@@ -1,0 +1,62 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.codeActionsOnSave.mode": "problems",
+  "eslint.useFlatConfig": true,
+  "eslint.validate": ["javascript", "javascriptreact", "typescript", "typescriptreact"],
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "prettier.requireConfig": true,
+  "tailwindCSS.classFunctions": ["cn", "cva"],
+  "yaml.yamlVersion": "1.2",
+  "yaml.schemaStore.enable": true,
+  "redhat.telemetry.enabled": false,
+  "sonarlint.disableTelemetry": true,
+  "cSpell.language": "en,pt,pt_BR",
+  "cSpell.ignorePaths": ["coverage/**", "node_modules/**", "src/generated/**"],
+  "files.watcherExclude": {
+    "**/.next/**": true,
+    "**/coverage/**": true,
+    "**/node_modules/**": true,
+    "**/src/generated/**": true
+  },
+  "search.exclude": {
+    "**/.next": true,
+    "**/coverage": true,
+    "**/node_modules": true,
+    "**/src/generated": true
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[markdown]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[yaml]": {
+    "editor.defaultFormatter": "redhat.vscode-yaml"
+  },
+  "[prisma]": {
+    "editor.defaultFormatter": "prisma.prisma"
+  }
+}

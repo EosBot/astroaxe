@@ -1,0 +1,58 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model GuestSession {
+  id         String         @id @default(uuid()) @db.Uuid
+  tokenHash  String         @unique @map("token_hash") @db.Char(64)
+  expiresAt  DateTime       @map("expires_at") @db.Timestamptz(6)
+  createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  profiles   BirthProfile[]
+
+  @@index([expiresAt])
+  @@map("guest_sessions")
+}
+
+model BirthProfile {
+  id             String        @id @default(uuid()) @db.Uuid
+  guestSessionId String        @map("guest_session_id") @db.Uuid
+  displayName    String        @map("display_name") @db.VarChar(100)
+  birthDate      DateTime      @map("birth_date") @db.Date
+  birthTime      String?       @map("birth_time") @db.VarChar(5)
+  timePrecision  TimePrecision @map("time_precision")
+  latitude       Decimal       @db.Decimal(9, 6)
+  longitude      Decimal       @db.Decimal(9, 6)
+  timezone       String        @db.VarChar(100)
+  location       String        @db.VarChar(200)
+  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  guestSession   GuestSession  @relation(fields: [guestSessionId], references: [id], onDelete: Cascade)
+  chart          NatalChart?
+
+  @@index([guestSessionId, createdAt])
+  @@map("birth_profiles")
+}
+
+model NatalChart {
+  id               String       @id @default(uuid()) @db.Uuid
+  birthProfileId   String       @unique @map("birth_profile_id") @db.Uuid
+  inputFingerprint String       @map("input_fingerprint") @db.Char(64)
+  engineVersion    String       @map("engine_version") @db.VarChar(50)
+  configVersion    String       @map("config_version") @db.VarChar(50)
+  calculationMode  String       @map("calculation_mode") @db.VarChar(20)
+  result           Json
+  createdAt        DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  birthProfile     BirthProfile @relation(fields: [birthProfileId], references: [id], onDelete: Cascade)
+
+  @@index([inputFingerprint])
+  @@map("natal_charts")
+}
+
+enum TimePrecision {
+  KNOWN
+  UNKNOWN
+}

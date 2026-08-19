@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "bradlc.vscode-tailwindcss",
+    "dbaeumer.vscode-eslint",
+    "docker.docker",
+    "esbenp.prettier-vscode",
+    "ms-playwright.playwright",
+    "prisma.prisma",
+    "redhat.vscode-yaml",
+    "sonarsource.sonarlint-vscode",
+    "streetsidesoftware.code-spell-checker-portuguese-brazilian",
+    "vitest.explorer"
+  ]
+}

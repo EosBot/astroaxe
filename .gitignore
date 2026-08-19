@@ -1,0 +1,25 @@
+# Dependencies and generated output
+# Baseline local do projeto. Compare atualizações com `npm run gitignore:preview`.
+node_modules/
+.next/
+src/generated/
+coverage/
+*.tsbuildinfo
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Tooling and operating-system output
+*.log
+.DS_Store
+.sonar/
+.scannerwork/
+
+# Local data
+backups/
+
+
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md

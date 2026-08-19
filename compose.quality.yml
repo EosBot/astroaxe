@@ -1,0 +1,74 @@
+name: astroaxe-quality
+
+services:
+  sonar-db:
+    image: postgres:18.4-alpine
+    profiles: ["quality"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sonar
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: ${SONAR_DB_PASSWORD:?Defina SONAR_DB_PASSWORD antes de iniciar a stack de qualidade}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sonar -d sonar"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    volumes:
+      - sonar_postgres_data:/var/lib/postgresql
+    networks:
+      - sonar_backend
+
+  sonarqube:
+    image: sonarqube:26.7.0.124771-community
+    profiles: ["quality"]
+    restart: unless-stopped
+    depends_on:
+      sonar-db:
+        condition: service_healthy
+    environment:
+      SONAR_JDBC_URL: jdbc:postgresql://sonar-db:5432/sonar
+      SONAR_JDBC_USERNAME: sonar
+      SONAR_JDBC_PASSWORD: ${SONAR_DB_PASSWORD:?Defina SONAR_DB_PASSWORD antes de iniciar a stack de qualidade}
+      SONAR_TELEMETRY_ENABLE: "false"
+    ports:
+      - "127.0.0.1:9000:9000"
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          'curl --fail --silent http://127.0.0.1:9000/api/system/status | grep --quiet ''"status":"UP"''',
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 90s
+    ulimits:
+      nofile:
+        soft: 131072
+        hard: 131072
+      nproc:
+        soft: 8192
+        hard: 8192
+    stop_grace_period: 60s
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    volumes:
+      - sonar_data:/opt/sonarqube/data
+      - sonar_extensions:/opt/sonarqube/extensions
+      - sonar_logs:/opt/sonarqube/logs
+      - sonar_temp:/opt/sonarqube/temp
+    networks:
+      - sonar_backend
+
+networks:
+  sonar_backend:
+    internal: true
+
+volumes:
+  sonar_postgres_data:
+  sonar_data:
+  sonar_extensions:
+  sonar_logs:
+  sonar_temp:

@@ -1,0 +1,58 @@
+# AstroAxe
+
+Astrologia calculada, regencias culturais contextualizadas e ritual diario.
+
+## Requisitos
+
+- Docker Engine com Compose v2
+- Para comandos fora do Docker: Node.js 24 e npm 11
+
+## Desenvolvimento local
+
+1. Copie `.env.example` para `.env` e gere senhas URL-safe diferentes.
+2. Atualize `DATABASE_URL` e `REDIS_URL` com as mesmas senhas.
+3. Execute `docker compose -f compose.yml -f compose.dev.yml up --build`.
+4. Abra `http://localhost`.
+
+PostgreSQL e Redis nao publicam portas no host. `/api/health/live` verifica o processo;
+`/api/health/ready` verifica PostgreSQL e Redis sem expor mensagens internas.
+
+O PostgreSQL 18 monta o volume em `/var/lib/postgresql`. Volumes criados por PostgreSQL 16 ou
+17 exigem backup/restore ou `pg_upgrade`; nunca aponte a imagem 18 diretamente para o layout
+antigo em `/var/lib/postgresql/data`.
+
+## Qualidade
+
+Os checks rapidos sao `npm run typecheck`, `npm run lint` e `npm test`. O gate completo roda
+`npm run quality` e envia a cobertura LCOV ao SonarQube local. Consulte a documentacao em
+`docs/` para inicializar o perfil de qualidade.
+
+Para comparar o `.gitignore` do projeto com a base mantida pelo gitignore.io/Toptal, execute
+`npm run gitignore:preview` e revise a saída. O comando nunca altera arquivos; redirecione para
+um arquivo temporário quando quiser comparar mudanças.
+
+O build usa o compilador Webpack suportado pelo Next.js. O Turbopack permanece no modo de
+desenvolvimento; neste ambiente ele nao consegue abrir o processo interno usado pelo PostCSS.
+
+## Motor astrológico
+
+O domínio ocidental usa Caelus fixado e dados efemérides embarcados. Horários civis são
+convertidos por timezone IANA antes do cálculo em UTC. Quando a hora é desconhecida, o contrato
+retorna posições de referência e a faixa diária da Lua, mas omite casas, Ascendente e Meio do
+Céu. Resultados incluem versões de engine/config e fingerprint SHA-256 dos inputs normalizados.
+
+## Onboarding guest-first
+
+A página inicial entrega nome/apelido, data, hora opcional e cidade em quatro etapas. A busca de
+cidades usa Nominatim somente com o texto da cidade, deriva o timezone pelas coordenadas e mantém
+cache por 30 dias. O primeiro mapa aparece antes de cadastro ou paywall.
+
+A sessão guest dura 24 horas. O navegador recebe um token aleatório em cookie HttpOnly,
+SameSite=Lax e Secure em produção; o banco persiste apenas seu HMAC. Dados natais nunca devem ir
+para logs, analytics, URLs ou serviços de geocoding.
+
+## Producao
+
+O Compose principal serve HTTP localmente para desenvolvimento. TLS/ACME, backup externo,
+segredos de producao e restauracao testada devem ser configurados pelo runbook de deploy antes
+de publicar o servico.
