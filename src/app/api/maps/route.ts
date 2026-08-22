@@ -10,6 +10,7 @@ import { parseServerEnv } from "@/lib/env";
 import { getPrisma } from "@/lib/prisma";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
+import { resolveAccount } from "@/lib/security/account";
 import { guestCookie, resolveGuestSession } from "@/lib/security/guest-session";
 import { apiJson } from "@/lib/security/headers";
 
@@ -23,18 +24,17 @@ const createMapSchema = birthDataSchema.extend({
 });
 
 export async function POST(request: NextRequest): Promise<Response> {
-  if (!request.headers.get("content-type")?.startsWith("application/json")) {
-    return apiJson({ error: "Envie os dados como JSON." }, { status: 415 });
-  }
-  const contentLength = Number(request.headers.get("content-length") ?? "0");
-  if (!Number.isFinite(contentLength) || contentLength > 16_384) {
-    return apiJson({ error: "Payload excede o limite permitido." }, { status: 413 });
-  }
+  const invalidRequest = validateMapRequest(request);
+  if (invalidRequest !== null) return invalidRequest;
 
   try {
     const env = parseServerEnv();
-    const guest = await resolveGuestSession(request, env.GUEST_SESSION_SECRET);
-    const allowed = await enforceRateLimit(`v1:rate:maps:${guest.id}`, 5, 60);
+    const account = await resolveAccount(request, env.AUTH_SESSION_SECRET);
+    const guest =
+      account === null ? await resolveGuestSession(request, env.GUEST_SESSION_SECRET) : null;
+    const ownerId = account?.id ?? guest?.id;
+    if (ownerId === undefined) throw new TypeError("Map owner could not be resolved.");
+    const allowed = await enforceRateLimit(`v1:rate:maps:${ownerId}`, 5, 60);
     if (!allowed)
       return apiJson({ error: "Muitas tentativas. Aguarde um minuto." }, { status: 429 });
 
@@ -52,7 +52,8 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     const stored = await prisma.birthProfile.create({
       data: {
-        guestSessionId: guest.id,
+        guestSessionId: guest?.id ?? null,
+        userId: account?.id ?? null,
         displayName,
         birthDate: new Date(`${birthData.date}T00:00:00.000Z`),
         birthTime: birthData.time ?? null,
@@ -78,23 +79,35 @@ export async function POST(request: NextRequest): Promise<Response> {
       { profileId: stored.id, chartId: stored.chart?.id, chart },
       { status: 201 },
     );
-    if (guest.newToken !== undefined)
+    if (guest?.newToken !== undefined)
       response.headers.append("Set-Cookie", guestCookie(guest.newToken));
     return response;
   } catch (error) {
-    if (error instanceof z.ZodError || error instanceof RangeError) {
-      return apiJson(
-        {
-          error: "Revise os dados informados.",
-          details: error instanceof z.ZodError ? error.issues : undefined,
-        },
-        { status: 400 },
-      );
-    }
-    logger.error(
-      { errorType: error instanceof Error ? error.name : "UnknownError" },
-      "map creation failed",
-    );
-    return apiJson({ error: "Nao foi possivel calcular o mapa agora." }, { status: 503 });
+    return mapCreationError(error);
   }
+}
+
+function validateMapRequest(request: NextRequest): Response | null {
+  if (!request.headers.get("content-type")?.startsWith("application/json"))
+    return apiJson({ error: "Envie os dados como JSON." }, { status: 415 });
+  const contentLength = Number(request.headers.get("content-length") ?? "0");
+  if (!Number.isFinite(contentLength) || contentLength > 16_384)
+    return apiJson({ error: "Payload excede o limite permitido." }, { status: 413 });
+  return null;
+}
+
+function mapCreationError(error: unknown): Response {
+  if (error instanceof z.ZodError || error instanceof RangeError)
+    return apiJson(
+      {
+        error: "Revise os dados informados.",
+        details: error instanceof z.ZodError ? error.issues : undefined,
+      },
+      { status: 400 },
+    );
+  logger.error(
+    { errorType: error instanceof Error ? error.name : "UnknownError" },
+    "map creation failed",
+  );
+  return apiJson({ error: "Nao foi possivel calcular o mapa agora." }, { status: 503 });
 }

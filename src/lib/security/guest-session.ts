@@ -11,20 +11,25 @@ function tokenHash(token: string, secret: string): string {
   return createHmac("sha256", secret).update(token).digest("hex");
 }
 
+export async function findGuestSession(
+  request: NextRequest,
+  secret: string,
+): Promise<{ id: string } | null> {
+  const currentToken = request.cookies.get(GUEST_COOKIE_NAME)?.value;
+  if (currentToken === undefined) return null;
+  return getPrisma().guestSession.findFirst({
+    where: { tokenHash: tokenHash(currentToken, secret), expiresAt: { gt: new Date() } },
+    select: { id: true },
+  });
+}
+
 export async function resolveGuestSession(
   request: NextRequest,
   secret: string,
 ): Promise<{ id: string; newToken?: string }> {
-  const currentToken = request.cookies.get(GUEST_COOKIE_NAME)?.value;
   const prisma = getPrisma();
-
-  if (currentToken !== undefined) {
-    const current = await prisma.guestSession.findFirst({
-      where: { tokenHash: tokenHash(currentToken, secret), expiresAt: { gt: new Date() } },
-      select: { id: true },
-    });
-    if (current !== null) return current;
-  }
+  const current = await findGuestSession(request, secret);
+  if (current !== null) return current;
 
   const newToken = randomBytes(32).toString("base64url");
   const session = await prisma.guestSession.create({
