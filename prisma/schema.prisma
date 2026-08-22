@@ -8,48 +8,241 @@ datasource db {
 }
 
 model GuestSession {
-  id         String         @id @default(uuid()) @db.Uuid
-  tokenHash  String         @unique @map("token_hash") @db.Char(64)
-  expiresAt  DateTime       @map("expires_at") @db.Timestamptz(6)
-  createdAt  DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  profiles   BirthProfile[]
+  id        String         @id @default(uuid()) @db.Uuid
+  tokenHash String         @unique @map("token_hash") @db.Char(64)
+  expiresAt DateTime       @map("expires_at") @db.Timestamptz(6)
+  createdAt DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  profiles  BirthProfile[]
 
   @@index([expiresAt])
   @@map("guest_sessions")
 }
 
+model User {
+  id                  String               @id @default(uuid()) @db.Uuid
+  email               String               @unique @db.VarChar(320)
+  passwordHash        String               @map("password_hash") @db.VarChar(255)
+  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  sessions            AccountSession[]
+  profiles            BirthProfile[]
+  culturalContributor CulturalContributor?
+
+  @@map("users")
+}
+
+model AccountSession {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  tokenHash String   @unique @map("token_hash") @db.Char(64)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("account_sessions")
+}
+
 model BirthProfile {
-  id             String        @id @default(uuid()) @db.Uuid
-  guestSessionId String        @map("guest_session_id") @db.Uuid
-  displayName    String        @map("display_name") @db.VarChar(100)
-  birthDate      DateTime      @map("birth_date") @db.Date
-  birthTime      String?       @map("birth_time") @db.VarChar(5)
-  timePrecision  TimePrecision @map("time_precision")
-  latitude       Decimal       @db.Decimal(9, 6)
-  longitude      Decimal       @db.Decimal(9, 6)
-  timezone       String        @db.VarChar(100)
-  location       String        @db.VarChar(200)
-  createdAt      DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
-  guestSession   GuestSession  @relation(fields: [guestSessionId], references: [id], onDelete: Cascade)
+  id             String         @id @default(uuid()) @db.Uuid
+  guestSessionId String?        @map("guest_session_id") @db.Uuid
+  userId         String?        @map("user_id") @db.Uuid
+  displayName    String         @map("display_name") @db.VarChar(100)
+  birthDate      DateTime       @map("birth_date") @db.Date
+  birthTime      String?        @map("birth_time") @db.VarChar(5)
+  timePrecision  TimePrecision  @map("time_precision")
+  latitude       Decimal        @db.Decimal(9, 6)
+  longitude      Decimal        @db.Decimal(9, 6)
+  timezone       String         @db.VarChar(100)
+  location       String         @db.VarChar(200)
+  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  guestSession   GuestSession?  @relation(fields: [guestSessionId], references: [id], onDelete: Cascade)
+  user           User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
   chart          NatalChart?
+  journalEntries JournalEntry[]
 
   @@index([guestSessionId, createdAt])
+  @@index([userId, createdAt])
   @@map("birth_profiles")
 }
 
+model JournalEntry {
+  id             String                 @id @default(uuid()) @db.Uuid
+  birthProfileId String                 @map("birth_profile_id") @db.Uuid
+  entryDate      DateTime               @map("entry_date") @db.Date
+  content        String                 @db.VarChar(4000)
+  createdAt      DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime               @updatedAt @map("updated_at") @db.Timestamptz(6)
+  birthProfile   BirthProfile           @relation(fields: [birthProfileId], references: [id], onDelete: Cascade)
+  revisions      JournalEntryRevision[]
+
+  @@unique([birthProfileId, entryDate])
+  @@index([birthProfileId, entryDate(sort: Desc)])
+  @@map("journal_entries")
+}
+
+model JournalEntryRevision {
+  id             String       @id @default(uuid()) @db.Uuid
+  journalEntryId String       @map("journal_entry_id") @db.Uuid
+  content        String       @db.VarChar(4000)
+  supersededAt   DateTime     @default(now()) @map("superseded_at") @db.Timestamptz(6)
+  journalEntry   JournalEntry @relation(fields: [journalEntryId], references: [id], onDelete: Cascade)
+
+  @@index([journalEntryId, supersededAt(sort: Desc)])
+  @@map("journal_entry_revisions")
+}
+
 model NatalChart {
-  id               String       @id @default(uuid()) @db.Uuid
-  birthProfileId   String       @unique @map("birth_profile_id") @db.Uuid
-  inputFingerprint String       @map("input_fingerprint") @db.Char(64)
-  engineVersion    String       @map("engine_version") @db.VarChar(50)
-  configVersion    String       @map("config_version") @db.VarChar(50)
-  calculationMode  String       @map("calculation_mode") @db.VarChar(20)
+  id               String               @id @default(uuid()) @db.Uuid
+  birthProfileId   String               @unique @map("birth_profile_id") @db.Uuid
+  inputFingerprint String               @map("input_fingerprint") @db.Char(64)
+  engineVersion    String               @map("engine_version") @db.VarChar(50)
+  configVersion    String               @map("config_version") @db.VarChar(50)
+  calculationMode  String               @map("calculation_mode") @db.VarChar(20)
   result           Json
-  createdAt        DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
-  birthProfile     BirthProfile @relation(fields: [birthProfileId], references: [id], onDelete: Cascade)
+  createdAt        DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  birthProfile     BirthProfile         @relation(fields: [birthProfileId], references: [id], onDelete: Cascade)
+  revisions        NatalChartRevision[]
 
   @@index([inputFingerprint])
   @@map("natal_charts")
+}
+
+model NatalChartRevision {
+  id               String     @id @default(uuid()) @db.Uuid
+  natalChartId     String     @map("natal_chart_id") @db.Uuid
+  inputFingerprint String     @map("input_fingerprint") @db.Char(64)
+  engineVersion    String     @map("engine_version") @db.VarChar(50)
+  configVersion    String     @map("config_version") @db.VarChar(50)
+  calculationMode  String     @map("calculation_mode") @db.VarChar(20)
+  result           Json
+  reason           String     @db.VarChar(50)
+  supersededAt     DateTime   @default(now()) @map("superseded_at") @db.Timestamptz(6)
+  natalChart       NatalChart @relation(fields: [natalChartId], references: [id], onDelete: Cascade)
+
+  @@index([natalChartId, supersededAt])
+  @@map("natal_chart_revisions")
+}
+
+model CulturalContributor {
+  id                   String                          @id @default(uuid()) @db.Uuid
+  userId               String?                         @unique @map("user_id") @db.Uuid
+  displayName          String                          @map("display_name") @db.VarChar(120)
+  publicBio            String?                         @map("public_bio") @db.VarChar(1000)
+  attributionLine      String                          @map("attribution_line") @db.VarChar(300)
+  role                 String                          @db.VarChar(30)
+  createdAt            DateTime                        @default(now()) @map("created_at") @db.Timestamptz(6)
+  user                 User?                           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  authoredEntries      CulturalEntry[]                 @relation("CulturalEntryAuthor")
+  reviewedEntries      CulturalEntry[]                 @relation("CulturalEntryReviewer")
+  reviews              CulturalReview[]
+  transitTextsAuthored TransitInterpretationTemplate[] @relation("TransitTextAuthor")
+  transitTextsReviewed TransitInterpretationTemplate[] @relation("TransitTextReviewer")
+
+  @@map("cultural_contributors")
+}
+
+model TransitInterpretationTemplate {
+  id               String               @id @default(uuid()) @db.Uuid
+  transitingBody   String               @map("transiting_body") @db.VarChar(30)
+  natalBody        String               @map("natal_body") @db.VarChar(30)
+  aspectType       String               @map("aspect_type") @db.VarChar(30)
+  locale           String               @default("pt-BR") @db.VarChar(10)
+  title            String               @db.VarChar(180)
+  opening          String               @db.VarChar(1200)
+  deepening        String               @db.Text
+  technicalWhy     String               @map("technical_why") @db.VarChar(1500)
+  reflectionPrompt String               @map("reflection_prompt") @db.VarChar(500)
+  practice         String               @db.VarChar(1000)
+  version          String               @db.VarChar(80)
+  status           String               @default("DRAFT") @db.VarChar(30)
+  generationMethod String               @default("HUMAN") @map("generation_method") @db.VarChar(30)
+  authorId         String               @map("author_id") @db.Uuid
+  reviewerId       String?              @map("reviewer_id") @db.Uuid
+  reviewedAt       DateTime?            @map("reviewed_at") @db.Timestamptz(6)
+  publishedAt      DateTime?            @map("published_at") @db.Timestamptz(6)
+  createdAt        DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  author           CulturalContributor  @relation("TransitTextAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  reviewer         CulturalContributor? @relation("TransitTextReviewer", fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  @@unique([transitingBody, natalBody, aspectType, locale, version])
+  @@index([transitingBody, natalBody, aspectType, locale, status])
+  @@map("transit_interpretation_templates")
+}
+
+model CulturalSource {
+  id           String          @id @default(uuid()) @db.Uuid
+  sourceKey    String          @unique @map("source_key") @db.VarChar(120)
+  title        String          @db.VarChar(300)
+  url          String          @db.VarChar(2000)
+  evidenceKind String          @map("evidence_kind") @db.VarChar(40)
+  usageStatus  String          @default("REFERENCE_ONLY") @map("usage_status") @db.VarChar(30)
+  licenseNote  String          @map("license_note") @db.VarChar(500)
+  accessedAt   DateTime        @map("accessed_at") @db.Date
+  createdAt    DateTime        @default(now()) @map("created_at") @db.Timestamptz(6)
+  claims       CulturalClaim[]
+
+  @@map("cultural_sources")
+}
+
+model CulturalEntry {
+  id            String               @id @default(uuid()) @db.Uuid
+  slug          String               @db.VarChar(120)
+  displayName   String               @map("display_name") @db.VarChar(120)
+  category      String               @db.VarChar(40)
+  traditionId   String               @map("tradition_id") @db.VarChar(120)
+  summary       String               @db.VarChar(2000)
+  editorialBody String               @map("editorial_body") @db.Text
+  version       String               @db.VarChar(80)
+  status        String               @default("DRAFT") @db.VarChar(30)
+  authorId      String               @map("author_id") @db.Uuid
+  reviewerId    String?              @map("reviewer_id") @db.Uuid
+  reviewedAt    DateTime?            @map("reviewed_at") @db.Timestamptz(6)
+  publishedAt   DateTime?            @map("published_at") @db.Timestamptz(6)
+  createdAt     DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime             @updatedAt @map("updated_at") @db.Timestamptz(6)
+  author        CulturalContributor  @relation("CulturalEntryAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  reviewer      CulturalContributor? @relation("CulturalEntryReviewer", fields: [reviewerId], references: [id], onDelete: Restrict)
+  claims        CulturalClaim[]
+  reviews       CulturalReview[]
+
+  @@unique([slug, version])
+  @@index([slug, status, publishedAt])
+  @@map("cultural_entries")
+}
+
+model CulturalClaim {
+  id            String         @id @default(uuid()) @db.Uuid
+  entryId       String         @map("entry_id") @db.Uuid
+  sourceId      String         @map("source_id") @db.Uuid
+  claimKey      String         @map("claim_key") @db.VarChar(120)
+  predicate     String         @db.VarChar(120)
+  objectSummary String         @map("object_summary") @db.VarChar(500)
+  sourceLocator String?        @map("source_locator") @db.VarChar(120)
+  status        String         @default("ACTIVE") @db.VarChar(30)
+  createdAt     DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  entry         CulturalEntry  @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  source        CulturalSource @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+
+  @@unique([entryId, claimKey])
+  @@index([sourceId])
+  @@map("cultural_claims")
+}
+
+model CulturalReview {
+  id         String              @id @default(uuid()) @db.Uuid
+  entryId    String              @map("entry_id") @db.Uuid
+  reviewerId String              @map("reviewer_id") @db.Uuid
+  decision   String              @db.VarChar(30)
+  note       String?             @db.VarChar(2000)
+  createdAt  DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  entry      CulturalEntry       @relation(fields: [entryId], references: [id], onDelete: Cascade)
+  reviewer   CulturalContributor @relation(fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  @@index([entryId, createdAt])
+  @@map("cultural_reviews")
 }
 
 enum TimePrecision {
