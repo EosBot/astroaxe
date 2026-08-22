@@ -231,8 +231,12 @@ momento. Requisitos mínimos:
 
 Exige função pura, input snapshot auditável, validação de sanidade, teste golden
 e registro `ANTES / DEPOIS / MOTIVO / IMPACTO`. Faça bump da versão de engine ou
-config quando o mesmo input passar a produzir outro resultado. Um modelo de
-Orixás sem ground truth deve continuar apresentado como heurística simbólica.
+config quando o mesmo input passar a produzir outro resultado. O método autoral
+de Orixás pode produzir regências diretas de frente, cabeça e costas, desde que
+declare versão, matriz, pesos, proveniência, acurácia observada e população de
+validação. Casos sacerdotais consentidos e autodeclarações públicas verificáveis
+podem compor datasets separados, anonimizados no repositório e sem conteúdo
+ritual reservado.
 
 ### Dependência ou integração externa
 
@@ -447,3 +451,26 @@ Uma tarefa termina somente quando:
   alheias;
 - a entrega informa arquivos, resultado, comandos executados e qualquer
   validação que não pôde ser realizada.
+
+## 16. Memória e retomada do projeto
+
+`docs/PROJECT_MEMORY.md` é o ponto canônico de retomada entre sessões. Leia-o
+depois deste manual e antes de assumir o estado do runtime, do banco, das
+validações ou das decisões recentes de produto. Atualize-o quando uma mudança
+alterar comportamento entregue, infraestrutura ativa, decisão de experiência,
+risco conhecido ou próximo marco.
+
+O documento é um snapshot local datado, não substitui `git status`, healthchecks,
+testes, runbooks nem os documentos temáticos. Divergências devem ser resolvidas
+pela evidência mais recente e registradas tanto na memória quanto no documento
+autoritativo da área.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

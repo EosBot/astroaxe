@@ -1,6 +1,6 @@
 # AstroAxe — Blueprint 6
 
-**Versão:** 6.0.0
+**Versão:** 6.1.0
 
 **Data:** 2026-08-19
 
@@ -14,9 +14,9 @@ AstroAxe é uma plataforma brasileira de astrologia personalizada que une três 
 
 1. **Céu calculado:** posições, casas, aspectos e trânsitos determinísticos e auditáveis.
 2. **Leitura astrológica:** interpretação editorial em português, com autoria e versão visíveis.
-3. **Ressonância de Axé:** aproximação simbólica e educativa com arquétipos de Orixás, produzida com governança cultural.
+3. **Tríade de Regências:** leitura autoral e calculada de Orixás de frente, cabeça e costas, produzida por uma matriz ocultista versionada e governança cultural.
 
-O produto não determina Orixá religioso, não substitui jogo de búzios, terreiro, sacerdote, terapia ou aconselhamento profissional. Seu diferencial é transformar dados astrológicos complexos em uma experiência diária brasileira, acolhedora e culturalmente responsável.
+O produto assume uma leitura direta dentro do método AstroAxe. Seu diferencial é combinar cálculo astrológico, correspondências ocultistas, narrativas e conhecimento afro-brasileiro em um sistema determinístico, explicável e calibrado. Um disclaimer curto no rodapé identifica o método como autoral.
 
 ## 2. Princípios inegociáveis
 
@@ -33,21 +33,22 @@ O produto não determina Orixá religioso, não substitui jogo de búzios, terre
 
 ### 3.1 Decisão sobre Orixás
 
-O Blueprint 6 remove a tabela signo→Orixá como mecanismo de determinação e cancela o plano de treinar um classificador de “Orixá confirmado”. No Candomblé, a composição da cabeça é tratada por práticas oraculares e iniciáticas, varia entre tradições e pode permanecer provisória. Um mapa natal não equivale a esse processo.
+O Blueprint 6.1 substitui a antiga ressonância não conclusiva pela **Tríade de Regências AstroAxe**:
 
-O resultado de produto passa a se chamar **Tríade de Ressonâncias Simbólicas**:
+- calcula e apresenta Orixá de frente, Orixá de cabeça e Orixá de costas;
+- combina planetas, signos, casas, ângulos, dignidades, aspectos, elementos, modalidades, ciclos e correspondências ocultistas documentadas;
+- relaciona os indicadores a uma ontologia versionada de Orixás, qualidades, elementos, narrativas e símbolos;
+- explica os fatores determinantes sem transformar a tela em uma sucessão de ressalvas;
+- informa acurácia somente quando medida em conjunto de validação separado;
+- mantém um disclaimer discreto no rodapé: “Método autoral AstroAxe; consulte a metodologia”.
 
-- apresenta até três arquétipos para exploração, sem os rótulos religiosos “de frente”, “de cabeça” ou “de costas”;
-- explica quais símbolos astrológicos e quais conteúdos editoriais motivaram cada aproximação;
-- não usa Odú, “confiança alta” ou linguagem de confirmação espiritual;
-- inclui a mensagem persistente “ressonância simbólica; não determina seu Orixá”;
-- oferece conteúdo educativo sobre diversidade entre Candomblé, Umbanda e suas diferentes nações, sem fundi-las em uma tradição genérica.
+Universalidade é uma hipótese operacional do método. O grafo conserva a origem de cada correspondência — Ketu/Nagô, Ifá, Umbanda, Batuque, hermetismo ou outra escola — para testar convergências sem perder rastreabilidade.
 
 ### 3.2 Conselho cultural
 
 Antes de publicar a camada de Axé, formar um conselho remunerado com lideranças e pesquisadores de mais de uma tradição. O acordo deve definir escopo público versus reservado, autoria, licenças, remuneração, direito de veto, processo de correção e repartição de receita quando aplicável.
 
-Não coletar filiação religiosa ou “Orixá confirmado” para treinamento. Pesquisa futura exige consentimento específico, minimização, governança comunitária, benefício compartilhado e direito de retirada.
+Casos sacerdotais podem ser usados com consentimento específico e dados minimizados. Casos públicos exigem autodeclaração inequívoca da regência e fonte natal verificável. Rumor, atribuição por terceiros, inferência por aparência ou dado reservado não são ground truth. Calibração e validação usam conjuntos separados, e o repositório guarda somente IDs opacos, features derivadas e rótulos necessários.
 
 ## 4. Experiência principal
 
@@ -83,7 +84,7 @@ A home deve ser compreendida em poucos segundos e aprofundada sob demanda:
 4. **Ressonância:** conteúdo cultural revisado, somente quando houver relação editorial legítima; nunca um “Orixá regente automático do dia”.
 5. **Aprofundar:** mandala, demais trânsitos e texto técnico.
 
-Cadências complementares: céu coletivo diário, leitura semanal, fases da Lua, trânsitos longos e retrospectiva anual. Notificações são opt-in, configuráveis por frequência e sem mensagens alarmistas.
+Cadências complementares: céu coletivo diário, leitura semanal, fases da Lua, trânsitos longos e retrospectiva anual. A conta já permite consultar o Tempo do Céu diário dos últimos 366 dias sem duplicar snapshots no banco. Notificações são opt-in, configuráveis por frequência e sem mensagens alarmistas.
 
 ## 5. Conteúdo e IA
 
@@ -250,18 +251,110 @@ Não usar “precisão sentida” ou dependência diária como North Star. A mé
 2. **Fase 1 — Fundação:** Docker, banco, Redis, migrations, health, worker mínimo, SonarQube e tooling.
 3. **Fase 2 — Motor:** domínio astrológico, data hygiene, unknown-time mode, golden tests e cache.
 4. **Fase 3 — Conta e mapa:** guest-first, autenticação, ownership, onboarding e primeiro resultado.
-5. **Fase 4 — Conteúdo:** CMS/corpus autorizado, autoria, Tríade de Ressonâncias e revisão cultural.
+5. **Fase 4 — Conteúdo:** CMS/corpus autorizado, autoria, Tríade de Regências e revisão cultural.
 6. **Fase 5 — Ritual e IA:** trânsitos, Tempo do Céu, RAG, validação semântica e streaming.
 7. **Fase 6 — Receita:** Free/Pro, avulsos, Stripe, limites e experimentação.
 8. **Fase 7 — Polimento:** acessibilidade, E2E, performance, SEO, backups e observabilidade.
 
+### Atualização operacional em 2026-08-21
+
+- A memória curta e canônica para retomada entre sessões está em `docs/PROJECT_MEMORY.md`; o estado
+  detalhado continua em `docs/IMPLEMENTATION_STATUS.md`.
+- A busca real de cidades e a criação sintética de mapa foram validadas pela stack local. A
+  apresentação de signos e Ascendente foi corrigida sem alterar o núcleo astronômico.
+- O onboarding já implementa palco orbital, motion com propósito, redução de movimento e partículas
+  Canvas limitadas. A próxima entrega da experiência principal é a mandala natal real e interativa
+  no primeiro resultado.
+- O runtime local foi migrado por restore lógico para PostgreSQL 18 no volume
+  `astroaxe_postgres18_data`, com 16 migrations e pgvector validados. O volume PostgreSQL 16
+  `astroaxe_postgres_data` permanece preservado para retorno.
+- O checkpoint mais recente passou com 218 testes, typecheck, lint, build e release smoke. O Sonar
+  passou antes do incremento visual e deve ser reexecutado no próximo checkpoint funcional.
+
 ### Estado implementado em 2026-08-19
 
 - Fases 0–2 concluídas no primeiro checkpoint.
-- Fase 3 parcial: sessão guest HMAC com retenção de 24 horas, modelos de perfil/mapa, onboarding
-  em quatro etapas, geocoding com cache, cálculo persistido e primeiro resultado antes de conta.
-- Próximo incremento da Fase 3: autenticação, claim idempotente do mapa guest, exclusão pelo
-  titular e política automatizada de expiração.
+- Fase 3 concluída no escopo de conta e primeiro mapa: sessão guest HMAC com retenção de 24 horas,
+  onboarding em quatro etapas, geocoding com cache, cálculo persistido e primeiro resultado antes
+  da conta; autenticação local com senha derivada por `scrypt`, sessão opaca de 30 dias, claim
+  idempotente no cadastro/login e exclusão do perfil filtrada pelo titular.
+- O worker remove sessões guest e de conta vencidas a cada hora. O cascade elimina somente perfis
+  que ainda pertencem ao guest; perfis reivindicados têm ownership transferido ao usuário na mesma
+  operação e permanecem preservados.
+- A conta agora lista somente os perfis do titular e permite atualizar/recalcular dados natais. O
+  resultado substituído é preservado em `natal_chart_revisions`, com fingerprint, versões, modo,
+  resultado, motivo e instante da substituição.
+- Fase 4 avançou da infraestrutura para o primeiro corpus público: conteúdo versionado, autoria, revisão independente,
+  fontes, claims e retirada editorial possuem persistência auditável. A API pública expõe somente
+  versões publicadas e claims ativas ou contestadas, sem pareceres internos.
+- A aprovação coletiva em lote declarada pelo responsável foi registrada sem inferir nomes ou
+  credenciais. Quatro verbetes longos estão publicados: três contextos IPHAN e uma leitura situada
+  do capítulo VI de _Yoruba Legends_ (1929), acompanhada de crítica ao enquadramento colonial do
+  prefácio. A página `/acervo-cultural` mostra texto, versão, autoria, revisão, claims e fontes.
+- A existência de quatro textos aprovados não ativa sozinha a Tríade. O novo método direto foi
+  autorizado em 20 de agosto de 2026 e ainda exige ontologia, matriz versionada, dataset de
+  calibração, validação separada e testes golden antes da publicação.
+- O workflow editorial possui identidade explicitamente vinculada a uma conta e papéis de autoria,
+  revisão ou administração. As APIs exigem sessão, mesma origem e segregação de funções; ninguém
+  pode aprovar o próprio verbete, e toda publicação registra o parecer na mesma transação.
+- A Fase 5 foi iniciada pelo domínio puro de trânsitos. Um snapshot versionado calcula aspectos
+  entre sete corpos em trânsito e os placements natais, com orbe, movimento aplicante/separante,
+  intensidade relativa e fingerprint determinístico. Cache, API e primeira apresentação do
+  `Tempo do Céu` e janelas temporais de início, pico e fim estão implementados.
+- O snapshot diário agora possui cache Redis validado e uma API autenticada por perfil. A data é
+  resolvida no timezone do titular, a chave contém todas as dimensões que alteram o resultado e a
+  consulta ao mapa é filtrada server-side por ownership.
+- A leitura diária passa a usar biblioteca editorial preexistente, não geração obrigatória por
+  requisição. Templates longos são selecionados por trânsito, ponto natal e aspecto, possuem versão,
+  autoria, método de geração e revisão independente. Três textos assistidos por IA inauguram o
+  acervo publicado com validação automatizada explicitamente identificada; conteúdo cultural
+  continua exigindo revisão humana. O seletor fail-closed devolve apenas versões publicadas. Na
+  ficha do perfil, a primeira apresentação organiza a narrativa em `Agora / Por quê / Como
+trabalhar`, expõe autoria e revisão e recusa improvisar quando não existe template publicado.
+- O benchmark público de Astrolink e Personare orientou um feed de múltiplos ciclos, sem copiar
+  redação ou interface. A biblioteca `modular-ptbr-1` materializa 350 textos longos a partir de
+  blocos editoriais originais por agente em trânsito, função natal e aspecto. O runtime apenas
+  seleciona registros publicados; a aprovação estrutural é feita em lote e permanece separada da
+  revisão cultural.
+- A primeira fatia da Fase 7 adiciona Playwright fixado, E2E em Chromium desktop/mobile, skip link,
+  foco visível e verificação de overflow e proveniência. Onboarding autenticado, performance, SEO,
+  backup/restore e observabilidade continuam como próximos checkpoints.
+
+### Registro do snapshot de trânsitos
+
+- **ANTES:** o produto calculava apenas o mapa natal e não possuía contrato determinístico para o
+  céu de uma data posterior.
+- **DEPOIS:** o domínio produz um snapshot validado e ordenado dos aspectos de trânsito para um
+  instante explícito, sem relógio implícito, rede, IA ou conteúdo cultural.
+- **MOTIVO:** separar o fato astronômico da interpretação editorial antes de construir o ritual
+  diário e o RAG.
+- **IMPACTO:** o contrato inicial foi `transits-2026-08-19`; o mapa natal e suas versões não
+  mudaram. O snapshot passou depois a alimentar a experiência diária, sempre descrito como contexto
+  astrológico e não como previsão certa ou conselho.
+
+### Registro das janelas de trânsitos
+
+- **ANTES:** o snapshot descrevia apenas o aspecto no instante diário; a interface não distinguia
+  quando a passagem começou, quando atingiria seu menor orbe local ou quando terminaria.
+- **DEPOIS:** os cinco aspectos prioritários carregam a janela contínua que contém o instante de
+  referência, com `startsAt`, `peaksAt`, `endsAt` e `peakOrb`. O cálculo possui teste golden e a
+  configuração mudou de `transits-2026-08-19` para `transits-2026-08-19-window-1`.
+- **MOTIVO:** dar contexto temporal observável sem transformar um trânsito em previsão fatalista e
+  sem fundir passagens distintas durante movimentos retrógrados.
+- **IMPACTO:** o mesmo mapa/data passa a produzir campos adicionais e uma nova cache key. Snapshots
+  anteriores não são reutilizados; nenhuma posição ou regra de aspecto natal foi alterada.
+
+### Registro de recálculo de perfil
+
+- **ANTES:** o mapa natal persistido era imutável na interface; corrigir data, hora ou cidade exigia
+  criar outro perfil e não havia uma relação auditável com o resultado anterior.
+- **DEPOIS:** o titular pode corrigir seus dados e solicitar novo cálculo; a transação arquiva o
+  mapa anterior antes de atualizar perfil e resultado atual.
+- **MOTIVO:** hora de nascimento pode ser descoberta ou corrigida depois do primeiro valor, e o
+  produto precisa comunicar essa mudança sem perder rastreabilidade.
+- **IMPACTO:** o mesmo input e as mesmas versões continuam produzindo o mesmo resultado. Não há
+  bump de engine/config; cada mudança decorre de input explícito do titular e mantém histórico
+  técnico. A revisão não é exposta como previsão nem enviada a analytics/LLM.
 
 ## 13. Fontes verificadas
 
@@ -289,4 +382,7 @@ Não usar “precisão sentida” ou dependência diária como North Star. A mé
 
 ## 14. Registro de mudanças
 
+- **6.1.0 (2026-08-22):** formaliza a Tríade de Regências como resultado direto do método autoral
+  AstroAxe, condicionado a matriz versionada, proveniência, validação separada e governança
+  cultural; o resultado não constitui confirmação religiosa nem substitui consulta tradicional.
 - **6.0.0 (2026-08-19):** atualiza stack e mercado; substitui determinação automatizada de Orixá por ressonância simbólica governada; formaliza hora desconhecida, autoria/IA transparente, monetização em dois planos, SonarQube Community local e LSPs.

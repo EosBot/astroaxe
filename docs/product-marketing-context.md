@@ -32,7 +32,7 @@ Para brasileiros que gostam de astrologia, mas querem ir além do horóscopo gen
 
 1. **Clareza:** primeiro insight em linguagem simples; técnica disponível sob demanda.
 2. **Rastreabilidade:** placements, trânsito, duração, versão e autoria acessíveis.
-3. **Cuidado cultural:** ressonância simbólica, não determinação religiosa.
+3. **Método rastreável:** regências calculadas com versão, fontes, fatores determinantes e acurácia observada.
 4. **Ritual possível:** uma ação pequena, opcional e não fatalista.
 5. **Brasil real:** português natural, referências locais e estética própria.
 
@@ -153,26 +153,26 @@ Preços e ratings de lojas são fotografias por país/data. Não usar ratings co
 - “tema”, “tendência”, “possibilidade”, “ressonância”, “reflexão”;
 - “calculado a partir do seu mapa”;
 - “veja por que esta leitura apareceu”;
-- “ressonância simbólica; não determina seu Orixá”;
+- “regência calculada pelo método autoral AstroAxe”;
 - “se fizer sentido para você”.
 
 ### Evitar
 
 - “seu destino”, “vai acontecer”, “garantido”, “cientificamente comprovado”;
-- “descubra seu Orixá pelo signo” ou “confiança alta” para identidade religiosa;
+- “descubra seu Orixá pelo signo” ou porcentagem de certeza sem calibração publicada;
 - “cura”, “diagnóstico”, “a IA sabe quem você é”;
 - “ancestral” como adjetivo decorativo sem origem, autoria e contexto;
 - medo, urgência artificial e jargão sem explicação.
 
 ## Objeções
 
-| Objeção                             | Resposta de produto                                                                                      |
-| ----------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| “É só um horóscopo genérico.”       | Mostrar mapa natal, trânsito exato, período e motivo da seleção.                                         |
-| “A IA inventou isso.”               | Rotular a composição, abrir fontes/placements e identificar o conteúdo-base e seu autor.                 |
-| “Um app não pode dizer meu Orixá.”  | Concordar explicitamente: o produto oferece somente ressonâncias simbólicas e aponta para tradição viva. |
-| “Não sei minha hora de nascimento.” | Oferecer modo sem hora, retirar resultados dependentes dela e explicar como atualizar depois.            |
-| “Isso parece apropriação.”          | Expor conselho, autoria, contexto, remuneração, política de correção e limites do produto.               |
+| Objeção                                | Resposta de produto                                                                                                                                                        |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| “É só um horóscopo genérico.”          | Mostrar mapa natal, trânsito exato, período e motivo da seleção.                                                                                                           |
+| “A IA inventou isso.”                  | Rotular a composição, abrir fontes/placements e identificar o conteúdo-base e seu autor.                                                                                   |
+| “Um app não pode confirmar meu Orixá.” | Concordar explicitamente: o produto apresenta uma regência calculada pelo método autoral AstroAxe, não uma confirmação religiosa nem substituição de consulta tradicional. |
+| “Não sei minha hora de nascimento.”    | Oferecer modo sem hora, retirar resultados dependentes dela e explicar como atualizar depois.                                                                              |
+| “Isso parece apropriação.”             | Expor conselho, autoria, contexto, remuneração, política de correção e limites do produto.                                                                                 |
 
 ## Provas e limites
 

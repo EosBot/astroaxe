@@ -45,6 +45,14 @@ por `SONAR_TOKEN`, e o endereço por `SONAR_HOST_URL`. A ordem obrigatória é: 
 `coverage/lcov.info`, executar o scanner e aguardar o Quality Gate conforme
 `sonar-project.properties`.
 
+Quando tokens locais permanentes forem autorizados pelo responsável, guarde o Project Analysis
+Token em `SONAR_TOKEN` e o User Token em `SONARQUBE_TOKEN` exclusivamente no `.env` ignorado, com
+permissão `600`. Use nomes distintos, menor escopo e rotação explícita; nunca copie os valores para
+Compose, documentação, terminal compartilhado ou arquivos de exemplo.
+
+O diretório de trabalho do scanner é `.scannerwork-user`. Essa separação evita conflito com o
+artefato histórico `.scannerwork` criado por container com outro UID; ambos permanecem ignorados.
+
 Para parar sem apagar os dados:
 
 ```bash

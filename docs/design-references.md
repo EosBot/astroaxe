@@ -1,8 +1,10 @@
 # Referências visuais — NFTmap e Astrarise
 
-**Análise:** 2026-08-19
+**Análise inicial:** 2026-08-19
 
-**Escopo:** direção visual para AstroAxe; nenhuma UI foi implementada
+**Implementação revisada:** 2026-08-21
+
+**Escopo:** contrato de experiência e direção visual do AstroAxe
 
 ## Método e limites
 
@@ -156,7 +158,19 @@ Os valores são ponto de partida e exigem teste de contraste antes de implementa
 - Canvas deve pausar em aba oculta e nunca bloquear input, formulário ou leitura.
 - Som é opt-in e não participa do feedback essencial.
 
-## Critérios de aceite futuros
+## Estado implementado em 2026-08-21
+
+- O onboarding usa palco orbital, entradas em sequência e transições curtas com CSS.
+- A camada `celestial-particles.tsx` usa partículas Canvas determinísticas, com limites de 38 no
+  desktop e 20 no mobile, alvo de 30 fps e DPR máximo de `1.5`.
+- A cena pausa fora do viewport e com a aba oculta. `prefers-reduced-motion` entrega uma composição
+  estática.
+- Formulário, mensagens, foco e ações permanecem no DOM; a camada visual não intercepta input.
+- As composições foram verificadas em `1440×1000` e `390×844`.
+- A experiência ainda não alcançou integralmente as referências: falta transformar o resultado em
+  mandala natal real, explorável e ligada aos dados calculados.
+
+## Critérios de aceite permanentes
 
 - A página permanece compreensível e navegável com WebGL, JS, motion ou som indisponíveis.
 - Nenhum texto essencial é renderizado dentro do canvas.
@@ -170,3 +184,7 @@ Os valores são ponto de partida e exigem teste de contraste antes de implementa
 ## Decisão
 
 Adotar as referências como estudos de **espacialidade, foco e coreografia**, não como moodboard cromático. O Observatório Ritual será mais quente, editorial e legível: o céu fornece estrutura; a tradição fornece contexto; a interface fornece calma.
+
+O próximo marco é uma mandala natal real no resultado, com seleção de um corpo por vez, ficha
+editorial acessível no DOM e composição mobile própria. A memória de retomada está em
+`docs/PROJECT_MEMORY.md`.

@@ -21,10 +21,7 @@
       "extensions": [".yaml", ".yml"]
     },
     "prisma": {
-      "command": [
-        "node_modules/.bin/prisma",
-        "language-server"
-      ],
+      "command": ["node_modules/.bin/prisma", "language-server"],
       "extensions": [".prisma"]
     }
   }

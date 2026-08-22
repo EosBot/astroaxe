@@ -2,6 +2,16 @@
 
 Astrologia calculada, regencias culturais contextualizadas e ritual diario.
 
+Para continuar o desenvolvimento em outra sessão, comece por
+[`docs/PROJECT_MEMORY.md`](docs/PROJECT_MEMORY.md). Ela registra o estado local observado, decisões
+vigentes, validações, riscos e a próxima fronteira do produto.
+
+## Branches
+
+- `develop` é a linha permanente de integração e validação do MVP.
+- `main` é reservada exclusivamente a versões promovidas para produção. Enquanto não houver uma
+  release aprovada, seu snapshot contém apenas um aviso de desenvolvimento.
+
 ## Requisitos
 
 - Docker Engine com Compose v2
@@ -20,6 +30,10 @@ PostgreSQL e Redis nao publicam portas no host. `/api/health/live` verifica o pr
 O PostgreSQL 18 monta o volume em `/var/lib/postgresql`. Volumes criados por PostgreSQL 16 ou
 17 exigem backup/restore ou `pg_upgrade`; nunca aponte a imagem 18 diretamente para o layout
 antigo em `/var/lib/postgresql/data`.
+
+No ambiente local atual, o volume ativo é `astroaxe_postgres18_data`. O legado
+`astroaxe_postgres_data` contém PostgreSQL 16 e permanece preservado para retorno; nunca use
+`down -v` nem o monte na imagem 18. Consulte `docs/backup-restore.md`.
 
 ## Qualidade
 
