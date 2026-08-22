@@ -28,3 +28,7 @@ services:
 
 networks:
   e2e_public:
+
+volumes:
+  postgres_data:
+    name: "${COMPOSE_PROJECT_NAME:-astroaxe_e2e}_postgres18_data"
