@@ -4,6 +4,8 @@ node_modules/
 .next/
 src/generated/
 coverage/
+playwright-report/
+test-results/
 *.tsbuildinfo
 
 # Local configuration and secrets
@@ -16,6 +18,10 @@ coverage/
 .DS_Store
 .sonar/
 .scannerwork/
+.scannerwork-user/
+.citadel/
+.planning/
+.codex/agent-context/
 
 # Local data
 backups/

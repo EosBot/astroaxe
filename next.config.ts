@@ -11,8 +11,12 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  allowedDevOrigins: ["127.0.0.1"],
   poweredByHeader: false,
   reactStrictMode: true,
+  experimental: {
+    useTypeScriptCli: false,
+  },
   async headers() {
     return [{ source: "/(.*)", headers: securityHeaders }];
   },

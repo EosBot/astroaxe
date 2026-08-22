@@ -53,13 +53,17 @@ services:
     build:
       context: .
       target: app-runner
+      args:
+        SITE_URL: ${SITE_URL:?SITE_URL is required}
     restart: unless-stopped
     environment:
       DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
       REDIS_URL: ${REDIS_URL:?REDIS_URL is required}
       GUEST_SESSION_SECRET: ${GUEST_SESSION_SECRET:?GUEST_SESSION_SECRET is required}
+      AUTH_SESSION_SECRET: ${AUTH_SESSION_SECRET:?AUTH_SESSION_SECRET is required}
       FINGERPRINT_SECRET: ${FINGERPRINT_SECRET:?FINGERPRINT_SECRET is required}
       NOMINATIM_USER_AGENT: ${NOMINATIM_USER_AGENT:?NOMINATIM_USER_AGENT is required}
+      SITE_URL: ${SITE_URL:?SITE_URL is required}
       LOG_LEVEL: ${LOG_LEVEL:-info}
     depends_on:
       migrate:
@@ -77,6 +81,26 @@ services:
       traefik.http.services.astroaxe.loadbalancer.healthcheck.interval: 15s
     security_opt: [no-new-privileges:true]
 
+  worker:
+    build:
+      context: .
+      target: worker-runner
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
+      REDIS_URL: ${REDIS_URL:?REDIS_URL is required}
+      GUEST_SESSION_SECRET: ${GUEST_SESSION_SECRET:?GUEST_SESSION_SECRET is required}
+      AUTH_SESSION_SECRET: ${AUTH_SESSION_SECRET:?AUTH_SESSION_SECRET is required}
+      FINGERPRINT_SECRET: ${FINGERPRINT_SECRET:?FINGERPRINT_SECRET is required}
+      NOMINATIM_USER_AGENT: ${NOMINATIM_USER_AGENT:?NOMINATIM_USER_AGENT is required}
+      SITE_URL: ${SITE_URL:?SITE_URL is required}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    networks: [backend]
+    security_opt: [no-new-privileges:true]
+
   traefik:
     image: traefik:v3.7.0
     restart: unless-stopped
@@ -84,20 +108,39 @@ services:
       - --api.dashboard=false
       - --providers.docker=true
       - --providers.docker.exposedbydefault=false
+      - --providers.docker.constraints=Label(`com.docker.compose.project`,`${COMPOSE_PROJECT_NAME:-astroaxe}`)
       - --entrypoints.web.address=:80
+      - --entrypoints.metrics.address=:8082
+      - --metrics.prometheus=true
+      - --metrics.prometheus.entrypoint=metrics
+      - --metrics.prometheus.addrouterslabels=true
+      - --metrics.prometheus.addserviceslabels=true
+      - --metrics.prometheus.buckets=0.05,0.1,0.25,0.5,0.75,1.0,2.5,5.0
       - --accesslog=true
+      - --accesslog.format=json
+      - --accesslog.fields.defaultmode=drop
+      - --accesslog.fields.names.StartUTC=keep
+      - --accesslog.fields.names.Duration=keep
+      - --accesslog.fields.names.RequestMethod=keep
+      - --accesslog.fields.names.RouterName=keep
+      - --accesslog.fields.names.ServiceName=keep
+      - --accesslog.fields.names.OriginStatus=keep
+      - --accesslog.fields.names.DownstreamStatus=keep
+      - --accesslog.fields.names.RetryAttempts=keep
+      - --accesslog.fields.headers.defaultmode=drop
     ports:
-      - "80:80"
+      - "${ASTROAXE_HTTP_BIND:-127.0.0.1}:${ASTROAXE_HTTP_PORT:-80}:80"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     depends_on:
       app:
         condition: service_healthy
-    networks: [edge]
+    networks: [edge, observability, public]
     security_opt: [no-new-privileges:true]
 
 volumes:
   postgres_data:
+    name: astroaxe_postgres18_data
   redis_data:
 
 networks:
@@ -106,3 +149,6 @@ networks:
   edge:
     internal: true
   egress:
+  observability:
+    internal: true
+  public:

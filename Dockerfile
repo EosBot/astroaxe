@@ -10,8 +10,10 @@ RUN npm ci
 
 FROM dependencies AS builder
 WORKDIR /app
+ARG SITE_URL=http://localhost
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
+    SITE_URL=${SITE_URL} \
     DATABASE_URL=postgresql://astroaxe:build-only@127.0.0.1:5432/astroaxe?schema=public
 COPY . .
 RUN npm run build
@@ -42,6 +44,13 @@ ENV NODE_ENV=production
 COPY prisma ./prisma
 COPY prisma.config.ts ./prisma.config.ts
 CMD ["npx", "prisma", "migrate", "deploy"]
+
+FROM dependencies AS worker-runner
+WORKDIR /app
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1
+COPY . .
+USER node
+CMD ["node", "--import", "tsx", "src/worker.ts"]
 
 FROM dependencies AS development
 WORKDIR /app

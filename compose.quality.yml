@@ -61,10 +61,12 @@ services:
       - sonar_temp:/opt/sonarqube/temp
     networks:
       - sonar_backend
+      - sonar_edge
 
 networks:
   sonar_backend:
     internal: true
+  sonar_edge:
 
 volumes:
   sonar_postgres_data:

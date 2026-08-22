@@ -1,0 +1,48 @@
+groups:
+  - name: astroaxe-http
+    rules:
+      - alert: AstroAxeMetricsTargetDown
+        expr: up{job="traefik"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Coleta das métricas HTTP indisponível
+          description: O Prometheus não coleta o endpoint interno do Traefik há dois minutos.
+
+      - alert: AstroAxeBackendDown
+        expr: min(traefik_service_server_up{service=~"astroaxe.*"}) == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: Backend do AstroAxe indisponível
+          description: O healthcheck do Traefik mantém ao menos um backend indisponível há dois minutos.
+
+      - alert: AstroAxeHttpErrorRateHigh
+        expr: |
+          sum(rate(traefik_service_requests_total{service=~"astroaxe.*",code=~"5.."}[5m]))
+          /
+          clamp_min(sum(rate(traefik_service_requests_total{service=~"astroaxe.*"}[5m])), 0.001)
+          > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: Taxa de erro HTTP acima de 5%
+          description: Respostas 5xx superaram 5% por cinco minutos na entrada agregada.
+
+      - alert: AstroAxeHttpP95High
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (le) (
+              rate(traefik_service_request_duration_seconds_bucket{service=~"astroaxe.*"}[5m])
+            )
+          ) > 0.75
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: Latência HTTP p95 acima de 750 ms
+          description: A latência agregada do serviço superou o limite local por dez minutos.
