@@ -2,7 +2,7 @@ import { Onboarding } from "@/components/onboarding/onboarding";
 
 export default function HomePage() {
   return (
-    <main className="observatory-shell">
+    <main id="conteudo-principal" className="observatory-shell">
       <header className="brand-mark">
         <a href="#ceu">
           <span aria-hidden="true">✦</span> AstroAxe

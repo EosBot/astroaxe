@@ -1,6 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+
+import { AccountPrompt } from "@/components/account/account-prompt";
+import { CelestialParticles } from "@/components/onboarding/celestial-particles";
+import { zodiacPlacement } from "@/domain/astrology/western/zodiac";
 
 import {
   createMapResponseSchema,
@@ -73,113 +77,115 @@ export function Onboarding(): React.JSX.Element {
           Etapa {step + 1} de 4 · {STEPS[step]}
         </p>
 
-        {step === 0 ? (
-          <Field
-            title="Como podemos chamar você?"
-            help="Um nome ou apelido basta. Ele não aparece em logs nem analytics."
-          >
-            <label htmlFor="displayName">Nome ou apelido</label>
-            <input
-              id="displayName"
-              autoComplete="nickname"
-              maxLength={100}
-              value={displayName}
-              onChange={(event) => setDisplayName(event.target.value)}
-              placeholder="Ex.: Lu, Ana Clara"
-            />
-          </Field>
-        ) : null}
-        {step === 1 ? (
-          <Field
-            title="Em que dia você nasceu?"
-            help="Nesta versão, calculamos mapas a partir de 01/01/1900."
-          >
-            <label htmlFor="birthDate">Data de nascimento</label>
-            <input
-              id="birthDate"
-              type="date"
-              min="1900-01-01"
-              value={date}
-              onChange={(event) => setDate(event.target.value)}
-            />
-          </Field>
-        ) : null}
-        {step === 2 ? (
-          <Field
-            title="Você sabe a hora em que nasceu?"
-            help="A hora permite calcular Ascendente e casas. Não inventamos esses dados quando ela é desconhecida."
-          >
-            <label htmlFor="birthTime">Hora de nascimento</label>
-            <input
-              id="birthTime"
-              type="time"
-              disabled={unknownTime}
-              value={time}
-              onChange={(event) => setTime(event.target.value)}
-            />
-            <label className="choice">
+        <div className="step-stage" key={step}>
+          {step === 0 ? (
+            <Field
+              title="Como podemos chamar você?"
+              help="Um nome ou apelido basta. Ele não aparece em logs nem analytics."
+            >
+              <label htmlFor="displayName">Nome ou apelido</label>
               <input
-                type="checkbox"
-                checked={unknownTime}
-                onChange={(event) => {
-                  setUnknownTime(event.target.checked);
-                  if (event.target.checked) setTime("");
-                }}
-              />{" "}
-              Não sei minha hora
-            </label>
-          </Field>
-        ) : null}
-        {step === 3 ? (
-          <Field
-            title="Onde você nasceu?"
-            help="Busque apenas a cidade. Não precisamos do seu endereço."
-          >
-            <label htmlFor="place">Cidade de nascimento</label>
-            <div className="search-row">
-              <input
-                id="place"
-                role="combobox"
-                aria-autocomplete="list"
-                aria-expanded={places.length > 0}
-                aria-controls="place-options"
-                value={placeQuery}
-                onChange={(event) => {
-                  setPlaceQuery(event.target.value);
-                  setPlace(undefined);
-                }}
-                placeholder="Ex.: Salvador, Bahia"
+                id="displayName"
+                autoComplete="nickname"
+                maxLength={100}
+                value={displayName}
+                onChange={(event) => setDisplayName(event.target.value)}
+                placeholder="Ex.: Lu, Ana Clara"
               />
-              <button
-                type="button"
-                className="quiet-button"
-                disabled={placeQuery.trim().length < 2 || status === "searching"}
-                onClick={searchPlaces}
-              >
-                {status === "searching" ? "Buscando…" : "Buscar"}
-              </button>
-            </div>
-            {places.length > 0 ? (
-              <ul className="place-list" id="place-options" aria-label="Cidades encontradas">
-                {places.map((candidate) => (
-                  <li key={`${candidate.latitude}-${candidate.longitude}`}>
-                    <button
-                      type="button"
-                      aria-pressed={place?.label === candidate.label}
-                      onClick={() => {
-                        setPlace(candidate);
-                        setPlaceQuery(candidate.label);
-                        setPlaces([]);
-                      }}
-                    >
-                      {candidate.label}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
-          </Field>
-        ) : null}
+            </Field>
+          ) : null}
+          {step === 1 ? (
+            <Field
+              title="Em que dia você nasceu?"
+              help="Nesta versão, calculamos mapas a partir de 01/01/1900."
+            >
+              <label htmlFor="birthDate">Data de nascimento</label>
+              <input
+                id="birthDate"
+                type="date"
+                min="1900-01-01"
+                value={date}
+                onChange={(event) => setDate(event.target.value)}
+              />
+            </Field>
+          ) : null}
+          {step === 2 ? (
+            <Field
+              title="Você sabe a hora em que nasceu?"
+              help="A hora permite calcular Ascendente e casas. Não inventamos esses dados quando ela é desconhecida."
+            >
+              <label htmlFor="birthTime">Hora de nascimento</label>
+              <input
+                id="birthTime"
+                type="time"
+                disabled={unknownTime}
+                value={time}
+                onChange={(event) => setTime(event.target.value)}
+              />
+              <label className="choice">
+                <input
+                  type="checkbox"
+                  checked={unknownTime}
+                  onChange={(event) => {
+                    setUnknownTime(event.target.checked);
+                    if (event.target.checked) setTime("");
+                  }}
+                />{" "}
+                Não sei minha hora
+              </label>
+            </Field>
+          ) : null}
+          {step === 3 ? (
+            <Field
+              title="Onde você nasceu?"
+              help="Busque apenas a cidade. Não precisamos do seu endereço."
+            >
+              <label htmlFor="place">Cidade de nascimento</label>
+              <div className="search-row">
+                <input
+                  id="place"
+                  role="combobox"
+                  aria-autocomplete="list"
+                  aria-expanded={places.length > 0}
+                  aria-controls="place-options"
+                  value={placeQuery}
+                  onChange={(event) => {
+                    setPlaceQuery(event.target.value);
+                    setPlace(undefined);
+                  }}
+                  placeholder="Ex.: Salvador, Bahia"
+                />
+                <button
+                  type="button"
+                  className="quiet-button"
+                  disabled={placeQuery.trim().length < 2 || status === "searching"}
+                  onClick={searchPlaces}
+                >
+                  {status === "searching" ? "Buscando…" : "Buscar"}
+                </button>
+              </div>
+              {places.length > 0 ? (
+                <ul className="place-list" id="place-options" aria-label="Cidades encontradas">
+                  {places.map((candidate) => (
+                    <li key={`${candidate.latitude}-${candidate.longitude}`}>
+                      <button
+                        type="button"
+                        aria-pressed={place?.label === candidate.label}
+                        onClick={() => {
+                          setPlace(candidate);
+                          setPlaceQuery(candidate.label);
+                          setPlaces([]);
+                        }}
+                      >
+                        {candidate.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
+            </Field>
+          ) : null}
+        </div>
 
         {error ? (
           <p className="form-error" role="alert">
@@ -215,6 +221,7 @@ export function Onboarding(): React.JSX.Element {
 }
 
 function OrbitStory({ step }: Readonly<{ step: number }>): React.JSX.Element {
+  const { mapRef, ambientActive } = useAmbientMotion();
   return (
     <section className="orbit-story" aria-labelledby="astroaxe-title">
       <div className="story-copy">
@@ -224,7 +231,13 @@ function OrbitStory({ step }: Readonly<{ step: number }>): React.JSX.Element {
           Quatro coordenadas abrem seu primeiro mapa. Nenhuma conta ou plano antes do resultado.
         </p>
       </div>
-      <div className="system-map" aria-label={`Progresso: ${Math.min(step + 1, 4)} de 4`}>
+      <div
+        ref={mapRef}
+        className="system-map"
+        data-ambient-active={ambientActive}
+        aria-label={`Progresso: ${Math.min(step + 1, 4)} de 4`}
+      >
+        <CelestialParticles />
         <span className="system-sun" aria-hidden="true">
           0°
         </span>
@@ -243,6 +256,40 @@ function OrbitStory({ step }: Readonly<{ step: number }>): React.JSX.Element {
       </p>
     </section>
   );
+}
+
+function useAmbientMotion(): {
+  mapRef: React.RefObject<HTMLDivElement | null>;
+  ambientActive: boolean;
+} {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const [inViewport, setInViewport] = useState(true);
+  const [pageVisible, setPageVisible] = useState(
+    () => typeof document === "undefined" || document.visibilityState === "visible",
+  );
+
+  useEffect(() => {
+    const handleVisibility = () => setPageVisible(document.visibilityState === "visible");
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    const element = mapRef.current;
+    if (element === null || typeof IntersectionObserver === "undefined") {
+      return () => document.removeEventListener("visibilitychange", handleVisibility);
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setInViewport(entry?.isIntersecting ?? false),
+      { threshold: 0.08 },
+    );
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, []);
+
+  return { mapRef, ambientActive: inViewport && pageVisible };
 }
 
 function getOrbitNodeState(index: number, step: number): "complete" | "active" | "pending" {
@@ -406,40 +453,25 @@ function ChartReveal({
         {featured.map((planet) => (
           <article key={planet.id}>
             <span>{planet.id === "sun" ? "Sol" : "Lua"}</span>
-            <strong>{planet.sign}</strong>
-            <small>{planet.signDegree.toFixed(2)}° no signo</small>
+            <strong>{zodiacPlacement(planet.longitude).sign}</strong>
+            <small>{zodiacPlacement(planet.longitude).signDegree.toFixed(2)}° no signo</small>
           </article>
         ))}
         {result.chart.houses ? (
           <article>
             <span>Ascendente</span>
-            <strong>{zodiacName(result.chart.houses.ascendant)}</strong>
-            <small>{result.chart.houses.ascendant.toFixed(2)}°</small>
+            <strong>{zodiacPlacement(result.chart.houses.ascendant).sign}</strong>
+            <small>
+              {zodiacPlacement(result.chart.houses.ascendant).signDegree.toFixed(2)}° no signo
+            </small>
           </article>
         ) : null}
       </div>
       <p className="cultural-note">
-        As futuras afinidades culturais serão narrativas simbólicas do AstroAxe. Elas não determinam
-        nem confirmam Orixá, Odù ou vínculo iniciático.
+        A futura Tríade de Regências combinará estes dados em um método autoral, versionado e
+        rastreável. <a href="/metodologia">Consulte a metodologia.</a>
       </p>
+      <AccountPrompt profileId={result.profileId} />
     </section>
   );
-}
-
-function zodiacName(longitude: number): string {
-  const signs = [
-    "Áries",
-    "Touro",
-    "Gêmeos",
-    "Câncer",
-    "Leão",
-    "Virgem",
-    "Libra",
-    "Escorpião",
-    "Sagitário",
-    "Capricórnio",
-    "Aquário",
-    "Peixes",
-  ];
-  return signs[Math.floor(longitude / 30) % 12] ?? "—";
 }

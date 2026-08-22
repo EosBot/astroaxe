@@ -32,7 +32,7 @@ describe("Onboarding", () => {
     vi.unstubAllGlobals();
   });
 
-  it("keeps account creation out of the four-step path and reveals an untimed result", async () => {
+  it("keeps account creation after the four-step path and reveals an untimed result", async () => {
     const fetchMock = vi
       .fn()
       .mockResolvedValueOnce(
@@ -89,7 +89,9 @@ describe("Onboarding", () => {
 
     await screen.findByText("Seu céu se abre assim, Lu.");
     expect(screen.getByText("Hora desconhecida · leitura sem casas e Ascendente")).toBeTruthy();
-    expect(screen.queryByText("Criar conta")).toBeNull();
+    expect(screen.getAllByText("Áries")).toHaveLength(2);
+    expect(screen.getByText("0.00° no signo")).toBeTruthy();
+    expect(screen.getByText("Crie sua conta gratuita")).toBeTruthy();
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
