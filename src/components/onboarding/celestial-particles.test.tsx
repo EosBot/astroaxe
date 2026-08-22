@@ -16,7 +16,9 @@ describe("CelestialParticles", () => {
     vi.stubGlobal("ResizeObserver", undefined);
     vi.stubGlobal("IntersectionObserver", undefined);
     const { container } = render(<CelestialParticles />);
-    expect(container.querySelector("canvas")?.getAttribute("role")).toBe("presentation");
+    expect(container.querySelector("canvas")?.parentElement?.getAttribute("aria-hidden")).toBe(
+      "true",
+    );
   });
 
   it("draws a capped particle field and releases browser observers", () => {

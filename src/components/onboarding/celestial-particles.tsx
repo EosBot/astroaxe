@@ -112,5 +112,9 @@ export function CelestialParticles(): React.JSX.Element {
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="celestial-particles" role="presentation" />;
+  return (
+    <span aria-hidden="true">
+      <canvas ref={canvasRef} className="celestial-particles" />
+    </span>
+  );
 }
