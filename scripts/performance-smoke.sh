@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-base_url="${PERFORMANCE_BASE_URL:-http://127.0.0.1}"
+base_url="${PERFORMANCE_BASE_URL:-http://localhost}"
 requests="${PERFORMANCE_REQUESTS:-100}"
 concurrency="${PERFORMANCE_CONCURRENCY:-10}"
 max_p95_ms="${PERFORMANCE_MAX_P95_MS:-750}"

@@ -11,6 +11,9 @@ Com a stack principal saudável:
 npm run test:performance
 ```
 
+Por padrão, o smoke usa `http://localhost`, o host aceito pelo roteamento local do Traefik. Para
+outro ambiente, informe uma origem explícita em `PERFORMANCE_BASE_URL`.
+
 Para outra porta ou volume:
 
 ```bash
