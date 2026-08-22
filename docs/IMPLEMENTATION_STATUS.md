@@ -211,7 +211,7 @@ também satisfaz a constraint de 1.800 caracteres.
   responsável, o `.env` local contém um Project Analysis Token e um User Token permanentes,
   distintos e validados; nenhum valor foi versionado.
 - Um smoke pela entrada Traefik realizou 100 requisições com concorrência 10, zero falhas e p95 de
-  129 ms na stack Docker local. O comando `npm run test:performance` e o runbook de diagnóstico
+  127 ms na stack Docker local. O comando `npm run test:performance` e o runbook de diagnóstico
   não coletam PII. O Compose do Sonar ganhou uma rede de borda separada para publicar somente
   `127.0.0.1:9000`, mantendo seu PostgreSQL na rede interna.
 - `npm run test:release-smoke` valida uma origem containerizada explícita: liveness, readiness de

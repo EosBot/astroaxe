@@ -90,7 +90,7 @@ não podem ser removidos sem backup, alvo explícito e nova autorização.
 - `npm run build`: passou;
 - E2E em Chromium desktop e mobile: oito cenários passaram;
 - `npm run test:release-smoke`: passou na stack local;
-- performance local: 100 requisições, concorrência 10, zero falhas e p95 de 129 ms;
+- performance local: 100 requisições, concorrência 10, zero falhas e p95 de 127 ms;
 - observabilidade: target, séries e quatro regras passaram;
 - restore isolado do dump `backups/astroaxe-20260820T024048Z.dump`: passou;
 - navegação real em Chromium: onboarding até resultado, cadastro, conta, acervo, metodologia e
