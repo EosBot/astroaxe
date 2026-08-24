@@ -95,6 +95,13 @@ services:
       NOMINATIM_USER_AGENT: ${NOMINATIM_USER_AGENT:?NOMINATIM_USER_AGENT is required}
       SITE_URL: ${SITE_URL:?SITE_URL is required}
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      EMAIL_FROM: ${EMAIL_FROM:-nao-responda@astroaxe.local}
+      EMAIL_FROM_NAME: ${EMAIL_FROM_NAME:-AstroAxe}
     depends_on:
       migrate:
         condition: service_completed_successfully

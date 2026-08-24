@@ -1,5 +1,8 @@
 {
   "lsp": {
+    "biome": {
+      "disabled": true
+    },
     "typescript": {
       "command": ["typescript-language-server", "--stdio"],
       "extensions": [".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs", ".mts", ".cts"]

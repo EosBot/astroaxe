@@ -4,7 +4,11 @@ import { getSiteUrl } from "@/lib/site-metadata";
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/api/", "/conta"] },
+    rules: {
+      userAgent: "*",
+      allow: "/",
+      disallow: ["/api/", "/conta", "/entrar", "/recuperar-senha", "/redefinir-senha"],
+    },
     sitemap: new URL("/sitemap.xml", getSiteUrl()).href,
   };
 }

@@ -92,6 +92,36 @@ tríade exata. Ela também recusa uma impressão digital de evidência presente 
 reporta cortes por proveniência. Esses controles não substituem a deduplicação humana por pessoa,
 mas detectam reutilização exata das mesmas cadeias documentais no artefato sanitizado.
 
+A versão `regency-evaluation-0.4.0` acrescenta rótulos públicos não ordenados em `expected.anyOf`.
+Ela existe para declarações como “sou de X” ou “meus Orixás são X e Y”, quando a fonte não atribui
+frente, cabeça ou costas. Esses rótulos medem cobertura na tríade selecionada e no top-3 de qualquer
+papel, sem alimentar acurácia por papel ou tríade exata. Uma declaração sem papel nunca é convertida
+silenciosamente em cabeça.
+
+Registro da mudança:
+
+- **ANTES:** todo caso precisava atribuir ao menos um Orixá a frente, cabeça ou costas;
+- **DEPOIS:** casos podem preservar um conjunto `anyOf`, com métricas agregadas próprias;
+- **MOTIVO:** autodeclarações públicas e relatos consentidos frequentemente nomeiam Orixás sem papel;
+- **IMPACTO:** mais casos podem ser auditados sem fabricar rótulos, mas não passam a satisfazer a
+  amostra mínima por papel nem autorizam promoção do motor.
+
+O método `regency-robustness-0.1.0-beta` adiciona uma análise de sensibilidade
+`leave-one-school-out`. O scorer é repetido removendo, uma por vez, cada escola pública de
+correspondência; por papel, o relatório mede quantas vezes o primeiro candidato original permanece
+no topo e, quando houve seleção, quantas vezes o selecionado permanece no topo. Uma única escola é
+amostra insuficiente. A medida não é probabilidade religiosa nem acurácia observada: ela detecta
+dependência excessiva de uma família de fontes e orienta abstenção e revisão.
+
+Registro da mudança:
+
+- **ANTES:** a avaliação media acerto em casos rotulados, mas não expunha a sensibilidade do
+  resultado à retirada de uma escola de correspondência;
+- **DEPOIS:** a interface Beta mostra estabilidade experimental e a versão do teste de robustez;
+- **MOTIVO:** uma pontuação alta pode ser frágil quando depende de uma única família documental;
+- **IMPACTO:** resultados instáveis ficam visíveis e devem favorecer abstenção. O teste não promove
+  pesos, não substitui validação externa e não confirma Orixás de ninguém.
+
 Antes de qualquer comparação, `regency-comparison-0.1.0` calcula um SHA-256 canônico do dataset
 sanitizado e registra apenas versão, digest e contagens agregadas. Baseline e experimental precisam
 usar a mesma versão e a mesma partição de validação. A política inicial exige 30 rótulos em frente e

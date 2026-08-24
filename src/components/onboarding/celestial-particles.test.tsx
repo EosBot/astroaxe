@@ -90,7 +90,8 @@ describe("CelestialParticles", () => {
 
     const { unmount } = render(<CelestialParticles />);
     expect(setTransform).toHaveBeenCalledWith(1.5, 0, 0, 1.5, 0, 0);
-    expect(arc).toHaveBeenCalledTimes(38);
+    expect(arc.mock.calls.length).toBeGreaterThan(140);
+    expect(arc.mock.calls.length).toBeLessThanOrEqual(180);
 
     act(() => {
       intersectionCallback(

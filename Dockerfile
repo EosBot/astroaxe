@@ -43,6 +43,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY prisma ./prisma
 COPY prisma.config.ts ./prisma.config.ts
+COPY src/lib/config/read-secret.ts ./src/lib/config/read-secret.ts
 CMD ["npx", "prisma", "migrate", "deploy"]
 
 FROM dependencies AS worker-runner

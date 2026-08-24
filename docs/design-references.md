@@ -158,17 +158,28 @@ Os valores são ponto de partida e exigem teste de contraste antes de implementa
 - Canvas deve pausar em aba oculta e nunca bloquear input, formulário ou leitura.
 - Som é opt-in e não participa do feedback essencial.
 
-## Estado implementado em 2026-08-21
+## Estado implementado até 2026-08-23
 
 - O onboarding usa palco orbital, entradas em sequência e transições curtas com CSS.
-- A camada `celestial-particles.tsx` usa partículas Canvas determinísticas, com limites de 38 no
-  desktop e 20 no mobile, alvo de 30 fps e DPR máximo de `1.5`.
+- A camada `celestial-particles.tsx` usa partículas Canvas determinísticas, com limites de 180 no
+  desktop e 72 no mobile, alvo de 30 fps e DPR máximo de `1.5`.
 - A cena pausa fora do viewport e com a aba oculta. `prefers-reduced-motion` entrega uma composição
   estática.
 - Formulário, mensagens, foco e ações permanecem no DOM; a camada visual não intercepta input.
 - As composições foram verificadas em `1440×1000` e `390×844`.
-- A experiência ainda não alcançou integralmente as referências: falta transformar o resultado em
-  mandala natal real, explorável e ligada aos dados calculados.
+- O resultado possui mandala natal real, explorável e ligada aos dados calculados, com ficha
+  equivalente no DOM e composição própria para mobile.
+
+## Evolução da abertura em 2026-08-22
+
+- A página inicial passou a usar um palco de viewport inteira, com nebulosa em camadas, até 180
+  partículas determinísticas com profundidade e parallax óptico sutil em ponteiros precisos.
+- O formulário virou uma superfície de vidro fumê sobre a cena, sem retirar foco, semântica ou
+  contraste dos campos.
+- No mobile, observação celeste e coleta de coordenadas são momentos consecutivos no scroll, em vez
+  de uma miniatura da composição desktop.
+- Canvas continua decorativo, limitado a 30 fps e DPR `1.5`, pausando fora do viewport e com a aba
+  oculta. Redução de movimento remove avanço em profundidade e resposta ao ponteiro.
 
 ## Critérios de aceite permanentes
 
@@ -181,10 +192,39 @@ Os valores são ponto de partida e exigem teste de contraste antes de implementa
 - Performance é medida em dispositivo intermediário real; reduzir densidade é preferível a degradar interação.
 - Elementos culturais têm proveniência e aprovação registradas; não são aplicados como textura genérica.
 
+## Evidência normativa aplicada à conta
+
+Na revisão autenticada de 2026-08-23, o desenho foi confrontado com fontes primárias atuais:
+
+- WCAG 2.2, critérios 1.4.10 (reflow), 2.4.11 (foco não obscurecido) e 2.5.8 (tamanho de alvo),
+  publicados pelo W3C;
+- padrão de diálogo modal do WAI-ARIA Authoring Practices, adotando o elemento `dialog` nativo para
+  confinamento de foco, tecla Escape e retorno ao fluxo;
+- documentação oficial do Motion para animação de layout e preferência de movimento reduzido.
+
+Consequências no produto: nenhuma coordenada essencial fica em rótulo flutuante sujeito a colisão;
+ações destrutivas exigem etapa separada e confirmação digitada; grids recompõem para uma coluna; e
+motion nunca é requisito para compreender ou concluir o fluxo.
+
 ## Decisão
 
 Adotar as referências como estudos de **espacialidade, foco e coreografia**, não como moodboard cromático. O Observatório Ritual será mais quente, editorial e legível: o céu fornece estrutura; a tradição fornece contexto; a interface fornece calma.
 
-O próximo marco é uma mandala natal real no resultado, com seleção de um corpo por vez, ficha
-editorial acessível no DOM e composição mobile própria. A memória de retomada está em
-`docs/PROJECT_MEMORY.md`.
+O próximo marco visual é medir frame time e resposta ao toque em dispositivo físico intermediário,
+antes de elevar novamente a densidade. A memória de retomada está em `docs/PROJECT_MEMORY.md`.
+
+## Complemento editorial — Astrolink e Personare
+
+**Revisão:** 2026-08-22
+
+As superfícies públicas de [Astrolink sobre a Casa 1](https://www.astrolink.com.br/casa1) e do
+[Personare sobre Ascendente e Descendente](https://www.personare.com.br/conteudo/ascendente-descendente-m242633)
+foram usadas como referência de arquitetura da informação, não como fonte para copiar identidade,
+texto ou componentes. Ambas tratam Ascendente/Casa 1 como parte central do mapa e relacionam o
+Descendente à Casa 7; o Personare também organiza a compreensão do mapa por planetas, signos, casas
+e aspectos.
+
+O resultado do AstroAxe passa a aplicar essa profundidade por camadas: mandala em uma primeira dobra
+dedicada, eixo ASC–DSC explícito, casas numeradas e capítulos editoriais no scroll. A interpretação
+continua separada dos dados astronômicos calculados, declara seu caráter simbólico e não imita a
+linguagem visual, comercial ou autoral das referências.

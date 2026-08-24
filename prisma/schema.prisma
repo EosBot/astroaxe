@@ -23,11 +23,56 @@ model User {
   email               String               @unique @db.VarChar(320)
   passwordHash        String               @map("password_hash") @db.VarChar(255)
   createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  emailVerifiedAt     DateTime?            @map("email_verified_at") @db.Timestamptz(6)
   sessions            AccountSession[]
   profiles            BirthProfile[]
   culturalContributor CulturalContributor?
+  emailOutbox         EmailOutbox[]
+  accountTokens       AccountToken[]
 
   @@map("users")
+}
+
+model EmailOutbox {
+  id                String        @id @default(uuid()) @db.Uuid
+  userId            String        @map("user_id") @db.Uuid
+  accountTokenId    String?       @map("account_token_id") @db.Uuid
+  kind              String        @db.VarChar(50)
+  templateVersion   String        @map("template_version") @db.VarChar(30)
+  idempotencyKey    String        @unique @map("idempotency_key") @db.VarChar(160)
+  status            String        @default("PENDING") @db.VarChar(20)
+  attemptCount      Int           @default(0) @map("attempt_count")
+  nextAttemptAt     DateTime      @default(now()) @map("next_attempt_at") @db.Timestamptz(6)
+  leaseOwner        String?       @map("lease_owner") @db.Uuid
+  leaseExpiresAt    DateTime?     @map("lease_expires_at") @db.Timestamptz(6)
+  providerMessageId String?       @map("provider_message_id") @db.VarChar(255)
+  lastErrorCategory String?       @map("last_error_category") @db.VarChar(50)
+  createdAt         DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  sentAt            DateTime?     @map("sent_at") @db.Timestamptz(6)
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountToken      AccountToken? @relation(fields: [accountTokenId], references: [id], onDelete: SetNull)
+
+  @@index([status, nextAttemptAt])
+  @@index([leaseExpiresAt])
+  @@index([createdAt])
+  @@index([accountTokenId])
+  @@map("email_outbox")
+}
+
+model AccountToken {
+  id        String        @id @default(uuid()) @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
+  purpose   String        @db.VarChar(30)
+  tokenHash String        @unique @map("token_hash") @db.Char(64)
+  expiresAt DateTime      @map("expires_at") @db.Timestamptz(6)
+  usedAt    DateTime?     @map("used_at") @db.Timestamptz(6)
+  createdAt DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emails    EmailOutbox[]
+
+  @@index([userId, purpose, createdAt])
+  @@index([expiresAt])
+  @@map("account_tokens")
 }
 
 model AccountSession {

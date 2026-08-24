@@ -1,6 +1,16 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 
+const guestSessionFixture = credentialFixture("guest-session");
+const accountSessionFixture = credentialFixture("account-session");
+const fingerprintFixture = credentialFixture("fingerprint");
+const passwordFixture = process.env.ASTROAXE_TEST_PASSWORD ?? credentialFixture("password");
+const replacementPasswordFixture =
+  process.env.ASTROAXE_TEST_REPLACEMENT_PASSWORD ?? credentialFixture("replacement-password");
+const invalidPasswordFixture =
+  process.env.ASTROAXE_TEST_INVALID_PASSWORD ?? credentialFixture("invalid-password");
+const passwordHashFixture = credentialFixture("password-hash");
+
 const mocks = vi.hoisted(() => ({
   transaction: vi.fn(),
   userCreate: vi.fn(),
@@ -16,15 +26,17 @@ const mocks = vi.hoisted(() => ({
   resolveAccount: vi.fn(),
   replacePasswordAndSessions: vi.fn(),
   userDelete: vi.fn(),
+  emailCreate: vi.fn(),
+  accountTokenCreate: vi.fn(),
 }));
 
 vi.mock("@/lib/env", () => ({
   parseServerEnv: () => ({
     DATABASE_URL: "postgresql://localhost/test",
     REDIS_URL: "redis://localhost",
-    GUEST_SESSION_SECRET: "g".repeat(32),
-    AUTH_SESSION_SECRET: "a".repeat(32),
-    FINGERPRINT_SECRET: "f".repeat(32),
+    GUEST_SESSION_SECRET: guestSessionFixture,
+    AUTH_SESSION_SECRET: accountSessionFixture,
+    FINGERPRINT_SECRET: fingerprintFixture,
     NOMINATIM_USER_AGENT: "AstroAxe test",
     SITE_URL: "http://localhost",
     NODE_ENV: "test",
@@ -54,7 +66,7 @@ describe("account routes", () => {
     vi.clearAllMocks();
     mocks.rateLimit.mockResolvedValue(true);
     mocks.findGuest.mockResolvedValue({ id: "guest-id" });
-    mocks.hashPassword.mockResolvedValue("password-hash");
+    mocks.hashPassword.mockResolvedValue(passwordHashFixture);
     mocks.verifyPassword.mockResolvedValue(true);
     mocks.createSession.mockResolvedValue({ token: "opaque", expiresAt: new Date() });
     mocks.replacePasswordAndSessions.mockResolvedValue({ token: "rotated", expiresAt: new Date() });
@@ -62,15 +74,19 @@ describe("account routes", () => {
     mocks.userDelete.mockResolvedValue({ id: "user-id" });
     mocks.profileUpdate.mockResolvedValue({ count: 1 });
     mocks.userCreate.mockResolvedValue({ id: "user-id", email: "lu@example.test" });
+    mocks.emailCreate.mockResolvedValue({ id: "email-id" });
+    mocks.accountTokenCreate.mockResolvedValue({ id: "token-id" });
     mocks.userFind.mockResolvedValue({
       id: "user-id",
       email: "lu@example.test",
-      passwordHash: "password-hash",
+      passwordHash: passwordHashFixture,
     });
     mocks.transaction.mockImplementation(async (callback: (tx: unknown) => unknown) =>
       callback({
         user: { create: mocks.userCreate },
         birthProfile: { updateMany: mocks.profileUpdate },
+        emailOutbox: { create: mocks.emailCreate },
+        accountToken: { create: mocks.accountTokenCreate },
       }),
     );
     mocks.getPrisma.mockReturnValue({
@@ -90,13 +106,22 @@ describe("account routes", () => {
       data: { guestSessionId: null, userId: "user-id" },
     });
     expect(response.headers.getSetCookie()).toHaveLength(2);
+    expect(mocks.emailCreate).toHaveBeenCalledWith({
+      data: expect.objectContaining({
+        userId: "user-id",
+        kind: "ACCOUNT_WELCOME",
+        templateVersion: "v1",
+        idempotencyKey: "account-welcome:user-id:v1",
+        accountTokenId: expect.any(String),
+      }),
+    });
   });
 
   it("logs in and claims without duplicating profiles", async () => {
     const { POST } = await import("./login/route");
     const response = await POST(jsonRequest("/api/auth/login"));
     expect(response.status).toBe(200);
-    expect(mocks.verifyPassword).toHaveBeenCalledWith("frase-secreta-comprida", "password-hash");
+    expect(mocks.verifyPassword).toHaveBeenCalledWith(passwordFixture, passwordHashFixture);
     expect(mocks.profileUpdate).toHaveBeenCalledOnce();
   });
 
@@ -122,15 +147,15 @@ describe("account routes", () => {
     const { PUT } = await import("./password/route");
     const response = await PUT(
       jsonRequest("/api/auth/password", {
-        currentPassword: "frase-secreta-comprida",
-        newPassword: "outra-frase-secreta-segura",
+        currentPassword: passwordFixture,
+        newPassword: replacementPasswordFixture,
       }),
     );
     expect(response.status).toBe(200);
     expect(mocks.replacePasswordAndSessions).toHaveBeenCalledWith(
       "user-id",
-      "password-hash",
-      "a".repeat(32),
+      passwordHashFixture,
+      accountSessionFixture,
     );
     expect(response.headers.get("set-cookie")).toContain("astroaxe_session");
   });
@@ -140,7 +165,7 @@ describe("account routes", () => {
     const response = await DELETE(
       jsonRequest(
         "/api/auth/account",
-        { currentPassword: "frase-secreta-comprida", confirmation: "EXCLUIR" },
+        { currentPassword: passwordFixture, confirmation: "EXCLUIR" },
         "DELETE",
       ),
     );
@@ -155,7 +180,7 @@ describe("account routes", () => {
     const response = await DELETE(
       jsonRequest(
         "/api/auth/account",
-        { currentPassword: "frase-secreta-incorreta", confirmation: "EXCLUIR" },
+        { currentPassword: invalidPasswordFixture, confirmation: "EXCLUIR" },
         "DELETE",
       ),
     );
@@ -168,7 +193,7 @@ function jsonRequest(
   path: string,
   body: Record<string, string> = {
     email: "LU@example.test",
-    password: "frase-secreta-comprida",
+    password: passwordFixture,
   },
   method = "POST",
 ): NextRequest {
@@ -177,4 +202,8 @@ function jsonRequest(
     headers: { "content-type": "application/json" },
     body: JSON.stringify(body),
   });
+}
+
+function credentialFixture(label: string): string {
+  return `test-only-${label}-value`.padEnd(40, "x");
 }

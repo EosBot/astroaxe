@@ -1,5 +1,22 @@
 # Release containerizado, validação e retorno
 
+Há dois contratos de deploy: homologação local por Docker Compose e produção por Docker Swarm nas
+VPS Contabo atrás da Cloudflare. A topologia, comandos e secrets de Swarm estão em
+`docs/swarm-runbook.md`. Este documento conserva os gates compartilhados de release e retorno.
+
+Antes de promover produção, a mesma release deve passar na homologação local:
+
+```bash
+npm run homolog:up
+npm run homolog:smoke
+```
+
+Mailpit captura todos os emails de homologação. Nenhuma credencial Cloudflare, Brevo ou de produção
+é usada localmente.
+
+O contrato da outbox, retries, configuração SMTP e autenticação do domínio está em
+`docs/transactional-email.md`.
+
 Este runbook não pressupõe Vercel nem um provedor específico. O artefato autoritativo é a imagem
 construída pelo `Dockerfile`; PostgreSQL, Redis, app, worker, migrations e Traefik são operados por
 Compose ou por uma plataforma compatível com containers.

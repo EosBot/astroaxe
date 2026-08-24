@@ -38,10 +38,9 @@ export async function createAccountSession(
   userId: string,
   secret: string,
 ): Promise<{ token: string; expiresAt: Date }> {
-  const token = randomBytes(32).toString("base64url");
-  const expiresAt = new Date(Date.now() + SESSION_SECONDS * 1000);
+  const { token, expiresAt, tokenHash: sessionTokenHash } = createAccountSessionMaterial(secret);
   await getPrisma().accountSession.create({
-    data: { userId, tokenHash: tokenHash(token, secret), expiresAt },
+    data: { userId, tokenHash: sessionTokenHash, expiresAt },
   });
   return { token, expiresAt };
 }
@@ -51,16 +50,25 @@ export async function replacePasswordAndSessions(
   passwordHash: string,
   secret: string,
 ): Promise<{ token: string; expiresAt: Date }> {
-  const token = randomBytes(32).toString("base64url");
-  const expiresAt = new Date(Date.now() + SESSION_SECONDS * 1000);
+  const { token, expiresAt, tokenHash: sessionTokenHash } = createAccountSessionMaterial(secret);
   await getPrisma().$transaction([
     getPrisma().user.update({ where: { id: userId }, data: { passwordHash } }),
     getPrisma().accountSession.deleteMany({ where: { userId } }),
-    getPrisma().accountSession.create({
-      data: { userId, tokenHash: tokenHash(token, secret), expiresAt },
-    }),
+    getPrisma().accountSession.create({ data: { userId, tokenHash: sessionTokenHash, expiresAt } }),
   ]);
   return { token, expiresAt };
+}
+
+export function createAccountSessionMaterial(
+  secret: string,
+  now = new Date(),
+): { token: string; tokenHash: string; expiresAt: Date } {
+  const token = randomBytes(32).toString("base64url");
+  return {
+    token,
+    tokenHash: tokenHash(token, secret),
+    expiresAt: new Date(now.getTime() + SESSION_SECONDS * 1000),
+  };
 }
 
 export async function resolveAccount(

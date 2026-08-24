@@ -1,18 +1,37 @@
-# Astrolink e Personare — síntese para o AstroAxe
+# Panorama competitivo AstroAxe
 
-**Gerado:** 2026-08-19
+Gerado em 2026-08-24. Profundidade: varredura funcional focada em módulos e arquitetura editorial.
 
-| Dimensão       | Astrolink                    | Personare                         | Direção AstroAxe                     |
-| -------------- | ---------------------------- | --------------------------------- | ------------------------------------ |
-| Unidade        | trânsito + ecossistema       | feed de trânsitos                 | trânsito auditável                   |
-| Tempo          | diário e futuro              | recente, ativo, longo, terminando | início, pico, fim e fase             |
-| Profundidade   | conteúdo conectado e artigos | leitura expansível + dica         | resumo + ensaio profundo + prática   |
-| Recorrência    | diário pessoal e recursos    | alertas de novos ciclos           | retorno quando o céu muda, sem culpa |
-| Personalização | mapa natal e mapas extras    | mapa natal completo               | mapa natal com modo sem hora honesto |
+| Capacidade               | Astrolink                  | Personare              | Astrocentro           | AstroAxe                             |
+| ------------------------ | -------------------------- | ---------------------- | --------------------- | ------------------------------------ |
+| Mapa natal detalhado     | Sim                        | Sim                    | Conteúdo/serviços     | Sim                                  |
+| Trânsitos personalizados | Sim                        | Sim                    | Previsões             | Sim                                  |
+| Sinastria                | Sim                        | Sim                    | Serviços              | Sim                                  |
+| Biorritmo                | Sim                        | Não evidenciado        | Não evidenciado       | Sim                                  |
+| Ciclo lunar              | Sim                        | Calendário             | Conteúdo              | Sim                                  |
+| Revolução solar          | Não evidenciado na home    | Sim                    | Conteúdo              | Guia inicial; cálculo exato pendente |
+| Amor/sexualidade         | Sinastria                  | Mapas amoroso e sexual | Conteúdo/consultas    | Mapa do Amor                         |
+| Carreira                 | Trânsitos                  | Mapa profissional      | Conteúdo/consultas    | Capítulo no Horóscopo                |
+| Sombra                   | Traços negativos por signo | Desafios               | Conteúdo              | Horóscopo Sombrio                    |
+| Orixás                   | Não evidenciado            | Não evidenciado        | Numerologia/consultas | Laboratório Beta auditável           |
 
-## Decisão
+## Implicações
 
-Construir um corpus modular pré-escrito. Cada leitura combina blocos específicos do agente em
-trânsito, função natal, geometria do aspecto e fase temporal. A composição é determinística e pode
-ser validada automaticamente; não usa IA em runtime. Conteúdo cultural continua em corpus separado
-e só entra por blocos culturalmente aprovados.
+O padrão comercial forte não é somente quantidade de módulos: é continuidade editorial. Cada
+resultado precisa combinar corpo/ponto, signo, casa, aspecto, orbe e tempo, apresentar um resumo e
+permitir aprofundamento. As maiores lacunas técnicas restantes são Revolução Solar exata, mapa
+composto, progressões secundárias, calendário de eclipses/retrogradações personalizado, retornos
+lunares e mapa profissional dedicado.
+
+## Fontes técnicas e críticas
+
+- Astrodienst documenta Revolução Solar como o instante exato em que o Sol retorna à longitude
+  natal, dependente do local adotado; portanto o guia anual atual não deve ser chamado de Revolução
+  Solar sem esse cálculo.
+- Astrodienst descreve o retorno lunar como recorrente a cada 27–28 dias.
+- Estudos experimentais indexados no PubMed relatam efeito Barnum e falha de participantes em
+  identificar mapas natais verdadeiros acima do acaso. Para reduzir linguagem genérica, o AstroAxe
+  ancora cada texto em posições e aspectos exibidos e preserva versões de cálculo/conteúdo.
+- A pesquisa lógico-histórica sobre Vettius Valens identifica raciocínio combinatório como técnica
+  recorrente da tradição astrológica; isso sustenta matrizes editoriais por combinações, sem alegar
+  validação científica preditiva.

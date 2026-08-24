@@ -16,6 +16,7 @@ const PLACE_TWO = {
 };
 
 test("completes the authenticated MVP lifecycle", async ({ page }) => {
+  test.setTimeout(300_000);
   const email = `e2e-${randomUUID()}@example.invalid`;
   const password = `E2e-${randomUUID()}-safe`;
   const newPassword = `E2e-${randomUUID()}-rotated`;
@@ -33,7 +34,9 @@ test("completes the authenticated MVP lifecycle", async ({ page }) => {
     placeQuery: "Horizonte",
     place: PLACE_ONE,
   });
-  await expect(page.getByText("Hora desconhecida · leitura sem casas e Ascendente")).toBeVisible();
+  await expect(
+    page.getByText("Sem uma hora conhecida, mostramos somente posições planetárias confiáveis."),
+  ).toBeVisible();
 
   const registerResponse = page.waitForResponse(
     (response) =>
@@ -48,12 +51,38 @@ test("completes the authenticated MVP lifecycle", async ({ page }) => {
   await page.getByRole("link", { name: "Abrir meu arquivo celeste" }).click();
 
   await expect(
-    page.getByRole("heading", { name: "Um arquivo do céu que você informou." }),
+    page.getByRole("heading", { name: "Bem-vindo ao seu observatório, Perfil Horizonte." }),
   ).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Perfil Horizonte" })).toBeVisible();
-  await expect(page.getByText("Precisão").locator("strong")).toHaveText("Sem hora");
-  await expect(page.getByText("Tempo do Céu", { exact: false }).first()).toBeVisible();
-  await expect(page.getByText(/Autoria:/).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Além dos dez planetas." })).toBeVisible();
+  await page.getByRole("button", { name: "Ativar sons de interface" }).click();
+  await expect(page.getByRole("button", { name: "Desativar sons de interface" })).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await captureEvidence(page, "astroaxe-overview");
+  await captureAccountModules(page);
+  await openSecondaryModule(page, "Orixás");
+  await expect(page.getByRole("heading", { name: "Ressonâncias com Orixás" })).toBeVisible();
+  await expect(page.getByText("Recurso Beta — metodologia em desenvolvimento.")).toBeVisible();
+  await expect(page.getByText(/Estabilidade experimental:/).first()).toBeVisible();
+  await expect(page.getByText(/não substituem confirmação religiosa/)).toBeVisible();
+  await captureEvidence(page, "astroaxe-orixas");
+  await page.getByRole("button", { name: "Desativar sons de interface" }).click();
+  await page.getByRole("button", { name: "Mapa natal", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Perfil Horizonte", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Além dos dez planetas." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Quíron" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Lilith média" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Nodo Norte" })).toBeVisible();
+  await captureEvidence(page, "astroaxe-map-modern-points");
+  await expect(
+    page.locator(".account-view:not([hidden])").getByText("Precisão").locator("strong"),
+  ).toHaveText("Sem hora");
+
+  await page.getByRole("button", { name: "Horóscopo", exact: true }).click();
+  const cyclesView = page.locator(".account-view:not([hidden])");
+  await expect(cyclesView.getByText("Tempo do Céu", { exact: false }).first()).toBeVisible();
+  await expect(cyclesView.getByText(/Autoria:/).first()).toBeVisible();
 
   const journal = page.getByRole("region", { name: "O que este céu movimentou em você?" });
   await journal.getByLabel("Reflexão de hoje").fill("Registro sintético para validar o diário.");
@@ -74,19 +103,33 @@ test("completes the authenticated MVP lifecycle", async ({ page }) => {
   expect(journalExport.status).toBe(200);
   expect(JSON.stringify(journalExport.body)).toContain("Registro sintético atualizado");
   await journal.getByText(/Reflexões anteriores/).click();
+  const journalDeleteResponse = page.waitForResponse(
+    (response) => response.url().includes("/journal/") && response.request().method() === "DELETE",
+  );
   await journal.getByRole("button", { name: "Excluir" }).click();
+  expect((await journalDeleteResponse).status()).toBe(204);
   await expect(journal.getByText("Reflexão excluída.")).toBeVisible();
 
+  await openSecondaryModule(page, "Configurações");
   await page.getByLabel("Nome ou apelido").fill("Perfil Aurora");
   await page.getByLabel("Não sei minha hora").uncheck();
   await page.getByLabel("Hora de nascimento").fill("08:45");
   await page.getByLabel("Cidade de nascimento").fill("Aurora");
   await page.getByRole("button", { name: "Buscar" }).click();
   await page.getByRole("button", { name: PLACE_TWO.label }).click();
+  const profileUpdateResponse = page.waitForResponse(
+    (response) =>
+      response.url().includes("/api/profiles/") && response.request().method() === "PUT",
+  );
   await page.getByRole("button", { name: "Salvar e recalcular" }).click();
-  await expect(page.getByText("Dados atualizados e mapa recalculado.")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Perfil Aurora" })).toBeVisible();
-  await expect(page.getByText("Precisão").locator("strong")).toHaveText("Com hora");
+  expect((await profileUpdateResponse).status()).toBe(200);
+  await expect(page.getByText("Dados atualizados e mapa recalculado.")).toBeVisible({
+    timeout: 15_000,
+  });
+  await expect(page.getByRole("heading", { name: "Perfil Aurora", exact: true })).toBeVisible();
+  await expect(
+    page.locator(".account-view:not([hidden])").getByText("Precisão").locator("strong"),
+  ).toHaveText("Com hora");
 
   const accountExport = await sameOriginApi(page, "/api/auth/export");
   expect(accountExport.status).toBe(200);
@@ -142,9 +185,15 @@ test("completes the authenticated MVP lifecycle", async ({ page }) => {
     "Perfil Aurora",
     "Perfil Travessia",
   ]);
+  await page.goto("/conta");
+  await page.getByRole("button", { name: "Mapa natal", exact: true }).click();
+  await page.getByRole("button", { name: /Perfil Travessia/ }).focus();
+  await page.keyboard.press("Enter");
+  await openSecondaryModule(page, "Configurações");
   await page.getByRole("button", { name: "Excluir este mapa" }).click();
-  await page.getByRole("button", { name: "Confirmar exclusão" }).click();
-  await expect(page.getByText("Este mapa foi excluído.")).toBeVisible();
+  await page.getByLabel(/Digite EXCLUIR MAPA/).fill("EXCLUIR MAPA");
+  await page.getByRole("button", { name: "Excluir mapa definitivamente" }).click();
+  await expect(page.getByRole("heading", { name: "Perfil Aurora", exact: true })).toBeVisible();
 
   const afterInterfaceDelete = await profiles(page);
   expect(afterInterfaceDelete).toHaveLength(1);
@@ -216,7 +265,7 @@ async function createGuestMap(
   await page.getByRole("button", { name: input.place.label }).click();
   await page.getByRole("button", { name: "Calcular meu céu" }).click();
   await expect(
-    page.getByRole("heading", { name: `Seu céu se abre assim, ${input.displayName}.` }),
+    page.getByRole("heading", { name: `Seu mapa natal, ${input.displayName}` }),
   ).toBeVisible();
 }
 
@@ -264,4 +313,99 @@ async function expectNoHorizontalOverflow(page: Page): Promise<void> {
     clientWidth: document.documentElement.clientWidth,
   }));
   expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth);
+}
+
+async function captureEvidence(page: Page, name: string): Promise<void> {
+  if (process.env.VISUAL_EVIDENCE !== "1") return;
+  await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+  await page.screenshot({
+    path: `.planning/screenshots/comparison/${name}-${test.info().project.name}.png`,
+    fullPage: true,
+  });
+}
+
+async function captureAccountModules(page: Page): Promise<void> {
+  const modules = [
+    { button: "Horóscopo", heading: /Horóscopo de Perfil Horizonte/, slug: "horoscope" },
+    {
+      button: "Horóscopo sombrio",
+      heading: "Aquilo que pede integração.",
+      slug: "shadow-horoscope",
+    },
+    { button: "Sinastria", heading: "Sinastria", slug: "synastry" },
+    {
+      button: "Mapa completo",
+      heading: "A arquitetura do céu em que você nasceu.",
+      slug: "complete-map",
+    },
+    { button: "Biorritmo", heading: /Biorritmo de Perfil Horizonte/, slug: "biorhythm" },
+    { button: "Nodos lunares", heading: "Nodos Lunares", slug: "lunar-nodes" },
+    { button: "Mapa do amor", heading: "Mapa do Amor", slug: "love-map" },
+    { button: "Mapa sexual", heading: /Prazer em se conhecer/, slug: "sexual-map" },
+    {
+      button: "Mapa profissional",
+      heading: /Vocação é uma direção cultivada/,
+      slug: "professional-map",
+    },
+    {
+      button: "Revolução Solar 2026",
+      heading: "Um ano para orientar, não aprisionar.",
+      slug: "solar-return",
+    },
+    {
+      button: "Área Lua",
+      heading: "Da memória natal ao mês que começa agora.",
+      slug: "lunar-area",
+    },
+  ] as const;
+  for (const item of modules) {
+    const target = page.getByRole("button", { name: item.button, exact: true });
+    if (!(await target.isVisible())) await page.getByText("Mais módulos", { exact: true }).click();
+    await target.click();
+    await expect(page.getByRole("heading", { name: item.heading })).toBeVisible();
+    await expectNoHorizontalOverflow(page);
+    await captureEvidence(page, `astroaxe-${item.slug}`);
+  }
+  await page.getByText("Mais módulos", { exact: true }).click();
+  await page.getByRole("button", { name: "Revolução Solar 2026", exact: true }).click();
+  await page.getByLabel("Cidade onde passou ou passará o aniversário").fill("Horizonte");
+  await page.getByRole("button", { name: "Buscar cidade" }).click();
+  const solarReturnResponse = page.waitForResponse(
+    (response) => response.url().includes("/returns?kind=solar") && response.status() === 200,
+    { timeout: 30_000 },
+  );
+  await page.getByRole("button", { name: PLACE_ONE.label }).click();
+  await solarReturnResponse;
+  await expect(page.getByText("Instante exato", { exact: true })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Eclipses e viradas retrógradas de 2026" }),
+  ).toBeVisible();
+  await captureEvidence(page, "astroaxe-annual-guide-loaded");
+  await openSecondaryModule(page, "Área Lua");
+  await page.getByLabel("Cidade atual").fill("Horizonte");
+  await page.getByRole("button", { name: "Buscar cidade" }).click();
+  const lunarResponse = page.waitForResponse(
+    (response) => response.url().includes("/lunar?") && response.status() === 200,
+    { timeout: 30_000 },
+  );
+  await page.getByRole("button", { name: PLACE_ONE.label }).click();
+  await lunarResponse;
+  await expect(page.getByRole("heading", { name: /O mês começa em/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "O ponteiro das próximas horas" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Como duas necessidades emocionais convivem" }),
+  ).toBeVisible();
+  const electionHeading = page.getByRole("heading", {
+    name: /A Lua (está fora de curso|ainda aplica a um aspecto)/,
+  });
+  await expect(electionHeading).toBeVisible();
+  await electionHeading.scrollIntoViewIfNeeded();
+  await expectNoHorizontalOverflow(page);
+  await captureEvidence(page, "astroaxe-lunar-area-loaded");
+}
+
+async function openSecondaryModule(page: Page, label: string): Promise<void> {
+  const button = page.getByRole("button", { name: label, exact: true });
+  if (!(await button.isVisible())) await page.getByText("Mais módulos", { exact: true }).click();
+  await button.click();
 }

@@ -2,7 +2,10 @@ import { NextRequest } from "next/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({ resolveAccount: vi.fn(), findMany: vi.fn() }));
-vi.mock("@/lib/env", () => ({ parseServerEnv: () => ({ AUTH_SESSION_SECRET: "a".repeat(32) }) }));
+const accountSessionFixture = process.env.ASTROAXE_TEST_ACCOUNT_SESSION ?? fixtureValue();
+vi.mock("@/lib/env", () => ({
+  parseServerEnv: () => ({ AUTH_SESSION_SECRET: accountSessionFixture }),
+}));
 vi.mock("@/lib/security/account", () => ({ resolveAccount: mocks.resolveAccount }));
 vi.mock("@/lib/prisma", () => ({
   getPrisma: () => ({ birthProfile: { findMany: mocks.findMany } }),
@@ -38,7 +41,7 @@ describe("profile listing", () => {
       displayName: "Lu",
       date: "1990-06-10",
       timePrecision: "unknown",
-      chart: { sunSign: "Gemini", moonSign: "Cancer" },
+      chart: { sunSign: "Gemini", moonSign: "Cancer", natal: chartResult() },
     });
     expect(mocks.findMany).toHaveBeenCalledWith(
       expect.objectContaining({ where: { userId: "owner-id" } }),
@@ -71,4 +74,8 @@ function chartResult() {
     })),
     warnings: [],
   };
+}
+
+function fixtureValue(): string {
+  return "test-only-value".padEnd(40, "x");
 }

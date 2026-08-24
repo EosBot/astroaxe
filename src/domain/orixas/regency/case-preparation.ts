@@ -20,6 +20,7 @@ const rawCaseSchema = z
         front: z.string().optional(),
         head: z.string().optional(),
         back: z.string().optional(),
+        anyOf: z.array(z.string().min(1).max(120)).min(1).max(8).optional(),
       })
       .strict(),
     birth: z.unknown(),

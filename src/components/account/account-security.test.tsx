@@ -19,18 +19,41 @@ describe("AccountSecurity", () => {
   it("offers a direct no-script account export", () => {
     render(<AccountSecurity />);
     const exportLink = screen.getByRole("link", {
-      name: "Exportar conta, mapas e diário em JSON",
+      name: "Exportar meus dados",
     });
     expect(exportLink.getAttribute("href")).toBe("/api/auth/export");
     expect(exportLink.hasAttribute("download")).toBe(true);
   });
 
-  it("changes the password and explains session revocation", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+  it("offers a resend action while the email is unverified", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ emailVerified: false })))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ message: "Enviamos um novo link de confirmação." }), {
+          status: 202,
+        }),
+      );
     vi.stubGlobal("fetch", fetchMock);
     render(<AccountSecurity />);
 
-    fireEvent.change(screen.getByLabelText("Senha atual"), {
+    fireEvent.click(await screen.findByRole("button", { name: "Reenviar confirmação" }));
+    expect(await screen.findByText("Enviamos um novo link de confirmação.")).toBeTruthy();
+    expect(fetchMock).toHaveBeenLastCalledWith("/api/auth/email-verification/request", {
+      method: "POST",
+    });
+  });
+
+  it("changes the password and explains session revocation", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockImplementation(() =>
+        Promise.resolve(new Response(JSON.stringify({ emailVerified: true, ok: true }))),
+      );
+    vi.stubGlobal("fetch", fetchMock);
+    render(<AccountSecurity />);
+
+    fireEvent.change(screen.getAllByLabelText("Senha atual")[0]!, {
       target: { value: "frase-secreta-comprida" },
     });
     fireEvent.change(screen.getByLabelText("Nova senha"), {
@@ -48,16 +71,15 @@ describe("AccountSecurity", () => {
   });
 
   it("shows the public API error without losing the form", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi
-        .fn()
-        .mockResolvedValue(
-          new Response(JSON.stringify({ error: "Senha atual inválida." }), { status: 401 }),
-        ),
-    );
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(new Response(JSON.stringify({ emailVerified: true })))
+      .mockResolvedValueOnce(
+        new Response(JSON.stringify({ error: "Senha atual inválida." }), { status: 401 }),
+      );
+    vi.stubGlobal("fetch", fetchMock);
     render(<AccountSecurity />);
-    fireEvent.change(screen.getByLabelText("Senha atual"), {
+    fireEvent.change(screen.getAllByLabelText("Senha atual")[0]!, {
       target: { value: "frase-secreta-incorreta" },
     });
     fireEvent.change(screen.getByLabelText("Nova senha"), {
@@ -72,13 +94,17 @@ describe("AccountSecurity", () => {
   });
 
   it("deletes the account only after the explicit confirmation", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify({ ok: true })));
+    const fetchMock = vi
+      .fn()
+      .mockImplementation(() =>
+        Promise.resolve(new Response(JSON.stringify({ emailVerified: true, ok: true }))),
+      );
     vi.stubGlobal("fetch", fetchMock);
     render(<AccountSecurity />);
     const deleteButton = screen.getByRole("button", { name: "Excluir minha conta" });
     expect(deleteButton).toHaveProperty("disabled", true);
 
-    fireEvent.change(screen.getByLabelText("Senha atual"), {
+    fireEvent.change(screen.getAllByLabelText("Senha atual")[1]!, {
       target: { value: "frase-secreta-comprida" },
     });
     fireEvent.change(screen.getByLabelText("Digite EXCLUIR"), {

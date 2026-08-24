@@ -3,7 +3,10 @@ services:
     build:
       context: .
       target: development
-    command: ["npm", "run", "dev", "--", "--hostname", "0.0.0.0"]
+    # The named volume survives image rebuilds. Keep it synchronized with the
+    # authoritative lockfile before Turbopack starts so newly added packages
+    # cannot be hidden by stale development dependencies.
+    command: ["sh", "-c", "npm ci && exec npm run dev -- --hostname 0.0.0.0"]
     volumes:
       - .:/app
       - dev_node_modules:/app/node_modules

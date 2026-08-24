@@ -112,6 +112,11 @@ export function AccountPrompt({ profileId }: Readonly<{ profileId: string }>): R
           {mode === "register" ? "Já tenho conta" : "Quero criar uma conta"}
         </button>
       </div>
+      {mode === "login" ? (
+        <Link className="text-link" href="/recuperar-senha">
+          Esqueci minha senha
+        </Link>
+      ) : null}
     </form>
   );
 }

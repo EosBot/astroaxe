@@ -12,6 +12,7 @@
   "prettier.requireConfig": true,
   "tailwindCSS.classFunctions": ["cn", "cva"],
   "yaml.yamlVersion": "1.2",
+  "yaml.customTags": ["!override mapping", "!override sequence"],
   "yaml.schemaStore.enable": true,
   "redhat.telemetry.enabled": false,
   "sonarlint.disableTelemetry": true,

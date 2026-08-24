@@ -32,7 +32,7 @@ describe("transit interpretation selection", () => {
     );
   });
 
-  it("does not expose drafts or content without independent review", async () => {
+  it("uses the versioned built-in editorial matrix when no published override exists", async () => {
     const findFirst = vi.fn().mockResolvedValue(null);
     await expect(
       selectPublishedTransitInterpretations(
@@ -41,7 +41,11 @@ describe("transit interpretation selection", () => {
         "pt-BR",
         new Date(),
       ),
-    ).resolves.toEqual([]);
+    ).resolves.toEqual([
+      expect.objectContaining({
+        content: expect.objectContaining({ version: "built-in-transits-2.0.0" }),
+      }),
+    ]);
   });
 });
 

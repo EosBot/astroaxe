@@ -5,14 +5,16 @@ registro de operações, avaliação jurídica ou definição de base legal.
 
 ## Dados de conta e sessão
 
-| Grupo              | Campos persistidos                                    | Uso técnico                  | Retenção implementada                                            |
-| ------------------ | ----------------------------------------------------- | ---------------------------- | ---------------------------------------------------------------- |
-| Conta              | email normalizado, hash de senha, instante de criação | autenticação e ownership     | até exclusão integral da conta                                   |
-| Sessão autenticada | hash de token, user ID, criação e expiração           | sessão opaca                 | worker remove sessões expiradas; logout revoga a sessão corrente |
-| Sessão guest       | hash de token, criação e expiração                    | ownership temporário e claim | worker remove sessões expiradas em cascata                       |
+| Grupo              | Campos persistidos                                      | Uso técnico                     | Retenção implementada                                            |
+| ------------------ | ------------------------------------------------------- | ------------------------------- | ---------------------------------------------------------------- |
+| Conta              | email normalizado, hash de senha, criação e confirmação | autenticação e ownership        | até exclusão integral da conta                                   |
+| Sessão autenticada | hash de token, user ID, criação e expiração             | sessão opaca                    | worker remove sessões expiradas; logout revoga a sessão corrente |
+| Sessão guest       | hash de token, criação e expiração                      | ownership temporário e claim    | worker remove sessões expiradas em cascata                       |
+| Ação de conta      | finalidade, hash, criação, expiração e uso              | confirmar email/recuperar senha | worker remove tokens expirados; cascade com a conta              |
 
-Tokens em claro existem somente no cookie de sessão. Logger, access log e métricas não conservam
-cookie, header ou token.
+Tokens em claro existem somente no cookie de sessão ou no link de uso único entregue por email. O
+banco conserva apenas hashes; logger, access log e métricas não conservam cookie, header, query ou
+token. Links de confirmação expiram em 24 horas e links de recuperação em 30 minutos.
 
 ## Dados natais e conteúdo privado
 
@@ -42,7 +44,9 @@ retenção precisa constar dos contratos com colaboradores antes de uso real.
 - Redis contém cache e rate limit, nunca é fonte autoritativa dos dados privados;
 - Pino aplica redaction e registra IDs opacos, status, duração e categorias, não payloads;
 - Prometheus recebe métricas HTTP agregadas; access logs descartam caminho, query, IP e headers;
-- analytics, LLM, SMTP e Stripe não recebem dados porque não existem integrações ativas.
+- SMTP recebe somente o email destinatário e o conteúdo transacional necessário; homologação usa
+  Mailpit local e produção continua bloqueada até contrato/credencial do relay;
+- analytics, LLM e Stripe não recebem dados porque não existem integrações ativas.
 
 ## Lacunas antes de produção
 

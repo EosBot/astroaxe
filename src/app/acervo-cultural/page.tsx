@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { CulturalArchive } from "@/components/cultural-content/cultural-archive";
 
@@ -20,12 +19,6 @@ export const metadata: Metadata = {
 export default function CulturalArchivePage(): React.JSX.Element {
   return (
     <main id="conteudo-principal" className="observatory-shell cultural-archive-shell">
-      <header className="brand-mark archive-brand">
-        <Link href="/">
-          <span aria-hidden="true">✦</span> AstroAxe
-        </Link>
-        <small>Acervo cultural</small>
-      </header>
       <CulturalArchive />
     </main>
   );

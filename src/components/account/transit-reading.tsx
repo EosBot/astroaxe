@@ -19,12 +19,18 @@ type DisplayableAspect = {
 export function TransitReading({
   profileId,
   timezone,
-}: Readonly<{ profileId: string; timezone: string }>): React.JSX.Element {
+  variant = "standard",
+}: Readonly<{
+  profileId: string;
+  timezone: string;
+  variant?: "standard" | "shadow";
+}>): React.JSX.Element {
   const [requestVersion, setRequestVersion] = useState(0);
   const [reading, setReading] = useState<TransitReadingResponse>();
   const [status, setStatus] = useState<ReadingStatus>("loading");
   const today = dateInTimezone(timezone);
   const earliestDate = shiftIsoDate(today, -366);
+  const latestDate = shiftIsoDate(today, 90);
   const [date, setDate] = useState(today);
 
   useEffect(() => {
@@ -60,7 +66,7 @@ export function TransitReading({
         <input
           type="date"
           min={earliestDate}
-          max={today}
+          max={latestDate}
           value={date}
           onChange={(event) => {
             if (event.target.value !== "") setDate(event.target.value);
@@ -70,7 +76,7 @@ export function TransitReading({
       <button
         type="button"
         className="quiet-button"
-        disabled={date >= today}
+        disabled={date >= latestDate}
         onClick={() => setDate((current) => shiftIsoDate(current, 1))}
       >
         Dia seguinte
@@ -135,6 +141,7 @@ export function TransitReading({
   }
 
   const { content, transit } = interpretation;
+  const displayContent = variant === "shadow" ? shadowContent(transit) : content;
   const window = reading?.snapshot.windows.find(
     (candidate) =>
       candidate.transitingBody === transit.transitingBody &&
@@ -142,12 +149,21 @@ export function TransitReading({
       candidate.type === transit.type,
   );
   return (
-    <section className="transit-reading" aria-labelledby="transit-reading-title">
+    <section
+      className="transit-reading"
+      data-variant={variant}
+      aria-labelledby={
+        variant === "shadow" ? "shadow-transit-reading-title" : "transit-reading-title"
+      }
+    >
       {dateNavigation}
       <header className="transit-reading-header">
         <div>
           <p className="eyebrow">Tempo do Céu · {formatReadingDate(date)}</p>
-          <h3 id="transit-reading-title">{content.title}</h3>
+          <h3 id={variant === "shadow" ? "shadow-transit-reading-title" : "transit-reading-title"}>
+            {displayContent.title}
+          </h3>
+          <p>{reading.interpretations.length} influências ativas nesta data</p>
         </div>
         <span className="transit-intensity">
           {Math.round(transit.relativeIntensity * 100)}% <small>de exatidão relativa</small>
@@ -174,18 +190,18 @@ export function TransitReading({
       <div className="meridian-reading">
         <article>
           <span>Agora</span>
-          <p>{content.opening}</p>
+          <p>{displayContent.opening}</p>
         </article>
         <article>
           <span>Por quê</span>
-          <p>{content.technicalWhy}</p>
+          <p>{displayContent.technicalWhy}</p>
           <small>{describeAspect(transit)}</small>
         </article>
         <article>
           <span>Como trabalhar</span>
-          <p>{content.deepening}</p>
-          <blockquote>{content.reflectionPrompt}</blockquote>
-          <p className="transit-practice">Prática possível: {content.practice}</p>
+          <p>{displayContent.deepening}</p>
+          <blockquote>{displayContent.reflectionPrompt}</blockquote>
+          <p className="transit-practice">Prática possível: {displayContent.practice}</p>
         </article>
       </div>
 
@@ -207,6 +223,7 @@ export function TransitReading({
             </h4>
           </div>
           {reading.interpretations.slice(1).map((item) => {
+            const itemContent = variant === "shadow" ? shadowContent(item.transit) : item.content;
             const itemWindow = reading.snapshot.windows.find(
               (candidate) =>
                 candidate.transitingBody === item.transit.transitingBody &&
@@ -218,15 +235,15 @@ export function TransitReading({
                 key={`${item.transit.transitingBody}-${item.transit.natalBody}-${item.transit.type}`}
               >
                 <summary>
-                  <span>{item.content.title}</span>
+                  <span>{itemContent.title}</span>
                   <small>{classifyWindow(itemWindow, reading.snapshot.instant)}</small>
                 </summary>
                 <div className="transit-feed-body">
-                  <p>{item.content.opening}</p>
-                  <p>{item.content.deepening}</p>
-                  <p className="transit-technical">{item.content.technicalWhy}</p>
-                  <blockquote>{item.content.reflectionPrompt}</blockquote>
-                  <p className="transit-practice">Prática possível: {item.content.practice}</p>
+                  <p>{itemContent.opening}</p>
+                  <p>{itemContent.deepening}</p>
+                  <p className="transit-technical">{itemContent.technicalWhy}</p>
+                  <blockquote>{itemContent.reflectionPrompt}</blockquote>
+                  <p className="transit-practice">Prática possível: {itemContent.practice}</p>
                   <small>
                     {item.content.generationMethod === "AI_ASSISTED"
                       ? "Texto assistido por IA"
@@ -311,6 +328,42 @@ const ASPECT_NAMES: Readonly<Record<string, string>> = {
   trine: "trígono",
   opposition: "oposição",
 };
+
+function shadowContent(
+  transit: TransitReadingResponse["interpretations"][number]["transit"],
+): TransitReadingResponse["interpretations"][number]["content"] {
+  const transitingBody = BODY_NAMES[transit.transitingBody] ?? transit.transitingBody;
+  const natalBody = BODY_NAMES[transit.natalBody] ?? transit.natalBody;
+  const aspect = ASPECT_NAMES[transit.type] ?? transit.type;
+  let tension =
+    "A facilidade do aspecto pode manter o padrão invisível justamente porque ele funciona sem encontrar resistência.";
+  if (transit.type === "square" || transit.type === "opposition") {
+    tension =
+      "O conflito torna o padrão mais visível e pode produzir projeção, defensividade ou tentativa de controlar o outro polo.";
+  } else if (transit.type === "conjunction") {
+    tension =
+      "A concentração dessa energia intensifica identificação e torna difícil separar impulso, medo e escolha consciente.";
+  }
+  const phase = transit.applying
+    ? "A influência ainda ganha força: perceba os primeiros gatilhos antes que a reação se torne automática."
+    : "A influência já passou pelo pico: observe consequências, repetições e aquilo que agora pode ser reparado.";
+  return {
+    title: `${transitingBody}: reconheça a sombra em movimento`,
+    opening: `${transitingBody} em ${aspect} com seu ${natalBody} natal ativa conteúdos que normalmente procuram agir fora da consciência. ${tension}`,
+    deepening: `${phase} A sombra pode aparecer como excesso, negação ou projeção: você combate no mundo aquilo que ainda não consegue acolher em si. O objetivo não é culpar-se, mas recuperar autoria antes que o mecanismo escolha por você.`,
+    technicalWhy: `${transitingBody} forma ${aspect} com ${natalBody}, orbe de ${transit.orb.toFixed(2)}° e ${Math.round(transit.relativeIntensity * 100)}% de exatidão relativa.`,
+    reflectionPrompt: `Que reação recorrente revela uma necessidade não reconhecida neste encontro entre ${transitingBody} e ${natalBody}?`,
+    practice:
+      "registre gatilho, sensação corporal, impulso e necessidade; só então escolha uma resposta que não repita o automatismo",
+    version: "shadow-transits-1.0.0",
+    generationMethod: "HUMAN",
+    author: { displayName: "AstroAxé Editorial", attributionLine: "Matriz sombria pré-escrita" },
+    reviewer: {
+      displayName: "Engine editorial AstroAxé",
+      attributionLine: "Composição determinística por trânsito",
+    },
+  };
+}
 
 function describeAspect(aspect: DisplayableAspect): string {
   const movement = aspect.applying ? "se aproximando da exatidão" : "se afastando da exatidão";

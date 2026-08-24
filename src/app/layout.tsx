@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 
 import { getSiteUrl, serializeJsonLd } from "@/lib/site-metadata";
+import { SiteFooter } from "@/components/site/site-footer";
+import { SiteHeader } from "@/components/site/site-header";
 
 import "./globals.css";
 
@@ -42,7 +44,11 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
         <a className="skip-link" href="#conteudo-principal">
           Ir para o conteúdo principal
         </a>
-        {children}
+        <div className="site-frame">
+          <SiteHeader />
+          {children}
+          <SiteFooter />
+        </div>
       </body>
     </html>
   );

@@ -141,6 +141,29 @@ describe("regency configuration evaluation", () => {
       confidenceInterval95: null,
     });
   });
+
+  it("measures public unordered Orixá sets without assigning a role", () => {
+    const result = evaluateRegencyConfig({
+      matrix: regencyMatrix,
+      config: regencyResearchConfig,
+      datasetVersion: "unordered-public-1",
+      cases: [
+        evaluationCase("case:eeeeeeeeeeeeeeee", "validation", {
+          anyOf: ["orisa:oxala"],
+        }),
+      ],
+      partition: "validation",
+    });
+
+    expect(result.metricsByRole.head.sampleSize).toBe(0);
+    expect(result.exactTriad.sampleSize).toBe(0);
+    expect(result.unorderedLabels).toMatchObject({
+      sampleSize: 1,
+      labelCount: 1,
+      selectedTriadCoverage: 1,
+      top3AnyRoleCoverage: 1,
+    });
+  });
 });
 
 function evaluationCase(

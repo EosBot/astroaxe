@@ -1,0 +1,392 @@
+version: "3.9"
+
+services:
+  socket-proxy:
+    image: ${SOCKET_PROXY_IMAGE:?SOCKET_PROXY_IMAGE must be pinned by digest}
+    environment:
+      CONTAINERS: "0"
+      EVENTS: "1"
+      INFO: "1"
+      NETWORKS: "1"
+      NODES: "0"
+      PING: "1"
+      SERVICES: "1"
+      SWARM: "1"
+      TASKS: "1"
+      VERSION: "1"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - socket_api
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 60s
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 128M
+        reservations:
+          cpus: "0.05"
+          memory: 32M
+
+  traefik:
+    image: ${TRAEFIK_IMAGE:?TRAEFIK_IMAGE must be pinned by digest}
+    command:
+      - --api.dashboard=false
+      - --global.checknewversion=false
+      - --global.sendanonymoususage=false
+      - --providers.swarm=true
+      - --providers.swarm.endpoint=tcp://socket-proxy:2375
+      - --providers.swarm.exposedbydefault=false
+      - --providers.swarm.network=astroaxe_app_edge
+      - --providers.swarm.constraints=Label(`astroaxe.stack`,`production`)
+      - --entrypoints.web.address=:8080
+      - --entrypoints.metrics.address=:8082
+      - --metrics.prometheus=true
+      - --metrics.prometheus.entrypoint=metrics
+      - --metrics.prometheus.addrouterslabels=true
+      - --metrics.prometheus.addserviceslabels=true
+      - --accesslog=true
+      - --accesslog.format=json
+      - --accesslog.fields.defaultmode=drop
+      - --accesslog.fields.names.StartUTC=keep
+      - --accesslog.fields.names.Duration=keep
+      - --accesslog.fields.names.RequestMethod=keep
+      - --accesslog.fields.names.RouterName=keep
+      - --accesslog.fields.names.ServiceName=keep
+      - --accesslog.fields.names.OriginStatus=keep
+      - --accesslog.fields.names.DownstreamStatus=keep
+      - --accesslog.fields.names.RetryAttempts=keep
+      - --accesslog.fields.headers.defaultmode=drop
+    read_only: true
+    tmpfs:
+      - /tmp
+    networks:
+      - tunnel_edge
+      - app_edge
+      - socket_api
+    deploy:
+      replicas: ${TRAEFIK_REPLICAS:-2}
+      placement:
+        constraints:
+          - node.labels.astroaxe.role == edge
+        preferences:
+          - spread: node.labels.astroaxe.zone
+      update_config:
+        parallelism: 1
+        delay: 10s
+        monitor: 30s
+        failure_action: rollback
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 5s
+        monitor: 30s
+        failure_action: pause
+        order: stop-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 60s
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          cpus: "0.10"
+          memory: 64M
+
+  cloudflared:
+    image: ${CLOUDFLARED_IMAGE:?CLOUDFLARED_IMAGE must be pinned by digest}
+    command:
+      - tunnel
+      - --no-autoupdate
+      - --loglevel
+      - info
+      - --metrics
+      - 0.0.0.0:2000
+      - --grace-period
+      - 30s
+      - run
+      - --token-file
+      - /run/secrets/cloudflare_tunnel_token
+    secrets:
+      - source: cloudflare_tunnel_token
+        target: cloudflare_tunnel_token
+        mode: 0400
+    read_only: true
+    tmpfs:
+      - /tmp
+    networks:
+      - tunnel_edge
+      - egress
+    deploy:
+      replicas: ${CLOUDFLARED_REPLICAS:-2}
+      placement:
+        constraints:
+          - node.labels.astroaxe.role == edge
+        preferences:
+          - spread: node.labels.astroaxe.zone
+      update_config:
+        parallelism: 1
+        delay: 10s
+        monitor: 30s
+        failure_action: rollback
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 5s
+        monitor: 30s
+        failure_action: pause
+        order: stop-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 10
+        window: 120s
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
+        reservations:
+          cpus: "0.10"
+          memory: 64M
+
+  app:
+    image: ${ASTROAXE_APP_IMAGE:?ASTROAXE_APP_IMAGE must be pinned by digest}
+    environment:
+      NODE_ENV: production
+      DATABASE_URL_FILE: /run/secrets/database_url
+      REDIS_URL_FILE: /run/secrets/redis_url
+      GUEST_SESSION_SECRET_FILE: /run/secrets/guest_session_secret
+      AUTH_SESSION_SECRET_FILE: /run/secrets/auth_session_secret
+      FINGERPRINT_SECRET_FILE: /run/secrets/fingerprint_secret
+      NOMINATIM_USER_AGENT: ${NOMINATIM_USER_AGENT:?NOMINATIM_USER_AGENT is required}
+      SITE_URL: ${SITE_URL:?SITE_URL is required}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    secrets:
+      - source: database_url
+        target: database_url
+        uid: "1001"
+        gid: "1001"
+        mode: 0400
+      - source: redis_url
+        target: redis_url
+        uid: "1001"
+        gid: "1001"
+        mode: 0400
+      - source: guest_session_secret
+        target: guest_session_secret
+        uid: "1001"
+        gid: "1001"
+        mode: 0400
+      - source: auth_session_secret
+        target: auth_session_secret
+        uid: "1001"
+        gid: "1001"
+        mode: 0400
+      - source: fingerprint_secret
+        target: fingerprint_secret
+        uid: "1001"
+        gid: "1001"
+        mode: 0400
+    read_only: true
+    tmpfs:
+      - /tmp
+    networks:
+      - app_edge
+      - egress
+    healthcheck:
+      test:
+        - CMD
+        - curl
+        - --fail
+        - --silent
+        - http://127.0.0.1:3000/api/health/live
+      interval: 15s
+      timeout: 5s
+      retries: 4
+      start_period: 20s
+    deploy:
+      replicas: ${APP_REPLICAS:-2}
+      labels:
+        astroaxe.stack: production
+        traefik.enable: "true"
+        traefik.swarm.network: astroaxe_app_edge
+        traefik.http.routers.astroaxe.rule: Host(`${ASTROAXE_HOST:?ASTROAXE_HOST is required}`)
+        traefik.http.routers.astroaxe.entrypoints: web
+        traefik.http.services.astroaxe.loadbalancer.server.port: "3000"
+        traefik.http.services.astroaxe.loadbalancer.healthcheck.path: /api/health/ready
+        traefik.http.services.astroaxe.loadbalancer.healthcheck.interval: 15s
+        traefik.http.services.astroaxe.loadbalancer.healthcheck.timeout: 5s
+      placement:
+        constraints:
+          - node.labels.astroaxe.role == app
+        preferences:
+          - spread: node.labels.astroaxe.zone
+      update_config:
+        parallelism: 1
+        delay: 15s
+        monitor: 45s
+        max_failure_ratio: 0
+        failure_action: rollback
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 5s
+        monitor: 45s
+        max_failure_ratio: 0
+        failure_action: pause
+        order: stop-first
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 5
+        window: 60s
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 1G
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+
+  scheduler:
+    image: ${ASTROAXE_WORKER_IMAGE:?ASTROAXE_WORKER_IMAGE must be pinned by digest}
+    environment:
+      NODE_ENV: production
+      DATABASE_URL_FILE: /run/secrets/database_url
+      REDIS_URL_FILE: /run/secrets/redis_url
+      GUEST_SESSION_SECRET_FILE: /run/secrets/guest_session_secret
+      AUTH_SESSION_SECRET_FILE: /run/secrets/auth_session_secret
+      FINGERPRINT_SECRET_FILE: /run/secrets/fingerprint_secret
+      NOMINATIM_USER_AGENT: ${NOMINATIM_USER_AGENT:?NOMINATIM_USER_AGENT is required}
+      SITE_URL: ${SITE_URL:?SITE_URL is required}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      SMTP_HOST: ${SMTP_HOST:?SMTP_HOST is required}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:?SMTP_USER is required}
+      SMTP_PASSWORD_FILE: /run/secrets/smtp_password
+      EMAIL_FROM: ${EMAIL_FROM:?EMAIL_FROM is required}
+      EMAIL_FROM_NAME: ${EMAIL_FROM_NAME:-AstroAxe}
+    secrets:
+      - source: database_url
+        target: database_url
+        uid: "1000"
+        gid: "1000"
+        mode: 0400
+      - source: redis_url
+        target: redis_url
+        uid: "1000"
+        gid: "1000"
+        mode: 0400
+      - source: guest_session_secret
+        target: guest_session_secret
+        uid: "1000"
+        gid: "1000"
+        mode: 0400
+      - source: auth_session_secret
+        target: auth_session_secret
+        uid: "1000"
+        gid: "1000"
+        mode: 0400
+      - source: fingerprint_secret
+        target: fingerprint_secret
+        uid: "1000"
+        gid: "1000"
+        mode: 0400
+      - source: smtp_password
+        target: smtp_password
+        uid: "1000"
+        gid: "1000"
+        mode: 0400
+    read_only: true
+    tmpfs:
+      - /tmp
+    networks:
+      - egress
+    stop_grace_period: 30s
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.labels.astroaxe.role == app
+      update_config:
+        parallelism: 1
+        monitor: 30s
+        failure_action: rollback
+        order: stop-first
+      rollback_config:
+        parallelism: 1
+        monitor: 30s
+        failure_action: pause
+        order: stop-first
+      restart_policy:
+        condition: on-failure
+        delay: 10s
+        max_attempts: 5
+        window: 120s
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 512M
+        reservations:
+          cpus: "0.10"
+          memory: 128M
+
+networks:
+  tunnel_edge:
+    name: astroaxe_tunnel_edge
+    driver: overlay
+    internal: true
+    driver_opts:
+      encrypted: ""
+  app_edge:
+    name: astroaxe_app_edge
+    driver: overlay
+    internal: true
+    driver_opts:
+      encrypted: ""
+  socket_api:
+    name: astroaxe_socket_api
+    driver: overlay
+    internal: true
+    driver_opts:
+      encrypted: ""
+  egress:
+    name: astroaxe_egress
+    driver: overlay
+    driver_opts:
+      encrypted: ""
+
+secrets:
+  database_url:
+    external: true
+    name: ${DATABASE_URL_SECRET:-astroaxe_database_url_v1}
+  redis_url:
+    external: true
+    name: ${REDIS_URL_SECRET:-astroaxe_redis_url_v1}
+  guest_session_secret:
+    external: true
+    name: ${GUEST_SESSION_SECRET_NAME:-astroaxe_guest_session_v1}
+  auth_session_secret:
+    external: true
+    name: ${AUTH_SESSION_SECRET_NAME:-astroaxe_auth_session_v1}
+  fingerprint_secret:
+    external: true
+    name: ${FINGERPRINT_SECRET_NAME:-astroaxe_fingerprint_v1}
+  cloudflare_tunnel_token:
+    external: true
+    name: ${CLOUDFLARE_TUNNEL_SECRET:-astroaxe_cloudflare_tunnel_v1}
+  smtp_password:
+    external: true
+    name: ${SMTP_PASSWORD_SECRET:-astroaxe_smtp_password_v1}

@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   guestDelete: vi.fn(),
   accountDelete: vi.fn(),
+  tokenDelete: vi.fn(),
   transaction: vi.fn(),
   getPrisma: vi.fn(),
 }));
@@ -13,10 +14,12 @@ describe("session retention", () => {
     vi.clearAllMocks();
     mocks.guestDelete.mockReturnValue(Promise.resolve({ count: 2 }));
     mocks.accountDelete.mockReturnValue(Promise.resolve({ count: 3 }));
-    mocks.transaction.mockResolvedValue([{ count: 2 }, { count: 3 }]);
+    mocks.tokenDelete.mockReturnValue(Promise.resolve({ count: 4 }));
+    mocks.transaction.mockResolvedValue([{ count: 2 }, { count: 3 }, { count: 4 }]);
     mocks.getPrisma.mockReturnValue({
       guestSession: { deleteMany: mocks.guestDelete },
       accountSession: { deleteMany: mocks.accountDelete },
+      accountToken: { deleteMany: mocks.tokenDelete },
       $transaction: mocks.transaction,
     });
   });
@@ -27,8 +30,10 @@ describe("session retention", () => {
     await expect(deleteExpiredSessions(now)).resolves.toEqual({
       guestSessions: 2,
       accountSessions: 3,
+      accountTokens: 4,
     });
     expect(mocks.guestDelete).toHaveBeenCalledWith({ where: { expiresAt: { lte: now } } });
     expect(mocks.accountDelete).toHaveBeenCalledWith({ where: { expiresAt: { lte: now } } });
+    expect(mocks.tokenDelete).toHaveBeenCalledWith({ where: { expiresAt: { lte: now } } });
   });
 });

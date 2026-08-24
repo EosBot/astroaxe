@@ -110,6 +110,14 @@ function evaluationResult(
     sampleSize,
     metricsByRole: { front: metric, head: metric, back: metric },
     exactTriad: { sampleSize, accuracy, confidenceInterval95: { lower: 0, upper: 1 } },
+    unorderedLabels: {
+      sampleSize: 0,
+      labelCount: 0,
+      selectedTriadCoverage: null,
+      selectedTriadConfidenceInterval95: null,
+      top3AnyRoleCoverage: null,
+      top3AnyRoleConfidenceInterval95: null,
+    },
     confusionByRole: { front: {}, head: {}, back: {} },
     strata: {
       byTimeQuality: {

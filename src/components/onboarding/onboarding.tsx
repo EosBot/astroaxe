@@ -3,8 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 
 import { AccountPrompt } from "@/components/account/account-prompt";
-import { CelestialParticles } from "@/components/onboarding/celestial-particles";
-import { zodiacPlacement } from "@/domain/astrology/western/zodiac";
+import { CelestialObservatory3D } from "@/components/onboarding/celestial-observatory-3d";
+import { NatalChartWheel } from "@/components/onboarding/natal-chart-wheel";
 
 import {
   createMapResponseSchema,
@@ -42,13 +42,7 @@ export function Onboarding(): React.JSX.Element {
     calculate,
   } = state;
 
-  if (result !== undefined)
-    return (
-      <div className="experience-grid">
-        <OrbitStory step={4} />
-        <ChartReveal name={displayName} result={result} />
-      </div>
-    );
+  if (result !== undefined) return <ChartReveal name={displayName} result={result} />;
 
   const canContinue = canAdvance(step, { displayName, date, time, unknownTime, place });
   const primaryLabel = getPrimaryLabel(step, status);
@@ -226,30 +220,20 @@ function OrbitStory({ step }: Readonly<{ step: number }>): React.JSX.Element {
     <section className="orbit-story" aria-labelledby="astroaxe-title">
       <div className="story-copy">
         <p className="eyebrow">Astrologia calculada · cultura contextualizada</p>
-        <h1 id="astroaxe-title">O céu revela movimentos.</h1>
+        <h1 id="astroaxe-title">Seu céu é uma arquitetura.</h1>
         <p>
-          Quatro coordenadas abrem seu primeiro mapa. Nenhuma conta ou plano antes do resultado.
+          Data, hora e lugar orientam um instrumento vivo. Atravesse as quatro coordenadas e veja a
+          forma singular do céu no instante em que você nasceu.
         </p>
       </div>
       <div
         ref={mapRef}
         className="system-map"
         data-ambient-active={ambientActive}
-        aria-label={`Progresso: ${Math.min(step + 1, 4)} de 4`}
+        data-step={step}
+        aria-hidden="true"
       >
-        <CelestialParticles />
-        <span className="system-sun" aria-hidden="true">
-          0°
-        </span>
-        {STEPS.map((label, index) => {
-          const state = getOrbitNodeState(index, step);
-          return (
-            <span className={`orbit-node orbit-node-${index + 1}`} data-state={state} key={label}>
-              <i aria-hidden="true" />
-              {label}
-            </span>
-          );
-        })}
+        <CelestialObservatory3D />
       </div>
       <p className="story-footnote">
         Precisão declarada · fontes rastreáveis · sem determinações religiosas
@@ -290,12 +274,6 @@ function useAmbientMotion(): {
   }, []);
 
   return { mapRef, ambientActive: inViewport && pageVisible };
-}
-
-function getOrbitNodeState(index: number, step: number): "complete" | "active" | "pending" {
-  if (index < step) return "complete";
-  if (index === step) return "active";
-  return "pending";
 }
 
 function useOnboardingState() {
@@ -436,42 +414,21 @@ function ChartReveal({
   name: string;
   result: CreateMapResponse;
 }>): React.JSX.Element {
-  const featured = result.chart.planets.filter((planet) => ["sun", "moon"].includes(planet.id));
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => titleRef.current?.focus(), []);
   return (
-    <section className="reveal" aria-live="polite">
-      <div className="celestial-seal" aria-hidden="true">
-        <span>0°</span>
-      </div>
-      <p className="eyebrow">Seu primeiro céu</p>
-      <h2>Seu céu se abre assim, {name}.</h2>
-      <p className="quality-note">
-        {result.chart.mode === "timed"
-          ? "Hora informada · casas e Ascendente disponíveis"
-          : "Hora desconhecida · leitura sem casas e Ascendente"}
-      </p>
-      <div className="placement-grid">
-        {featured.map((planet) => (
-          <article key={planet.id}>
-            <span>{planet.id === "sun" ? "Sol" : "Lua"}</span>
-            <strong>{zodiacPlacement(planet.longitude).sign}</strong>
-            <small>{zodiacPlacement(planet.longitude).signDegree.toFixed(2)}° no signo</small>
-          </article>
-        ))}
-        {result.chart.houses ? (
-          <article>
-            <span>Ascendente</span>
-            <strong>{zodiacPlacement(result.chart.houses.ascendant).sign}</strong>
-            <small>
-              {zodiacPlacement(result.chart.houses.ascendant).signDegree.toFixed(2)}° no signo
-            </small>
-          </article>
-        ) : null}
-      </div>
-      <p className="cultural-note">
-        A futura Tríade de Regências combinará estes dados em um método autoral, versionado e
-        rastreável. <a href="/metodologia">Consulte a metodologia.</a>
-      </p>
-      <AccountPrompt profileId={result.profileId} />
+    <section className="natal-journey" aria-live="polite">
+      <h2 ref={titleRef} tabIndex={-1} className="sr-only">
+        Seu mapa natal, {name}
+      </h2>
+      <NatalChartWheel chart={result.chart} name={name} />
+      <footer className="natal-journey-footer">
+        <p className="cultural-note">
+          A futura Tríade de Regências combinará estes dados em um método autoral, versionado e
+          rastreável. <a href="/metodologia">Consulte a metodologia.</a>
+        </p>
+        <AccountPrompt profileId={result.profileId} />
+      </footer>
     </section>
   );
 }

@@ -29,7 +29,10 @@ describe("western astrology engine", () => {
 
     expect(first).toEqual(second);
     expect(first.mode).toBe("timed");
-    expect(first.planets).toHaveLength(10);
+    expect(first.planets).toHaveLength(13);
+    expect(first.planets.map(({ id }) => id)).toEqual(
+      expect.arrayContaining(["chiron", "true_node", "mean_lilith"]),
+    );
     expect(first.houses?.cusps).toHaveLength(12);
     expect(first.planets.find((planet) => planet.id === "sun")?.longitude).toBeCloseTo(
       79.4918317,

@@ -39,15 +39,6 @@ export default function MethodologyPage(): React.JSX.Element {
   );
   return (
     <main id="conteudo-principal" className="observatory-shell methodology-shell">
-      <header className="brand-mark archive-brand">
-        <Link href="/">
-          <span aria-hidden="true">✦</span> AstroAxe
-        </Link>
-        <small>
-          Metodologia · <Link href="/acervo-cultural">Acervo cultural</Link>
-        </small>
-      </header>
-
       <article className="methodology-document">
         <header className="methodology-hero">
           <div>

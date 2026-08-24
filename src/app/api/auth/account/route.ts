@@ -13,6 +13,21 @@ import {
 } from "@/lib/security/account";
 import { apiJson } from "@/lib/security/headers";
 
+export async function GET(request: NextRequest): Promise<Response> {
+  const env = parseServerEnv();
+  const account = await resolveAccount(request, env.AUTH_SESSION_SECRET);
+  if (account === null) return apiJson({ error: "Sessão necessária." }, { status: 401 });
+  const user = await getPrisma().user.findUnique({
+    where: { id: account.id },
+    select: { email: true, emailVerifiedAt: true },
+  });
+  if (user === null) return apiJson({ error: "Sessão necessária." }, { status: 401 });
+  return apiJson({
+    email: user.email,
+    emailVerified: user.emailVerifiedAt !== null,
+  });
+}
+
 export async function DELETE(request: NextRequest): Promise<Response> {
   if (!request.headers.get("content-type")?.startsWith("application/json"))
     return apiJson({ error: "Envie os dados como JSON." }, { status: 415 });

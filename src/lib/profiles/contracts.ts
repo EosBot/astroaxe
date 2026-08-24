@@ -1,6 +1,9 @@
 import { z } from "zod";
 
 import { birthDataSchema } from "@/domain/astrology/western/contracts";
+import { createMapResponseSchema } from "@/lib/maps/contracts";
+
+const natalChartSchema = createMapResponseSchema.shape.chart;
 
 export const updateProfileSchema = birthDataSchema.extend({
   displayName: z.string().trim().min(1).max(100),
@@ -22,6 +25,7 @@ export const profileRecordSchema = z.object({
     sunSign: z.string(),
     moonSign: z.string().optional(),
     ascendant: z.number().optional(),
+    natal: natalChartSchema,
   }),
 });
 

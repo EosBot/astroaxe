@@ -42,6 +42,7 @@ export async function GET(request: NextRequest): Promise<Response> {
             sunSign: sun.sign,
             ...(moon === undefined ? {} : { moonSign: moon.sign }),
             ...(chart.houses === undefined ? {} : { ascendant: chart.houses.ascendant }),
+            natal: chart,
           },
         },
       ];

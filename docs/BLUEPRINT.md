@@ -268,7 +268,7 @@ Não usar “precisão sentida” ou dependência diária como North Star. A mé
 - O runtime local foi migrado por restore lógico para PostgreSQL 18 no volume
   `astroaxe_postgres18_data`, com 16 migrations e pgvector validados. O volume PostgreSQL 16
   `astroaxe_postgres_data` permanece preservado para retorno.
-- O checkpoint mais recente passou com 218 testes, typecheck, lint, build e release smoke. O Sonar
+- O checkpoint mais recente passou com 238 testes, typecheck, lint, build e release smoke. O Sonar
   passou antes do incremento visual e deve ser reexecutado no próximo checkpoint funcional.
 
 ### Estado implementado em 2026-08-19

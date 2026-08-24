@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const planetSchema = z.object({
+export const planetPositionSchema = z.object({
   id: z.string(),
   longitude: z.number(),
   latitude: z.number(),
@@ -19,7 +19,18 @@ export const createMapResponseSchema = z.object({
     configVersion: z.string(),
     inputFingerprint: z.string().length(64),
     jdUt: z.number(),
-    planets: z.array(planetSchema).length(10),
+    planets: z.array(planetPositionSchema).min(10).max(13),
+    aspects: z
+      .array(
+        z.object({
+          a: z.string(),
+          b: z.string(),
+          type: z.string(),
+          orb: z.number().nonnegative(),
+          strength: z.number().min(0).max(1),
+        }),
+      )
+      .optional(),
     houses: z
       .object({
         requestedSystem: z.string(),

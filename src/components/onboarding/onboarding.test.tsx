@@ -5,6 +5,10 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Onboarding } from "./onboarding";
 
+vi.mock("./celestial-observatory-3d", () => ({
+  CelestialObservatory3D: () => <span data-testid="celestial-observatory-3d" />,
+}));
+
 const planets = [
   "sun",
   "moon",
@@ -87,10 +91,20 @@ describe("Onboarding", () => {
     fireEvent.click(screen.getByRole("button", { name: "Salvador, Bahia, Brasil" }));
     fireEvent.click(screen.getByRole("button", { name: "Calcular meu céu" }));
 
-    await screen.findByText("Seu céu se abre assim, Lu.");
-    expect(screen.getByText("Hora desconhecida · leitura sem casas e Ascendente")).toBeTruthy();
-    expect(screen.getAllByText("Áries")).toHaveLength(2);
-    expect(screen.getByText("0.00° no signo")).toBeTruthy();
+    const revealTitle = await screen.findByText("Seu mapa natal, Lu");
+    await waitFor(() => expect(document.activeElement).toBe(revealTitle));
+    expect(
+      screen.getByText(
+        "Sem uma hora conhecida, mostramos somente posições planetárias confiáveis.",
+      ),
+    ).toBeTruthy();
+    expect(screen.getByLabelText("Interpretações de planetas e pontos").children).toHaveLength(10);
+    expect(screen.getByRole("button", { name: "Ler Sol" }).getAttribute("aria-pressed")).toBe(
+      "true",
+    );
+    expect(screen.getByText("Corpo em foco").parentElement?.textContent).toContain(
+      "0.00° no signo",
+    );
     expect(screen.getByText("Crie sua conta gratuita")).toBeTruthy();
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });

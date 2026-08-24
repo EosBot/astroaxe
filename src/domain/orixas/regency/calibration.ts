@@ -5,7 +5,7 @@ import type { RegencyAstrologicalFeature } from "./features";
 import { scoreRegencies, type RegencyRole, type RegencyScoringConfig } from "./scorer";
 import type { RegencyTemporalFeature } from "./temporal";
 
-export const REGENCY_EVALUATION_VERSION = "regency-evaluation-0.3.0";
+export const REGENCY_EVALUATION_VERSION = "regency-evaluation-0.4.0";
 
 const temporalMethodSchema = z.enum([
   "observed_solar",
@@ -19,15 +19,19 @@ const roleLabelsSchema = z
     front: z.string().optional(),
     head: z.string().optional(),
     back: z.string().optional(),
+    anyOf: z.array(z.string().min(1).max(120)).min(1).max(8).optional(),
   })
   .strict()
-  .refine((labels) => Object.values(labels).some((label) => label !== undefined), {
-    message: "O caso precisa de ao menos um papel autodeclarado ou autorizado.",
-  })
-  .transform(({ front, head, back }) => ({
+  .refine(
+    ({ front, head, back, anyOf }) =>
+      front !== undefined || head !== undefined || back !== undefined || anyOf !== undefined,
+    { message: "O caso precisa de ao menos um rótulo autodeclarado ou autorizado." },
+  )
+  .transform(({ front, head, back, anyOf }) => ({
     ...(front === undefined ? {} : { front }),
     ...(head === undefined ? {} : { head }),
     ...(back === undefined ? {} : { back }),
+    ...(anyOf === undefined ? {} : { anyOf: [...new Set(anyOf)] }),
   }));
 
 const astrologicalFeatureSchema = z
@@ -142,7 +146,7 @@ export interface RegencyEvaluationCase {
   provenance: "authorized_practitioner" | "public_self_disclosure" | "synthetic";
   timeQuality: "known" | "unknown";
   temporalMethod: z.infer<typeof temporalMethodSchema>;
-  expected: Partial<Record<RegencyRole, string>>;
+  expected: Partial<Record<RegencyRole, string>> & { anyOf?: string[] };
   astrologicalFeatures: RegencyAstrologicalFeature[];
   temporalFeatures?: RegencyTemporalFeature[];
 }
@@ -160,6 +164,14 @@ export interface RegencyEvaluationResult {
     sampleSize: number;
     accuracy: number | null;
     confidenceInterval95: ConfidenceInterval | null;
+  };
+  unorderedLabels: {
+    sampleSize: number;
+    labelCount: number;
+    selectedTriadCoverage: number | null;
+    selectedTriadConfidenceInterval95: ConfidenceInterval | null;
+    top3AnyRoleCoverage: number | null;
+    top3AnyRoleConfidenceInterval95: ConfidenceInterval | null;
   };
   confusionByRole: Record<RegencyRole, Record<string, Record<string, number>>>;
   strata: {
@@ -216,12 +228,22 @@ export function evaluateRegencyConfig(input: {
   ] as const);
   let exact = 0;
   let completeCases = 0;
+  let unorderedCases = 0;
+  let unorderedLabels = 0;
+  let unorderedSelected = 0;
+  let unorderedTop3 = 0;
 
   for (const item of cases) {
     const outcome = evaluateCase(item, input.matrix, input.config, roleCounters, confusionByRole);
     if (outcome.knownLabels === 3) {
       completeCases += 1;
       if (outcome.allKnownRolesCorrect) exact += 1;
+    }
+    if (outcome.unorderedLabelCount > 0) {
+      unorderedCases += 1;
+      unorderedLabels += outcome.unorderedLabelCount;
+      unorderedSelected += outcome.unorderedSelected;
+      unorderedTop3 += outcome.unorderedTop3;
     }
     recordCase(
       timeQualityCounts[item.timeQuality],
@@ -252,6 +274,14 @@ export function evaluateRegencyConfig(input: {
       accuracy: completeCases === 0 ? null : exact / completeCases,
       confidenceInterval95: wilsonInterval(exact, completeCases),
     },
+    unorderedLabels: {
+      sampleSize: unorderedCases,
+      labelCount: unorderedLabels,
+      selectedTriadCoverage: unorderedLabels === 0 ? null : unorderedSelected / unorderedLabels,
+      selectedTriadConfidenceInterval95: wilsonInterval(unorderedSelected, unorderedLabels),
+      top3AnyRoleCoverage: unorderedLabels === 0 ? null : unorderedTop3 / unorderedLabels,
+      top3AnyRoleConfidenceInterval95: wilsonInterval(unorderedTop3, unorderedLabels),
+    },
     confusionByRole,
     strata: {
       byTimeQuality: summarizeCounters(timeQualityCounts),
@@ -267,7 +297,14 @@ function evaluateCase(
   config: RegencyScoringConfig,
   roleCounters: Record<RegencyRole, OutcomeCounter>,
   confusionByRole: Record<RegencyRole, Record<string, Record<string, number>>>,
-): { knownLabels: number; correctKnownLabels: number; allKnownRolesCorrect: boolean } {
+): {
+  knownLabels: number;
+  correctKnownLabels: number;
+  allKnownRolesCorrect: boolean;
+  unorderedLabelCount: number;
+  unorderedSelected: number;
+  unorderedTop3: number;
+} {
   const scoring = scoreRegencies({
     matrix,
     config,
@@ -291,7 +328,21 @@ function evaluateCase(
     else allKnownRolesCorrect = false;
     incrementConfusion(confusionByRole[role], expected, predicted[role] ?? "unresolved");
   }
-  return { knownLabels, correctKnownLabels, allKnownRolesCorrect };
+  const selectedIds = new Set(Object.values(predicted).filter((id) => id !== null));
+  const top3Ids = new Set(
+    Object.values(scoring.rankingsByRole)
+      .flatMap((ranking) => ranking.slice(0, 3))
+      .map(({ orisaId }) => orisaId),
+  );
+  const unordered = item.expected.anyOf ?? [];
+  return {
+    knownLabels,
+    correctKnownLabels,
+    allKnownRolesCorrect,
+    unorderedLabelCount: unordered.length,
+    unorderedSelected: unordered.filter((id) => selectedIds.has(id)).length,
+    unorderedTop3: unordered.filter((id) => top3Ids.has(id)).length,
+  };
 }
 
 function counters<const T extends readonly string[]>(keys: T): Record<T[number], OutcomeCounter> {

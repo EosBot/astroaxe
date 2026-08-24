@@ -2,11 +2,12 @@
 
 import { useEffect, useRef } from "react";
 
-interface Particle {
-  angle: number;
-  radius: number;
+interface Star {
+  x: number;
+  y: number;
+  depth: number;
   size: number;
-  speed: number;
+  velocity: number;
   phase: number;
   warm: boolean;
 }
@@ -23,20 +24,26 @@ export function CelestialParticles(): React.JSX.Element {
     if (context === null) return;
 
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)");
     let visible = document.visibilityState === "visible";
     let intersecting = true;
     let animationFrame = 0;
     let previousFrame = 0;
-    let particles: Particle[] = [];
+    let stars: Star[] = [];
+    let targetCameraX = 0;
+    let targetCameraY = 0;
+    let cameraX = 0;
+    let cameraY = 0;
 
-    const createParticles = (count: number): Particle[] =>
+    const createStars = (count: number): Star[] =>
       Array.from({ length: count }, (_, index) => ({
-        angle: (index / count) * Math.PI * 2 + ((index * 17) % 11) * 0.07,
-        radius: 0.16 + (((index * 29) % 83) / 100) * 0.76,
-        size: 0.55 + ((index * 7) % 9) * 0.12,
-        speed: (0.018 + ((index * 13) % 17) * 0.0015) * (index % 3 === 0 ? -1 : 1),
-        phase: ((index * 31) % 100) / 100,
-        warm: index % 7 === 0,
+        x: (((index * 73) % 211) / 210 - 0.5) * 1.8,
+        y: (((index * 47 + 19) % 197) / 196 - 0.5) * 1.35,
+        depth: 0.34 + (((index * 31 + 7) % 100) / 100) * 0.66,
+        size: 0.45 + ((index * 11) % 13) * 0.12,
+        velocity: 0.012 + ((index * 17) % 9) * 0.0015,
+        phase: ((index * 29) % 100) / 100,
+        warm: index % 9 === 0,
       }));
 
     const resize = () => {
@@ -45,32 +52,40 @@ export function CelestialParticles(): React.JSX.Element {
       canvas.width = Math.max(1, Math.round(bounds.width * dpr));
       canvas.height = Math.max(1, Math.round(bounds.height * dpr));
       context.setTransform(dpr, 0, 0, dpr, 0, 0);
-      particles = createParticles(bounds.width < 500 ? 20 : 38);
+      stars = createStars(bounds.width < 500 ? 72 : 180);
     };
 
     const draw = (time: number) => {
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
-      const centerX = width / 2;
-      const centerY = height / 2;
-      const extent = Math.min(width, height) / 2;
+      const centerX = width * 0.5;
+      const centerY = height * 0.48;
+      const motionTime = reduceMotion.matches ? 0 : time / 1000;
       context.clearRect(0, 0, width, height);
 
-      for (const particle of particles) {
-        const motionTime = reduceMotion.matches ? 0 : time / 1000;
-        const angle = particle.angle + motionTime * particle.speed;
-        const orbitRadius = extent * particle.radius;
-        const x = centerX + Math.cos(angle) * orbitRadius;
-        const y = centerY + Math.sin(angle) * orbitRadius * 0.72;
-        const shimmer = reduceMotion.matches
-          ? 0.46
-          : 0.34 + Math.sin(motionTime * 0.8 + particle.phase * Math.PI * 2) * 0.16;
+      cameraX += (targetCameraX - cameraX) * 0.04;
+      cameraY += (targetCameraY - cameraY) * 0.04;
 
+      for (const star of stars) {
+        if (!reduceMotion.matches) {
+          star.depth -= star.velocity * 0.012;
+          if (star.depth < 0.32) star.depth = 1;
+        }
+        const perspective = 0.58 / star.depth;
+        const x = centerX + star.x * width * 0.48 * perspective + cameraX * (1 - star.depth);
+        const y = centerY + star.y * height * 0.48 * perspective + cameraY * (1 - star.depth);
+        if (x < -12 || x > width + 12 || y < -12 || y > height + 12) continue;
+
+        const shimmer = reduceMotion.matches
+          ? 0.5
+          : 0.42 + Math.sin(motionTime * 0.75 + star.phase * Math.PI * 2) * 0.2;
+        const alpha = Math.max(0.16, shimmer * (1.18 - star.depth * 0.4));
+        const radius = star.size * perspective;
         context.beginPath();
-        context.arc(x, y, particle.size, 0, Math.PI * 2);
-        context.fillStyle = particle.warm
-          ? `rgb(196 122 74 / ${shimmer})`
-          : `rgb(216 211 199 / ${shimmer})`;
+        context.arc(x, y, radius, 0, Math.PI * 2);
+        context.fillStyle = star.warm
+          ? `rgb(196 122 74 / ${alpha})`
+          : `rgb(216 211 199 / ${alpha})`;
         context.fill();
       }
     };
@@ -86,7 +101,16 @@ export function CelestialParticles(): React.JSX.Element {
     const handleVisibility = () => {
       visible = document.visibilityState === "visible";
     };
-    const handleMotionPreference = () => draw(0);
+    const handlePointer = (event: PointerEvent) => {
+      if (!finePointer.matches || reduceMotion.matches) return;
+      targetCameraX = (event.clientX / window.innerWidth - 0.5) * 18;
+      targetCameraY = (event.clientY / window.innerHeight - 0.5) * 12;
+    };
+    const handleMotionPreference = () => {
+      targetCameraX = 0;
+      targetCameraY = 0;
+      draw(0);
+    };
     const resizeObserver = new ResizeObserver(resize);
     const intersectionObserver = new IntersectionObserver(
       ([entry]) => {
@@ -98,6 +122,7 @@ export function CelestialParticles(): React.JSX.Element {
     resizeObserver.observe(canvas);
     intersectionObserver.observe(canvas);
     document.addEventListener("visibilitychange", handleVisibility);
+    window.addEventListener("pointermove", handlePointer, { passive: true });
     reduceMotion.addEventListener("change", handleMotionPreference);
     resize();
     draw(0);
@@ -108,12 +133,13 @@ export function CelestialParticles(): React.JSX.Element {
       resizeObserver.disconnect();
       intersectionObserver.disconnect();
       document.removeEventListener("visibilitychange", handleVisibility);
+      window.removeEventListener("pointermove", handlePointer);
       reduceMotion.removeEventListener("change", handleMotionPreference);
     };
   }, []);
 
   return (
-    <span aria-hidden="true">
+    <span className="celestial-particles-layer" aria-hidden="true">
       <canvas ref={canvasRef} className="celestial-particles" />
     </span>
   );

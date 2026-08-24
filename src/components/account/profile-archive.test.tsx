@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { ProfileArchive } from "./profile-archive";
 
@@ -28,45 +28,83 @@ const profile = {
   timezone: "America/Bahia",
   location: "Salvador, Bahia, Brasil",
   updatedAt: "2026-08-19T12:00:00.000Z",
-  chart: { mode: "untimed", sunSign: "Gemini", moonSign: "Cancer" },
+  chart: { mode: "untimed", sunSign: "Gemini", moonSign: "Cancer", natal: chartResult() },
 };
 
 describe("ProfileArchive", () => {
+  beforeEach(() => {
+    HTMLDialogElement.prototype.showModal = vi.fn(function (this: HTMLDialogElement) {
+      this.setAttribute("open", "");
+    });
+    HTMLDialogElement.prototype.close = vi.fn(function (this: HTMLDialogElement) {
+      this.removeAttribute("open");
+      this.dispatchEvent(new Event("close"));
+    });
+  });
   afterEach(() => {
     cleanup();
     vi.unstubAllGlobals();
   });
 
-  it("lists an owned profile and recalculates it", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(new Response(JSON.stringify({ profiles: [profile] })))
-      .mockResolvedValueOnce(
+  it("lists an owned profile and recalculates it", { timeout: 10_000 }, async () => {
+    let profileReads = 0;
+    const fetchMock = vi.fn().mockImplementation((input: string, init?: RequestInit) => {
+      if (input === "/api/auth/account")
+        return Promise.resolve(new Response(JSON.stringify({ emailVerified: true })));
+      if (init?.method === "PUT")
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({
+              profileId: profile.id,
+              chartId: "223e4567-e89b-42d3-a456-426614174000",
+              chart: chartResult(),
+            }),
+          ),
+        );
+      profileReads += 1;
+      return Promise.resolve(
         new Response(
           JSON.stringify({
-            profileId: profile.id,
-            chartId: "223e4567-e89b-42d3-a456-426614174000",
-            chart: chartResult(),
+            profiles: [profileReads === 1 ? profile : { ...profile, date: "1990-06-11" }],
           }),
         ),
-      )
-      .mockResolvedValueOnce(
-        new Response(JSON.stringify({ profiles: [{ ...profile, date: "1990-06-11" }] })),
       );
+    });
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileArchive />);
+    await screen.findByRole("heading", { name: /Bem-vindo ao seu observatório/ });
+    fireEvent.click(screen.getByRole("button", { name: "Mapa natal" }));
     await screen.findByRole("heading", { name: "Lu" });
+    expect(screen.getByRole("heading", { name: "O mapa natal de você" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Configurações" }));
     fireEvent.change(screen.getByLabelText("Data de nascimento"), {
       target: { value: "1990-06-11" },
     });
     fireEvent.click(screen.getByRole("button", { name: "Salvar e recalcular" }));
     await screen.findByText("Dados atualizados e mapa recalculado.");
-    expect(fetchMock).toHaveBeenNthCalledWith(
-      2,
+    expect(fetchMock).toHaveBeenCalledWith(
       `/api/profiles/${profile.id}`,
       expect.objectContaining({ method: "PUT" }),
     );
   });
+
+  it("opens synastry and biorhythm as independent account tabs", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue(new Response(JSON.stringify({ profiles: [profile] }))),
+    );
+    render(<ProfileArchive />);
+    await screen.findByRole("heading", { name: /Bem-vindo ao seu observatório/ });
+
+    fireEvent.click(screen.getByRole("button", { name: /^Sinastria$/ }));
+    expect(screen.getByRole("heading", { name: /^Sinastria$/ })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Biorritmo" })).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: /^Biorritmo$/ }));
+    expect(screen.getByRole("heading", { name: "Biorritmo de Lu" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: /^Biorritmo$/ })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: /^Sinastria$/ })).toBeNull();
+  }, 15_000);
 
   it("directs an unauthenticated visitor back to the value flow", async () => {
     vi.stubGlobal(
@@ -83,25 +121,30 @@ describe("ProfileArchive", () => {
   });
 
   it("searches and selects a corrected birth city", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(new Response(JSON.stringify({ profiles: [profile] })))
-      .mockResolvedValueOnce(
-        new Response(
-          JSON.stringify({
-            places: [
-              {
-                label: "Recife, Pernambuco, Brasil",
-                latitude: -8.05,
-                longitude: -34.9,
-                timezone: "America/Recife",
-              },
-            ],
-          }),
-        ),
-      );
+    const fetchMock = vi.fn().mockImplementation((input: string) => {
+      if (input === "/api/auth/account")
+        return Promise.resolve(new Response(JSON.stringify({ emailVerified: true })));
+      if (input.startsWith("/api/geocoding"))
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({
+              places: [
+                {
+                  label: "Recife, Pernambuco, Brasil",
+                  latitude: -8.05,
+                  longitude: -34.9,
+                  timezone: "America/Recife",
+                },
+              ],
+            }),
+          ),
+        );
+      return Promise.resolve(new Response(JSON.stringify({ profiles: [profile] })));
+    });
     vi.stubGlobal("fetch", fetchMock);
     render(<ProfileArchive />);
+    await screen.findByRole("heading", { name: /Bem-vindo ao seu observatório/ });
+    fireEvent.click(screen.getByRole("button", { name: "Configurações" }));
     await screen.findByRole("heading", { name: "Lu" });
     fireEvent.change(screen.getByLabelText("Cidade de nascimento"), {
       target: { value: "Recife" },
@@ -112,30 +155,70 @@ describe("ProfileArchive", () => {
       "value",
       "Recife, Pernambuco, Brasil",
     );
-  });
+  }, 15_000);
 
   it("keeps the form actionable when recalculation fails", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi
-        .fn()
-        .mockResolvedValueOnce(new Response(JSON.stringify({ profiles: [profile] })))
-        .mockResolvedValueOnce(
+    const fetchMock = vi.fn().mockImplementation((input: string, init?: RequestInit) => {
+      if (input === "/api/auth/account")
+        return Promise.resolve(new Response(JSON.stringify({ emailVerified: true })));
+      if (init?.method === "PUT")
+        return Promise.resolve(
           new Response(JSON.stringify({ error: "unavailable" }), { status: 503 }),
-        ),
-    );
+        );
+      return Promise.resolve(new Response(JSON.stringify({ profiles: [profile] })));
+    });
+    vi.stubGlobal("fetch", fetchMock);
     render(<ProfileArchive />);
+    await screen.findByRole("heading", { name: /Bem-vindo ao seu observatório/ });
+    fireEvent.click(screen.getByRole("button", { name: "Configurações" }));
     await screen.findByRole("heading", { name: "Lu" });
     fireEvent.click(screen.getByRole("button", { name: "Salvar e recalcular" }));
     await screen.findByText("Não foi possível recalcular. Revise os dados e tente novamente.");
     expect(screen.getByRole("button", { name: "Salvar e recalcular" })).toBeTruthy();
   });
 
+  it("deletes only the selected map after typed confirmation", async () => {
+    const fetchMock = vi.fn().mockImplementation((input: string, init?: RequestInit) => {
+      if (input === "/api/auth/account")
+        return Promise.resolve(new Response(JSON.stringify({ emailVerified: true })));
+      if (input === `/api/profiles/${profile.id}` && init?.method === "DELETE")
+        return Promise.resolve(new Response(null, { status: 204 }));
+      return Promise.resolve(new Response(JSON.stringify({ profiles: [profile] })));
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    render(<ProfileArchive />);
+    await screen.findByRole("heading", { name: /Bem-vindo ao seu observatório/ });
+    fireEvent.click(screen.getByRole("button", { name: "Configurações" }));
+    await screen.findByRole("heading", { name: "Lu" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Excluir este mapa" }));
+    const confirmButton = await screen.findByRole("button", {
+      name: "Excluir mapa definitivamente",
+    });
+    expect(confirmButton).toHaveProperty("disabled", true);
+    fireEvent.change(screen.getByLabelText(/Digite EXCLUIR MAPA/), {
+      target: { value: "EXCLUIR MAPA" },
+    });
+    fireEvent.click(confirmButton);
+
+    await vi.waitFor(() =>
+      expect(fetchMock).toHaveBeenCalledWith(`/api/profiles/${profile.id}`, { method: "DELETE" }),
+    );
+    expect(await screen.findByText("Seu arquivo ainda está vazio.")).toBeTruthy();
+  });
+
   it("turns empty and failed loads into directed states", async () => {
-    const fetchMock = vi
-      .fn()
-      .mockResolvedValueOnce(new Response(JSON.stringify({ profiles: [] })))
-      .mockResolvedValueOnce(new Response(JSON.stringify({ error: "failed" }), { status: 503 }));
+    let profileReads = 0;
+    const fetchMock = vi.fn().mockImplementation((input: string) => {
+      if (input === "/api/auth/account")
+        return Promise.resolve(new Response(JSON.stringify({ emailVerified: true })));
+      profileReads += 1;
+      return Promise.resolve(
+        profileReads === 1
+          ? new Response(JSON.stringify({ profiles: [] }))
+          : new Response(JSON.stringify({ error: "failed" }), { status: 503 }),
+      );
+    });
     vi.stubGlobal("fetch", fetchMock);
     const first = render(<ProfileArchive />);
     expect(await screen.findByText("Seu arquivo ainda está vazio.")).toBeTruthy();

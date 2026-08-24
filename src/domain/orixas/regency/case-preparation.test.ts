@@ -33,6 +33,16 @@ describe("regency evaluation case preparation", () => {
       prepareRegencyEvaluationCase(rawCase(), today, secret),
     );
   });
+
+  it("preserves unordered public labels without inventing roles", () => {
+    const prepared = prepareRegencyEvaluationCase(
+      { ...rawCase(), expected: { anyOf: ["orisa:xango", "orisa:oxossi"] } },
+      Temporal.PlainDate.from("2026-08-20"),
+      secret,
+    );
+
+    expect(prepared.expected).toEqual({ anyOf: ["orisa:xango", "orisa:oxossi"] });
+  });
 });
 
 function rawCase() {

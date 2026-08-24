@@ -1,4 +1,4 @@
-import { createHmac } from "node:crypto";
+import { createHmac, randomUUID } from "node:crypto";
 
 import { Prisma } from "@/generated/prisma/client";
 import { NextRequest } from "next/server";
@@ -17,6 +17,8 @@ import {
 } from "@/lib/security/account";
 import { findGuestSession, GUEST_COOKIE_NAME } from "@/lib/security/guest-session";
 import { apiJson } from "@/lib/security/headers";
+import { WELCOME_EMAIL_KIND, WELCOME_TEMPLATE_VERSION } from "@/lib/email/template";
+import { createAccountToken } from "@/lib/auth/account-token";
 
 export async function POST(request: NextRequest): Promise<Response> {
   if (!request.headers.get("content-type")?.startsWith("application/json"))
@@ -33,11 +35,28 @@ export async function POST(request: NextRequest): Promise<Response> {
       return apiJson({ error: "Muitas tentativas. Aguarde alguns minutos." }, { status: 429 });
     const guest = await findGuestSession(request, env.GUEST_SESSION_SECRET);
     const passwordHash = await hashPassword(credentials.password);
+    const now = new Date();
     const prisma = getPrisma();
     const created = await prisma.$transaction(async (tx) => {
       const user = await tx.user.create({
         data: { email: credentials.email, passwordHash },
         select: { id: true, email: true },
+      });
+      const tokenId = randomUUID();
+      const verification = createAccountToken(
+        tokenId,
+        "EMAIL_VERIFICATION",
+        env.AUTH_SESSION_SECRET,
+        now,
+      );
+      await tx.accountToken.create({
+        data: {
+          id: tokenId,
+          userId: user.id,
+          purpose: "EMAIL_VERIFICATION",
+          tokenHash: verification.tokenHash,
+          expiresAt: verification.expiresAt,
+        },
       });
       const claimed =
         guest === null
@@ -46,6 +65,15 @@ export async function POST(request: NextRequest): Promise<Response> {
               where: { guestSessionId: guest.id, userId: null },
               data: { guestSessionId: null, userId: user.id },
             });
+      await tx.emailOutbox.create({
+        data: {
+          userId: user.id,
+          kind: WELCOME_EMAIL_KIND,
+          templateVersion: WELCOME_TEMPLATE_VERSION,
+          idempotencyKey: `account-welcome:${user.id}:${WELCOME_TEMPLATE_VERSION}`,
+          accountTokenId: tokenId,
+        },
+      });
       return { user, claimedProfiles: claimed.count };
     });
     const session = await createAccountSession(created.user.id, env.AUTH_SESSION_SECRET);

@@ -1,0 +1,72 @@
+services:
+  postgres:
+    restart: unless-stopped
+
+  redis:
+    restart: unless-stopped
+
+  app:
+    restart: unless-stopped
+    networks: !override [backend, edge]
+    environment:
+      DEPLOYMENT_ENVIRONMENT: homologation
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      SMTP_SECURE: "false"
+      EMAIL_FROM: nao-responda@astroaxe.local
+      EMAIL_FROM_NAME: AstroAxe Homologação
+    labels: !override
+      traefik.enable: "true"
+      traefik.docker.network: "${COMPOSE_PROJECT_NAME:-astroaxe_homolog}_edge"
+      traefik.http.routers.astroaxe-homolog.rule: Host(`${ASTROAXE_HOST:-127.0.0.1}`)
+      traefik.http.routers.astroaxe-homolog.entrypoints: web
+      traefik.http.services.astroaxe-homolog.loadbalancer.server.port: "3000"
+      traefik.http.services.astroaxe-homolog.loadbalancer.healthcheck.path: /api/health/ready
+      traefik.http.services.astroaxe-homolog.loadbalancer.healthcheck.interval: 15s
+
+  worker:
+    restart: unless-stopped
+    environment:
+      DEPLOYMENT_ENVIRONMENT: homologation
+      SMTP_HOST: mailpit
+      SMTP_PORT: "1025"
+      SMTP_SECURE: "false"
+
+  traefik:
+    restart: unless-stopped
+    networks: !override [edge, homolog_public]
+    ports: !override
+      - "${ASTROAXE_HTTP_BIND:-127.0.0.1}:${ASTROAXE_HTTP_PORT:-3200}:80"
+
+  mailpit:
+    image: axllent/mailpit:v1.31.0
+    restart: unless-stopped
+    environment:
+      MP_DATABASE: /data/mailpit.db
+      MP_MAX_MESSAGES: "500"
+      MP_SMTP_BIND_ADDR: 0.0.0.0:1025
+      MP_UI_BIND_ADDR: 0.0.0.0:8025
+    volumes:
+      - mailpit_data:/data
+    ports:
+      - "${MAILPIT_BIND:-127.0.0.1}:${MAILPIT_PORT:-8025}:8025"
+    networks:
+      - backend
+      - homolog_public
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  postgres_data:
+    name: "${COMPOSE_PROJECT_NAME:-astroaxe_homolog}_postgres18_data"
+  redis_data:
+    name: "${COMPOSE_PROJECT_NAME:-astroaxe_homolog}_redis_data"
+  mailpit_data:
+    name: "${COMPOSE_PROJECT_NAME:-astroaxe_homolog}_mailpit_data"
+
+networks: !override
+  backend:
+    internal: true
+  edge:
+    internal: true
+  homolog_public:

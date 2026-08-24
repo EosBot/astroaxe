@@ -7,7 +7,7 @@ import { embeddedData } from "caelus/data-embedded";
 import type { PlanetPosition, SanitizedBirthData, WesternChartEnvelope } from "./contracts";
 
 export const ASTRO_ENGINE_VERSION = "caelus-0.24.1";
-export const ASTRO_CONFIG_VERSION = "western-2026-08-19";
+export const ASTRO_CONFIG_VERSION = "western-2026-08-23-extended-points";
 
 const CORE_BODIES = [
   "sun",
@@ -20,6 +20,9 @@ const CORE_BODIES = [
   "uranus",
   "neptune",
   "pluto",
+  "chiron",
+  "true_node",
+  "mean_lilith",
 ] as const;
 const engine = new Engine(embeddedData);
 
@@ -116,7 +119,7 @@ export function calculateWesternChart(
     p.second,
     data.latitude,
     data.longitude,
-    { houseSystem: data.houseSystem },
+    { houseSystem: data.houseSystem, bodies: [...CORE_BODIES] },
   );
   const planets = CORE_BODIES.flatMap((body) => {
     const value = chart.bodies[body];
