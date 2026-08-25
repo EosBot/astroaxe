@@ -1,5 +1,19 @@
 # Registro de mudanças do cálculo astrológico
 
+## Método autoral de regências v2 — pesquisa de 2026-08-25
+
+- **ANTES:** o scorer aceitava fatores astrológicos e temporais; a nova coleção local e a tabela
+  numerológica 1–16 ainda não possuíam contrato calculável nem independência por família.
+- **DEPOIS:** `regency-numerology-0.1.0-research` produz lentes 1–16 e 1–9 separadas;
+  `regency-matrix-0.4.0-v2-research` combina claims publicados, derivados e numerológicos; e
+  `regency-evidence-graph-0.1.0-research` registra obra, família, escola, confiança e conflitos.
+- **MOTIVO:** incorporar o novo estudo sem contar cópias como consenso, misturar algoritmos de
+  redução ou apagar divergências entre correspondências.
+- **IMPACTO:** scorer, robustez e avaliador aceitam features numerológicas auditáveis. A mudança
+  passa a alimentar o módulo autenticado por endpoint server-side. O navegador recebe somente nomes,
+  intensidade qualitativa, estabilidade categórica, versão pública e limites; a receita permanece
+  fora dos chunks cliente.
+
 ## Painel lunar avançado de 2026-08-24
 
 - **ANTES:** o Ciclo Lunar era uma leitura editorial estática de quatro fases, sem progressão

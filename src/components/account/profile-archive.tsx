@@ -252,7 +252,7 @@ export function ProfileArchive(): React.JSX.Element {
         <LunarIntelligencePanel profile={selected} profiles={profiles} />
       </div>
       <div className="account-view" hidden={view !== "orixas"}>
-        <OrisaResearchLab chart={selected.chart.natal} />
+        {view === "orixas" ? <OrisaResearchLab profileId={selected.id} /> : null}
       </div>
       <div
         className="account-view account-settings-view"

@@ -1,6 +1,6 @@
 import { regencyEvaluationDatasetSchema, evaluateRegencyConfig } from "./calibration";
-import { experimentalRegencyConfig } from "./experimental-config";
-import { experimentalRegencyMatrix } from "./experimental-matrix";
+import { regencyV2Config } from "./v2-config";
+import { regencyV2Matrix } from "./v2-matrix";
 import { regencyMatrix } from "./matrix";
 import { regencyResearchConfig } from "./research-config";
 import { assessRegencyPromotion, createRegencyDatasetManifest } from "./dataset-freeze";
@@ -13,18 +13,14 @@ export function runRegencyResearchBenchmark(rawDataset: unknown) {
 export function runRegencyComparativeBenchmark(rawDataset: unknown) {
   const dataset = regencyEvaluationDatasetSchema.parse(rawDataset);
   const baseline = evaluateVersions(dataset, regencyMatrix, regencyResearchConfig);
-  const experimental = evaluateVersions(
-    dataset,
-    experimentalRegencyMatrix,
-    experimentalRegencyConfig,
-  );
+  const candidate = evaluateVersions(dataset, regencyV2Matrix, regencyV2Config);
   return {
     dataset: createRegencyDatasetManifest(dataset),
     baseline,
-    experimental,
+    candidate,
     promotionAssessment: assessRegencyPromotion({
       baseline: baseline.validation,
-      experimental: experimental.validation,
+      experimental: candidate.validation,
     }),
   };
 }

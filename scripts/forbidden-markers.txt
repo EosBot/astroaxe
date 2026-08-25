@@ -1,0 +1,5 @@
+# Propriedade intelectual do método de regências: nunca enviar ao bundle cliente.
+claim:astrocentro:numerology
+regency-weights-0.1.0-v2-research
+source:astroaxe:role-lenses
+derived_symbolic_hypothesis

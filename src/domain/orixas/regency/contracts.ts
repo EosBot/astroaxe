@@ -32,7 +32,12 @@ export const correspondenceSourceSchema = z
     title: z.string().trim().min(1).max(300),
     url: z.url(),
     locator: z.string().trim().min(1).max(160),
-    evidenceKind: z.enum(["community_primary", "scholarly_analysis", "institutional_inventory"]),
+    evidenceKind: z.enum([
+      "community_primary",
+      "scholarly_analysis",
+      "institutional_inventory",
+      "product_editorial",
+    ]),
   })
   .strict();
 
@@ -55,6 +60,7 @@ const correspondenceClaimBaseSchema = z
       "angularity",
       "planetary_day",
       "planetary_hour",
+      "birth_number",
     ]),
     values: z.array(z.string().trim().min(1).max(40)).min(1).max(12),
     manifestation: z
@@ -86,9 +92,17 @@ const derivedCorrespondenceClaimSchema = correspondenceClaimBaseSchema.extend({
   algorithmWeight: z.null(),
 });
 
+const numerologicalMappingClaimSchema = correspondenceClaimBaseSchema.extend({
+  evidenceTrack: z.literal("numerological_mapping"),
+  sourceId: z.string().trim().min(1).max(120),
+  lensId: z.string().regex(/^[a-z0-9-]+$/),
+  algorithmWeight: z.null(),
+});
+
 export const correspondenceClaimSchema = z.discriminatedUnion("evidenceTrack", [
   publishedCorrespondenceClaimSchema,
   derivedCorrespondenceClaimSchema,
+  numerologicalMappingClaimSchema,
 ]);
 
 export const regencyMatrixSchema = z
@@ -112,7 +126,7 @@ export const regencyMatrixSchema = z
           message: "A entidade da correspondencia deve existir na ontologia.",
         });
       const claimSourceIds =
-        claim.evidenceTrack === "published_correspondence" ? [claim.sourceId] : claim.sourceIds;
+        claim.evidenceTrack === "derived_symbolic_hypothesis" ? claim.sourceIds : [claim.sourceId];
       if (claimSourceIds.some((sourceId) => !sourceIds.has(sourceId)))
         context.addIssue({
           code: "custom",

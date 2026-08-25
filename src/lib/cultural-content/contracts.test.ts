@@ -4,7 +4,7 @@ import {
   culturalEntrySlugSchema,
   publicCulturalEntrySchema,
 } from "@/lib/cultural-content/contracts";
-import { SYMBOLIC_RESONANCE_DISCLAIMER } from "@/lib/orixas/contracts";
+import { AUTHORIAL_REGENCY_DISCLAIMER } from "@/lib/orixas/contracts";
 
 describe("cultural content contracts", () => {
   it("accepts traceable reviewed public content", () => {
@@ -26,7 +26,7 @@ describe("cultural content contracts", () => {
 function validEntry() {
   return {
     kind: "reviewed_cultural_content",
-    disclaimer: SYMBOLIC_RESONANCE_DISCLAIMER,
+    disclaimer: AUTHORIAL_REGENCY_DISCLAIMER,
     slug: "figura-simbolica",
     displayName: "Figura simbólica",
     category: "orisa",

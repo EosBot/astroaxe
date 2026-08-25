@@ -5,13 +5,13 @@ import { CulturalArchive } from "@/components/cultural-content/cultural-archive"
 export const metadata: Metadata = {
   title: "Acervo cultural",
   description:
-    "Textos culturais longos, versionados e rastreáveis, com fontes e limites de uso explícitos.",
+    "Corpus de pesquisa e leituras culturais versionadas, com autoria, fontes e limites explícitos.",
   alternates: { canonical: "/acervo-cultural" },
   openGraph: {
     type: "website",
     title: "Acervo cultural — AstroAxe",
     description:
-      "Textos culturais longos, versionados e rastreáveis, com fontes e limites de uso explícitos.",
+      "Corpus de pesquisa e leituras culturais versionadas, com autoria, fontes e limites explícitos.",
     url: "/acervo-cultural",
   },
 };

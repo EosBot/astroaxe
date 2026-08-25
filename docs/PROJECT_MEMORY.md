@@ -1,5 +1,58 @@
 # Memória canônica do projeto
 
+## Atualização 2026-08-25 — aplicação do método v2 e revisão pública
+
+- A área autenticada de Orixás passou da matriz baseline para `regency-matrix-0.4.0-v2-research`
+  com a configuração v2 composta e feature numerológica derivada da data natal já armazenada.
+- A interface apresenta intensidades qualitativas, não percentuais que possam ser confundidos com
+  certeza. A Tríade continua podendo se abster quando a convergência não fecha um papel.
+- `/metodologia` agora publica entradas, controles de qualidade, versionamento e limites, preservando
+  matriz, coeficientes, limiares, regras de desempate e corpus como propriedade intelectual.
+- O benchmark `regency:evaluate-v2` substitui o comando derivado antigo. O contrato sem consumidor
+  de “ressonância simbólica” e o diagnóstico HTML datado foram removidos como código/artefato morto.
+- Homepage, onboarding, dashboard, acervo, metadados e rodapé foram alinhados ao posicionamento v2.
+  Nenhuma prova social, precisão espiritual ou acurácia sem amostra foi inventada.
+- Matriz e configuração v2 foram marcadas `server-only`; a conta busca um DTO mínimo na rota
+  autenticada de regência. O gate pós-build final examinou 61 chunks cliente contra quatro
+  marcadores proprietários e não encontrou vazamento.
+- Checkpoint observado: 305 testes em 88 arquivos passaram; cobertura global de 86,17% em
+  statements e 88,45% em linhas; typecheck, lint, formatação, build de produção e Quality Gate do
+  SonarQube passaram. O primeiro build encontrou cache webpack corrompido; a repetição com cache
+  isolado compilou integralmente, confirmando que não era regressão da aplicação.
+- O Acervo Cultural passou a distinguir visualmente o corpus técnico ampliado dos quatro verbetes
+  culturalmente publicados. A página mostra apenas métricas agregadas da pesquisa e preserva a
+  coleção privada, a matriz e os critérios proprietários fora da resposta pública.
+
+## Atualização 2026-08-25 — início do método autoral v2
+
+- O responsável autorizou cruzamento amplo do acervo `E:\Ocultismo` com astrologia, numerologia,
+  Odù, Ifá, Umbandas, Candomblé, Cabala e sistemas cerimoniais para criar um novo método autoral.
+- O desenho implementado está em `docs/research/orixa-method-v2/report-source.md`: grafo de
+  evidências, facetas, famílias independentes, canais numerológicos e desempate por estabilidade.
+- O inventário encontrou 801 arquivos, 737 hashes únicos e 64 duplicatas exatas. Há 124 PDFs únicos;
+  123 possuem artefato de extração por página e 121 geraram texto útil; a única renderização ausente
+  tem outra edição da mesma obra extraída, além dos documentos Office/ODT/RTF/TXT.
+- Relações preliminares fortes incluem Ogum/Marte, Oxalá/Sol e Xangô/Júpiter em duas famílias. O
+  mesmo trabalho do Templo da Pena contém alternativas Oxóssi/Vênus e Oxóssi/Mercúrio, reforçando a
+  necessidade de facetas e conflito explícito.
+- Foram adicionados cálculo numerológico puro, matriz 1–16, matriz/config v2, suporte no avaliador e
+  robustez, e grafo `regency-evidence-graph-0.1.0-research`. Nenhum resultado público mudou. O
+  próximo marco é ampliar locators/OCR e validar pesos em dataset consentido congelado.
+
+## Atualização 2026-08-24 — numerologia, Odù e Ifá
+
+- O estudo das três páginas fornecidas, literatura acadêmica e acervo privado `E:\Ocultismo` foi
+  registrado em `docs/research/orixa-numerology/report-source.md`.
+- Soma decimal da data, associação signo→Orixá e tabela por dia da semana são lentes editoriais
+  distintas. A soma 1–16 agora pode entrar somente no scorer v2 de pesquisa e não revela Odù de Ifá.
+- A variante 1–16 possui viés estrutural: após reduzir totais acima de 16, os resultados tendem a
+  1–9; qualquer protótipo exige auditoria de distribuição e versão própria.
+- Fontes divergem dentro das próprias Umbandas: uma etnografia registra numerologia composta em
+  uma casa, enquanto Rubens Saraceni rejeita que a data natal identifique Orixá regente.
+- Nenhum código, endpoint, cache ou resultado público foi alterado. Próximo passo cultural é obter
+  genealogia da “Cabala de Odù” e revisão por praticantes de correntes distintas e por especialista
+  de Ifá/iorùbá.
+
 ## Atualização 2026-08-24 — cadernos imersivos personalizados
 
 - Nodos Lunares, Mapa do Amor, Mapa Sexual e Mapa Profissional ganharam cadernos longos com índice,
@@ -28,7 +81,7 @@
 - Próximo marco: área Lua com progressões secundárias, Retorno Lunar, trânsitos lunares, fase natal,
   sinastria lunar e Lua fora de curso.
 
-Atualizada em **23 de agosto de 2026**, no fuso `America/Sao_Paulo`. Este é o ponto de retomada
+Atualizada em **25 de agosto de 2026**, no fuso `America/Sao_Paulo`. Este é o ponto de retomada
 para novas sessões de desenvolvimento. Ele registra o estado observado no workspace local; não
 representa commit, CI, revisão externa ou deploy em produção.
 

@@ -1,16 +1,18 @@
 # AstroAxe — Contexto de Product Marketing
 
-**Versão do documento:** v1
+**Versão do documento:** v2
 
-**Última atualização:** 2026-08-19
+**Última atualização:** 2026-08-25
 
-**Status:** contexto inicial; mensagens e preços são hipóteses até pesquisa com usuários
+**Status:** posicionamento vigente; preços continuam hipóteses até pesquisa com usuários
 
 ## Visão do produto
 
-**One-liner:** Astrologia personalizada com céu calculado, linguagem brasileira e ressonâncias de Axé culturalmente cuidadas.
+**One-liner:** Seu céu calculado, explicado com clareza e conectado a uma leitura autoral brasileira.
 
-**O que faz:** AstroAxe calcula mapa natal e trânsitos, explica o que está ativo agora e transforma a leitura em uma pequena prática de reflexão. Uma camada editorial aproxima símbolos astrológicos de arquétipos de Orixás sem alegar determinar identidade religiosa.
+**O que faz:** AstroAxe calcula mapa natal, ciclos e trânsitos, explica o que está ativo e apresenta
+uma Tríade de Regências pelo método autoral AstroAxe. A leitura não confirma identidade religiosa
+nem substitui consulta tradicional.
 
 **Categoria:** aplicativo de astrologia personalizada, autoconhecimento e ritual diário.
 
@@ -32,7 +34,8 @@ Para brasileiros que gostam de astrologia, mas querem ir além do horóscopo gen
 
 1. **Clareza:** primeiro insight em linguagem simples; técnica disponível sob demanda.
 2. **Rastreabilidade:** placements, trânsito, duração, versão e autoria acessíveis.
-3. **Método rastreável:** regências calculadas com versão, fontes, fatores determinantes e acurácia observada.
+3. **Método verificável:** versão, classes de entrada, fatores explicativos e limites visíveis; matriz,
+   pesos e regras proprietárias protegidos.
 4. **Ritual possível:** uma ação pequena, opcional e não fatalista.
 5. **Brasil real:** português natural, referências locais e estética própria.
 
@@ -212,4 +215,6 @@ Métricas prioritárias:
 
 ## Changelog
 
+- **v2 (2026-08-25):** incorpora a Tríade v2 aplicada, linguagem pública sem percentuais de certeza
+  e política de transparência técnica com proteção da propriedade intelectual.
 - **v1 (2026-08-19):** contexto inicial consolidado com posicionamento, audiência, ritual diário, oferta em dois planos, benchmarks atuais e limites culturais/IA.

@@ -1,11 +1,13 @@
 // @vitest-environment jsdom
 
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { AmbientSoundControl } from "./ambient-sound-control";
 
 describe("AmbientSoundControl", () => {
+  beforeEach(() => localStorage.clear());
+
   afterEach(() => {
     cleanup();
     vi.unstubAllGlobals();

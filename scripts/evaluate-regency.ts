@@ -6,11 +6,11 @@ import {
 } from "../src/domain/orixas/regency/benchmark";
 
 const MAX_DATASET_BYTES = 10 * 1024 * 1024;
-const comparative = process.argv[2] === "--experimental";
+const comparative = process.argv[2] === "--v2";
 const datasetPath = process.argv[comparative ? 3 : 2];
 
 if (datasetPath === undefined)
-  fail("Uso: npm run regency:evaluate -- <dataset.json> [ou regency:evaluate-derived]");
+  fail("Uso: npm run regency:evaluate -- <dataset.json> [ou regency:evaluate-v2]");
 
 try {
   const file = await readFile(datasetPath);

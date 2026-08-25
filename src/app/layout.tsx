@@ -11,14 +11,14 @@ export const metadata: Metadata = {
   metadataBase: getSiteUrl(),
   applicationName: "AstroAxe",
   title: { default: "AstroAxe — Observatório Ritual", template: "%s — AstroAxe" },
-  description: "Astrologia calculada, leituras rastreáveis e cultura contextualizada.",
+  description: "Mapa natal calculado, leituras explicáveis e Tríade de Regências autoral.",
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     locale: "pt_BR",
     siteName: "AstroAxe",
     title: "AstroAxe — Observatório Ritual",
-    description: "Entenda seu céu de hoje, saiba de onde a leitura veio e escolha como caminhar.",
+    description: "Veja seu céu calculado, entenda os movimentos do momento e explore sua leitura.",
     url: "/",
   },
 };
@@ -32,7 +32,7 @@ export default function RootLayout({ children }: Readonly<{ children: ReactNode 
     name: "AstroAxe",
     url: getSiteUrl().href,
     inLanguage: "pt-BR",
-    description: "Astrologia calculada, leituras rastreáveis e cultura contextualizada.",
+    description: "Mapa natal calculado, leituras explicáveis e método autoral de regências.",
   };
   return (
     <html lang="pt-BR">

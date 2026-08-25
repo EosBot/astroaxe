@@ -5,7 +5,7 @@ import {
   type PublicCulturalCollection,
   type PublicCulturalEntry,
 } from "@/lib/cultural-content/contracts";
-import { SYMBOLIC_RESONANCE_DISCLAIMER } from "@/lib/orixas/contracts";
+import { AUTHORIAL_REGENCY_DISCLAIMER } from "@/lib/orixas/contracts";
 
 export async function findPublishedCulturalEntry(
   prisma: PrismaClient,
@@ -99,7 +99,7 @@ function serializePublicEntry(entry: EntryWithPublicationRelations): PublicCultu
 
   return publicCulturalEntrySchema.parse({
     kind: "reviewed_cultural_content",
-    disclaimer: SYMBOLIC_RESONANCE_DISCLAIMER,
+    disclaimer: AUTHORIAL_REGENCY_DISCLAIMER,
     slug: entry.slug,
     displayName: entry.displayName,
     category: entry.category,

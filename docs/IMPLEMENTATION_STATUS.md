@@ -1,6 +1,6 @@
 # Estado de implementação e handoff
 
-Atualizado em 23 de agosto de 2026. Este documento registra o estado observável do workspace; não
+Atualizado em 25 de agosto de 2026. Este documento registra o estado observável do workspace; não
 representa deploy, revisão humana externa ou commit Git.
 
 O ponto curto de retomada entre sessões é `docs/PROJECT_MEMORY.md`.
@@ -13,7 +13,7 @@ O ponto curto de retomada entre sessões é `docs/PROJECT_MEMORY.md`.
 | 1 — Fundação           | Concluída                                    | Docker, PostgreSQL/pgvector, Redis, Traefik, health, Sonar e restore testado | Endurecer e medir a operação containerizada                                 |
 | 2 — Motor              | Concluída no escopo natal e trânsitos atuais | Cálculo determinístico, hora desconhecida, golden tests, cache e janelas     | Ampliar efemérides/regras somente com snapshots e bump de versão            |
 | 3 — Conta e mapa       | Concluída no MVP local                       | Guest-first, autenticação, ownership, arquivo, edição, histórico e E2E       | Exercitar continuamente os fluxos completos em desktop e mobile             |
-| 4 — Conteúdo           | Em reformulação autorizada                   | Workflow editorial, corpus público e motor experimental auditável            | Calibrar e validar a Tríade com casos elegíveis congelados                  |
+| 4 — Conteúdo           | V2 aplicada, validação em curso              | Workflow editorial, corpus público e Tríade v2 auditável                     | Calibrar com casos elegíveis congelados e publicar métricas suficientes     |
 | 5 — Ritual e IA        | Parcial avançada                             | Tempo do Céu, diário privado versionado e exportável; sem LLM em runtime     | Histórico longitudinal e RAG opcional quando houver chave/corpus autorizado |
 | 6 — Receita            | Não iniciada                                 | Hipóteses documentadas, sem cobrança simulada                                | Free/Pro, limites, Stripe e webhooks após decisões e credenciais de teste   |
 | 7 — Polimento/operação | Parcial avançada                             | Acessibilidade, E2E, SEO, backup/restore, métricas/alertas locais e gate     | Destino externo de alertas e SLOs do ambiente real                          |
@@ -59,7 +59,10 @@ O ponto curto de retomada entre sessões é `docs/PROJECT_MEMORY.md`.
   com ao menos 1.800 caracteres para qualquer novo verbete `PUBLISHED`.
 - `GET /api/cultural-content` lista apenas a versão publicada mais recente de cada slug. A página
   `/acervo-cultural` entrega o texto integral, autoria, aprovação, versão, claims, locators, fontes
-  e a proveniência cultural, ainda sem ligar o acervo ao cálculo da Tríade de Regências.
+  e a proveniência cultural. A abertura também apresenta o inventário agregado do corpus ampliado,
+  separando material técnico de verbetes culturalmente revisados e sem expor a coleção privada ou
+  a receita proprietária. O acervo informa o grafo de pesquisa; conteúdo publicado não recebe peso
+  automático por simples presença no corpus.
 
 ### Início do Tempo do Céu
 
@@ -105,15 +108,14 @@ O ponto curto de retomada entre sessões é `docs/PROJECT_MEMORY.md`.
 - O conteúdo não entra no logger, analytics, IA, MCP ou corpus editorial. As APIs validam JSON,
   mesma origem nas mutações, Zod e ownership no servidor.
 
-### Motor experimental de regências
+### Método autoral de regências v2
 
-- Os 25 Orixás do catálogo possuem atributos de pesquisa e 106 correspondências candidatas
-  derivadas, das quais 23 exigem convergência de múltiplos atributos.
-- A matriz experimental mantém correspondências publicadas e hipóteses derivadas em trilhas
-  distintas; somente as derivadas recebem o multiplicador explícito de convergência.
-- O benchmark compara baseline e experimental nas mesmas partições sem alterar endpoints ou
-  resultados públicos.
-- O avaliador `regency-evaluation-0.3.0` mede top-1, top-3, tríade exata, intervalos de Wilson de 95%,
+- O módulo autenticado usa a composição v2: fatores natais, canais temporais disponíveis,
+  numerologia versionada e correspondências culturais com proveniência separada por escola.
+- O grafo distingue arquivo, obra, família de fonte e escola; cópias e conversões não são contadas
+  como consenso independente. Conflitos permanecem dados auditáveis.
+- O benchmark compara o baseline congelado com o candidato v2 nas mesmas partições.
+- O avaliador `regency-evaluation-0.4.0` mede top-1, top-3, tríade exata, intervalos de Wilson de 95%,
   abstenções, matrizes de confusão e cortes por hora, método temporal e proveniência.
 - A mesma impressão digital documental não pode atravessar calibração e validação. Casos reais não
   foram inventados nem incorporados ao repositório; a próxima dependência é coleta elegível e
@@ -122,9 +124,14 @@ O ponto curto de retomada entre sessões é `docs/PROJECT_MEMORY.md`.
   promoção exige amostra mínima, ausência de perda top-1/top-3 e limite de aumento de abstenções;
   mesmo quando passa, a versão fica somente elegível para revisão cultural, nunca ativa
   automaticamente.
-- A rota pública `/metodologia` apresenta a cadeia mapa → fatores → correspondências → score →
-  decisão, versões técnicas, critérios de abstenção, política de comparação e o estado ainda não
-  validado. Ela não publica acurácia inexistente nem ativa a Tríade no resultado do usuário.
+- A rota pública `/metodologia` apresenta entradas, controles, versionamento e limites sem publicar
+  matriz, pesos, limiares, regras de desempate ou corpus proprietário.
+- Percentuais normalizados deixaram a interface: o usuário vê intensidade relativa em linguagem
+  qualitativa, evitando leitura indevida como certeza espiritual.
+- O cálculo v2 roda somente no servidor pela rota autenticada
+  `GET /api/profiles/{profileId}/regency`, com ownership e resposta `private, no-store`. O DTO não
+  contém claims, regras, pesos, contribuições ou versão interna da matriz. `server-only` impede que
+  matriz/configuração sejam importadas por componentes cliente.
 
 ## Migrations aplicadas no banco PostgreSQL 18 ativo
 

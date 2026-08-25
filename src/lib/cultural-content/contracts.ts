@@ -4,7 +4,7 @@ import {
   evidenceKindSchema,
   sacredCategorySchema,
   safePublicCopySchema,
-  SYMBOLIC_RESONANCE_DISCLAIMER,
+  AUTHORIAL_REGENCY_DISCLAIMER,
 } from "@/lib/orixas/contracts";
 
 export const culturalEntrySlugSchema = z
@@ -47,7 +47,7 @@ const publicCulturalClaimSchema = z
 export const publicCulturalEntrySchema = z
   .object({
     kind: z.literal("reviewed_cultural_content"),
-    disclaimer: z.literal(SYMBOLIC_RESONANCE_DISCLAIMER),
+    disclaimer: z.literal(AUTHORIAL_REGENCY_DISCLAIMER),
     slug: culturalEntrySlugSchema,
     displayName: z.string().trim().min(1).max(120),
     category: sacredCategorySchema,

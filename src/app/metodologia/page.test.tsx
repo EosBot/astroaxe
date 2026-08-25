@@ -8,14 +8,18 @@ import MethodologyPage, { metadata } from "./page";
 describe("methodology page", () => {
   afterEach(cleanup);
 
-  it("publishes versions, validation status and the discreet authorial disclaimer", () => {
+  it("publishes the verifiable contract without exposing proprietary mechanics", () => {
     render(<MethodologyPage />);
     expect(
-      screen.getByRole("heading", { name: "Da posição no céu à decisão explicável." }),
+      screen.getByRole("heading", {
+        name: "Um método rastreável, sem transformar profundidade em caixa-preta.",
+      }),
     ).toBeTruthy();
-    expect(screen.getByText(/regency-scorer-0.5.0-research/)).toBeTruthy();
-    expect(screen.getByText(/nenhuma porcentagem de acurácia é publicada/i)).toBeTruthy();
-    expect(screen.getByText(/Método autoral AstroAxe; versão de pesquisa/)).toBeTruthy();
+    expect(
+      screen.getByText(/A matriz, os pesos e as regras proprietárias permanecem protegidos/),
+    ).toBeTruthy();
+    expect(screen.getByText(/não porcentagem de certeza espiritual/)).toBeTruthy();
+    expect(screen.queryByText(/regency-scorer/)).toBeNull();
     expect(metadata.alternates).toEqual({ canonical: "/metodologia" });
   });
 });

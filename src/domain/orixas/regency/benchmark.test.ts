@@ -17,7 +17,7 @@ describe("regency research benchmark", () => {
     expect(result.calibration.datasetVersion).toBe("synthetic-benchmark-1");
   });
 
-  it("compares the frozen baseline with the derived experimental versions", () => {
+  it("compares the frozen baseline with the composed v2 candidate", () => {
     const result = runRegencyComparativeBenchmark({
       version: "synthetic-benchmark-1",
       cases: [
@@ -27,11 +27,11 @@ describe("regency research benchmark", () => {
     });
 
     expect(result.baseline.matrixVersion).toBe("regency-matrix-0.1.0-research");
-    expect(result.experimental).toMatchObject({
-      matrixVersion: "regency-matrix-0.2.0-derived-research",
-      configVersion: "regency-weights-0.4.0-derived-research",
+    expect(result.candidate).toMatchObject({
+      matrixVersion: "regency-matrix-0.4.0-v2-research",
+      configVersion: "regency-weights-0.1.0-v2-research",
     });
-    expect(result.experimental.validation.sampleSize).toBe(result.baseline.validation.sampleSize);
+    expect(result.candidate.validation.sampleSize).toBe(result.baseline.validation.sampleSize);
     expect(result.dataset).toMatchObject({
       datasetVersion: "synthetic-benchmark-1",
       totalCases: 2,

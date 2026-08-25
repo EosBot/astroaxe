@@ -433,6 +433,31 @@ afirmações não podem integrar a base cultural como fatos religiosos:
 - capacidade de um modelo estatístico validar jogo de búzios, Ifá, Fá,
   iniciação ou experiência mediúnica.
 
+## Numerologia popular, data natal e tabelas zodiacais
+
+O estudo completo e a proposta de modelagem estão em
+[`../research/orixa-numerology/report-source.md`](../research/orixa-numerology/report-source.md).
+
+- Astrocentro, “Numerologia dos Orixás”: `discovery_only` e `product-editorial`. Documenta uma
+  redução decimal da data para 1–16 e uma tabela Odù/Orixá sem genealogia, casa ou bibliografia
+  publicadas. Não sustenta Orixá de cabeça nem Odù de Ifá.
+- Terra, “Descubra qual Orixá está ligado ao seu signo”: `discovery_only` e
+  `product-editorial`. A própria página chama a tabela de associação simbólica e remete a
+  identificação espiritual aos búzios.
+- Imaginário Brasileiro, “Como saber o meu Orixá?”: `discovery_only`. Combina teste não
+  documentado, signo, dia da semana e recomendação de consulta tradicional; não possui método ou
+  proveniência suficientes para claims.
+- _Etnomatemática e Candomblé: a mística numérica por trás dos ritos_: `REFERENCE_ONLY` até revisão
+  metodológica e cultural. Registra a soma da data, mas não demonstra que a tabela seja universal.
+- Alice Macedo, tese USP, p. 162: `CLAIM_ELIGIBLE` somente para afirmar que a casa de Umbanda
+  estudada combinava numerologia de nome/data com outras leituras. Não generalizar o procedimento.
+- Rubens Saraceni, _As Sete Linhas de Umbanda_, pp. 48–49: acervo privado e `REFERENCE_ONLY` até
+  confirmar edição e acesso elegível. Na corrente do autor, contradiz a identificação do Orixá
+  regente pela data natal.
+
+Essas fontes estabelecem divergência, não convergência. “Cabala de Odù” permanece termo de fonte a
+ser genealogicamente investigado e não uma tradição única cadastrada pelo produto.
+
 Esses itens podem ser estudados como construções editoriais, comparações ou
 crenças situadas, mas precisam do tipo de claim adequado e jamais devem ser
 apresentados como consenso tradicional.

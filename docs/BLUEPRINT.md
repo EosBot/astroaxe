@@ -291,7 +291,7 @@ Não usar “precisão sentida” ou dependência diária como North Star. A mé
   credenciais. Quatro verbetes longos estão publicados: três contextos IPHAN e uma leitura situada
   do capítulo VI de _Yoruba Legends_ (1929), acompanhada de crítica ao enquadramento colonial do
   prefácio. A página `/acervo-cultural` mostra texto, versão, autoria, revisão, claims e fontes.
-- A existência de quatro textos aprovados não ativa sozinha a Tríade. O novo método direto foi
+- A existência de quatro textos aprovados não determina sozinha a Tríade. O método direto foi
   autorizado em 20 de agosto de 2026 e ainda exige ontologia, matriz versionada, dataset de
   calibração, validação separada e testes golden antes da publicação.
 - O workflow editorial possui identidade explicitamente vinculada a uma conta e papéis de autoria,

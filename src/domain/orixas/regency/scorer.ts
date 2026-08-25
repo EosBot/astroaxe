@@ -3,6 +3,7 @@ import { z } from "zod";
 import { regencyMatrixSchema, type RegencyMatrix } from "./contracts";
 import type { RegencyAstrologicalFeature } from "./features";
 import type { RegencyTemporalFeature } from "./temporal";
+import type { RegencyNumerologicalFeature } from "./numerology";
 import { regencyDecisionPolicySchema } from "./decision-policy";
 
 export const REGENCY_SCORER_VERSION = "regency-scorer-0.5.0-research";
@@ -22,6 +23,7 @@ const featureCategorySchema = z.enum([
   "planetary_day",
   "planetary_hour",
   "solar_segment",
+  "birth_number",
 ]);
 
 export const regencyScoringConfigSchema = z
@@ -46,6 +48,7 @@ export const regencyScoringConfigSchema = z
               "ceremonial",
               "angelical",
               "goetia",
+              "numerology",
               "product_hypothesis",
             ]),
           })
@@ -89,6 +92,7 @@ export const regencyScoringConfigSchema = z
               "angularity",
               "planetary_day",
               "planetary_hour",
+              "birth_number",
             ]),
             featureCategory: featureCategorySchema,
             matchMode: z.enum(["direct", "planetary_resonance"]).optional(),
@@ -147,7 +151,8 @@ export const regencyScoringConfigSchema = z
 export type RegencyRole = z.infer<typeof roleSchema>;
 export type RegencyScoringConfig = z.infer<typeof regencyScoringConfigSchema>;
 
-type ScorableFeature = RegencyAstrologicalFeature | RegencyTemporalFeature;
+type ScorableFeature =
+  RegencyAstrologicalFeature | RegencyTemporalFeature | RegencyNumerologicalFeature;
 
 export interface RegencyContribution {
   ruleId: string;
@@ -189,12 +194,14 @@ export function scoreRegencies(input: {
   config: RegencyScoringConfig;
   astrologicalFeatures: RegencyAstrologicalFeature[];
   temporalFeatures?: RegencyTemporalFeature[];
+  numerologicalFeatures?: RegencyNumerologicalFeature[];
 }): RegencyScoringResult {
   const matrix = regencyMatrixSchema.parse(input.matrix);
   const config = regencyScoringConfigSchema.parse(input.config);
   const features: ScorableFeature[] = [
     ...input.astrologicalFeatures,
     ...(input.temporalFeatures ?? []),
+    ...(input.numerologicalFeatures ?? []),
   ];
   const candidates = matrix.entities.filter((entity) => entity.eligibleForRegency);
   if (candidates.length < 3)
@@ -267,7 +274,7 @@ function contributionsForClaim(
   );
   return applicableRules.flatMap((rule) =>
     features
-      .filter((feature) => matches(rule, claim.values, feature))
+      .filter((feature) => matches(rule, claim, feature))
       .map((feature) => contribution(rule, claim, feature)),
   );
 }
@@ -280,7 +287,7 @@ function compareContributions(left: RegencyContribution, right: RegencyContribut
 
 function matches(
   rule: RegencyScoringConfig["rules"][number],
-  values: string[],
+  claim: RegencyMatrix["claims"][number],
   feature: ScorableFeature,
 ): boolean {
   if (feature.category !== rule.featureCategory) return false;
@@ -292,10 +299,15 @@ function matches(
     feature.scope !== rule.temporalScope
   )
     return false;
-  if (rule.matchMode === "planetary_resonance") return values.includes(feature.value);
+  if (
+    claim.evidenceTrack === "numerological_mapping" &&
+    (!("lensId" in feature) || feature.lensId !== claim.lensId)
+  )
+    return false;
+  if (rule.matchMode === "planetary_resonance") return claim.values.includes(feature.value);
   if (rule.claimFactor === "planet")
-    return "body" in feature && feature.body !== undefined && values.includes(feature.body);
-  return values.includes(feature.value);
+    return "body" in feature && feature.body !== undefined && claim.values.includes(feature.body);
+  return claim.values.includes(feature.value);
 }
 
 function contribution(

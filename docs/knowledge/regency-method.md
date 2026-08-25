@@ -213,6 +213,27 @@ cultural e sem esconder a origem dos pesos ou da política.
 público muda enquanto a integração ao produto permanecer bloqueada até validação cultural e
 calibração.
 
+### Incremento numerológico e grafo v2
+
+A pesquisa v2 acrescenta `birth_number` como fator e exige `lensId` tanto na feature quanto no
+claim. Isso impede que a raiz digital 1–9 acione por acidente uma tabela editorial 1–16. O snapshot
+guarda soma bruta e trilha de redução; não depende de relógio nem de hora natal.
+
+A matriz `regency-matrix-0.4.0-v2-research` compõe a base publicada, hipóteses simbólicas e a tabela
+numerológica sem alterar o runtime público. O grafo `regency-evidence-graph-0.1.0-research` separa
+artefato, obra, família e escola: republicações não aumentam abrangência independente, e relações
+concorrentes permanecem como conflitos explícitos. O avaliador e a análise leave-one-school-out
+aceitam as features numerológicas para futuros benchmarks consentidos.
+
+`ANTES`: data natal não era uma feature do scorer e repetição documental não tinha contrato próprio.
+
+`DEPOIS`: duas lentes determinísticas, matriz composta, faceta Oxaguiã e grafo de evidência são
+executáveis e cobertos por testes golden, de distribuição, conflito, deduplicação e estabilidade.
+
+`MOTIVO`: incorporar o estudo numerológico e o corpus local com cálculo reproduzível e proveniência.
+
+`IMPACTO`: resultados só mudam quando a configuração v2 de pesquisa é escolhida explicitamente.
+
 ### Geração de correspondências 0.2.0
 
 A cobertura é ampliada por uma cadeia de três artefatos, nunca por uma tabela opaca:
@@ -281,22 +302,20 @@ pesos continuam hipóteses de calibração e não alteram a configuração públ
 O comando abaixo avalia baseline e experimental sobre exatamente as mesmas partições:
 
 ```bash
-npm run regency:evaluate-derived -- caminho/seguro/dataset.json
+npm run regency:evaluate-v2 -- caminho/seguro/dataset.json
 ```
 
 `ANTES`: o benchmark aceitava apenas a matriz publicada incompleta, e as hipóteses geradas não podiam
 ser pontuadas.
 
-`DEPOIS`: a matriz `regency-matrix-0.2.0-derived-research` e a configuração
-`regency-weights-0.4.0-derived-research` podem ser comparadas lado a lado com o baseline, usando o
-scorer `regency-scorer-0.5.0-research`.
+`DEPOIS`: o candidato v2 composto pode ser comparado lado a lado com o baseline congelado usando o
+mesmo avaliador e as mesmas partições.
 
 `MOTIVO`: medir se a geração amplia cobertura e acurácia antes de promover qualquer correspondência
 ao produto.
 
-`IMPACTO`: nenhum endpoint ou resultado público passa a usar a matriz experimental. A promoção
-permanece condicionada a revisão cultural, conjunto de validação congelado e ganho mensurável por
-papel sem aumento indevido de falsas atribuições.
+`IMPACTO`: o módulo autenticado passa a usar o candidato v2; promoção para versão validada continua
+condicionada a revisão cultural, conjunto congelado e ganho mensurável.
 
 ### Avaliação e calibração 0.1.0
 
@@ -327,7 +346,7 @@ de bloquear vazamento documental entre as duas partições.
 ou ganho artificial causado pela reutilização de casos.
 
 `IMPACTO`: o formato do relatório de pesquisa ganha campos; scorer, pesos, matriz ativa, endpoints e
-resultados públicos permanecem inalterados. Métricas reais continuam indisponíveis até a entrada de
+o módulo autenticado usa o candidato v2. Métricas reais continuam indisponíveis até a entrada de
 casos elegíveis, consentidos ou publicamente verificáveis, em armazenamento restrito.
 
 ### Congelamento e decisão comparativa 0.1.0
@@ -338,7 +357,7 @@ o fingerprint; qualquer mudança de conteúdo, rótulo ou feature muda o digest.
 nomes, URLs, locators, nascimento, localização nem IDs individuais.
 
 A política `regency-promotion-policy-0.1.0-research` exige pelo menos 30 rótulos de validação para
-frente e 30 para cabeça. Em cada papel obrigatório, a matriz experimental não pode reduzir top-1 nem
+frente e 30 para cabeça. Em cada papel obrigatório, o candidato v2 não pode reduzir top-1 nem
 top-3 e pode elevar a taxa de abstenção em no máximo cinco pontos percentuais. Costas é reportado,
 mas não bloqueia a análise enquanto não alcançar sua própria amostra mínima, pois o papel ancestral
 pode não estar declarado ou manifestado.
@@ -356,8 +375,8 @@ de top-1, top-3 e abstenção por papel sob política explícita.
 `MOTIVO`: impedir escolha oportunista de versões, adulteração silenciosa do conjunto e promoção por
 amostras pequenas ou por redução artificial da cobertura.
 
-`IMPACTO`: o comando `regency:evaluate-derived` ganha manifesto e parecer técnico. Nenhum resultado
-público muda e nenhuma aprovação cultural é automatizada.
+`IMPACTO`: o comando `regency:evaluate-v2` produz manifesto e parecer técnico. Nenhuma aprovação
+cultural é automatizada.
 
 ## Calibração, validação e limites
 

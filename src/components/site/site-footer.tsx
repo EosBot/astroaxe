@@ -7,7 +7,7 @@ export function SiteFooter(): React.JSX.Element {
     <footer className="site-footer">
       <div className="site-footer-brand">
         <AstroAxeLogo />
-        <p>Astrologia calculada, leitura contextualizada e espaço para escolha.</p>
+        <p>Seu céu calculado, explicado com clareza e aberto à sua interpretação.</p>
       </div>
       <nav aria-label="Rodapé">
         <div>
@@ -19,13 +19,13 @@ export function SiteFooter(): React.JSX.Element {
         <div>
           <strong>Transparência</strong>
           <Link href="/metodologia">Metodologia</Link>
-          <span>Privacidade em preparação</span>
-          <span>Termos em preparação</span>
+          <span>Privacidade e controles na conta</span>
+          <span>Versões e limites publicados</span>
         </div>
       </nav>
       <p className="site-footer-note">
-        Correspondências com Orixás são interpretações culturais em pesquisa; não substituem jogo de
-        búzios, orientação religiosa ou cuidado profissional.
+        Regências são resultados do método autoral AstroAxe. Não confirmam identidade religiosa nem
+        substituem jogo de búzios, consulta tradicional ou cuidado profissional.
       </p>
     </footer>
   );

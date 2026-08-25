@@ -42,14 +42,56 @@ export function CulturalArchive(): React.JSX.Element {
   return (
     <div className="cultural-archive">
       <header className="cultural-archive-intro">
-        <p className="eyebrow">Contexto antes de correspondência</p>
-        <h1>Um acervo para ler devagar.</h1>
+        <p className="eyebrow">Acervo cultural e corpus de pesquisa</p>
+        <h1>Conhecimento situado, com origem visível.</h1>
         <p>
-          Textos pré-escritos, longos e versionados. Cada afirmação pública abre sua fonte e seus
-          limites. Este acervo não revela Orixá, não substitui tradição viva e não transforma um
-          trânsito astrológico em identidade religiosa.
+          O AstroAxe mantém separados os textos culturalmente revisados e o material usado em
+          pesquisa técnica. Cada afirmação publicada abre sua fonte e seus limites. O acervo não
+          revela Orixá, não substitui tradição viva e não transforma cálculo em identidade
+          religiosa.
         </p>
       </header>
+
+      <section className="archive-research-snapshot" aria-labelledby="research-snapshot-title">
+        <div>
+          <p className="eyebrow">Atualização do corpus · agosto de 2026</p>
+          <h2 id="research-snapshot-title">Uma base maior, sem confundir volume com verdade.</h2>
+          <p>
+            O ciclo mais recente reuniu fontes institucionais e acadêmicas, páginas públicas e uma
+            coleção privada de estudo. Duplicatas foram identificadas, documentos foram extraídos
+            por página e divergências entre linhagens e escolas permaneceram explícitas.
+          </p>
+        </div>
+        <dl>
+          <div>
+            <dt>801</dt>
+            <dd>arquivos inventariados</dd>
+          </div>
+          <div>
+            <dt>737</dt>
+            <dd>conteúdos únicos por hash</dd>
+          </div>
+          <div>
+            <dt>124</dt>
+            <dd>PDFs únicos examinados</dd>
+          </div>
+          <div>
+            <dt>4</dt>
+            <dd>verbetes culturalmente publicados</dd>
+          </div>
+        </dl>
+        <p className="archive-research-note">
+          O corpus de pesquisa informa hipóteses e controles do método autoral, mas não promove
+          automaticamente uma associação a fato religioso. Pesos, matriz e regras internas não fazem
+          parte deste acervo público.
+        </p>
+      </section>
+
+      <div className="archive-section-heading">
+        <p className="eyebrow">Coleção publicada</p>
+        <h2>Verbetes com proveniência editorial</h2>
+        <p>Somente a versão vigente de cada texto aprovado aparece abaixo.</p>
+      </div>
 
       {status === "loading" ? (
         <output className="archive-state">Abrindo os textos aprovados…</output>

@@ -2,6 +2,7 @@ import type { RegencyMatrix } from "./contracts";
 import type { RegencyAstrologicalFeature } from "./features";
 import { scoreRegencies, type RegencyRole, type RegencyScoringConfig } from "./scorer";
 import type { RegencyTemporalFeature } from "./temporal";
+import type { RegencyNumerologicalFeature } from "./numerology";
 
 export const REGENCY_ROBUSTNESS_VERSION = "regency-robustness-0.1.0-beta";
 
@@ -22,6 +23,7 @@ export function assessRegencyRobustness(input: {
   config: RegencyScoringConfig;
   astrologicalFeatures: RegencyAstrologicalFeature[];
   temporalFeatures?: RegencyTemporalFeature[];
+  numerologicalFeatures?: RegencyNumerologicalFeature[];
 }): { version: string; roles: Record<RegencyRole, RegencyRoleRobustness> } {
   const baseline = scoreRegencies(input);
   const schools = [...new Set(input.matrix.claims.map(({ schoolId }) => schoolId))].sort((a, b) =>

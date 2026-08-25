@@ -3,7 +3,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { SYMBOLIC_RESONANCE_DISCLAIMER } from "@/lib/orixas/contracts";
+import { AUTHORIAL_REGENCY_DISCLAIMER } from "@/lib/orixas/contracts";
 import { CulturalArchive } from "./cultural-archive";
 
 describe("CulturalArchive", () => {
@@ -19,6 +19,9 @@ describe("CulturalArchive", () => {
     );
     render(<CulturalArchive />);
 
+    expect(screen.getByText("801")).toBeTruthy();
+    expect(screen.getByText("arquivos inventariados")).toBeTruthy();
+    expect(screen.getByText(/não promove automaticamente uma associação/)).toBeTruthy();
     expect(await screen.findByRole("heading", { name: "Xangô em contexto" })).toBeTruthy();
     expect(screen.getByText("Segundo parágrafo profundo.")).toBeTruthy();
     expect(screen.getByText(/Conselho cultural AstroAxe/)).toBeTruthy();
@@ -45,7 +48,7 @@ describe("CulturalArchive", () => {
 function entry() {
   return {
     kind: "reviewed_cultural_content",
-    disclaimer: SYMBOLIC_RESONANCE_DISCLAIMER,
+    disclaimer: AUTHORIAL_REGENCY_DISCLAIMER,
     slug: "xango-contexto",
     displayName: "Xangô em contexto",
     category: "orisa",

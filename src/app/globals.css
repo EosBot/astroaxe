@@ -555,12 +555,12 @@ a.celestial-module:hover {
   padding-left: 0.8rem;
   border-left: 2px solid var(--copper);
 }
-.orisa-beta-label {
+.orisa-method-label {
   display: flex;
   align-items: center;
   gap: 0.65rem;
 }
-.orisa-beta-label span {
+.orisa-method-label span {
   padding: 0.28rem 0.52rem;
   color: #061016;
   border-radius: 999px;
@@ -3043,6 +3043,64 @@ button:disabled {
   font-size: 1.05rem;
   line-height: 1.8;
 }
+.archive-research-snapshot {
+  display: grid;
+  gap: 2rem;
+  margin-bottom: 4rem;
+  padding: clamp(1.5rem, 5vw, 3.5rem);
+  border: 1px solid var(--line);
+  border-radius: 2px 44px 2px 2px;
+  background: linear-gradient(145deg, rgb(104 168 164 / 9%), rgb(255 255 255 / 1%));
+}
+.archive-research-snapshot h2,
+.archive-section-heading h2 {
+  max-width: 19ch;
+  margin: 0.5rem 0 1rem;
+  font-family: Georgia, serif;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 400;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+.archive-research-snapshot > div > p:last-child,
+.archive-section-heading > p:last-child,
+.archive-research-note {
+  max-width: 68ch;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.archive-research-snapshot dl {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1px;
+  margin: 0;
+  background: var(--line);
+}
+.archive-research-snapshot dl > div {
+  min-height: 8rem;
+  padding: 1.25rem;
+  background: var(--background);
+}
+.archive-research-snapshot dt {
+  color: var(--copper);
+  font-family: Georgia, serif;
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+.archive-research-snapshot dd {
+  margin: 0.35rem 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.4;
+}
+.archive-research-note {
+  margin: 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+  font-size: 0.85rem;
+}
+.archive-section-heading {
+  margin: 0 0 2rem;
+}
 .archive-state {
   padding: 2rem;
   border: 1px solid var(--line);
@@ -3130,6 +3188,9 @@ button:disabled {
   line-height: 1.5;
 }
 @media (max-width: 820px) {
+  .archive-research-snapshot dl {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .observatory-shell {
     align-items: start;
   }

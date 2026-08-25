@@ -81,10 +81,10 @@ export function CelestialDashboard({
           <span className="celestial-module-glyph" aria-hidden="true">
             ◇
           </span>
-          <small>Laboratório ativo</small>
-          <h2>Ressonâncias com Orixás</h2>
-          <p>Explore a matriz cultural aprovada, seus indicadores e os limites da pesquisa.</p>
-          <strong>Abrir laboratório →</strong>
+          <small>Método autoral v2</small>
+          <h2>Tríade de Regências</h2>
+          <p>Explore frente, cabeça e costas com sinais explicáveis e limites declarados.</p>
+          <strong>Abrir minha leitura →</strong>
         </button>
       </div>
     </section>

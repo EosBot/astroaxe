@@ -4,6 +4,7 @@ import type { RegencyMatrix } from "./contracts";
 import type { RegencyAstrologicalFeature } from "./features";
 import { scoreRegencies, type RegencyRole, type RegencyScoringConfig } from "./scorer";
 import type { RegencyTemporalFeature } from "./temporal";
+import { regencyNumerologicalFeatureSchema, type RegencyNumerologicalFeature } from "./numerology";
 
 export const REGENCY_EVALUATION_VERSION = "regency-evaluation-0.4.0";
 
@@ -84,6 +85,7 @@ export const regencyEvaluationCaseSchema = z
     expected: roleLabelsSchema,
     astrologicalFeatures: z.array(astrologicalFeatureSchema).min(1).max(500),
     temporalFeatures: z.array(temporalFeatureSchema).max(10).optional(),
+    numerologicalFeatures: z.array(regencyNumerologicalFeatureSchema).max(10).optional(),
   })
   .strict()
   .superRefine((evaluationCase, context) => {
@@ -106,9 +108,10 @@ export const regencyEvaluationCaseSchema = z
         message: "Hora conhecida exige registrar o método temporal ou sua indisponibilidade.",
       });
   })
-  .transform(({ temporalFeatures, ...evaluationCase }) => ({
+  .transform(({ temporalFeatures, numerologicalFeatures, ...evaluationCase }) => ({
     ...evaluationCase,
     ...(temporalFeatures === undefined ? {} : { temporalFeatures }),
+    ...(numerologicalFeatures === undefined ? {} : { numerologicalFeatures }),
   }));
 
 export const regencyEvaluationDatasetSchema = z
@@ -149,6 +152,7 @@ export interface RegencyEvaluationCase {
   expected: Partial<Record<RegencyRole, string>> & { anyOf?: string[] };
   astrologicalFeatures: RegencyAstrologicalFeature[];
   temporalFeatures?: RegencyTemporalFeature[];
+  numerologicalFeatures?: RegencyNumerologicalFeature[];
 }
 
 export type RegencyEvaluationDataset = z.infer<typeof regencyEvaluationDatasetSchema>;
@@ -310,6 +314,9 @@ function evaluateCase(
     config,
     astrologicalFeatures: item.astrologicalFeatures,
     ...(item.temporalFeatures === undefined ? {} : { temporalFeatures: item.temporalFeatures }),
+    ...(item.numerologicalFeatures === undefined
+      ? {}
+      : { numerologicalFeatures: item.numerologicalFeatures }),
   });
   const predicted = scoring.triad;
   let knownLabels = 0;

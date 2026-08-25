@@ -219,11 +219,11 @@ function OrbitStory({ step }: Readonly<{ step: number }>): React.JSX.Element {
   return (
     <section className="orbit-story" aria-labelledby="astroaxe-title">
       <div className="story-copy">
-        <p className="eyebrow">Astrologia calculada · cultura contextualizada</p>
-        <h1 id="astroaxe-title">Seu céu é uma arquitetura.</h1>
+        <p className="eyebrow">Astrologia calculada · leitura autoral brasileira</p>
+        <h1 id="astroaxe-title">Veja seu céu. Entenda o que ele movimenta.</h1>
         <p>
-          Data, hora e lugar orientam um instrumento vivo. Atravesse as quatro coordenadas e veja a
-          forma singular do céu no instante em que você nasceu.
+          Seu mapa nasce de data, hora e lugar — não de um texto genérico para o seu signo. Informe
+          seus dados e abra uma leitura que você pode explorar e conferir.
         </p>
       </div>
       <div
@@ -236,7 +236,7 @@ function OrbitStory({ step }: Readonly<{ step: number }>): React.JSX.Element {
         <CelestialObservatory3D />
       </div>
       <p className="story-footnote">
-        Precisão declarada · fontes rastreáveis · sem determinações religiosas
+        Precisão declarada · método versionado · seus dados sob seu controle
       </p>
     </section>
   );
@@ -424,8 +424,9 @@ function ChartReveal({
       <NatalChartWheel chart={result.chart} name={name} />
       <footer className="natal-journey-footer">
         <p className="cultural-note">
-          A futura Tríade de Regências combinará estes dados em um método autoral, versionado e
-          rastreável. <a href="/metodologia">Consulte a metodologia.</a>
+          Sua Tríade de Regências está disponível em Meu céu. Ela combina o mapa calculado com o
+          método autoral AstroAxe e informa quando um papel permanece em aberto.{" "}
+          <a href="/metodologia">Veja como funciona.</a>
         </p>
         <AccountPrompt profileId={result.profileId} />
       </footer>

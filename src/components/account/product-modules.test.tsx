@@ -90,11 +90,14 @@ describe("account product modules", () => {
     expect(openSettings).toHaveBeenCalledOnce();
   });
 
-  it("runs the approved Orixás research matrix without asserting certainty", () => {
-    render(<OrisaResearchLab chart={profile("Lua", 0).chart.natal} />);
-    expect(screen.getByRole("heading", { name: "Ressonâncias com Orixás" })).toBeTruthy();
+  it("loads the protected Orixás result without asserting certainty", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(response(regencyResponse())));
+    render(<OrisaResearchLab profileId="00000000-0000-4000-8000-000000000001" />);
+    expect(
+      await screen.findByRole("heading", { name: "Tríade de Regências AstroAxe" }),
+    ).toBeTruthy();
     expect(screen.getByText(/não substituem confirmação religiosa/)).toBeTruthy();
-    expect(screen.getByText(/validação pública ainda não concluída/)).toBeTruthy();
+    expect(screen.getByText(/Métricas de validação serão publicadas/)).toBeTruthy();
   });
 
   it("opens the lunar area after resolving the current city", async () => {
@@ -230,6 +233,28 @@ function lunarResponse() {
       houses: houses(),
     },
     transits: [],
+  };
+}
+
+function regencyResponse() {
+  const candidates = [
+    { orisaId: "orisa:ogum", displayName: "Ogum", affinity: "predominant" },
+    { orisaId: "orisa:oxala", displayName: "Oxalá", affinity: "strong" },
+    { orisaId: "orisa:xango", displayName: "Xangô", affinity: "present" },
+  ] as const;
+  return {
+    methodVersion: "AstroAxe Regências 2.0 — pesquisa aplicada",
+    disclaimer: "Metodo autoral AstroAxe; consulte a metodologia.",
+    roles: {
+      front: { selectedId: "orisa:ogum", candidates, stability: "high" },
+      head: { selectedId: "orisa:oxala", candidates, stability: "medium" },
+      back: {
+        selectedId: null,
+        candidates,
+        stability: "low",
+        unresolvedReason: "insufficient_score",
+      },
+    },
   };
 }
 

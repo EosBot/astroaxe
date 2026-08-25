@@ -54,6 +54,6 @@ describe("SiteHeader", () => {
   it("renders the global footer navigation and cultural boundary", () => {
     render(<SiteFooter />);
     expect(screen.getByRole("navigation", { name: "Rodapé" })).toBeTruthy();
-    expect(screen.getByText(/não substituem jogo de búzios/)).toBeTruthy();
+    expect(screen.getByText(/nem substituem jogo de búzios/i)).toBeTruthy();
   });
 });
