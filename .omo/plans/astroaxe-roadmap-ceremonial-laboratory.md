@@ -11,19 +11,20 @@
 
 ## Execution status — updated 2026-08-26
 
-**Progress: 11 of 39 implementation todos complete (Waves 1 and 2 closed).
-Final-verification wave F1-F4 not started.** Tasks 1-8 are committed locally on `develop`;
-task 9 is complete in the current worktree. Nothing was pushed and `main` is untouched.
+**Progress: 12 of 39 implementation todos complete (Waves 1 and 2 closed, Wave 3 started).
+Final-verification wave F1-F4 not started.** Tasks 1-12 are all committed locally on
+`develop`; the worktree holds no uncommitted task work. Nothing was pushed and `main` is
+untouched.
 
-| Wave                                | Tasks | Status                         |
-| ----------------------------------- | ----- | ------------------------------ |
-| 1 — Recovery and Tríade v3          | 1-6   | **Complete**                   |
-| 2 — Dual-mode foundation            | 7-11  | **Complete**                   |
-| 3 — Corpus ingestion                | 12-16 | Not started                    |
-| 4 — Deterministic ceremonial domain | 17-21 | Not started                    |
-| 5 — Tradition workspaces            | 22-27 | Not started                    |
-| 6 — Product experience              | 28-33 | Not started                    |
-| 7 — Operations and release          | 34-39 | Not started                    |
+| Wave                                | Tasks | Status                 |
+| ----------------------------------- | ----- | ---------------------- |
+| 1 — Recovery and Tríade v3          | 1-6   | **Complete**           |
+| 2 — Dual-mode foundation            | 7-11  | **Complete**           |
+| 3 — Corpus ingestion                | 12-16 | 12 done; 13-16 pending |
+| 4 — Deterministic ceremonial domain | 17-21 | Not started            |
+| 5 — Tradition workspaces            | 22-27 | Not started            |
+| 6 — Product experience              | 28-33 | Not started            |
+| 7 — Operations and release          | 34-39 | Not started            |
 
 ### Commits, in order
 
@@ -369,7 +370,25 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
 
 ### Wave 3 — Inventory and ingest the private corpus
 
-- [ ] 12. Build a resumable, content-addressed inventory of `/mnt/e/Ocultismo`
+- [x] 12. Build a resumable, content-addressed inventory of `/mnt/e/Ocultismo` — **DONE `26f4889`**
+  - **Delivered:** local-only read-only CLI (`npm run ceremonial:inventory`) walking without
+    following symlinks, terminating on directory loops, recording relative path, size, mtime,
+    SHA-256 and detected type, and grouping byte-identical files. Append-only checkpoint makes
+    an interrupted run resumable; the manifest is written by atomic rename and carries no
+    absolute path (schema rejects it and the builder revalidates every entry). Reruns are
+    verified through a fingerprint that excludes `generatedAt`.
+  - **Observed census: 801 files / 737 unique hashes / 64 duplicates — `matchesBaseline: true`**,
+    zero unreadable, 13 quarantined (all `desktop.ini`). The archive turned out to be mostly
+    ritual audio (538 mp3, 146 pdf, 77 jpg), which the plan had not stated.
+  - **Three real defects found only by running against the actual archive**, each fixed with a
+    regression test: (1) the hash was discarded whenever the type was unknown, quarantining 554
+    of 801 files and collapsing unique hashes to 188 — identity belongs to the bytes, not to
+    whether the format can be named; (2) the type detector was blind to MP3/MP4/ASF/WAV, having
+    been designed assuming text; (3) transient 9p-mount failures became permanent quarantine —
+    two consecutive runs returned truncated censuses (259 and 695 files) with whole top-level
+    directories marked unreadable while the mount was healthy. Fixed with bounded retry and
+    exponential backoff per `AGENTS.md:7`, not retrying EACCES/EPERM/ENOENT so a genuine denial
+    is still recorded.
   - **Implement:** add a local-only CLI that walks without following symlinks, records normalized relative path, size, MIME, modified time and SHA-256, groups exact duplicates, checkpoints progress and never copies source files. Preserve the observed 801/737/64 baseline as comparison, not as a hardcoded truth.
   - **References:** `docs/research/orixa-method-v2/report-source.md:22-43`; `docs/data-inventory.md`; `/mnt/e/Ocultismo`; `scripts/` CLI conventions.
   - **Acceptance:** reruns are idempotent; renamed duplicate content shares one artifact identity; unreadable/unsupported items become explicit quarantine rows; manifest contains no absolute host path.
