@@ -1,0 +1,21 @@
+T9 — per-facet access-policy matrix (2026-08-26)
+
+Command:
+  npm test -- src/domain/ceremonial/access-policy.test.ts src/lib/ceremonial/mode.test.ts
+
+Observed result:
+  2 test files passed; 28 tests passed.
+
+Covered decisions:
+  - disabled mode denies all seven facets;
+  - authenticated local mode allows the local archive; unauthenticated local mode denies;
+  - public metadata/quotation/fullText/image/seal/mediaDownload/export require matching,
+    current RIGHTS and EDITORIAL approval scopes;
+  - public body/export additionally require PUBLIC_DOMAIN, LICENSED or PERMISSION_GRANTED;
+  - RESTRICTED and UNKNOWN rights remain eligible only for explicitly approved metadata;
+  - RESTRICTED_KNOWLEDGE never exposes public body or export facets;
+  - each facet receives its own frozen allow/deny decision and reason.
+
+Additional gates:
+  npm run typecheck -> pass
+  npm run lint      -> pass

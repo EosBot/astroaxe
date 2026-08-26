@@ -1,0 +1,13 @@
+T9 — adversarial access-policy cases (2026-08-26)
+
+The targeted suite verified that:
+  - an unrecognized mode such as a forged request/header value denies every facet with
+    invalid_policy_input;
+  - malformed/unknown enum values deny every facet rather than throwing or defaulting open;
+  - LOCAL_ONLY records remain denied in public mode even with otherwise valid approvals;
+  - expired, revoked and CHANGES_REQUESTED reviews do not authorize a facet;
+  - a review for metadata cannot authorize quotation or another facet;
+  - missing rights approval and missing editorial approval remain distinct denial reasons;
+  - a negative safety decision denies delivery.
+
+No corpus text, local path, user data or secret appears in this evidence.
