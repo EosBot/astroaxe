@@ -521,6 +521,31 @@ CSS no fundo do planetário e no painel do formulário. A cena WebGL não desenh
 único sistema de anéis visível pertence a Saturno e vem da imagem NASA. Capturas desktop e Pixel 7
 sem os círculos estão em `.planning/screenshots/comparison/astroaxe-home-no-decorative-rings-*`.
 
+## Borda pública configurada antes da VPS
+
+Em 2026-08-26 a zona `astroaxe.net` deixou de estar no default de fábrica. O estado anterior aceitava
+TLS 1.0, não redirecionava HTTP, não validava o certificado da origem e mantinha o WAF gerenciado
+desligado, sem nenhum registro DNS publicado.
+
+A borda passou a ter TLS estrito com mínimo 1.2, redirecionamento HTTPS, Managed Free Ruleset ativo,
+quatro regras WAF custom, rate limiting nas rotas de autenticação, regras de cache que excluem toda
+superfície autenticada, Bot Fight Mode com bloqueio de crawlers de treino de IA, e Zero Trust Access
+por One-time PIN no staging. O acesso à aplicação existe apenas por Cloudflare Tunnel: a zona não
+tem registro `A`, então nenhum IP de origem é descobrível.
+
+O domínio está declarado como não-remetente no DNS até existir relay e endereço de contato. HSTS
+permanece desligado de propósito e só deve ser ativado, de forma faseada, depois do primeiro deploy
+com HTTPS confirmado — ligá-lo antes grava nos navegadores uma instrução que não se revoga
+remotamente.
+
+Enquanto a VPS não existe, o apex não devolve erro: um Worker (`astroaxe-holding`) publica uma
+página de espera na borda, respondendo `503` com `noindex` para não ser indexada como se fosse o
+site real. O fonte está em `infra/cloudflare/holding-page/worker.js` e sai do ar apagando a rota,
+sem tocar em DNS.
+
+O runbook autoritativo é `docs/cloudflare-edge.md`; o desenho aprovado está em
+`docs/superpowers/specs/2026-08-26-cloudflare-edge-design.md`.
+
 ## Checklist curto de retomada
 
 ```bash

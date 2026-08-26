@@ -27,6 +27,11 @@ mensagem. O processamento faz até seis tentativas com backoff e então move a m
 
 ## Preparação do domínio na Cloudflare
 
+> **Estado atual:** `astroaxe.net` está declarado no DNS como domínio que não envia nem recebe
+> e-mail — `MX 0 .`, `v=spf1 -all` e `DMARC p=reject`. Essa é a postura mais restritiva contra
+> spoofing e deve ser mantida até existir relay contratado. Os passos abaixo descrevem a transição
+> a partir desse estado; a sequência exata está em `docs/cloudflare-edge.md`.
+
 1. Cadastre e verifique um subdomínio dedicado, por exemplo `mail.seu-dominio.example`, no relay.
 2. Publique exatamente os registros DKIM e de tracking fornecidos pelo painel do provedor. Registros
    de e-mail ficam como DNS only quando o painel assim exigir; o proxy HTTP da Cloudflare não é um

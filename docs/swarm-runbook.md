@@ -11,7 +11,7 @@ O projeto possui exatamente dois destinos de deploy, além do ambiente de desenv
 | Destino     | Execução                     | Entrada            | Dados                        | Email                       | Cloudflare |
 | ----------- | ---------------------------- | ------------------ | ---------------------------- | --------------------------- | ---------- |
 | Homologação | Docker Compose local         | `127.0.0.1:3200`   | volumes locais isolados      | Mailpit em `127.0.0.1:8025` | não        |
-| Produção    | Docker Swarm nas VPS Contabo | domínio HTTPS real | PostgreSQL/Redis gerenciados | relay interno para Brevo    | sim        |
+| Produção    | Docker Swarm nas VPS Contabo | `astroaxe.net` via Tunnel | PostgreSQL/Redis gerenciados | relay interno para Brevo    | sim        |
 
 Homologação não é um terceiro ambiente remoto e não usa credenciais de produção. O E2E automatizado
 em `127.0.0.1:3100` continua sendo uma stack efêmera separada, executada e desmontada pelo próprio
@@ -118,15 +118,27 @@ de forma apropriada ao storage utilizado. O runbook registra apenas o nome e a v
 
 ## Cloudflare
 
-Crie um Tunnel gerenciado e configure o hostname público para o serviço interno
-`http://traefik:8080`. O token fica em `astroaxe_cloudflare_tunnel_v1`; ele não entra em arquivo de
-ambiente, log ou comando persistido. Use duas réplicas de `cloudflared`, `--no-autoupdate` e imagem
-fixada, de modo que atualização seja decisão de deploy e não mutação dentro do container.
+A zona `astroaxe.net` já está provisionada. A configuração completa — registros, TLS, WAF, rate
+limiting, cache, Zero Trust e postura de e-mail — está em `docs/cloudflare-edge.md`, que é a
+referência autoritativa. Esta seção registra apenas o que o Swarm precisa saber.
 
-Na zona pública, habilite TLS estrito, WAF gerenciado, rate limiting compatível com as rotas e cache
-somente para superfícies públicas explicitamente revisadas. APIs autenticadas, conta, diário,
-exports e respostas com cookie permanecem sem cache. Mantenha procedimento break-glass por VPN/IP
-restrito; não deixe uma origem pública permanente contornando a Cloudflare.
+Dois Tunnels gerenciados remotamente já existem, um por ambiente, para isolar o raio de alcance de
+cada token:
+
+| Ambiente | Tunnel            | ID                                     | Hostname               |
+| -------- | ----------------- | -------------------------------------- | ---------------------- |
+| Produção | `astroaxe-prod`    | `bcdae972-63e8-47d2-b064-72b0e9394863` | `astroaxe.net`         |
+| Staging  | `astroaxe-staging` | `04e8bbff-646f-4f23-b257-7246fa9e6acb` | `staging.astroaxe.net` |
+
+O ingress de ambos aponta para o serviço interno `http://traefik:8080` e cai em `http_status:404`
+para qualquer hostname não declarado. O token fica em `astroaxe_cloudflare_tunnel_v1`; ele não entra
+em arquivo de ambiente, log ou comando persistido. Use duas réplicas de `cloudflared`,
+`--no-autoupdate` e imagem fixada, de modo que atualização seja decisão de deploy e não mutação
+dentro do container.
+
+A zona não possui nenhum registro `A` e nenhum wildcard: não existe IP de origem descobrível e não
+existe rota que contorne a Cloudflare. O break-glass é o próprio Tunnel, nunca uma porta publicada
+temporariamente no host.
 
 ## Preflight e deploy
 

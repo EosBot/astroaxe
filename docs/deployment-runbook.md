@@ -23,7 +23,8 @@ Compose ou por uma plataforma compatível com containers.
 
 ## Pré-condições
 
-- domínio, TLS e ambiente de destino definidos;
+- domínio, TLS e ambiente de destino definidos — a borda pública está configurada e
+  documentada em `docs/cloudflare-edge.md`;
 - segredos independentes entregues pelo secret manager, nunca copiados para a imagem;
 - PostgreSQL 18 com pgvector e Redis 8 acessíveis somente pelas redes internas;
 - backup recente restaurado com sucesso em banco isolado;
