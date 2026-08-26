@@ -84,6 +84,25 @@ describe("account export", () => {
               ],
             },
           ],
+          regencyFeedbacks: [
+            {
+              methodVersion: "AstroAxe Regências 3.0 — pesquisa aplicada",
+              matrixVersion: "0.5.0-v3",
+              configVersion: "0.2.0-v3",
+              scorerVersion: "0.6.0",
+              questionnaireVersion: "regency-questionnaire-1.0.0",
+              questionnaireAnswers: [],
+              predictedTriad: { front: "orisa:ogum", head: null, back: null },
+              verdict: "polarity_inverted",
+              knowsOrisas: true,
+              correctedTriad: { front: "orisa:oya", head: null, back: null },
+              confirmationBasis: "buzios_or_oracle",
+              comment: null,
+              consentVersion: "regency-feedback-consent-1.0",
+              createdAt: new Date("2026-08-20T10:06:00.000Z"),
+              updatedAt: new Date("2026-08-20T10:06:00.000Z"),
+            },
+          ],
         },
       ],
     });
@@ -106,6 +125,15 @@ describe("account export", () => {
           chart: { engineVersion: "engine-test" },
           chartRevisions: [{ reason: "birth_data_updated" }],
           journal: [{ revisions: [{ content: "Versão anterior sintética." }] }],
+          regencyFeedback: [
+            {
+              verdict: "polarity_inverted",
+              correctedTriad: { front: "orisa:oya" },
+              matrixVersion: "0.5.0-v3",
+              configVersion: "0.2.0-v3",
+              scorerVersion: "0.6.0",
+            },
+          ],
         },
       ],
     });

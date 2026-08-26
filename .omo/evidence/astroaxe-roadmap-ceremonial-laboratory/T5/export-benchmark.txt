@@ -1,0 +1,64 @@
+T5 — Complete calibration export and benchmark provenance (2026-08-26)
+
+## Personal export
+
+accountExportSchema and the export route's Prisma select now include
+matrixVersion/configVersion/scorerVersion alongside the existing methodVersion/
+questionnaireVersion for every regencyFeedback entry.
+npm test -- src/app/api/auth/export/export-route.test.ts -> 4/4 passed, asserting all
+five versions are present in the exported JSON.
+
+## New aggregate benchmark release (design decision confirmed with the user: prior
+releases persist in a new Postgres table, not a repo file)
+
+- prisma/migrations/20260826010000_regency_benchmark_releases/ adds
+  regency_benchmark_releases (release_version unique, cohort_size, cell_counts jsonb,
+  generated_at) — internal/research-role restricted, never exposed via a public route.
+  Deployed via `prisma migrate deploy`; 21 migrations now applied.
+- src/domain/orixas/regency/benchmark-release.ts (pure): expands each RegencyFeedback
+  row into one cell per role over the exact fixed dimension tuple
+  {methodVersion, matrixVersion, configVersion, scorerVersion, questionnaireVersion,
+  role, verdict, confirmationBasis, directedPair}; excludes id/comment/birth data/
+  location/timestamps by construction (the record schema has no such fields).
+- suppressRegencyBenchmarkCells refuses to publish below cohortSize=30
+  (insufficient_cohort, no fabricated report), primary-suppresses any cell <10, and
+  applies complementary suppression when exactly one cell in a
+  {method,matrix,config,scorer,questionnaire,role,verdict} partition is suppressed
+  (so it cannot be recovered from a marginal total published elsewhere).
+- detectRegencyBenchmarkDifferencingRisk compares true per-cell counts between the
+  previous stored release and the current one; a nonzero delta smaller than the
+  suppression threshold blocks publication of the new release outright.
+
+Command: npm test -- src/domain/orixas/regency/benchmark-release.test.ts
+13/13 passed, including: cohort-minimum refusal, primary suppression, complementary
+suppression (verified >=2 cells suppressed in the shared partition, one tagged
+"complementary"), and differencing-risk detection (flags a small delta, does not flag
+a delta >= threshold, does not flag an unchanged cell). Two real bugs were caught and
+fixed by these tests before ever touching the CLI/DB layer: the cell/partition hashing
+functions were accidentally including `count`/`suppressed` in their identity key,
+which silently broke both partition grouping and cross-release cell matching.
+
+## scripts/evaluate-regency.ts
+
+Added `--aggregate-release <version>` (Prisma-backed, no dataset file, no arbitrary
+filter argument accepted — the query is always over the complete RegencyFeedback
+table). This surfaced a pre-existing regression in the (uncommitted) v3 worktree: both
+existing modes (`regency:evaluate`, `regency:evaluate-v2`) were already broken because
+v2-config.ts/v2-matrix.ts gained `import "server-only"`, and that package throws
+unconditionally outside Next.js's bundler-level "react-server" condition swap. Fixed by
+adding `--conditions=react-server` to both npm scripts (matches how Next's own server
+build resolves the same package) — verified live against the running dev stack:
+- `docker compose ... run --rm app npm run regency:evaluate -- <synthetic-dataset>` and
+  `regency:evaluate-v2` both now produce the expected accuracy/promotion report (they
+  previously crashed with "This module cannot be imported from a Client Component
+  module" before this fix).
+- `docker compose ... run --rm app npm run regency:evaluate -- --aggregate-release
+  smoke-test-1` against the real (currently empty, 0-row) regency_feedback table
+  correctly refuses: "Amostra insuficiente para publicar: 0 de 30 casos exigidos.
+  Nenhum relatório foi gerado." — no accuracy or count was invented.
+
+Full suite: npm run typecheck -> pass. npm run lint -> pass. npm test -> 92 files,
+349 tests, 346 passed. The 3 failures (profile-archive.test.tsx timeout,
+ambient-sound-control.test.tsx call-count) are pre-existing flakiness under full-suite
+parallel load, unrelated to any file touched by this task — both pass cleanly (8/8) when
+run in isolation, confirmed twice.

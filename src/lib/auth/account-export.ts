@@ -59,6 +59,27 @@ export const accountExportSchema = z
               })
               .strict(),
           ),
+          regencyFeedback: z.array(
+            z
+              .object({
+                methodVersion: z.string(),
+                matrixVersion: z.string(),
+                configVersion: z.string(),
+                scorerVersion: z.string(),
+                questionnaireVersion: z.string(),
+                questionnaireAnswers: z.json(),
+                predictedTriad: z.json(),
+                verdict: z.string(),
+                knowsOrisas: z.boolean(),
+                correctedTriad: z.json().nullable(),
+                confirmationBasis: z.string(),
+                comment: z.string().nullable(),
+                consentVersion: z.string(),
+                createdAt: z.iso.datetime(),
+                updatedAt: z.iso.datetime(),
+              })
+              .strict(),
+          ),
         })
         .strict(),
     ),

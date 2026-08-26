@@ -105,10 +105,46 @@ model BirthProfile {
   user           User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
   chart          NatalChart?
   journalEntries JournalEntry[]
+  regencyFeedbacks RegencyFeedback[]
 
   @@index([guestSessionId, createdAt])
   @@index([userId, createdAt])
   @@map("birth_profiles")
+}
+
+model RegencyFeedback {
+  id                   String       @id @default(uuid()) @db.Uuid
+  birthProfileId       String       @map("birth_profile_id") @db.Uuid
+  methodVersion        String       @map("method_version") @db.VarChar(100)
+  matrixVersion        String       @map("matrix_version") @db.VarChar(100)
+  configVersion        String       @map("config_version") @db.VarChar(100)
+  scorerVersion        String       @map("scorer_version") @db.VarChar(100)
+  questionnaireVersion String       @map("questionnaire_version") @db.VarChar(100)
+  questionnaireAnswers Json         @map("questionnaire_answers")
+  predictedTriad       Json         @map("predicted_triad")
+  verdict              String       @db.VarChar(30)
+  knowsOrisas          Boolean      @map("knows_orisas")
+  correctedTriad       Json?        @map("corrected_triad")
+  confirmationBasis    String       @map("confirmation_basis") @db.VarChar(40)
+  comment              String?      @db.VarChar(1000)
+  consentVersion       String       @map("consent_version") @db.VarChar(50)
+  createdAt            DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime     @updatedAt @map("updated_at") @db.Timestamptz(6)
+  birthProfile         BirthProfile @relation(fields: [birthProfileId], references: [id], onDelete: Cascade)
+
+  @@unique([birthProfileId, methodVersion, questionnaireVersion])
+  @@index([methodVersion, verdict])
+  @@map("regency_feedback")
+}
+
+model RegencyBenchmarkRelease {
+  id             String   @id @default(uuid()) @db.Uuid
+  releaseVersion String   @unique @map("release_version") @db.VarChar(100)
+  cohortSize     Int      @map("cohort_size")
+  cellCounts     Json     @map("cell_counts")
+  generatedAt    DateTime @default(now()) @map("generated_at") @db.Timestamptz(6)
+
+  @@map("regency_benchmark_releases")
 }
 
 model JournalEntry {
