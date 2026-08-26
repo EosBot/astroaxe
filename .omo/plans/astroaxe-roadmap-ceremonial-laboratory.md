@@ -11,14 +11,14 @@
 
 ## Execution status — updated 2026-08-26
 
-**Progress: 8 of 39 implementation todos complete (Wave 1 closed; Wave 2 foundation laid).
-Final-verification wave F1-F4 not started.** All work is committed locally on `develop`;
-nothing was pushed and `main` is untouched.
+**Progress: 11 of 39 implementation todos complete (Waves 1 and 2 closed).
+Final-verification wave F1-F4 not started.** Tasks 1-8 are committed locally on `develop`;
+task 9 is complete in the current worktree. Nothing was pushed and `main` is untouched.
 
 | Wave                                | Tasks | Status                         |
 | ----------------------------------- | ----- | ------------------------------ |
 | 1 — Recovery and Tríade v3          | 1-6   | **Complete**                   |
-| 2 — Dual-mode foundation            | 7-11  | 7-8 complete; **9-11 pending** |
+| 2 — Dual-mode foundation            | 7-11  | **Complete**                   |
 | 3 — Corpus ingestion                | 12-16 | Not started                    |
 | 4 — Deterministic ceremonial domain | 17-21 | Not started                    |
 | 5 — Tradition workspaces            | 22-27 | Not started                    |
@@ -41,7 +41,7 @@ nothing was pushed and `main` is untouched.
 Every commit line matches the **Commit:** field declared by its todo. Evidence for each
 task is under `.omo/evidence/astroaxe-roadmap-ceremonial-laboratory/T<n>/`.
 
-### Observed checkpoint at the end of task 8
+### Observed checkpoint through task 11
 
 - `npm run typecheck`, `npm run lint`, `npm run format:check`: pass.
 - `npm test`: **94 files, 369 tests, all passing** (baseline at task 1 was 90/319).
@@ -51,6 +51,14 @@ task is under `.omo/evidence/astroaxe-roadmap-ceremonial-laboratory/T<n>/`.
 - SonarQube Quality Gate: **PASSED** — 0 new violations, 81.6% new-code coverage,
   1.52275% new-code duplication.
 - Migrations applied: **22** (was 19 at task 1), ending in `20260826020000_ceremonial_corpus`.
+- Task 9 targeted checkpoint: `npm run typecheck`, `npm run lint` and 28 mode/access-policy
+  tests passed. The complete coverage/build/E2E/Sonar checkpoint remains the wave gate.
+- Task 10 targeted checkpoint: 21 artifact-storage/route tests, typecheck, lint and the Next.js
+  production build passed; the build reports `/api/ceremonial/artifacts/[artifactId]` as dynamic.
+- Task 11 targeted checkpoint: 10 bundle/store tests, typecheck and lint passed; migration 23
+  deployed; production Docker targets `app` and `migrate` built successfully after one transient
+  registry `ECONNRESET`. The host build was not authoritative because the active dev container
+  owns `.next`; the isolated Docker build compiled Next and TypeScript successfully.
 
 ### Decisions taken during execution (not pre-specified by the plan)
 
@@ -102,10 +110,9 @@ explicitly to any Compose command that stops or removes containers.**
 
 ### Where to resume
 
-Task 9 (`Centralize rights, sensitivity and mode authorization`). Its two dependencies are
-in place: the frozen vocabulary in `src/domain/ceremonial/contracts.ts` (rights, access,
-sensitivity, the seven facets, and the fail-closed defaults) and the schema columns from
-task 8. Task 9 is pure logic with no new infrastructure, so it is a clean unit to start on.
+Task 12 (`Build a resumable, content-addressed inventory of /mnt/e/Ocultismo`). The owner authorized
+real local-corpus processing on 2026-08-26. Inventory remains read-only, never follows symlinks and
+must not copy source files or persist absolute paths.
 
 **Unstarted work that needs owner input before it can proceed honestly:** tasks 12-13 walk
 the real `/mnt/e/Ocultismo` corpus and build a sandboxed extraction/OCR container with SBOM
@@ -261,7 +268,7 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **References:** `src/domain/orixas/regency/questionnaire.test.ts`; `v2.golden.test.ts`; route/component/export tests; `docs/astrology-calculation-changelog.md:3-27`; `docs/research/orixa-triad-questionnaire/report-source.md:30-44`; `src/app/privacidade/page.tsx:35-111`.
   - **Acceptance:** docs say calculation-only answers are ephemeral and separately consented feedback is persisted; all targeted tests, migration deploy, E2E, build and quality gate pass with observed counts recorded.
   - **QA happy:** run targeted Vitest, `npm run test:e2e`, `npm run quality` (`.../T6/checkpoint.txt`).
-  - **QA failure:** E2E with rejected consent/version proves no row and no success message (`.../T6/e2e-rejection.zip`).
+  - **QA failure:** E2E with rejected consent/version proves no row and no success message (`.../T6/e2e-rejection.txt`).
   - **Commit:** `test(regency): freeze the v3 calibration journey`.
 
 ### Wave 2 — Establish the dual-mode ceremonial foundation
@@ -314,7 +321,13 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **QA failure:** orphan locator, duplicate hash/version and illegal access/right combinations are DB-rejected (`.../T8/migration-constraints.txt`).
   - **Commit:** `feat(ceremonial): add provenance and private-record schema`.
 
-- [ ] 9. Centralize rights, sensitivity and mode authorization
+- [x] 9. Centralize rights, sensitivity and mode authorization — **DONE in worktree 2026-08-26**
+  - **Delivered:** pure `src/domain/ceremonial/access-policy.ts` validates unknown inputs and
+    returns a frozen capability for each of the seven facets with an explicit allow/deny reason.
+    Disabled mode denies all; local mode requires authentication; public mode requires public
+    access plus current RIGHTS and EDITORIAL approvals for the exact facet. Body/export facets
+    require eligible rights, restricted knowledge remains metadata-only, and forged/unknown
+    values fail closed. Eleven table-driven policy tests plus the 17 mode tests pass.
   - **Implement:** create pure `src/domain/ceremonial/access-policy.ts` returning a per-facet capability object for `metadata`, `quotation`, `fullText`, `image`, `seal`, `mediaDownload` and `export`, each with `allow|deny` plus reason. Public capabilities require the matching permission scope, eligible rights and unexpired approvals; local raw-source capabilities require authenticated local mode; derived guidance also passes safety policy. Apply before fetching/serialization. Unknown values deny every facet except explicitly approved metadata.
   - **References:** `src/lib/cultural-content/public-entry.ts:10-127`; `src/lib/editorial/workflow.ts:11-126`; `src/lib/security/account.ts:74-107`; planned task-8 enums.
   - **Acceptance:** one policy governs list/detail/search/quotation/text/image/seal/download/export independently; public mode cannot override it; local-only data remains inaccessible in public mode even when adversarially seeded.
@@ -322,7 +335,15 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **QA failure:** unknown status, forged mode header and unpublished record all deny (`.../T9/policy-adversarial.txt`).
   - **Commit:** `feat(ceremonial): centralize dual-mode access policy`.
 
-- [ ] 10. Isolate artifact/media storage from public delivery
+- [x] 10. Isolate artifact/media storage from public delivery — **DONE in worktree 2026-08-26**
+  - **Delivered:** `artifact-storage.ts` accepts only normalized relative paths, opens with
+    `O_NOFOLLOW`, requires a regular non-empty file, verifies the opened descriptor remains under
+    the canonical archive root through `/proc/self/fd`, and validates PDF/PNG/JPEG/GIF/WebP/text
+    signatures before streaming. A local-only authenticated dynamic route applies the T9 policy
+    before filesystem I/O, supports one bounded byte range from the same descriptor, returns
+    no-store/nosniff/CSP headers and exposes only an opaque artifact UUID. Public/disabled modes
+    return 404 before authentication or DB access. Twenty-one targeted tests and production build
+    pass.
   - **Implement:** store only normalized relative paths and hashes in DB; canonicalize under the configured archive root with descriptor/no-follow checks, reject traversal/symlinks/devices, validate MIME by bytes, and stream via authenticated local-only route with range support and no-store headers. Public media must come only from a separate reviewed publish bundle, never from the archive mount.
   - **References:** `src/lib/security/headers.ts`; `src/app/api/journal/export/route.ts`; `compose.dev.yml:10-13`; planned artifact/media schema and policy.
   - **Acceptance:** archive root is read-only; public app image/container has no mount; route never reveals filesystem paths; content disposition and CSP are safe.
@@ -330,7 +351,15 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **QA failure:** traversal, symlink escape, MIME spoof, unauthenticated and public-mode requests fail (`.../T10/media-adversarial.txt`).
   - **Commit:** `feat(ceremonial): isolate local artifact delivery`.
 
-- [ ] 11. Create a deterministic reviewed public-publication bundle
+- [x] 11. Create a deterministic reviewed public-publication bundle — **DONE in worktree 2026-08-26**
+  - **Delivered:** strict source/manifest schemas and a canonical builder sort all records, fields,
+    approvals and media before SHA-256. Explicit ineligible selections abort; ordinary exclusions
+    are accounted for; metadata-only records cannot express source paths or bodies. The public
+    target independently revalidates schema, hash, current per-facet rights/editorial approvals,
+    rights/sensitivity policy and media hashes. Migration `20260826120000_ceremonial_public_bundles`
+    stores immutable inactive namespaces plus a singleton active/previous pointer. Serializable
+    activation retains the previous namespace; rollback revalidates it before atomically swapping
+    the pointer. CLI `ceremonial:bundle` writes manifest/hash/exclusions without overwrite.
   - **Implement:** add strict schemas/builder; select policy-eligible reviewed records, include provenance and facet-authorized media, omit local paths/body for metadata-only, and produce canonical manifest/hash. Exclude/report expected local/ineligible records; abort only when explicitly selected publication is ineligible. Import into an inactive versioned public DB schema and storage namespace; on the public target independently verify schema, manifest/media hashes and current non-revoked approvals, then switch one transactional active-bundle pointer. Preserve the previous namespace for immediate pointer rollback; garbage-collect only after the rollback window. No local→public DB replication.
   - **References:** `src/lib/cultural-content/public-entry.ts`; `src/app/sitemap.ts`; `docs/cultural-content-operations.md`; package script patterns in `package.json:29-32`.
   - **Acceptance:** identical inputs yield byte-identical bundle; exclusion report accounts for nonselected records; activation is pointer-atomic across preverified DB/storage namespace and rollback restores the prior pointer; bundle carries no local identifiers/paths/protected snippets.
@@ -352,7 +381,7 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **Implement:** create a pinned local-only ingest container/profile with read-only root/archive, non-root UID, capabilities dropped, no network, seccomp allowlist, bounded CPU/memory/time/tmpfs. Reopen every inventoried source descriptor-relative with no-follow, verify regular-file type, before/after `fstat`, size and SHA-256 against Task 12, and quarantine any changed/mismatched source. Add deterministic extraction/OCR adapters; disable active behavior and treat metadata/output as sensitive. Derivatives stay quarantined until schema/MIME/size/integrity validation, then enter a rebuildable private volume. Generate SBOM/license inventory and scan npm, OS packages, extraction binaries and container with pinned Trivy; Critical/High block, Medium requires documented owner, remediation and ≤30-day expiry.
   - **References:** `Dockerfile`; `compose.yml:3-161`; `compose.dev.yml`; prior extraction metrics in `docs/research/orixa-method-v2/report-source.md`.
   - **Acceptance:** every artifact has explicit state/reason; TOCTOU/mismatch quarantines; SBOM is complete; no unexpired Critical/High and every Medium exception is scoped/time-bounded; no silent omission.
-  - **QA happy:** fixture matrix produces expected normalized text/page counts (`.../T13/extraction-manifest.json`).
+  - **QA happy:** fixture matrix produces expected normalized text/page counts; task 13 will persist a sanitized JSON extraction manifest in its evidence directory.
   - **QA failure:** corrupt/bomb/oversized file is quarantined within limits and cannot reach app runtime (`.../T13/extraction-adversarial.txt`).
   - **Commit:** `feat(corpus): add sandboxed extraction pipeline`.
 
@@ -360,8 +389,8 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **Implement:** map extracted artifacts into work→edition→artifact→locator records; use review queues for ambiguous title/author/edition/language; never infer canonical identity from filename alone. Seed dedicated system IDs and keep compilations/translations as distinct editions.
   - **References:** planned task-8 schema; `docs/knowledge/sources.md:24-83`; `docs/cultural-content-operations.md`; `src/lib/editorial/contracts.ts`.
   - **Acceptance:** each imported claimable unit has artifact hash and locator; duplicate binaries do not duplicate editions; ambiguous matches remain unresolved and unusable by public publication.
-  - **QA happy:** representative Angelical/Goetic/Olympic fixtures import with exact lineage (`.../T14/import-fixtures.json`).
-  - **QA failure:** conflicting metadata creates a review item, not an overwrite (`.../T14/import-conflicts.json`).
+  - **QA happy:** representative Angelical/Goetic/Olympic fixtures import with exact lineage; task 14 will persist sanitized import-fixture JSON evidence.
+  - **QA failure:** conflicting metadata creates a review item, not an overwrite; task 14 will persist sanitized conflict JSON evidence.
   - **Commit:** `feat(corpus): import source lineage and locators`.
 
 - [ ] 15. Classify rights, sensitivity and editorial eligibility per edition/artifact
@@ -376,8 +405,8 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **Implement:** use Node 24 `node:sqlite` FTS5 in the rebuildable private derivative volume—not PostgreSQL—for local extracted chunks, joined to artifact/locator IDs through validated metadata and mode-policy filters; no embeddings/external model. Public search uses only its imported reviewed bundle DB. Add corpus dashboard/report for counts, duplicates, extraction coverage, unresolved metadata, rights/sensitivity and stale derivatives.
   - **References:** Node 24 `node:sqlite` documentation; `docs/data-inventory.md`; `src/components/cultural-content/cultural-archive.tsx:55-94`; task-12/13 manifests.
   - **Acceptance:** search result always points to source+edition+locator; public mode searches only bundle records; report totals reconcile to inventory or explicitly explain quarantines.
-  - **QA happy:** known fixture phrase returns the correct page/edition (`.../T16/search-happy.json`).
-  - **QA failure:** protected local phrase returns zero through public query helpers (`.../T16/search-public-deny.json`).
+  - **QA happy:** known fixture phrase returns the correct page/edition; task 16 will persist a sanitized successful-search JSON receipt.
+  - **QA failure:** protected local phrase returns zero through public query helpers; task 16 will persist a sanitized public-denial JSON receipt.
   - **Commit:** `feat(corpus): add local search and integrity reports`.
 
 ### Wave 4 — Build deterministic ceremonial domain contracts
@@ -394,8 +423,8 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **Implement:** create strict contracts for named source-bound rule profiles, required/forbidden/preferred conditions, uncertainty, conflict and provenance locator; evaluator returns matched/conflicted/unavailable observations, never “guaranteed success.” Inject time and use existing lunar/transit/annual event calculations.
   - **References:** `src/domain/astrology/lunar.ts:51-153`; `src/domain/astrology/transits/index.ts:39-123`; `src/domain/astrology/annual-calendar.ts`; task-17 timing.
   - **Acceptance:** Heptameron/Agrippa/Arbatel/Ars Paulina profiles remain distinct; conflicting profiles are shown side-by-side; every output includes engine/profile/source versions and limitations.
-  - **QA happy:** TDD golden election fixture per profile (`.../T18/election-goldens.json`).
-  - **QA failure:** missing coordinates/time/source rule returns typed unavailable, not a guessed time (`.../T18/election-unavailable.json`).
+  - **QA happy:** TDD golden election fixture per profile, with sanitized JSON evidence generated by task 18.
+  - **QA failure:** missing coordinates/time/source rule returns typed unavailable, not a guessed time, with a sanitized JSON receipt generated by task 18.
   - **Commit:** `feat(ceremonial): add source-bound election profiles`.
 
 - [ ] 19. Create strict source-bound entity, correspondence and variant contracts
@@ -419,7 +448,7 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **References:** `src/domain/orixas/regency/dataset-freeze.test.ts`; `evidence-graph.test.ts`; `robustness.test.ts`; tasks 17-20.
   - **Acceptance:** same snapshots are deterministic; changing any output requires explicit version bump and `ANTES/DEPOIS/MOTIVO/IMPACTO`; new pure code maintains ≥80% coverage.
   - **QA happy:** targeted domain suite and snapshot hash pass (`.../T21/domain-freeze.txt`).
-  - **QA failure:** duplicate-source and conflicting-rule fixtures remain observable and never silently reconcile (`.../T21/conflicts.json`).
+  - **QA failure:** duplicate-source and conflicting-rule fixtures remain observable and never silently reconcile; task 21 will persist the sanitized conflict report as JSON evidence.
   - **Commit:** `test(ceremonial): freeze domain and conflict behavior`.
 
 ### Wave 5 — Implement separate tradition workspaces
@@ -428,15 +457,15 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **Implement:** create one distinct `sourceSystemId` and adapter for Heptameron, Ars Paulina, Dee/Enochian and every explicitly named Shem-derived modern school; group them only under `workspaceKind=ANGELICAL`. Model hierarchies, names, offices, seals and timing per edition without a universal angel hierarchy. Ingest only locator-backed records.
   - **References:** `/mnt/e/Ocultismo/Angelical e olimpicos`; `/mnt/e/Ocultismo/Magia Angelical e Olimpicos`; `docs/knowledge/sources.md`; tasks 14, 18, 19.
   - **Acceptance:** UI/API can filter by system/edition; variants and conflicts remain visible; public projection follows rights policy.
-  - **QA happy:** fixture per Angelical system renders source-specific record/timing (`.../T22/angelical.json`).
-  - **QA failure:** a name shared across systems remains separate and locatorless data is quarantined (`.../T22/angelical-conflicts.json`).
+  - **QA happy:** fixture per Angelical system renders source-specific record/timing; task 22 will persist sanitized Angelical JSON evidence.
+  - **QA failure:** a name shared across systems remains separate and locatorless data is quarantined; task 22 will persist a sanitized conflict report.
   - **Commit:** `feat(ceremonial): add source-specific angelical workspace`.
 
 - [ ] 23. Implement Ars Goetia as its own source family
   - **Implement:** model 72-spirit records by manuscript/edition with rank, office, seal variants, correspondences and source locators; keep archival descriptions distinct from safe planner guidance and do not convert coercive source language into recommendations.
   - **References:** `/mnt/e/Ocultismo`; `docs/knowledge/sources.md`; tasks 14, 19, 20.
   - **Acceptance:** variant seals/offices can coexist; entity count is evidence-derived, not hardcoded as universal; no Theurgia record appears in Ars Goetia queries.
-  - **QA happy:** representative multi-edition spirit fixture preserves both variants (`.../T23/goetia-variants.json`).
+  - **QA happy:** representative multi-edition spirit fixture preserves both variants, recorded as sanitized task-23 JSON evidence.
   - **QA failure:** harmful planner goal refuses while archival source remains provenance-visible locally (`.../T23/goetia-safety.txt`).
   - **Commit:** `feat(ceremonial): add ars goetia workspace`.
 
@@ -444,7 +473,7 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **Implement:** add directional/aerial hierarchy, ranks, offices, seals and timing using Theurgia-specific adapters and routes; prohibit inheritance from Ars Goetia schemas except shared generic provenance/media primitives.
   - **References:** Lemegeton separation in `docs/knowledge/sources.md`; `/mnt/e/Ocultismo`; task-19 contracts.
   - **Acceptance:** system discriminator is mandatory in storage/query/URL; Goetia/Theurgia entities cannot merge through aliases or import heuristics.
-  - **QA happy:** Theurgia fixture returns only its source family (`.../T24/theurgia.json`).
+  - **QA happy:** Theurgia fixture returns only its source family, recorded as sanitized task-24 JSON evidence.
   - **QA failure:** cross-book import/query is rejected by schema and DB constraints (`.../T24/book-separation.txt`).
   - **Commit:** `feat(ceremonial): add theurgia-goetia workspace`.
 
@@ -452,7 +481,7 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **Implement:** model Olympic spirits, planetary links, offices, seals and aphorism/edition locators; preserve 1575 witness and later translation differences; use an Arbatel timing profile rather than generic planetary recommendations.
   - **References:** `/mnt/e/Ocultismo/Angelical e olimpicos`; `docs/knowledge/sources.md`; task-18 election profiles.
   - **Acceptance:** seven-spirit catalog is source-versioned; translation differences remain edition-scoped; no aliasing to planetary intelligences or angels.
-  - **QA happy:** multi-edition Olympic fixture retains locators/timing (`.../T25/olympic.json`).
+  - **QA happy:** multi-edition Olympic fixture retains locators/timing, recorded as sanitized task-25 JSON evidence.
   - **QA failure:** editionless seal/timing is rejected (`.../T25/olympic-rejections.txt`).
   - **Commit:** `feat(ceremonial): add olympic spirits workspace`.
 
@@ -460,7 +489,7 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **Implement:** model Agrippan planetary intelligences/spirits, tables/seals and correspondences with edition locators; link through planet IDs and timing profiles while explicitly preventing identity equivalence with Olympic spirits, angels, demons or Orixás.
   - **References:** Agrippa sources in `docs/knowledge/sources.md`; `/mnt/e/Ocultismo`; `src/domain/astrology` body IDs; tasks 18-19.
   - **Acceptance:** shared planet relation is navigable but does not merge entities; public/local source projections obey rights policy.
-  - **QA happy:** Saturn fixture shows linked but separate entities (`.../T26/planetary.json`).
+  - **QA happy:** Saturn fixture shows linked but separate entities, recorded as sanitized task-26 JSON evidence.
   - **QA failure:** attempted cross-class alias merge fails (`.../T26/planetary-separation.txt`).
   - **Commit:** `feat(ceremonial): add planetary intelligence workspace`.
 
@@ -468,7 +497,7 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **Implement:** generate a deterministic report over all imported records proving unique IDs, valid locators, system separation, explicit cross-relation types, rights/access consistency and complete public filtering; include known confusing-name fixtures.
   - **References:** tasks 22-26; `src/domain/orixas/regency/correspondence-generation.test.ts`; task-11 bundle.
   - **Acceptance:** every entity belongs to exactly one primary system; every cross-system edge is explicit and sourced; public bundle contains no local-only body/media.
-  - **QA happy:** ontology report passes representative complete fixtures (`.../T27/ontology-report.json`).
+  - **QA happy:** ontology report passes representative complete fixtures and task 27 persists the sanitized JSON report.
   - **QA failure:** deliberate alias, missing locator and local-body leak each fail with precise reason (`.../T27/ontology-adversarial.txt`).
   - **Commit:** `test(ceremonial): enforce tradition separation`.
 

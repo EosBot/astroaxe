@@ -1,5 +1,40 @@
 # Memória canônica do projeto
 
+## Atualização 2026-08-26 — Wave 2 dual-mode concluída
+
+- A divergência anterior foi corrigida: as Tasks 7–11 do roteiro estão concluídas e a Wave 2 está
+  fechada. O total observado é 11 de 39 tasks de implementação.
+- T7 criou os modos imutáveis e fail-closed `disabled|public|local`, com runtime local isolado em
+  loopback, Compose/credenciais/volumes próprios e vocabulário congelado de direitos, acesso,
+  sensibilidade e facetas.
+- T8 adicionou a migration `20260826020000_ceremonial_corpus`, com 15 tabelas aditivas para
+  proveniência, sistemas separados, obras/edições/artefatos/locators, entidades/variantes, mídia,
+  correspondências, timing, revisões estruturadas e envelopes privados. O banco observado possui
+  22 migrations aplicadas.
+- T9 centralizou a autorização pura por faceta. Modo público exige acesso público, escopos atuais
+  de revisão RIGHTS e EDITORIAL e direitos elegíveis para corpo/exportação; conhecimento restrito
+  fica metadata-only. Modo local exige autenticação. Entrada adulterada, modo desabilitado,
+  aprovação expirada/revogada ou registro local-only negam de forma explícita.
+- T10 adicionou armazenamento local seguro e uma rota dinâmica autenticada. Caminhos são sempre
+  relativos e normalizados; o arquivo é aberto com `O_NOFOLLOW`, verificado como regular e
+  confirmado sob o root canônico pelo descritor já aberto. MIME é validado pelos bytes; ranges usam
+  o mesmo descritor. Modo público/desabilitado nega antes de autenticação, banco ou filesystem, e
+  respostas nunca revelam caminho local.
+- T11 adicionou bundle público canônico e estrito, seleção por política T9, hash SHA-256, relatório
+  de exclusões, mídia apenas por hash e verificação independente de schema/direitos/revisões no
+  destino. A migration `20260826120000_ceremonial_public_bundles` cria namespaces imutáveis e um
+  ponteiro singleton ativo/anterior; ativação e rollback são transacionais e revalidam mídia.
+- Checkpoint direcionado T9: typecheck e lint passaram; 28 testes de modo/política passaram. O
+  checkpoint completo de coverage/build/E2E/Sonar permanece reservado ao gate da Wave 2.
+- Em 26 de agosto de 2026, o responsável autorizou prosseguir com acesso/processamento do corpus
+  local nas Tasks 12–13 e com as decisões de produto das Tasks 15 e 22–26. A autorização permite o
+  trabalho, mas não presume licença, domínio público, competência sacerdotal ou aprovação cultural:
+  classificações sem evidência continuam fail-closed e material protegido não se torna publicável.
+- Checkpoint T11: 10 testes de bundle/store, typecheck, lint, migration deploy e build Docker de
+  produção passaram. O banco possui 23 migrations. O primeiro build Docker sofreu `ECONNRESET` no
+  `npm ci`; a repetição passou e compilou Next/TypeScript integralmente.
+- Próxima retomada: Task 12, inventário read-only e retomável de `/mnt/e/Ocultismo`.
+
 ## Atualização 2026-08-26 — Wave 1 do roteiro cerimonial: Tríade v3 fechada
 
 - Concluída a Wave 1 (`.omo/plans/astroaxe-roadmap-ceremonial-laboratory.md`, tarefas 1-6):
@@ -44,10 +79,9 @@
   acima; Quality Gate do SonarQube passou após corrigir os quatro achados reais introduzidos nesta
   sessão (um bug MAJOR de `reduce()` sem valor inicial e três code smells MAJOR de espaçamento
   JSX ambíguo) — 0 novas violações, 81,6% de cobertura em código novo, 1,52275% de duplicação.
-- A migração da infraestrutura de Docker Swarm/homologação e o corpus `/mnt/e/Ocultismo` das
-  Waves 2-7 do roteiro cerimonial (fundação dual-mode, ingestão do acervo privado, workspaces de
-  tradição separadas, criptografia de planos privados) permanecem não iniciados; são mudanças de
-  arquitetura muito maiores que devem ser retomadas com aprovação explícita antes de prosseguir.
+- A fundação dual-mode foi concluída posteriormente pelas Tasks 7–11, conforme a atualização acima. A
+  ingestão, os workspaces e a criptografia continuam pendentes e agora possuem autorização do
+  responsável para execução incremental, preservando os gates jurídicos e culturais fail-closed.
 
 ## Atualização 2026-08-25 — regências v3 e nomenclatura astrológica
 
@@ -349,9 +383,10 @@ onboarding foi concluído. A falha recorrente de `PostToolUse` foi rastreada ao 
 Codex LSP sem a dependência empacotada; o wrapper foi reconstruído e seus oito testes passaram.
 O servidor MCP do Citadel também passou a aceitar o campo MCP `_meta`, validado por 21 chamadas
 JSON-RPC. Como o AstroAxe usa ESLint/Prettier, `.codex/lsp-client.json` desabilita explicitamente o
-Biome embutido para impedir que arquivos HTML acionem um servidor inexistente. O relatório das 14
-verificações do Babysitter está em `docs/a5c-doctor-20260822.html`. Uma nova sessão do Codex é
-necessária para recarregar o processo Citadel que já estava em memória antes da correção.
+Biome embutido para impedir que arquivos HTML acionem um servidor inexistente. O relatório HTML
+temporário das 14 verificações do Babysitter não é mais retido no repositório; o estado canônico
+permanece registrado nesta memória. Uma nova sessão do Codex é necessária para recarregar o
+processo Citadel que já estava em memória antes da correção.
 
 ## Próximos passos recomendados
 

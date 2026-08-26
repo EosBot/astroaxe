@@ -1,6 +1,6 @@
 # Estado de implementação e handoff
 
-Atualizado em 25 de agosto de 2026. Este documento registra o estado observável do workspace; não
+Atualizado em 26 de agosto de 2026. Este documento registra o estado observável do workspace; não
 representa deploy, revisão humana externa ou commit Git.
 
 O ponto curto de retomada entre sessões é `docs/PROJECT_MEMORY.md`.
@@ -19,6 +19,30 @@ O ponto curto de retomada entre sessões é `docs/PROJECT_MEMORY.md`.
 | 7 — Polimento/operação | Parcial avançada                             | Acessibilidade, E2E, SEO, backup/restore, métricas/alertas locais e gate     | Destino externo de alertas e SLOs do ambiente real                          |
 
 ## Concluído
+
+### Laboratório Cerimonial — fundação dual-mode
+
+- O roteiro cerimonial está em 11 de 39 tasks: Waves 1 e 2 completas.
+- Os processos aceitam somente `disabled`, `public` ou `local`; o modo é imutável e não pode ser
+  selecionado por request, header, cookie ou papel. O runtime local possui Compose, banco, Redis,
+  credenciais e volumes separados e fica limitado a loopback.
+- A migration `20260826020000_ceremonial_corpus` acrescenta 15 tabelas de proveniência e registros
+  privados, elevando o histórico observado para 22 migrations, sem alterar tabelas anteriores.
+- Uma política pura governa metadata, quotation, fullText, image, seal, mediaDownload e export.
+  Publicação exige revisão RIGHTS e EDITORIAL vigente por faceta; corpo/exportação exigem direitos
+  elegíveis. Registros local-only, valores desconhecidos, revisões expiradas/revogadas e modo
+  desabilitado negam explicitamente.
+- A entrega local de artefatos usa rota autenticada e dinâmica, abre somente caminhos relativos
+  sob o arquivo read-only, impede symlinks/escapes pelo descritor, valida MIME por assinatura e
+  oferece ranges com headers no-store/nosniff. A superfície não existe em modo público/desabilitado
+  e não revela caminhos em resposta, filename ou erro.
+- O bundle público usa manifesto estrito/canônico, SHA-256, namespace inativo separado e verificação
+  independente de aprovações, direitos e hashes de mídia antes da ativação. Um ponteiro singleton
+  troca active/previous em transação serializável e preserva rollback imediato. A migration mais
+  recente eleva o histórico aplicado para 23 migrations.
+- O responsável autorizou continuar as Tasks 12–13, 15 e 22–26. Direitos e competência cultural
+  não serão inferidos dessa autorização: sem evidência específica, o acesso público continua
+  metadata-only ou negado. Próxima task executável: T12, inventário read-only do corpus local.
 
 ### Fundação e motor natal
 
