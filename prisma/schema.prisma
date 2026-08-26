@@ -638,3 +638,35 @@ model CeremonialSession {
   @@index([planId, occurredAt])
   @@map("ceremonial_sessions")
 }
+
+/// Immutable reviewed bundle imported into a public-only namespace. The manifest contains
+/// public projections and media hashes, never local paths or archive identifiers.
+model CeremonialPublicBundle {
+  id               String    @id @default(uuid()) @db.Uuid
+  schemaVersion    Int       @map("schema_version")
+  manifestHash     String    @unique @map("manifest_hash") @db.Char(64)
+  manifest         Json
+  storageNamespace String    @unique @map("storage_namespace") @db.VarChar(120)
+  status           String    @default("INACTIVE") @db.VarChar(20)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  verifiedAt       DateTime? @map("verified_at") @db.Timestamptz(6)
+  activatedAt      DateTime? @map("activated_at") @db.Timestamptz(6)
+
+  activePointers   CeremonialPublicBundlePointer[] @relation("ActivePublicBundle")
+  previousPointers CeremonialPublicBundlePointer[] @relation("PreviousPublicBundle")
+
+  @@index([status, createdAt])
+  @@map("ceremonial_public_bundles")
+}
+
+/// Singleton transactional pointer. The previous namespace remains addressable for rollback.
+model CeremonialPublicBundlePointer {
+  id               Int                     @id
+  activeBundleId   String?                 @map("active_bundle_id") @db.Uuid
+  previousBundleId String?                 @map("previous_bundle_id") @db.Uuid
+  updatedAt        DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
+  activeBundle     CeremonialPublicBundle? @relation("ActivePublicBundle", fields: [activeBundleId], references: [id], onDelete: Restrict)
+  previousBundle   CeremonialPublicBundle? @relation("PreviousPublicBundle", fields: [previousBundleId], references: [id], onDelete: Restrict)
+
+  @@map("ceremonial_public_bundle_pointer")
+}

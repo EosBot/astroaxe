@@ -30,6 +30,7 @@
     "regency:evaluate-v2": "node --conditions=react-server --import tsx scripts/evaluate-regency.ts --v2",
     "regency:prepare-case": "node --import tsx scripts/prepare-regency-case.ts",
     "regency:correspondence-report": "node --import tsx scripts/report-generated-correspondences.ts",
+    "ceremonial:bundle": "node --import tsx scripts/build-ceremonial-public-bundle.ts",
     "backup:postgres": "sh scripts/backup-postgres.sh",
     "backup:verify": "sh scripts/verify-postgres-restore.sh",
     "format:check": "prettier --check .",
