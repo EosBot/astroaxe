@@ -13,7 +13,7 @@ O ponto curto de retomada entre sessões é `docs/PROJECT_MEMORY.md`.
 | 1 — Fundação           | Concluída                                    | Docker, PostgreSQL/pgvector, Redis, Traefik, health, Sonar e restore testado | Endurecer e medir a operação containerizada                                 |
 | 2 — Motor              | Concluída no escopo natal e trânsitos atuais | Cálculo determinístico, hora desconhecida, golden tests, cache e janelas     | Ampliar efemérides/regras somente com snapshots e bump de versão            |
 | 3 — Conta e mapa       | Concluída no MVP local                       | Guest-first, autenticação, ownership, arquivo, edição, histórico e E2E       | Exercitar continuamente os fluxos completos em desktop e mobile             |
-| 4 — Conteúdo           | V2 aplicada, validação em curso              | Workflow editorial, corpus público e Tríade v2 auditável                     | Calibrar com casos elegíveis congelados e publicar métricas suficientes     |
+| 4 — Conteúdo           | V3 dirigida, validação em curso              | Workflow editorial, corpus público e Tríade v3 auditável                     | Calibrar com casos elegíveis congelados e publicar métricas suficientes     |
 | 5 — Ritual e IA        | Parcial avançada                             | Tempo do Céu, diário privado versionado e exportável; sem LLM em runtime     | Histórico longitudinal e RAG opcional quando houver chave/corpus autorizado |
 | 6 — Receita            | Não iniciada                                 | Hipóteses documentadas, sem cobrança simulada                                | Free/Pro, limites, Stripe e webhooks após decisões e credenciais de teste   |
 | 7 — Polimento/operação | Parcial avançada                             | Acessibilidade, E2E, SEO, backup/restore, métricas/alertas locais e gate     | Destino externo de alertas e SLOs do ambiente real                          |
@@ -152,7 +152,8 @@ O ponto curto de retomada entre sessões é `docs/PROJECT_MEMORY.md`.
 15. `20260819140000_correct_cultural_publication_time`;
 16. `20260820010000_private_journaling`;
 17. `20260822010000_transactional_email_outbox`;
-18. `20260823010000_account_verification_and_recovery`.
+18. `20260823010000_account_verification_and_recovery`;
+19. `20260825160000_regency_feedback`.
 
 A migration 11 adiciona `REFERENCE_ONLY`, `CLAIM_ELIGIBLE` e `WITHDRAWN` às fontes. Oito livros
 de Rubens Saraceni e dos corpus/estudos iorubás foram catalogados apenas como referência. O fluxo
@@ -176,8 +177,8 @@ também satisfaz a constraint de 1.800 caracteres.
   em `docs/astrology-calculation-changelog.md`.
 - O onboarding adotou o contrato visual de `docs/design-references.md`: palco orbital, foco claro e
   coreografia curta, preservando a identidade quente e editorial do Observatório Ritual.
-- A cena de partículas Canvas é determinística, limitada a 180 partículas no desktop e 72 no mobile,
-  30 fps e DPR máximo de `1.5`; pausa fora do viewport/aba e fica estática com redução de movimento.
+- O palco orbital WebGL é decorativo e progressivo: conteúdo e formulário permanecem disponíveis
+  sem a cena. A implementação Canvas anterior, sem consumidor, foi removida com seus testes e CSS.
 - A composição foi verificada em `1440×1000`, `390×844` e `320×700`, sem overflow horizontal,
   overlay de erro ou erro de console. O resultado usa uma mandala natal real e interativa, com dez
   posições no DOM, seleção por teclado, casas e ASC/DSC quando a hora é conhecida e omissão explícita
@@ -223,9 +224,11 @@ também satisfaz a constraint de 1.800 caracteres.
   Graph coerentes; `/conta` é `noindex`; `robots.txt` exclui API/conta; `sitemap.xml` contém apenas
   páginas públicas; JSON-LD declara somente `WebSite`, sem fabricar organização, produto, preço,
   review ou FAQ.
-- Checkpoint mais recente observado: 252 testes em 69 arquivos, 87,42% de statements, 72,13% de
-  branches, 94,04% de functions e 89,57% de linhas; typecheck, lint, build, 14 cenários E2E e
-  release smoke passaram. O Sonar Quality Gate foi reexecutado em 23 de agosto de 2026 e passou com
+- Checkpoint desta revisão: 300 testes em 87 arquivos passaram, com 86,11% de statements, 70,69%
+  de branches, 89,06% de functions e 88,31% de linhas. Typecheck, lint, formatação, build Docker de
+  produção, release smoke e os 14 cenários E2E passaram. O Quality Gate do SonarQube foi
+  reexecutado em 25 de agosto de 2026 e passou. A inspeção de 65 arquivos estáticos do cliente não
+  encontrou marcadores da matriz proprietária. No checkpoint anterior, o gate registrava
   zero novas violações, 83,0% de cobertura no código novo e 0,54482% de duplicação. Por decisão do
   responsável, o `.env` local contém um Project Analysis Token e um User Token permanentes,
   distintos e validados; nenhum valor foi versionado.
@@ -240,9 +243,9 @@ também satisfaz a constraint de 1.800 caracteres.
   coleta métricas agregadas do Traefik e carrega quatro alertas locais. `npm run test:observability`
   verifica target, séries e regras. Logs de acesso descartam caminho, query, endereço do cliente e
   headers; o provider Docker fica restrito ao projeto Compose para impedir colisões entre stacks.
-- A fronteira de analytics possui consentimento versionado, fail-closed e vocabulário estrito sem
-  identificadores ou conteúdo sensível. Não há coletor, SDK, endpoint, evento ou flag de ativação;
-  fornecedor, finalidade e política LGPD continuam pré-condições para qualquer envio.
+- Não há coletor, SDK, endpoint, evento ou flag de analytics. O contrato sem chamadores foi removido
+  como código especulativo; fornecedor, finalidade, consentimento e política LGPD continuam
+  pré-condições para criar uma boundary real.
 - O inventário técnico de dados mapeia conta, sessões, perfil natal, mapas, diário, conteúdo
   editorial, cascatas e boundaries externas, além de registrar as lacunas jurídicas e de retenção
   que ainda impedem declarar a política LGPD final.
@@ -299,7 +302,8 @@ Os volumes anteriores não foram apagados e nenhum `down -v` foi executado.
 
 1. Definir provedor, domínio, TLS, secret manager, banco/Redis gerenciados ou operação equivalente.
 2. Executar migrations em staging, smoke tests, teste de restauração, carga básica e Quality Gate.
-3. Finalizar política de privacidade/LGPD, termos, retenção, exportação e exclusão de dados.
+3. Submeter a página factual de privacidade já publicada à revisão jurídica e completar controlador,
+   bases legais, retenção, subprocessadores e termos antes de produção.
 4. Criar procedimento de deploy e rollback/roll-forward; observar o primeiro deploy antes de
    declarar produção concluída.
 
