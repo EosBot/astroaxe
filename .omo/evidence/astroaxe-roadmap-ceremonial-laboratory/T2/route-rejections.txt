@@ -1,0 +1,17 @@
+T2 — rejection matrix, table-driven via route.test.ts (2026-08-26)
+
+- wrong origin (POST, isSameOrigin=false) -> 403, findFirst not called.
+- oversized POST body (Content-Length 16385) -> 413, findFirst not called.
+- unauthenticated POST -> 401, findFirst not called.
+- invalid/unparseable stored chart -> 503, response body has no ZodError/stack text
+  (log line: {"errorType":"ZodError","msg":"regency calculation failed"}).
+- regency-feedback contract: knowsOrisas=false + correctedTriad present -> rejected.
+- regency-feedback contract: knowsOrisas=true + correctedTriad all-null -> rejected.
+- regency-feedback contract: knowsOrisas=true + correctedTriad absent -> rejected (pre-existing).
+- regency-feedback contract: consent=false -> rejected (pre-existing).
+- checkJsonRequest: non-JSON content-type -> {ok:false,status:415}.
+- checkJsonRequest: Content-Length over limit -> {ok:false,status:413}.
+
+All from: npm test -- "src/app/api/profiles/[profileId]/regency/route.test.ts" \
+  src/lib/orixas/regency-feedback.test.ts src/lib/security/json-body.test.ts
+15/15 passed.

@@ -5,33 +5,42 @@ const mocks = vi.hoisted(() => ({
   resolveAccount: vi.fn(),
   findFirst: vi.fn(),
   getPrisma: vi.fn(),
+  upsert: vi.fn(),
+  isSameOrigin: vi.fn(),
 }));
 
-vi.mock("@/lib/env", () => ({ parseServerEnv: () => ({ AUTH_SESSION_SECRET: "a".repeat(32) }) }));
+vi.mock("@/lib/env", () => ({
+  parseServerEnv: () => ({ AUTH_SESSION_SECRET: "a".repeat(32), SITE_URL: "http://localhost" }),
+}));
 vi.mock("@/lib/prisma", () => ({ getPrisma: mocks.getPrisma }));
-vi.mock("@/lib/security/account", () => ({ resolveAccount: mocks.resolveAccount }));
+vi.mock("@/lib/security/account", () => ({
+  resolveAccount: mocks.resolveAccount,
+  isSameOrigin: mocks.isSameOrigin,
+}));
 
 describe("protected regency result", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.isSameOrigin.mockReturnValue(true);
     mocks.resolveAccount.mockResolvedValue({ id: "owner-id" });
     mocks.findFirst.mockResolvedValue({
       id: "123e4567-e89b-42d3-a456-426614174000",
       birthDate: new Date("1990-06-10T00:00:00.000Z"),
       chart: { result: chartResult() },
     });
-    mocks.getPrisma.mockReturnValue({ birthProfile: { findFirst: mocks.findFirst } });
+    mocks.upsert.mockResolvedValue({ id: "feedback-id" });
+    mocks.getPrisma.mockReturnValue({
+      birthProfile: { findFirst: mocks.findFirst },
+      regencyFeedback: { upsert: mocks.upsert },
+    });
   });
 
   it("returns only the public projection for an owned profile", async () => {
-    const { GET } = await import("./route");
+    const { POST } = await import("./route");
     const profileId = "123e4567-e89b-42d3-a456-426614174000";
-    const response = await GET(
-      new NextRequest(`http://localhost/api/profiles/${profileId}/regency`),
-      {
-        params: Promise.resolve({ profileId }),
-      },
-    );
+    const response = await POST(request(profileId), {
+      params: Promise.resolve({ profileId }),
+    });
     const body: unknown = await response.json();
 
     expect(response.status).toBe(200);
@@ -40,20 +49,113 @@ describe("protected regency result", () => {
       expect.objectContaining({ where: { id: profileId, userId: "owner-id" } }),
     );
     expect(JSON.stringify(body)).not.toMatch(/claimId|ruleId|weight|matrixVersion|contribution/);
-    expect(body).toMatchObject({ methodVersion: "AstroAxe Regências 2.0 — pesquisa aplicada" });
+    expect(body).toMatchObject({ methodVersion: "AstroAxe Regências 3.0 — pesquisa aplicada" });
+  });
+
+  it("rejects a cross-origin POST before touching the database", async () => {
+    mocks.isSameOrigin.mockReturnValue(false);
+    const { POST } = await import("./route");
+    const profileId = "123e4567-e89b-42d3-a456-426614174000";
+    const response = await POST(request(profileId), { params: Promise.resolve({ profileId }) });
+    expect(response.status).toBe(403);
+    expect(mocks.findFirst).not.toHaveBeenCalled();
+  });
+
+  it("rejects an oversized POST payload as 413", async () => {
+    const { POST } = await import("./route");
+    const profileId = "123e4567-e89b-42d3-a456-426614174000";
+    const oversized = new NextRequest(`http://localhost/api/profiles/${profileId}/regency`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Content-Length": "16385" },
+      body: JSON.stringify({ version: "regency-questionnaire-1.0.0", answers: [] }),
+    });
+    const response = await POST(oversized, { params: Promise.resolve({ profileId }) });
+    expect(response.status).toBe(413);
+    expect(mocks.findFirst).not.toHaveBeenCalled();
+  });
+
+  it("returns a sanitized 503 when the stored chart cannot be parsed", async () => {
+    mocks.findFirst.mockResolvedValue({
+      id: "123e4567-e89b-42d3-a456-426614174000",
+      birthDate: new Date("1990-06-10T00:00:00.000Z"),
+      chart: { result: { not: "a chart" } },
+    });
+    const { POST } = await import("./route");
+    const profileId = "123e4567-e89b-42d3-a456-426614174000";
+    const response = await POST(request(profileId), { params: Promise.resolve({ profileId }) });
+    expect(response.status).toBe(503);
+    const body: unknown = await response.json();
+    expect(JSON.stringify(body)).not.toMatch(/ZodError|stack/i);
   });
 
   it("does not calculate without an authenticated owner", async () => {
     mocks.resolveAccount.mockResolvedValue(null);
-    const { GET } = await import("./route");
-    const response = await GET(
-      new NextRequest("http://localhost/api/profiles/123e4567-e89b-42d3-a456-426614174000/regency"),
-      { params: Promise.resolve({ profileId: "123e4567-e89b-42d3-a456-426614174000" }) },
-    );
+    const { POST } = await import("./route");
+    const response = await POST(request("123e4567-e89b-42d3-a456-426614174000"), {
+      params: Promise.resolve({ profileId: "123e4567-e89b-42d3-a456-426614174000" }),
+    });
     expect(response.status).toBe(401);
     expect(mocks.findFirst).not.toHaveBeenCalled();
   });
+
+  it("stores a consented correction as a versioned calibration example", async () => {
+    const { PUT } = await import("./route");
+    const profileId = "123e4567-e89b-42d3-a456-426614174000";
+    const response = await PUT(feedbackRequest(profileId), {
+      params: Promise.resolve({ profileId }),
+    });
+    expect(response.status).toBe(201);
+    expect(mocks.upsert).toHaveBeenCalledWith(
+      expect.objectContaining({
+        create: expect.objectContaining({
+          birthProfileId: profileId,
+          verdict: "polarity_inverted",
+          knowsOrisas: true,
+          correctedTriad: { front: "orisa:oya", head: null, back: null },
+        }),
+      }),
+    );
+  });
 });
+
+function request(profileId: string) {
+  return new NextRequest(`http://localhost/api/profiles/${profileId}/regency`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      version: "regency-questionnaire-1.0.0",
+      answers: ["faith", "love", "knowledge", "justice", "law", "evolution", "generation"].map(
+        (questionId) => ({ questionId, value: "both" }),
+      ),
+    }),
+  });
+}
+
+function feedbackRequest(profileId: string) {
+  return new NextRequest(`http://localhost/api/profiles/${profileId}/regency`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json", Origin: "http://localhost" },
+    body: JSON.stringify({
+      methodVersion: "AstroAxe Regências 3.0 — pesquisa aplicada",
+      questionnaire: questionnaireBody(),
+      verdict: "polarity_inverted",
+      knowsOrisas: true,
+      correctedTriad: { front: "orisa:oya", head: null, back: null },
+      confirmationBasis: "buzios_or_oracle",
+      consent: true,
+      consentVersion: "regency-feedback-consent-1.0",
+    }),
+  });
+}
+
+function questionnaireBody() {
+  return {
+    version: "regency-questionnaire-1.0.0",
+    answers: ["faith", "love", "knowledge", "justice", "law", "evolution", "generation"].map(
+      (questionId) => ({ questionId, value: "both" }),
+    ),
+  };
+}
 
 function chartResult() {
   const ids = [
