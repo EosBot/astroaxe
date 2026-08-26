@@ -38,14 +38,12 @@ migration or generate step is owed before starting Task 2.**
 
 ## Targeted baseline (host, `npm` against the already-running Docker stack)
 
-| Gate | Result |
-| --- | --- |
-| `npm run typecheck` | pass, no output |
-| `npm run lint` | pass (`eslint . --max-warnings=0`), no output |
-| `npm test` (`vitest run`) | **90 files passed (90) / 319 tests passed (319)**, 30.48s |
-| `npm run format:check` | pass for all tracked source; only `.omo/` agent-runtime files (drafts,
-  plans, `run-continuation/*.json`) are flagged — those are outside the plan's file allowlist and
-  not part of the product source tree |
+| Gate                      | Result                                                                                                                                                                                                        |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run typecheck`       | pass, no output                                                                                                                                                                                               |
+| `npm run lint`            | pass (`eslint . --max-warnings=0`), no output                                                                                                                                                                 |
+| `npm test` (`vitest run`) | **90 files passed (90) / 319 tests passed (319)**, 30.48s                                                                                                                                                     |
+| `npm run format:check`    | pass for all tracked source; only `.omo/` agent-runtime files (drafts, plans, `run-continuation/*.json`) are flagged, and those are outside the plan's file allowlist and not part of the product source tree |
 
 Three expected sanitized error-level log lines appeared during the test run (`account export
 failed`, `published cultural content lookup failed`, `published cultural collection lookup
