@@ -131,7 +131,9 @@ cada token:
 | Staging  | `astroaxe-staging` | `04e8bbff-646f-4f23-b257-7246fa9e6acb` | `staging.astroaxe.net` |
 
 O ingress de ambos aponta para o serviço interno `http://traefik:8080` e cai em `http_status:404`
-para qualquer hostname não declarado. O token fica em `astroaxe_cloudflare_tunnel_v1`; ele não entra
+para qualquer hostname não declarado. Os dois tokens foram validados em 2026-08-26 executando
+`cloudflared` contra a Cloudflare: ambos autenticaram, registraram conexões de borda e receberam a
+configuração remota de ingress. O token fica em `astroaxe_cloudflare_tunnel_v1`; ele não entra
 em arquivo de ambiente, log ou comando persistido. Use duas réplicas de `cloudflared`,
 `--no-autoupdate` e imagem fixada, de modo que atualização seja decisão de deploy e não mutação
 dentro do container.

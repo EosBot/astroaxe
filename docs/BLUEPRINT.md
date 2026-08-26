@@ -160,7 +160,8 @@ Bibliotecas de UI entram apenas quando houver uso concreto. Componentes copy-pas
 - `migrate`: execução única antes dos consumidores;
 - `app`: Next standalone, usuário não-root;
 - `worker`: jobs, métricas e graceful shutdown;
-- `traefik`: entrada HTTP local e roteamento;
+- `traefik`: entrada HTTP local e roteamento; em produção ele permanece privado e é alcançado
+  apenas pelo Cloudflare Tunnel, conforme `docs/cloudflare-edge.md`;
 - `sonarqube`: análise local em profile de qualidade;
 - `backup`: profile sob demanda com restore testado.
 

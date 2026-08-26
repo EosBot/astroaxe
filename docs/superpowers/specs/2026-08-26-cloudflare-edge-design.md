@@ -128,3 +128,36 @@ Fica registrado como trabalho separado.
 2. O token da integração Cloudflare tem escopo reduzido: a leitura de
    `/subscriptions` retorna erro de autenticação. Qualquer permissão faltante
    para Tunnel ou Zero Trust é reportada, não contornada.
+
+## Desvios verificados na implementação
+
+Registrados após verificar a configuração contra a borda real, no mesmo dia. O runbook
+`docs/cloudflare-edge.md` é a referência autoritativa; esta seção preserva o que mudou em relação
+ao desenho aprovado acima e por quê.
+
+**CAA é menos restritivo do que este desenho afirmava.** A zona contém exatamente os três registros
+projetados, mas a Cloudflare sintetiza, na resolução, registros CAA adicionais para as CAs que ela
+própria usa — `comodoca.com`, `digicert.com` e `ssl.com` — inclusive `issuewild`. O `issuewild ";"`
+publicado fica neutralizado e o comportamento não é configurável no plano Free. O ganho real
+permanece, porque sem CAA qualquer CA do mundo pode emitir para o domínio, mas a restrição não é o
+par `letsencrypt.org` + `pki.goog` que a seção de arquitetura descreve.
+
+**A regra WAF de `TRACE`/`TRACK` era inerte e foi substituída.** A Cloudflare recusa esses métodos
+na borda com `405`, antes de o WAF ser avaliado, então a regra nunca disparava e ocupava um dos
+cinco slots do plano Free. O slot foi realocado para exigir Managed Challenge em `/api/geocoding`
+quando o user agent não é de navegador. Essa rota faz proxy para o Nominatim usando o user agent do
+projeto: o abuso dela não gera custo interno, gera bloqueio da nossa reputação junto a um terceiro,
+que é mais lento de reverter. O front chama a rota por `fetch` do navegador e não é afetado.
+
+**Rate limiting no plano Free exige `mitigation_timeout` igual ao período.** O desenho previa
+bloqueio de 60s sobre janela de 10s; a API recusou. O valor efetivo é 10s.
+
+**Página de espera.** Não estava no desenho original. Um Worker responde `503` com `noindex` no apex
+enquanto a VPS não existe, evitando erro 1033 e impedindo que a placeholder seja indexada como
+conteúdo real do domínio. Sai do ar apagando a rota, sem tocar em DNS.
+
+**Resultado da verificação.** TLS 1.1 recusado e 1.2 aceito; `403` em `/.env`, `/wp-login.php`,
+`/phpmyadmin/` e `/api/health/live`; rate limiting liberando 15 requisições e bloqueando a partir da
+16ª; Access redirecionando `staging.astroaxe.net` para login antes da origem; `www` redirecionando
+301 para o apex; SPF, DMARC e null MX publicados; e os dois tokens de Tunnel autenticando e
+registrando conexões de borda.

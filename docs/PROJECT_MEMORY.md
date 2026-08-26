@@ -530,7 +530,15 @@ desligado, sem nenhum registro DNS publicado.
 A borda passou a ter TLS estrito com mínimo 1.2, redirecionamento HTTPS, Managed Free Ruleset ativo,
 quatro regras WAF custom, rate limiting nas rotas de autenticação, regras de cache que excluem toda
 superfície autenticada, Bot Fight Mode com bloqueio de crawlers de treino de IA, e Zero Trust Access
-por One-time PIN no staging. O acesso à aplicação existe apenas por Cloudflare Tunnel: a zona não
+por One-time PIN no staging. Tudo foi verificado contra a borda real, não apenas contra a API: TLS
+1.1 recusado, WAF respondendo `403` nas rotas cobertas, rate limiting cortando na 16ª requisição e
+Access redirecionando para login antes da origem.
+
+Duas correções vieram dessa verificação. A regra WAF de `TRACE`/`TRACK` era inerte, porque a
+Cloudflare já recusa esses métodos com `405` antes do WAF; o slot foi realocado para proteger
+`/api/geocoding`, cujo abuso queima a reputação do projeto no Nominatim em vez de gerar custo
+interno. E o CAA publicado é menos restritivo do que aparenta: a Cloudflare sintetiza registros
+para as CAs parceiras dela, inclusive `issuewild`, e isso não é configurável no plano Free. O acesso à aplicação existe apenas por Cloudflare Tunnel: a zona não
 tem registro `A`, então nenhum IP de origem é descobrível.
 
 O domínio está declarado como não-remetente no DNS até existir relay e endereço de contato. HSTS

@@ -16,7 +16,7 @@ O ponto curto de retomada entre sessões é `docs/PROJECT_MEMORY.md`.
 | 4 — Conteúdo           | V3 dirigida, validação em curso              | Workflow editorial, corpus público e Tríade v3 auditável                     | Calibrar com casos elegíveis congelados e publicar métricas suficientes     |
 | 5 — Ritual e IA        | Parcial avançada                             | Tempo do Céu, diário privado versionado e exportável; sem LLM em runtime     | Histórico longitudinal e RAG opcional quando houver chave/corpus autorizado |
 | 6 — Receita            | Não iniciada                                 | Hipóteses documentadas, sem cobrança simulada                                | Free/Pro, limites, Stripe e webhooks após decisões e credenciais de teste   |
-| 7 — Polimento/operação | Parcial avançada                             | Acessibilidade, E2E, SEO, backup/restore, métricas/alertas locais e gate     | Destino externo de alertas e SLOs do ambiente real                          |
+| 7 — Polimento/operação | Parcial avançada                             | Acessibilidade, E2E, SEO, backup/restore, métricas/alertas locais, gate e borda pública verificada | Destino externo de alertas e SLOs do ambiente real                          |
 
 ## Concluído
 
@@ -299,6 +299,28 @@ também satisfaz a constraint de 1.800 caracteres.
 
 Os volumes anteriores não foram apagados e nenhum `down -v` foi executado.
 
+### Borda pública Cloudflare
+
+A zona `astroaxe.net` saiu do default de fábrica e foi verificada contra a borda real em 2026-08-26,
+antes de qualquer VPS existir. TLS estrito com mínimo 1.2 e TLS 1.1 recusado; Managed Free Ruleset
+ativo; quatro regras WAF custom; rate limiting cortando na 16ª requisição a `/api/auth/`; cache que
+exclui toda superfície autenticada; Bot Fight Mode com bloqueio de crawlers de treino de IA; e Zero
+Trust Access por One-time PIN barrando `staging.astroaxe.net` antes da origem.
+
+A origem existe apenas por Cloudflare Tunnel: a zona não tem registro `A` nem wildcard, então não há
+IP de origem descobrível. Os tokens dos dois Tunnels foram validados conectando `cloudflared` de
+verdade e registrando conexões na borda.
+
+O domínio está declarado como não-remetente no DNS — null MX, `v=spf1 -all` e DMARC `p=reject` —
+até existir relay e endereço de contato. HSTS permanece desligado de propósito até o primeiro deploy
+com HTTPS confirmado.
+
+Enquanto a VPS não existe, um Worker (`astroaxe-holding`) publica a página "em construção" no apex,
+respondendo `503` com `noindex` para não ser indexada como se fosse o site real.
+
+Runbook autoritativo: `docs/cloudflare-edge.md`. Desenho aprovado:
+`docs/superpowers/specs/2026-08-26-cloudflare-edge-design.md`.
+
 ## Fila restante, em ordem recomendada
 
 ### P0 — Fechar o MVP confiável
@@ -344,7 +366,8 @@ Os volumes anteriores não foram apagados e nenhum `down -v` foi executado.
 
 ### P3 — Produção
 
-1. Definir provedor, domínio, TLS, secret manager, banco/Redis gerenciados ou operação equivalente.
+1. Domínio, TLS e borda pública estão definidos e verificados (`docs/cloudflare-edge.md`). Resta
+   definir provedor de VPS, secret manager e banco/Redis gerenciados ou operação equivalente.
 2. Executar migrations em staging, smoke tests, teste de restauração, carga básica e Quality Gate.
 3. Submeter a página factual de privacidade já publicada à revisão jurídica e completar controlador,
    bases legais, retenção, subprocessadores e termos antes de produção.
@@ -367,12 +390,13 @@ Os volumes anteriores não foram apagados e nenhum `down -v` foi executado.
 - Stripe exige conta e chaves de teste; nenhuma chave deve ser criada ou armazenada no repositório.
 - Conteúdo/RAG exige corpus efetivamente autorizado; a lista de fontes em `docs/knowledge` não é
   licença automática.
-- Deploy, domínio, email transacional, monitoramento externo e política LGPD final exigem escolhas e
-  credenciais do responsável pelo produto.
+- Domínio e borda pública estão resolvidos. Deploy, email transacional, monitoramento externo e
+  política LGPD final continuam exigindo escolhas e credenciais do responsável pelo produto.
 
 ## Estado Git e operação
 
-- As mudanças permanecem no working tree e não foram commitadas, conforme ausência de autorização.
+- A configuração da borda Cloudflare foi commitada mediante autorização explícita. As demais
+  mudanças permanecem no working tree e não foram commitadas.
 - `.env` local existe, está ignorado e não deve ser versionado ou exibido.
 - SonarQube usa tokens permanentes distintos no `.env` local, por decisão explícita do responsável;
   eles devem ser rotacionados e nunca versionados.
@@ -382,8 +406,9 @@ Os volumes anteriores não foram apagados e nenhum `down -v` foi executado.
   imagem PostgreSQL 18 atual. Ele foi preservado intacto: a correção exige clone, backup e
   `pg_upgrade`/restore planejado, nunca exclusão do volume. As validações recentes usaram projetos e
   volumes isolados.
-- Não existe evidência de deploy, CI remoto, domínio público ou monitoramento externo; esses itens
-  não devem ser apresentados como concluídos. Backup local possui restauração comprovada, mas ainda
-  não existe cópia externa criptografada nem teste em infraestrutura hospedada.
+- O domínio público `astroaxe.net` existe, está configurado e foi verificado contra a borda real.
+  Não existe evidência de deploy, CI remoto ou monitoramento externo; esses itens não devem ser
+  apresentados como concluídos. Backup local possui restauração comprovada, mas ainda não existe
+  cópia externa criptografada nem teste em infraestrutura hospedada.
 - Antes de retomar: leia `AGENTS.md`, `docs/BLUEPRINT.md`, este arquivo e
   `docs/cultural-content-operations.md`; execute `git status --short` e preserve mudanças alheias.
