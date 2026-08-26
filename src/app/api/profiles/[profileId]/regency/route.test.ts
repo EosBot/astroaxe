@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   findFirst: vi.fn(),
   getPrisma: vi.fn(),
   upsert: vi.fn(),
+  deleteMany: vi.fn(),
   isSameOrigin: vi.fn(),
 }));
 
@@ -29,9 +30,10 @@ describe("protected regency result", () => {
       chart: { result: chartResult() },
     });
     mocks.upsert.mockResolvedValue({ id: "feedback-id" });
+    mocks.deleteMany.mockResolvedValue({ count: 1 });
     mocks.getPrisma.mockReturnValue({
       birthProfile: { findFirst: mocks.findFirst },
-      regencyFeedback: { upsert: mocks.upsert },
+      regencyFeedback: { upsert: mocks.upsert, deleteMany: mocks.deleteMany },
     });
   });
 
@@ -88,6 +90,56 @@ describe("protected regency result", () => {
     expect(JSON.stringify(body)).not.toMatch(/ZodError|stack/i);
   });
 
+  it("withdraws a matching feedback and returns 204", async () => {
+    const { DELETE } = await import("./route");
+    const profileId = "123e4567-e89b-42d3-a456-426614174000";
+    const response = await DELETE(deleteRequest(profileId), {
+      params: Promise.resolve({ profileId }),
+    });
+    expect(response.status).toBe(204);
+    expect(mocks.deleteMany).toHaveBeenCalledWith({
+      where: {
+        birthProfileId: profileId,
+        birthProfile: { userId: "owner-id" },
+        methodVersion: "AstroAxe Regências 3.0 — pesquisa aplicada",
+        questionnaireVersion: "regency-questionnaire-1.0.0",
+      },
+    });
+  });
+
+  it("returns 404 without deleting when nothing matches (non-owner or unknown feedback)", async () => {
+    mocks.deleteMany.mockResolvedValue({ count: 0 });
+    const { DELETE } = await import("./route");
+    const profileId = "123e4567-e89b-42d3-a456-426614174000";
+    const response = await DELETE(deleteRequest(profileId), {
+      params: Promise.resolve({ profileId }),
+    });
+    expect(response.status).toBe(404);
+  });
+
+  it("rejects a cross-origin DELETE before touching the database", async () => {
+    mocks.isSameOrigin.mockReturnValue(false);
+    const { DELETE } = await import("./route");
+    const profileId = "123e4567-e89b-42d3-a456-426614174000";
+    const response = await DELETE(deleteRequest(profileId), {
+      params: Promise.resolve({ profileId }),
+    });
+    expect(response.status).toBe(403);
+    expect(mocks.deleteMany).not.toHaveBeenCalled();
+  });
+
+  it("rejects an unversioned DELETE query as 400", async () => {
+    const { DELETE } = await import("./route");
+    const profileId = "123e4567-e89b-42d3-a456-426614174000";
+    const request = new NextRequest(
+      `http://localhost/api/profiles/${profileId}/regency?methodVersion=wrong`,
+      { method: "DELETE" },
+    );
+    const response = await DELETE(request, { params: Promise.resolve({ profileId }) });
+    expect(response.status).toBe(400);
+    expect(mocks.deleteMany).not.toHaveBeenCalled();
+  });
+
   it("does not calculate without an authenticated owner", async () => {
     mocks.resolveAccount.mockResolvedValue(null);
     const { POST } = await import("./route");
@@ -128,6 +180,17 @@ function request(profileId: string) {
         (questionId) => ({ questionId, value: "both" }),
       ),
     }),
+  });
+}
+
+function deleteRequest(profileId: string) {
+  const query = new URLSearchParams({
+    methodVersion: "AstroAxe Regências 3.0 — pesquisa aplicada",
+    questionnaireVersion: "regency-questionnaire-1.0.0",
+  });
+  return new NextRequest(`http://localhost/api/profiles/${profileId}/regency?${query}`, {
+    method: "DELETE",
+    headers: { Origin: "http://localhost" },
   });
 }
 

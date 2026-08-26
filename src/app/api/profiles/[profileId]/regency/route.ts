@@ -7,6 +7,7 @@ import type { WesternChartEnvelope } from "@/domain/astrology/western/contracts"
 import { extractRegencyAstrologicalFeatures } from "@/domain/orixas/regency/features";
 import { extractRegencyNumerologicalFeatures } from "@/domain/orixas/regency/numerology";
 import {
+  REGENCY_QUESTIONNAIRE_VERSION,
   extractRegencyQuestionnaireFeatures,
   regencyQuestionnaireSubmissionSchema,
 } from "@/domain/orixas/regency/questionnaire";
@@ -28,6 +29,10 @@ import { checkJsonRequest } from "@/lib/security/json-body";
 
 const idSchema = z.uuid();
 const chartSchema = createMapResponseSchema.shape.chart;
+const feedbackDeleteQuerySchema = z.object({
+  methodVersion: z.literal(PUBLIC_REGENCY_METHOD_VERSION),
+  questionnaireVersion: z.literal(REGENCY_QUESTIONNAIRE_VERSION),
+});
 
 export async function GET(): Promise<Response> {
   return apiJson(
@@ -140,11 +145,47 @@ export async function PUT(
   }
 }
 
+export async function DELETE(
+  request: NextRequest,
+  context: { params: Promise<{ profileId: string }> },
+): Promise<Response> {
+  const env = parseServerEnv();
+  if (!isSameOrigin(request, env.SITE_URL))
+    return apiJson({ error: "Origem inválida." }, { status: 403 });
+  const account = await resolveAccount(request, env.AUTH_SESSION_SECRET);
+  if (account === null)
+    return apiJson({ error: "Entre para remover sua avaliação." }, { status: 401 });
+  const parsedId = idSchema.safeParse((await context.params).profileId);
+  if (!parsedId.success) return apiJson({ error: "Mapa inválido." }, { status: 400 });
+  const query = feedbackDeleteQuerySchema.safeParse({
+    methodVersion: new URL(request.url).searchParams.get("methodVersion"),
+    questionnaireVersion: new URL(request.url).searchParams.get("questionnaireVersion"),
+  });
+  if (!query.success) return apiJson({ error: "Avaliação inválida." }, { status: 400 });
+
+  const deleted = await getPrisma().regencyFeedback.deleteMany({
+    where: {
+      birthProfileId: parsedId.data,
+      birthProfile: { userId: account.id },
+      methodVersion: query.data.methodVersion,
+      questionnaireVersion: query.data.questionnaireVersion,
+    },
+  });
+  if (deleted.count === 0) return apiJson({ error: "Avaliação não encontrada." }, { status: 404 });
+  return new Response(null, { status: 204 });
+}
+
 function tryCalculateRegency(
   chartResult: unknown,
   birthDate: Date,
   questionnaire: z.infer<typeof regencyQuestionnaireSubmissionSchema>,
-): { ok: true; response: ReturnType<typeof calculateRegency>["response"]; result: ReturnType<typeof calculateRegency>["result"] } | { ok: false } {
+):
+  | {
+      ok: true;
+      response: ReturnType<typeof calculateRegency>["response"];
+      result: ReturnType<typeof calculateRegency>["result"];
+    }
+  | { ok: false } {
   try {
     const { response, result } = calculateRegency(chartResult, birthDate, questionnaire);
     return { ok: true, response, result };
