@@ -29,6 +29,7 @@ model User {
   culturalContributor CulturalContributor?
   emailOutbox         EmailOutbox[]
   accountTokens       AccountToken[]
+  ceremonialPlans     CeremonialPlan[]
 
   @@map("users")
 }
@@ -106,6 +107,7 @@ model BirthProfile {
   chart          NatalChart?
   journalEntries JournalEntry[]
   regencyFeedbacks RegencyFeedback[]
+  ceremonialPlans  CeremonialPlan[]
 
   @@index([guestSessionId, createdAt])
   @@index([userId, createdAt])
@@ -220,6 +222,7 @@ model CulturalContributor {
   reviews              CulturalReview[]
   transitTextsAuthored TransitInterpretationTemplate[] @relation("TransitTextAuthor")
   transitTextsReviewed TransitInterpretationTemplate[] @relation("TransitTextReviewer")
+  ceremonialReviews    CeremonialReview[]
 
   @@map("cultural_contributors")
 }
@@ -329,4 +332,309 @@ model CulturalReview {
 enum TimePrecision {
   KNOWN
   UNKNOWN
+}
+
+// ---------------------------------------------------------------------------
+// Ceremonial laboratory — provenance-first corpus and private practice records.
+//
+// Identity rule: an entity belongs to exactly one CeremonialSourceSystem. Workspaces
+// (ANGELICAL, ARS_GOETIA, ...) are product navigation only and reach systems solely
+// through explicit membership rows, so a broad workspace can never merge two distinct
+// systems that happen to share a name.
+//
+// Claim rule: every correspondence, variant, timing rule and cross-reference carries a
+// mandatory locator, so nothing is assertable without a citable position in an edition.
+// ---------------------------------------------------------------------------
+
+model CeremonialSourceSystem {
+  id          String   @id @default(uuid()) @db.Uuid
+  slug        String   @unique @db.VarChar(100)
+  displayName String   @map("display_name") @db.VarChar(200)
+  tradition   String   @db.VarChar(120)
+  summary     String?  @db.VarChar(2000)
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  workspaceMemberships CeremonialWorkspaceMembership[]
+  works                CeremonialWork[]
+  entities             CeremonialEntity[]
+  timingProfiles       CeremonialTimingProfile[]
+
+  @@map("ceremonial_source_systems")
+}
+
+model CeremonialWorkspaceMembership {
+  id             String                 @id @default(uuid()) @db.Uuid
+  workspaceKind  String                 @map("workspace_kind") @db.VarChar(40)
+  sourceSystemId String                 @map("source_system_id") @db.Uuid
+  createdAt      DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  sourceSystem   CeremonialSourceSystem @relation(fields: [sourceSystemId], references: [id], onDelete: Cascade)
+
+  @@unique([workspaceKind, sourceSystemId])
+  @@index([workspaceKind])
+  @@map("ceremonial_workspace_memberships")
+}
+
+model CeremonialWork {
+  id             String                 @id @default(uuid()) @db.Uuid
+  sourceSystemId String                 @map("source_system_id") @db.Uuid
+  title          String                 @db.VarChar(300)
+  authorLabel    String?                @map("author_label") @db.VarChar(200)
+  createdAt      DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  sourceSystem   CeremonialSourceSystem @relation(fields: [sourceSystemId], references: [id], onDelete: Restrict)
+  editions       CeremonialEdition[]
+
+  @@unique([sourceSystemId, title])
+  @@map("ceremonial_works")
+}
+
+/// A specific witness: manuscript family, printing, translation or compilation.
+/// Compilations and translations stay distinct editions, never collapsed into the work.
+model CeremonialEdition {
+  id          String  @id @default(uuid()) @db.Uuid
+  workId      String  @map("work_id") @db.Uuid
+  label       String  @db.VarChar(200)
+  language    String  @db.VarChar(35)
+  publishedAt Int?    @map("published_at")
+  /// Provenance/rights facets. Import default is UNKNOWN + LOCAL_ONLY.
+  rights      String  @default("UNKNOWN") @db.VarChar(30)
+  access      String  @default("LOCAL_ONLY") @db.VarChar(20)
+  sensitivity String  @default("CULTURALLY_SENSITIVE") @db.VarChar(30)
+  /// Free-text jurisdiction/evidence note; never a substitute for a review row.
+  rightsNote  String? @map("rights_note") @db.VarChar(1000)
+
+  createdAt       DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
+  work            CeremonialWork             @relation(fields: [workId], references: [id], onDelete: Cascade)
+  artifacts       CeremonialArtifact[]
+  locators        CeremonialLocator[]
+  entityVariants  CeremonialEntityVariant[]
+  correspondences CeremonialCorrespondence[]
+  timingProfiles  CeremonialTimingProfile[]
+
+  @@unique([workId, label, language])
+  @@index([access, rights])
+  @@map("ceremonial_editions")
+}
+
+/// A concrete file in the private archive. Only a normalized relative path and a content
+/// hash are stored; the absolute host location never reaches the database.
+model CeremonialArtifact {
+  id               String  @id @default(uuid()) @db.Uuid
+  editionId        String  @map("edition_id") @db.Uuid
+  relativePath     String  @map("relative_path") @db.VarChar(1024)
+  contentHash      String  @unique @map("content_hash") @db.Char(64)
+  byteSize         BigInt  @map("byte_size")
+  mimeType         String  @map("mime_type") @db.VarChar(160)
+  extractionState  String  @default("PENDING") @map("extraction_state") @db.VarChar(20)
+  extractionReason String? @map("extraction_reason") @db.VarChar(300)
+  pageCount        Int?    @map("page_count")
+  rights           String  @default("UNKNOWN") @db.VarChar(30)
+  access           String  @default("LOCAL_ONLY") @db.VarChar(20)
+  sensitivity      String  @default("CULTURALLY_SENSITIVE") @db.VarChar(30)
+
+  createdAt DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+  edition   CeremonialEdition   @relation(fields: [editionId], references: [id], onDelete: Cascade)
+  locators  CeremonialLocator[]
+  media     CeremonialMedia[]
+
+  @@unique([editionId, relativePath])
+  @@index([extractionState])
+  @@map("ceremonial_artifacts")
+}
+
+/// A citable position. Every claim in this subsystem must point at one of these.
+model CeremonialLocator {
+  id         String  @id @default(uuid()) @db.Uuid
+  editionId  String  @map("edition_id") @db.Uuid
+  artifactId String? @map("artifact_id") @db.Uuid
+  kind       String  @db.VarChar(30)
+  reference  String  @db.VarChar(120)
+
+  createdAt       DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
+  edition         CeremonialEdition          @relation(fields: [editionId], references: [id], onDelete: Cascade)
+  artifact        CeremonialArtifact?        @relation(fields: [artifactId], references: [id], onDelete: SetNull)
+  entityVariants  CeremonialEntityVariant[]
+  media           CeremonialMedia[]
+  correspondences CeremonialCorrespondence[]
+  crossReferences CeremonialCrossReference[]
+  timingProfiles  CeremonialTimingProfile[]
+  reviews         CeremonialReview[]
+
+  @@unique([editionId, kind, reference])
+  @@map("ceremonial_locators")
+}
+
+model CeremonialEntity {
+  id             String                 @id @default(uuid()) @db.Uuid
+  sourceSystemId String                 @map("source_system_id") @db.Uuid
+  entityKind     String                 @map("entity_kind") @db.VarChar(40)
+  canonicalName  String                 @map("canonical_name") @db.VarChar(200)
+  createdAt      DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  sourceSystem   CeremonialSourceSystem @relation(fields: [sourceSystemId], references: [id], onDelete: Restrict)
+
+  variants        CeremonialEntityVariant[]
+  media           CeremonialMedia[]
+  correspondences CeremonialCorrespondence[]
+  outgoingRefs    CeremonialCrossReference[] @relation("CeremonialCrossReferenceFrom")
+  incomingRefs    CeremonialCrossReference[] @relation("CeremonialCrossReferenceTo")
+
+  @@unique([sourceSystemId, canonicalName])
+  @@index([entityKind])
+  @@map("ceremonial_entities")
+}
+
+/// How one edition renders an entity. Divergent ranks/offices coexist instead of being
+/// reconciled into a single "correct" record.
+model CeremonialEntityVariant {
+  id          String  @id @default(uuid()) @db.Uuid
+  entityId    String  @map("entity_id") @db.Uuid
+  editionId   String  @map("edition_id") @db.Uuid
+  locatorId   String  @map("locator_id") @db.Uuid
+  variantName String? @map("variant_name") @db.VarChar(200)
+  rank        String? @db.VarChar(120)
+  office      String? @db.VarChar(1000)
+
+  createdAt DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  entity    CeremonialEntity  @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  edition   CeremonialEdition @relation(fields: [editionId], references: [id], onDelete: Cascade)
+  locator   CeremonialLocator @relation(fields: [locatorId], references: [id], onDelete: Restrict)
+
+  @@unique([entityId, editionId])
+  @@map("ceremonial_entity_variants")
+}
+
+model CeremonialMedia {
+  id          String  @id @default(uuid()) @db.Uuid
+  artifactId  String  @map("artifact_id") @db.Uuid
+  entityId    String? @map("entity_id") @db.Uuid
+  locatorId   String? @map("locator_id") @db.Uuid
+  kind        String  @db.VarChar(30)
+  rights      String  @default("UNKNOWN") @db.VarChar(30)
+  access      String  @default("LOCAL_ONLY") @db.VarChar(20)
+  sensitivity String  @default("CULTURALLY_SENSITIVE") @db.VarChar(30)
+
+  createdAt DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
+  artifact  CeremonialArtifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
+  entity    CeremonialEntity?  @relation(fields: [entityId], references: [id], onDelete: SetNull)
+  locator   CeremonialLocator? @relation(fields: [locatorId], references: [id], onDelete: SetNull)
+
+  @@index([access, rights])
+  @@map("ceremonial_media")
+}
+
+model CeremonialCorrespondence {
+  id           String  @id @default(uuid()) @db.Uuid
+  entityId     String  @map("entity_id") @db.Uuid
+  editionId    String  @map("edition_id") @db.Uuid
+  locatorId    String  @map("locator_id") @db.Uuid
+  relationType String  @map("relation_type") @db.VarChar(40)
+  targetKey    String  @map("target_key") @db.VarChar(120)
+  note         String? @db.VarChar(1000)
+
+  createdAt DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  entity    CeremonialEntity  @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  edition   CeremonialEdition @relation(fields: [editionId], references: [id], onDelete: Cascade)
+  locator   CeremonialLocator @relation(fields: [locatorId], references: [id], onDelete: Restrict)
+
+  @@unique([entityId, editionId, relationType, targetKey])
+  @@index([relationType, targetKey])
+  @@map("ceremonial_correspondences")
+}
+
+/// An explicit, sourced edge between two entities. Navigating a shared planet is allowed;
+/// asserting identity is not, which is why the edge is typed and always has a locator.
+model CeremonialCrossReference {
+  id           String  @id @default(uuid()) @db.Uuid
+  fromEntityId String  @map("from_entity_id") @db.Uuid
+  toEntityId   String  @map("to_entity_id") @db.Uuid
+  locatorId    String  @map("locator_id") @db.Uuid
+  relationType String  @map("relation_type") @db.VarChar(40)
+  note         String? @db.VarChar(1000)
+
+  createdAt  DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  fromEntity CeremonialEntity  @relation("CeremonialCrossReferenceFrom", fields: [fromEntityId], references: [id], onDelete: Cascade)
+  toEntity   CeremonialEntity  @relation("CeremonialCrossReferenceTo", fields: [toEntityId], references: [id], onDelete: Cascade)
+  locator    CeremonialLocator @relation(fields: [locatorId], references: [id], onDelete: Restrict)
+
+  @@unique([fromEntityId, toEntityId, relationType])
+  @@map("ceremonial_cross_references")
+}
+
+model CeremonialTimingProfile {
+  id             String @id @default(uuid()) @db.Uuid
+  sourceSystemId String @map("source_system_id") @db.Uuid
+  editionId      String @map("edition_id") @db.Uuid
+  locatorId      String @map("locator_id") @db.Uuid
+  slug           String @db.VarChar(120)
+  displayName    String @map("display_name") @db.VarChar(200)
+  version        String @db.VarChar(60)
+  rules          Json
+
+  createdAt    DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
+  sourceSystem CeremonialSourceSystem @relation(fields: [sourceSystemId], references: [id], onDelete: Restrict)
+  edition      CeremonialEdition      @relation(fields: [editionId], references: [id], onDelete: Cascade)
+  locator      CeremonialLocator      @relation(fields: [locatorId], references: [id], onDelete: Restrict)
+
+  @@unique([slug, version])
+  @@map("ceremonial_timing_profiles")
+}
+
+/// Structured approval. Rights review and editorial review are separate rows, so one
+/// reviewer cannot satisfy both, and an expiry/revocation invalidates publication.
+model CeremonialReview {
+  id                String    @id @default(uuid()) @db.Uuid
+  subjectType       String    @map("subject_type") @db.VarChar(30)
+  subjectId         String    @map("subject_id") @db.Uuid
+  reviewKind        String    @map("review_kind") @db.VarChar(20)
+  decision          String    @db.VarChar(30)
+  /// Facets this approval covers, e.g. ["metadata","quotation"].
+  facetScope        Json      @map("facet_scope")
+  reviewerId        String    @map("reviewer_id") @db.Uuid
+  evidenceLocatorId String?   @map("evidence_locator_id") @db.Uuid
+  decidedAt         DateTime  @default(now()) @map("decided_at") @db.Timestamptz(6)
+  expiresAt         DateTime? @map("expires_at") @db.Timestamptz(6)
+  revokedAt         DateTime? @map("revoked_at") @db.Timestamptz(6)
+
+  reviewer        CulturalContributor @relation(fields: [reviewerId], references: [id], onDelete: Restrict)
+  evidenceLocator CeremonialLocator?  @relation(fields: [evidenceLocatorId], references: [id], onDelete: SetNull)
+
+  @@index([subjectType, subjectId, reviewKind])
+  @@map("ceremonial_reviews")
+}
+
+/// Private practice planning. Every user-authored field is stored as an encrypted
+/// envelope (Task 31); the columns below hold ciphertext, never plaintext.
+model CeremonialPlan {
+  id                String  @id @default(uuid()) @db.Uuid
+  userId            String  @map("user_id") @db.Uuid
+  birthProfileId    String? @map("birth_profile_id") @db.Uuid
+  titleEnvelope     Json    @map("title_envelope")
+  intentionEnvelope Json    @map("intention_envelope")
+  selectionEnvelope Json?   @map("selection_envelope")
+  scheduleEnvelope  Json?   @map("schedule_envelope")
+
+  createdAt    DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  birthProfile BirthProfile?       @relation(fields: [birthProfileId], references: [id], onDelete: SetNull)
+  sessions     CeremonialSession[]
+
+  @@index([userId, createdAt])
+  @@map("ceremonial_plans")
+}
+
+model CeremonialSession {
+  id                  String   @id @default(uuid()) @db.Uuid
+  planId              String   @map("plan_id") @db.Uuid
+  occurredAt          DateTime @map("occurred_at") @db.Timestamptz(6)
+  notesEnvelope       Json?    @map("notes_envelope")
+  observationEnvelope Json?    @map("observation_envelope")
+  outcomeEnvelope     Json?    @map("outcome_envelope")
+
+  createdAt DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime       @updatedAt @map("updated_at") @db.Timestamptz(6)
+  plan      CeremonialPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@index([planId, occurredAt])
+  @@map("ceremonial_sessions")
 }

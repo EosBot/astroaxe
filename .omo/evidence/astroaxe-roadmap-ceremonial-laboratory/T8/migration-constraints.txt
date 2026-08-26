@@ -1,0 +1,55 @@
+T8 — database-level rejection matrix (2026-08-26)
+
+Ten adversarial inserts against the deployed schema, synthetic fixtures only. Every one
+was rejected by PostgreSQL, not by application code — these are the last line of defense
+described in AGENTS.md §7.
+
+1. Orphan locator (a correspondence citing a locator that does not exist):
+   ERROR: insert or update on table "ceremonial_correspondences" violates foreign key
+   constraint "ceremonial_correspondences_locator_id_fkey"
+   DETAIL: Key (locator_id)=(99999999-...) is not present in table "ceremonial_locators".
+
+2. Duplicate content hash (the same file re-registered under another path):
+   ERROR: duplicate key value violates unique constraint
+   "ceremonial_artifacts_content_hash_key"
+   -> a renamed duplicate collapses to one artifact identity instead of inflating counts.
+
+3. Duplicate timing-profile slug+version:
+   ERROR: duplicate key value violates unique constraint
+   "ceremonial_timing_profiles_slug_version_key"
+   DETAIL: Key (slug, version)=(synthetic-profile, 1.0.0) already exists.
+
+4. Illegal access/rights on an edition (access=PUBLIC with rights=UNKNOWN):
+   ERROR: violates check constraint "ceremonial_editions_public_requires_rights_check"
+
+5. Illegal access/rights on an artifact (access=PUBLIC with rights=RESTRICTED):
+   ERROR: violates check constraint "ceremonial_artifacts_public_requires_rights_check"
+   -> unknown-rights and restricted material cannot be marked publicly deliverable at all,
+      so a mistaken flag cannot make the publication bundle eligible to carry it.
+
+6. Absolute host path stored instead of a normalized relative one:
+   ERROR: violates check constraint "ceremonial_artifacts_relative_path_check"
+   -> the archive's absolute location can never be persisted, so it cannot leak from the
+      database into a response, backup or export.
+
+7. Workspace kind outside the frozen five:
+   ERROR: violates check constraint "ceremonial_workspace_memberships_kind_check"
+
+8. Self cross-reference (an entity pointing at itself):
+   ERROR: violates check constraint "ceremonial_cross_references_not_self_check"
+
+9. Cross-system identity assertion ("IDENTICAL_TO" between two same-named angels in
+   different source systems):
+   ERROR: violates check constraint "ceremonial_cross_references_relation_type_check"
+   -> the vocabulary deliberately offers only SHARES_PLANET, NAME_SIMILARITY, CITED_BY,
+      DERIVED_FROM and CONTRASTED_WITH. Asserting that two entities from distinct systems
+      are the same being is not an expressible statement in this schema.
+
+10. Quarantined artifact with no stated reason:
+    ERROR: violates check constraint "ceremonial_artifacts_extraction_reason_check"
+    -> "no silent omission": anything not PENDING/EXTRACTED must record why.
+
+Additional structural guarantees not exercisable as an insert, because the column simply
+does not exist: an entity has no workspace column, so it cannot be attached to a
+workspace directly; and locator_id is NOT NULL on entity variants, correspondences,
+cross-references and timing profiles, so a locatorless claim cannot be represented.
