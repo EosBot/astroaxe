@@ -111,7 +111,7 @@ O plano Free permite cinco regras WAF custom e uma regra de rate limiting.
 | 1 | `/wp-*`, `/xmlrpc.php`, `/.env`, `/.git/`, `/vendor/`, `/phpmyadmin` | Block |
 | 2 | `/api/health/*` vindo da internet | Block |
 | 3 | `POST` em `/api/auth/*` sem user agent de navegador | Managed Challenge |
-| 4 | Métodos `TRACE` e `TRACK` | Block — **redundante, ver abaixo** |
+| 4 | `/api/geocoding` sem user agent de navegador | Managed Challenge |
 
 O quinto slot fica reservado para resposta a incidente. As expressões usam
 `starts_with` e `contains` em vez de expressão regular, porque o operador
@@ -120,10 +120,16 @@ O quinto slot fica reservado para resposta a incidente. As expressões usam
 A regra 2 é segura porque as probes de liveness e readiness do Swarm alcançam o
 container diretamente pela rede interna e nunca atravessam a Cloudflare.
 
-A regra 4 nunca chega a ser avaliada: a Cloudflare já recusa `TRACE` e `TRACK`
-na borda com `405`, antes do WAF. Verificado em 2026-08-26. Ela ocupa um dos
-cinco slots do plano Free sem produzir efeito e deve ser substituída por algo
-que proteja uma superfície real.
+A regra 4 protege `/api/geocoding`, que faz proxy para o Nominatim usando o
+`NOMINATIM_USER_AGENT` do projeto. Abuso dessa rota não gera custo interno: gera
+bloqueio do nosso user agent no Nominatim, um dano externo e difícil de reverter.
+O front chama a rota por `fetch` do navegador, então o desafio não afeta uso
+legítimo. O rate limiting não pôde ser usado aqui porque o plano Free permite
+uma única regra, já gasta em `/api/auth/*`.
+
+Não existe regra para `TRACE` e `TRACK`: a Cloudflare já recusa esses métodos na
+borda com `405`, antes do WAF. Uma regra para eles nunca seria avaliada e
+desperdiçaria um slot. Verificado em 2026-08-26.
 
 ### Rate limiting
 
@@ -268,7 +274,8 @@ curl -s https://astroaxe.net/robots.txt                   # Disallow: /
 # Regras WAF
 curl -sI https://astroaxe.net/.env | head -1              # 403
 curl -sI https://astroaxe.net/api/health/live | head -1   # 403
-curl -sI -X TRACE https://astroaxe.net | head -1          # 403
+curl -sI -X TRACE https://astroaxe.net | head -1          # 405, recusado pela borda
+curl -sI -A curl/8 "https://astroaxe.net/api/geocoding?q=x" | head -1  # 403, desafio
 
 # Cache
 curl -sI https://astroaxe.net/api/auth/status | grep -i cf-cache-status   # BYPASS/DYNAMIC
