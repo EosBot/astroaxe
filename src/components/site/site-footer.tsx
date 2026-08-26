@@ -19,7 +19,7 @@ export function SiteFooter(): React.JSX.Element {
         <div>
           <strong>Transparência</strong>
           <Link href="/metodologia">Metodologia</Link>
-          <span>Privacidade e controles na conta</span>
+          <Link href="/privacidade">Privacidade e dados</Link>
           <span>Versões e limites publicados</span>
         </div>
       </nav>

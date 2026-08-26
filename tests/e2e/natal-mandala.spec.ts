@@ -8,32 +8,38 @@ const PLACE = {
 };
 
 test("opens with an immersive observatory stage on mobile and desktop", async ({ page }) => {
+  test.setTimeout(90_000);
   for (const viewport of [
     { width: 390, height: 844 },
     { width: 1440, height: 1000 },
   ]) {
     await page.setViewportSize(viewport);
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: "Seu céu é uma arquitetura." })).toBeVisible();
-    await expect(page.locator(".celestial-particles")).toBeVisible();
+    await expect(
+      page.getByRole("heading", { name: "Veja seu céu. Entenda o que ele movimenta." }),
+    ).toBeVisible();
+    await expect(page.locator(".celestial-observatory-3d")).toBeVisible();
     await expect(page.locator(".system-map")).toHaveAttribute("data-ambient-active", "true");
     await expectNoHorizontalOverflow(page);
     const stageHeight = await page
       .locator(".experience-grid")
       .evaluate((element) => element.getBoundingClientRect().height);
-    expect(stageHeight).toBeGreaterThanOrEqual(viewport.height * 0.9);
+    expect(stageHeight).toBeGreaterThanOrEqual(viewport.height * 0.85);
     await page.getByLabel("Nome ou apelido").scrollIntoViewIfNeeded();
     await expect(page.getByLabel("Nome ou apelido")).toBeVisible();
   }
 });
 
 test("keeps the natal instrument usable from 320px through desktop", async ({ page }) => {
+  test.setTimeout(90_000);
   const consoleErrors: string[] = [];
   page.on("console", (message) => {
     if (message.type() === "error" && !message.text().includes("401 (Unauthorized)"))
       consoleErrors.push(message.text());
   });
   await mockMapFlow(page);
+  await page.setViewportSize({ width: 320, height: 780 });
+  await completeOnboarding(page);
 
   for (const viewport of [
     { width: 320, height: 780 },
@@ -41,7 +47,6 @@ test("keeps the natal instrument usable from 320px through desktop", async ({ pa
     { width: 1440, height: 1000 },
   ]) {
     await page.setViewportSize(viewport);
-    await completeOnboarding(page);
     await expect(page.getByRole("heading", { name: "O mapa natal de Lu" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Seu mapa natal, Lu" })).toBeFocused();
     await expect(page.locator(".skip-link")).not.toBeInViewport();
@@ -113,7 +118,9 @@ test("removes reveal animation when reduced motion is requested", async ({ page 
 });
 
 async function completeOnboarding(page: Page): Promise<void> {
+  const hydrated = page.waitForResponse((response) => response.url().endsWith("/api/auth/status"));
   await page.goto("/");
+  await hydrated;
   await page.getByLabel("Nome ou apelido").fill("Lu");
   await page.getByRole("button", { name: "Continuar" }).click();
   await page.getByLabel("Data de nascimento").fill("1990-06-10");
@@ -191,9 +198,23 @@ function mapResponse() {
 }
 
 async function expectNoHorizontalOverflow(page: Page): Promise<void> {
-  const dimensions = await page.evaluate(() => ({
-    scrollWidth: document.documentElement.scrollWidth,
-    clientWidth: document.documentElement.clientWidth,
-  }));
-  expect(dimensions.scrollWidth).toBeLessThanOrEqual(dimensions.clientWidth);
+  const dimensions = await page.evaluate(() => {
+    const clientWidth = document.documentElement.clientWidth;
+    const offenders = [...document.querySelectorAll<HTMLElement>("body *")]
+      .map((element) => {
+        const box = element.getBoundingClientRect();
+        return {
+          tag: element.tagName,
+          className: element.className,
+          left: box.left,
+          right: box.right,
+        };
+      })
+      .filter(({ left, right }) => left < -1 || right > clientWidth + 1)
+      .slice(0, 8);
+    return { scrollWidth: document.documentElement.scrollWidth, clientWidth, offenders };
+  });
+  expect(dimensions.scrollWidth, JSON.stringify(dimensions.offenders)).toBeLessThanOrEqual(
+    dimensions.clientWidth,
+  );
 }

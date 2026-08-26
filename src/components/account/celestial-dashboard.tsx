@@ -34,7 +34,11 @@ export function CelestialDashboard({
           </span>
           <small>Disponível</small>
           <h2>Mapa natal completo</h2>
-          <p>Planetas, casas, aspectos, quatro ângulos, Quíron, nodos e Lilith.</p>
+          <p>
+            {timed
+              ? "Planetas, casas, aspectos, quatro ângulos, Quíron, nodos e Lilith."
+              : "Planetas, aspectos, Quíron, nodos e Lilith — sem inventar casas ou ângulos."}
+          </p>
           <strong>Abrir instrumento →</strong>
         </button>
         <button className="celestial-module" type="button" onClick={() => onNavigate("cycles")}>

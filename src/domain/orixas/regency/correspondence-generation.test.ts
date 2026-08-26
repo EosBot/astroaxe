@@ -20,7 +20,7 @@ describe("symbolic correspondence generation", () => {
       correspondences: generatedSymbolicCorrespondences,
     });
 
-    expect(coverage.coveredCandidateIds).toHaveLength(25);
+    expect(coverage.coveredCandidateIds).toHaveLength(27);
     expect(coverage.uncoveredCandidateIds).toEqual([]);
     expect(generatedSymbolicCorrespondences.length).toBeGreaterThan(70);
     expect(generatedSymbolicCorrespondences[0]).toMatchObject({

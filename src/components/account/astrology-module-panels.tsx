@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 
+import { astrologicalAspectName, astrologicalBodyName } from "@/domain/astrology/labels";
 import { zodiacPlacement } from "@/domain/astrology/western/zodiac";
 import {
   houseForLongitude,
@@ -32,28 +33,28 @@ export function HoroscopeOverview({
     {
       title: "Dinheiro e carreira",
       glyph: "♃",
-      text: `Júpiter em ${jupiter.sign} amplia resultados quando você cresce ${expression(jupiter.sign)}. Saturno em ${saturn.sign} pede domínio, constância e responsabilidade nesse mesmo percurso. Seu período profissional floresce ao unir visão de futuro a um método que possa ser repetido.`,
+      text: `Júpiter em ${jupiter.sign} descreve como você tende a reconhecer expansão ${expression(jupiter.sign)}. Saturno em ${saturn.sign} mostra onde constância, limite e responsabilidade precisam amadurecer. Juntos, eles formam a base natal para interpretar os ciclos profissionais calculados abaixo.`,
     },
     {
       title: "Família e amigos",
       glyph: "☾",
-      text: `Sua Lua em ${moon.sign} procura segurança ${expression(moon.sign)}. Nos vínculos próximos, você precisa de relações capazes de acolher essa necessidade sem transformá-la em obrigação silenciosa. O céu natal pede pertencimento com espaço para verdade emocional.`,
+      text: `Sua Lua em ${moon.sign} procura segurança ${expression(moon.sign)}. Nos vínculos próximos, essa necessidade pode orientar pedidos, limites e formas de cuidado. Reconhecê-la evita transformar afeto em obrigação silenciosa ou expectativa de adivinhação.`,
     },
     {
       title: "Espiritualidade",
       glyph: "✦",
-      text: `O Sol em ${sun.sign} reconhece sentido quando a consciência se expressa ${expression(sun.sign)}. Sua prática espiritual ganha força quando deixa de ser fuga e se torna presença: algo vivido no corpo, nas escolhas e na maneira de iluminar o caminho de outras pessoas.`,
+      text: `O Sol em ${sun.sign} reconhece sentido quando a consciência se expressa ${expression(sun.sign)}. Esta é uma lente simbólica sobre propósito e presença, não uma declaração de crença, iniciação ou vínculo religioso.`,
     },
   ];
   return (
     <section className="editorial-module" aria-labelledby="horoscope-overview-title">
       <header>
-        <p className="eyebrow">Seu período atual</p>
+        <p className="eyebrow">Base natal e movimentos atuais</p>
         <h1 id="horoscope-overview-title">Horóscopo de {profile.displayName}</h1>
         <p>
-          Uma bússola pessoal construída sobre o seu mapa natal. Os trânsitos abaixo mostram o que
-          está ativado agora; estes quatro campos ajudam a reconhecer onde a energia encontra forma
-          concreta na sua vida.
+          Primeiro, três lentes permanentes do mapa natal oferecem contexto. Depois, o Tempo do Céu
+          usa trânsitos datados para mostrar o que está ativo agora. Assim, tendência natal e
+          movimento do período não são apresentados como se fossem a mesma coisa.
         </p>
       </header>
       <div className="editorial-module-grid">
@@ -66,12 +67,12 @@ export function HoroscopeOverview({
         ))}
       </div>
       <aside className="future-sky-callout">
-        <p className="eyebrow">Entrando em breve</p>
-        <h2>O futuro é uma janela, não uma sentença.</h2>
+        <p className="eyebrow">Como ler a linha do tempo</p>
+        <h2>Cada trânsito tem começo, pico e encerramento.</h2>
         <p>
-          A linha do tempo dos trânsitos apresenta início, pico e encerramento de cada movimento.
-          Observe primeiro os aspectos aplicantes: são ciclos que ainda estão ganhando força e
-          funcionam como aviso para preparar escolhas, conversas e limites.
+          Abra o Tempo do Céu abaixo para acompanhar a passagem completa. Aspectos aplicantes ainda
+          ganham força; aspectos separativos mostram o que começa a perder intensidade. Use a janela
+          para preparar escolhas, conversas e limites — não como sentença sobre o futuro.
         </p>
       </aside>
     </section>
@@ -95,8 +96,8 @@ export function ShadowHoroscopeView({
   ] as const;
   const shadowAreas = [
     {
-      title: "Seu período atual",
-      text: `O Sol em ${sun.sign} pode defender a própria identidade repetindo uma força que já perdeu flexibilidade. Neste período, observe quando afirmar-se vira provar valor e quando a necessidade de coerência impede uma mudança necessária.`,
+      title: "Identidade e autoimagem",
+      text: `O Sol em ${sun.sign} pode defender a própria identidade repetindo uma força que perdeu flexibilidade. Como padrão natal, ele pede atenção quando afirmar-se vira provar valor ou quando a necessidade de coerência impede uma mudança necessária.`,
     },
     {
       title: "Dinheiro e carreira",
@@ -1160,28 +1161,11 @@ function formatEventDate(instant: string, timezone: string): string {
 }
 
 function bodyName(body: string): string {
-  const values: Readonly<Record<string, string>> = {
-    sun: "Sol",
-    moon: "Lua",
-    mercury: "Mercúrio",
-    venus: "Vênus",
-    mars: "Marte",
-    jupiter: "Júpiter",
-    saturn: "Saturno",
-    uranus: "Urano",
-    neptune: "Netuno",
-    pluto: "Plutão",
-  };
-  return values[body] ?? body;
+  return astrologicalBodyName(body);
 }
 
 function aspectName(aspect: string): string {
-  const values: Readonly<Record<string, string>> = {
-    conjunction: "conjunção",
-    square: "quadratura",
-    opposition: "oposição",
-  };
-  return values[aspect] ?? aspect;
+  return astrologicalAspectName(aspect);
 }
 
 function elementBalance(chart: Natal): Array<{ name: string; percentage: number }> {

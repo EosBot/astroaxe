@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const AUTHORIAL_REGENCY_DISCLAIMER = "Metodo autoral AstroAxe; consulte a metodologia.";
+export const AUTHORIAL_REGENCY_DISCLAIMER = "Método autoral AstroAxe; consulte a metodologia.";
 
 export const FORBIDDEN_PUBLIC_CLAIMS = [
   "seu orixa e",

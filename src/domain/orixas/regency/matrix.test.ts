@@ -5,7 +5,7 @@ import { eligibleRegencyEntities, publishedCoverage, regencyMatrix } from "./mat
 
 describe("regency research matrix", () => {
   it("keeps a broad Orixa roster separate from Umbanda lines", () => {
-    expect(eligibleRegencyEntities()).toHaveLength(25);
+    expect(eligibleRegencyEntities()).toHaveLength(27);
     expect(regencyMatrix.entities.find(({ id }) => id === "umbanda-line:yori")).toMatchObject({
       kind: "umbanda_line",
       eligibleForRegency: false,
@@ -37,7 +37,7 @@ describe("regency research matrix", () => {
     expect(coverage.coveredCandidateIds).toHaveLength(12);
     expect(coverage.coveredCandidateIds).toContain("orisa:oxum");
     expect(coverage.uncoveredCandidateIds).not.toContain("orisa:oxum");
-    expect(coverage.uncoveredCandidateIds).toHaveLength(13);
+    expect(coverage.uncoveredCandidateIds).toHaveLength(15);
   });
 
   it("rejects a correspondence whose target is absent from the ontology", () => {

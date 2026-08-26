@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import type { TransitSnapshot } from "@/domain/astrology/transits/contracts";
 import { transitSnapshotSchema } from "@/domain/astrology/transits/contracts";
+import { transitTechnicalSummary } from "@/domain/astrology/labels";
 
 export const transitInterpretationSchema = z.object({
   transit: z.object({
@@ -170,10 +171,10 @@ function builtInInterpretation(
       title: voice.title,
       opening: `Este trânsito movimenta ${voice.force} e alcança diretamente ${natalField}. ${aspect.movement}.`,
       deepening: `${phase} Observe onde esse tema já aparece na rotina, nas relações e nas decisões práticas. ${aspect.counsel} Você não precisa responder a toda pressão imediatamente, mas precisa reconhecer o que o período está tornando visível.`,
-      technicalWhy: `A combinação entre ${transit.transitingBody} em trânsito e ${transit.natalBody} natal forma uma ${transit.type}, com orbe de ${transit.orb.toFixed(2)}° e ${Math.round(transit.relativeIntensity * 100)}% de exatidão relativa.`,
+      technicalWhy: transitTechnicalSummary(transit),
       reflectionPrompt: `Em que situação ${natalField} pede uma resposta mais consciente agora?`,
       practice: voice.practice,
-      version: "built-in-transits-2.0.0",
+      version: "built-in-transits-2.0.2",
       generationMethod: "HUMAN",
       author: {
         displayName: "AstroAxé Editorial",

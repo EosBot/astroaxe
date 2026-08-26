@@ -89,10 +89,7 @@ describe("RegencyFeedbackForm", () => {
   });
 
   it("shows an accessible error and keeps entered data on a 503, without a false saved state", async () => {
-    vi.stubGlobal(
-      "fetch",
-      vi.fn().mockResolvedValue(new Response("{}", { status: 503 })),
-    );
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("{}", { status: 503 })));
     render(
       <RegencyFeedbackForm
         profileId="profile-1"

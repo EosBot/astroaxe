@@ -61,6 +61,7 @@ const correspondenceClaimBaseSchema = z
       "planetary_day",
       "planetary_hour",
       "birth_number",
+      "self_report",
     ]),
     values: z.array(z.string().trim().min(1).max(40)).min(1).max(12),
     manifestation: z
@@ -99,10 +100,18 @@ const numerologicalMappingClaimSchema = correspondenceClaimBaseSchema.extend({
   algorithmWeight: z.null(),
 });
 
+const selfReportMappingClaimSchema = correspondenceClaimBaseSchema.extend({
+  evidenceTrack: z.literal("self_report_mapping"),
+  sourceId: z.string().trim().min(1).max(120),
+  lensId: z.string().regex(/^[a-z0-9-]+$/),
+  algorithmWeight: z.null(),
+});
+
 export const correspondenceClaimSchema = z.discriminatedUnion("evidenceTrack", [
   publishedCorrespondenceClaimSchema,
   derivedCorrespondenceClaimSchema,
   numerologicalMappingClaimSchema,
+  selfReportMappingClaimSchema,
 ]);
 
 export const regencyMatrixSchema = z

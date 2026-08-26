@@ -143,13 +143,7 @@ async function scanFile(
     if (!isWithinRoot(canonicalRoot, absolutePath))
       return quarantined(relativePath, stats.size, modifiedAt, "UNREADABLE");
     if (mimeType === null)
-      return quarantined(
-        relativePath,
-        stats.size,
-        modifiedAt,
-        "UNSUPPORTED_TYPE",
-        contentHash,
-      );
+      return quarantined(relativePath, stats.size, modifiedAt, "UNSUPPORTED_TYPE", contentHash);
     return {
       relativePath,
       byteSize: stats.size,

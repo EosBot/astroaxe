@@ -22,6 +22,8 @@ test-results/
 .citadel/
 .planning/
 .codex/agent-context/
+.claude/agent-context/
+.omo/run-continuation/
 
 # Local data
 backups/

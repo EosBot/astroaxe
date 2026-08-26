@@ -4,9 +4,10 @@ import { regencyMatrixSchema, type RegencyMatrix } from "./contracts";
 import type { RegencyAstrologicalFeature } from "./features";
 import type { RegencyTemporalFeature } from "./temporal";
 import type { RegencyNumerologicalFeature } from "./numerology";
+import type { RegencyQuestionnaireFeature } from "./questionnaire";
 import { regencyDecisionPolicySchema } from "./decision-policy";
 
-export const REGENCY_SCORER_VERSION = "regency-scorer-0.5.0-research";
+export const REGENCY_SCORER_VERSION = "regency-scorer-0.6.0-research";
 
 const roleSchema = z.enum(["front", "head", "back"]);
 const featureCategorySchema = z.enum([
@@ -24,6 +25,7 @@ const featureCategorySchema = z.enum([
   "planetary_hour",
   "solar_segment",
   "birth_number",
+  "self_report",
 ]);
 
 export const regencyScoringConfigSchema = z
@@ -93,6 +95,7 @@ export const regencyScoringConfigSchema = z
               "planetary_day",
               "planetary_hour",
               "birth_number",
+              "self_report",
             ]),
             featureCategory: featureCategorySchema,
             matchMode: z.enum(["direct", "planetary_resonance"]).optional(),
@@ -152,7 +155,10 @@ export type RegencyRole = z.infer<typeof roleSchema>;
 export type RegencyScoringConfig = z.infer<typeof regencyScoringConfigSchema>;
 
 type ScorableFeature =
-  RegencyAstrologicalFeature | RegencyTemporalFeature | RegencyNumerologicalFeature;
+  | RegencyAstrologicalFeature
+  | RegencyTemporalFeature
+  | RegencyNumerologicalFeature
+  | RegencyQuestionnaireFeature;
 
 export interface RegencyContribution {
   ruleId: string;
@@ -195,6 +201,7 @@ export function scoreRegencies(input: {
   astrologicalFeatures: RegencyAstrologicalFeature[];
   temporalFeatures?: RegencyTemporalFeature[];
   numerologicalFeatures?: RegencyNumerologicalFeature[];
+  questionnaireFeatures?: RegencyQuestionnaireFeature[];
 }): RegencyScoringResult {
   const matrix = regencyMatrixSchema.parse(input.matrix);
   const config = regencyScoringConfigSchema.parse(input.config);
@@ -202,6 +209,7 @@ export function scoreRegencies(input: {
     ...input.astrologicalFeatures,
     ...(input.temporalFeatures ?? []),
     ...(input.numerologicalFeatures ?? []),
+    ...(input.questionnaireFeatures ?? []),
   ];
   const candidates = matrix.entities.filter((entity) => entity.eligibleForRegency);
   if (candidates.length < 3)
@@ -300,7 +308,8 @@ function matches(
   )
     return false;
   if (
-    claim.evidenceTrack === "numerological_mapping" &&
+    (claim.evidenceTrack === "numerological_mapping" ||
+      claim.evidenceTrack === "self_report_mapping") &&
     (!("lensId" in feature) || feature.lensId !== claim.lensId)
   )
     return false;

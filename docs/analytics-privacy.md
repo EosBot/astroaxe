@@ -2,20 +2,19 @@
 
 ## Estado atual
 
-Não existe coletor, SDK, endpoint ou envio de analytics ativo. O módulo
-`src/lib/analytics/contracts.ts` é somente uma fronteira fail-closed para uma integração futura:
-mesmo um consentimento válido não autoriza coleta enquanto a integração não estiver explicitamente
-habilitada.
+Não existe coletor, SDK, endpoint, variável de ativação ou envio de analytics. O contrato Zod que
+não possuía chamador foi removido na auditoria de código morto de 25 de agosto de 2026: manter uma
+API especulativa não criava proteção real e poderia parecer uma integração pronta.
 
-O consentimento é versionado, exige decisão explícita e instante ISO fornecido pelo chamador. Dados
-ausentes, corrompidos, de versão antiga ou negados resultam em coleta desabilitada.
+Uma implementação futura deverá nascer junto do fluxo de consentimento, fornecedor e finalidade
+aprovados. Até lá, ausência de código de coleta é o comportamento fail-closed.
 
 ## Vocabulário mínimo permitido
 
-Somente três eventos estruturais estão reservados: conclusão do onboarding, abertura da explicação
-do mapa e conclusão do claim da conta. O payload aceita apenas superfície e classe de viewport. O
-schema estrito rejeita IDs, texto livre, email, data/hora natal, localização e quaisquer campos
-extras.
+O vocabulário candidato permanece limitado a três eventos estruturais: conclusão do onboarding,
+abertura da explicação do mapa e conclusão do claim da conta. Uma futura boundary deverá aceitar
+apenas superfície e classe de viewport e rejeitar IDs, texto livre, email, data/hora natal,
+localização e quaisquer campos extras.
 
 Antes de ativar coleta é obrigatório definir e revisar:
 
@@ -25,5 +24,5 @@ Antes de ativar coleta é obrigatório definir e revisar:
 - responsável por incidentes e procedimento de revogação;
 - UI acessível que não use dark patterns nem bloqueie funções essenciais.
 
-Até esse contrato externo e a política LGPD final existirem, a implementação deve permanecer sem
-chamadores e sem variável que habilite eventos.
+Até esse contrato externo e a política LGPD final existirem, nenhum módulo de analytics deve ser
+reintroduzido.

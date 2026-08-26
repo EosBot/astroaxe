@@ -135,7 +135,7 @@ function signMeaning(pointId: string, sign: string): string {
     chiron: "Sua jornada de elaboração acontece",
     mean_lilith: "Sua força indomada se manifesta",
     true_node: "Seu caminho de crescimento se abre",
-    south_node: "Seu repertório ancestral e conhecido se expressa",
+    south_node: "Seu repertório conhecido e já praticado se expressa",
   };
   const subject = subjects[pointId] ?? subjects.south_node;
   return `${subject} ${expression}.`;

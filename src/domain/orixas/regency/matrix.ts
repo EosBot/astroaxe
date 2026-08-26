@@ -31,6 +31,8 @@ export const regencyMatrix: RegencyMatrix = regencyMatrixSchema.parse({
     orisa("orisa:onile", "Onílẹ̀", ["Onile"]),
     orisa("orisa:orisa-oko", "Òrìṣà Oko", ["Orisa Oko"]),
     orisa("orisa:aje", "Ajé", ["Aje"]),
+    orisa("orisa:logunan", "Logunan", ["Oiá Tempo", "Oyá Tempo"]),
+    orisa("orisa:egunita", "Egunitá", ["Egunita", "Oroiná", "Oroina"]),
     umbandaLine("umbanda-line:yori", "Yori"),
     umbandaLine("umbanda-line:yorima", "Yorimá", ["Yorima"]),
     nkisi("nkisi:tempo", "Tempo", ["Kitembo"]),

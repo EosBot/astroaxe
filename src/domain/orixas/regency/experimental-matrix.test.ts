@@ -13,7 +13,7 @@ describe("experimental derived regency matrix", () => {
     );
     const targets = new Set(derived.map(({ targetId }) => targetId));
 
-    expect(derived).toHaveLength(106);
+    expect(derived).toHaveLength(112);
     expect(targets.size).toBe(eligibleRegencyEntities().length);
     expect(
       experimentalRegencyMatrix.claims.some(

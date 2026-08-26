@@ -3,6 +3,12 @@
 import { useEffect, useState } from "react";
 
 import {
+  astrologicalAspectName,
+  astrologicalBodyName,
+  transitTechnicalSummary,
+} from "@/domain/astrology/labels";
+
+import {
   transitReadingResponseSchema,
   type TransitReadingResponse,
 } from "@/lib/transits/interpretations";
@@ -166,7 +172,7 @@ export function TransitReading({
           <p>{reading.interpretations.length} influências ativas nesta data</p>
         </div>
         <span className="transit-intensity">
-          {Math.round(transit.relativeIntensity * 100)}% <small>de exatidão relativa</small>
+          {Math.round(transit.relativeIntensity * 100)}% <small>de proximidade ao pico</small>
         </span>
       </header>
 
@@ -308,33 +314,12 @@ function classifyWindow(
   return "Tendência ativa";
 }
 
-const BODY_NAMES: Readonly<Record<string, string>> = {
-  sun: "Sol",
-  moon: "Lua",
-  mercury: "Mercúrio",
-  venus: "Vênus",
-  mars: "Marte",
-  jupiter: "Júpiter",
-  saturn: "Saturno",
-  uranus: "Urano",
-  neptune: "Netuno",
-  pluto: "Plutão",
-};
-
-const ASPECT_NAMES: Readonly<Record<string, string>> = {
-  conjunction: "conjunção",
-  sextile: "sextil",
-  square: "quadratura",
-  trine: "trígono",
-  opposition: "oposição",
-};
-
 function shadowContent(
   transit: TransitReadingResponse["interpretations"][number]["transit"],
 ): TransitReadingResponse["interpretations"][number]["content"] {
-  const transitingBody = BODY_NAMES[transit.transitingBody] ?? transit.transitingBody;
-  const natalBody = BODY_NAMES[transit.natalBody] ?? transit.natalBody;
-  const aspect = ASPECT_NAMES[transit.type] ?? transit.type;
+  const transitingBody = astrologicalBodyName(transit.transitingBody);
+  const natalBody = astrologicalBodyName(transit.natalBody);
+  const aspect = astrologicalAspectName(transit.type);
   let tension =
     "A facilidade do aspecto pode manter o padrão invisível justamente porque ele funciona sem encontrar resistência.";
   if (transit.type === "square" || transit.type === "opposition") {
@@ -351,11 +336,11 @@ function shadowContent(
     title: `${transitingBody}: reconheça a sombra em movimento`,
     opening: `${transitingBody} em ${aspect} com seu ${natalBody} natal ativa conteúdos que normalmente procuram agir fora da consciência. ${tension}`,
     deepening: `${phase} A sombra pode aparecer como excesso, negação ou projeção: você combate no mundo aquilo que ainda não consegue acolher em si. O objetivo não é culpar-se, mas recuperar autoria antes que o mecanismo escolha por você.`,
-    technicalWhy: `${transitingBody} forma ${aspect} com ${natalBody}, orbe de ${transit.orb.toFixed(2)}° e ${Math.round(transit.relativeIntensity * 100)}% de exatidão relativa.`,
+    technicalWhy: transitTechnicalSummary(transit),
     reflectionPrompt: `Que reação recorrente revela uma necessidade não reconhecida neste encontro entre ${transitingBody} e ${natalBody}?`,
     practice:
       "registre gatilho, sensação corporal, impulso e necessidade; só então escolha uma resposta que não repita o automatismo",
-    version: "shadow-transits-1.0.0",
+    version: "shadow-transits-1.0.1",
     generationMethod: "HUMAN",
     author: { displayName: "AstroAxé Editorial", attributionLine: "Matriz sombria pré-escrita" },
     reviewer: {
@@ -367,8 +352,8 @@ function shadowContent(
 
 function describeAspect(aspect: DisplayableAspect): string {
   const movement = aspect.applying ? "se aproximando da exatidão" : "se afastando da exatidão";
-  const aspectName = ASPECT_NAMES[aspect.type] ?? aspect.type;
-  const transitingBody = BODY_NAMES[aspect.transitingBody.toLowerCase()] ?? aspect.transitingBody;
-  const natalBody = BODY_NAMES[aspect.natalBody.toLowerCase()] ?? aspect.natalBody;
+  const aspectName = astrologicalAspectName(aspect.type);
+  const transitingBody = astrologicalBodyName(aspect.transitingBody);
+  const natalBody = astrologicalBodyName(aspect.natalBody);
   return `${transitingBody} em ${aspectName} com ${natalBody}, orbe de ${aspect.orb.toFixed(2)}°, ${movement}.`;
 }

@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from "react";
 
+import {
+  astrologicalAspectName,
+  astrologicalAspectWithArticle,
+  astrologicalBodyName,
+} from "@/domain/astrology/labels";
 import { zodiacPlacement } from "@/domain/astrology/western/zodiac";
 import {
   EDITORIAL_REPORT_VERSION,
@@ -465,7 +470,7 @@ function LunarElection({ reading }: Readonly<{ reading: LunarModuleResponse }>):
         <p>
           {voidState.active
             ? `Até entrar em outro signo em ${formatInstant(voidState.ingressAt, "UTC")}, a tradição recomenda revisar e concluir em vez de forçar definições.`
-            : `O próximo aspecto é ${voidState.nextApplyingAspect?.type} com ${bodyLabel(voidState.nextApplyingAspect?.body ?? "")}, antes da entrada em outro signo.`}
+            : `O próximo aspecto é ${astrologicalAspectWithArticle(voidState.nextApplyingAspect?.type ?? "")} com ${bodyLabel(voidState.nextApplyingAspect?.body ?? "")}, antes da entrada em outro signo.`}
         </p>
       </div>
       <div className="editorial-module-grid">
@@ -702,39 +707,11 @@ function formatInstant(instant: string, timezone: string): string {
 }
 
 function aspectLabel(type: string): string {
-  return (
-    (
-      {
-        conjunction: "conjunção",
-        sextile: "sextil",
-        square: "quadratura",
-        trine: "trígono",
-        opposition: "oposição",
-      } as Readonly<Record<string, string>>
-    )[type] ?? type
-  );
+  return astrologicalAspectName(type);
 }
 
 function bodyLabel(body: string): string {
-  return (
-    (
-      {
-        sun: "Sol",
-        moon: "Lua",
-        mercury: "Mercúrio",
-        venus: "Vênus",
-        mars: "Marte",
-        jupiter: "Júpiter",
-        saturn: "Saturno",
-        uranus: "Urano",
-        neptune: "Netuno",
-        pluto: "Plutão",
-        chiron: "Quíron",
-        mean_lilith: "Lilith",
-        true_node: "Nodo Norte",
-      } as Readonly<Record<string, string>>
-    )[body] ?? body
-  );
+  return astrologicalBodyName(body);
 }
 
 function lunarTransitMeaning(body: string, type: string): string {

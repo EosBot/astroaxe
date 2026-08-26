@@ -18,6 +18,20 @@ export const correspondenceResearchSourceSchema = z
 
 export const correspondenceResearchSources = [
   source(
+    "source:saraceni:sete-linhas",
+    "As Sete Linhas de Umbanda — Rubens Saraceni",
+    "https://www.madras.com.br/umbanda/sete-linhas-de-umbanda-as",
+    "practitioner_or_community",
+    ["umbanda-sagrada-saraceni"],
+  ),
+  source(
+    "source:saraceni:teogonia",
+    "Orixás — Teogonia de Umbanda — Rubens Saraceni",
+    "https://www.madras.com.br/umbanda/orixas-teogonia-de-umbanda-5885",
+    "practitioner_or_community",
+    ["umbanda-sagrada-saraceni"],
+  ),
+  source(
     "source:scielo:geodiversity",
     "Simbolismo da geodiversidade nas religiões afro-brasileiras",
     "https://www.scielo.br/j/mercator/a/R5CsWttHSF35qGfkCjyKYqk/?lang=pt",

@@ -17,6 +17,7 @@ export function checkJsonRequest(
   if (!request.headers.get("content-type")?.toLowerCase().startsWith("application/json"))
     return { ok: false, status: 415 };
   const contentLength = Number(request.headers.get("content-length") ?? "0");
-  if (!Number.isFinite(contentLength) || contentLength > maxBytes) return { ok: false, status: 413 };
+  if (!Number.isFinite(contentLength) || contentLength > maxBytes)
+    return { ok: false, status: 413 };
   return { ok: true };
 }

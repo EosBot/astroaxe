@@ -161,8 +161,8 @@ Os valores são ponto de partida e exigem teste de contraste antes de implementa
 ## Estado implementado até 2026-08-23
 
 - O onboarding usa palco orbital, entradas em sequência e transições curtas com CSS.
-- A camada `celestial-particles.tsx` usa partículas Canvas determinísticas, com limites de 180 no
-  desktop e 72 no mobile, alvo de 30 fps e DPR máximo de `1.5`.
+- A cena WebGL `celestial-observatory-3d.tsx` concentra o ambiente orbital. A antiga camada Canvas
+  paralela foi removida para evitar dois loops visuais concorrentes e código sem consumidor.
 - A cena pausa fora do viewport e com a aba oculta. `prefers-reduced-motion` entrega uma composição
   estática.
 - Formulário, mensagens, foco e ações permanecem no DOM; a camada visual não intercepta input.
@@ -172,8 +172,8 @@ Os valores são ponto de partida e exigem teste de contraste antes de implementa
 
 ## Evolução da abertura em 2026-08-22
 
-- A página inicial passou a usar um palco de viewport inteira, com nebulosa em camadas, até 180
-  partículas determinísticas com profundidade e parallax óptico sutil em ponteiros precisos.
+- A página inicial passou a usar um palco de viewport inteira, com nebulosa em camadas e profundidade
+  controlada pela cena orbital única.
 - O formulário virou uma superfície de vidro fumê sobre a cena, sem retirar foco, semântica ou
   contraste dos campos.
 - No mobile, observação celeste e coleta de coordenadas são momentos consecutivos no scroll, em vez

@@ -43,7 +43,11 @@ describe("transit interpretation selection", () => {
       ),
     ).resolves.toEqual([
       expect.objectContaining({
-        content: expect.objectContaining({ version: "built-in-transits-2.0.0" }),
+        content: expect.objectContaining({
+          version: "built-in-transits-2.0.2",
+          technicalWhy:
+            "Saturno em trânsito forma uma quadratura com Sol natal. O orbe é de 1.00°, e o aspecto está a 80% do pico geométrico.",
+        }),
       }),
     ]);
   });

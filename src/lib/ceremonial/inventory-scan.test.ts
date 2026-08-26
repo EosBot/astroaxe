@@ -116,9 +116,9 @@ describe("scanArchive", () => {
     symlinkSync(root, join(root, "livros", "loop"));
     const entries = await scanArchive({ archiveRoot: root });
     expect(entries.length).toBeGreaterThan(0);
-    expect(
-      entries.filter((entry) => entry.quarantineReason === "SYMLINK").length,
-    ).toBeGreaterThan(0);
+    expect(entries.filter((entry) => entry.quarantineReason === "SYMLINK").length).toBeGreaterThan(
+      0,
+    );
   });
 
   it("quarantines an unreadable directory rather than aborting the scan", async () => {

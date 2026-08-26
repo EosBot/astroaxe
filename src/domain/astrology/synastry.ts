@@ -1,4 +1,5 @@
 import type { PlanetPosition } from "./western/contracts";
+import { astrologicalBodyName } from "./labels";
 
 export const SYNASTRY_VERSION = "major-cross-aspects-editorial-2.0.0";
 
@@ -209,22 +210,6 @@ const bodyTheme: Readonly<Record<string, SynastryThemeId>> = {
   true_node: "healing",
 };
 
-const bodyNames: Readonly<Record<string, string>> = {
-  sun: "Sol",
-  moon: "Lua",
-  mercury: "Mercúrio",
-  venus: "Vênus",
-  mars: "Marte",
-  jupiter: "Júpiter",
-  saturn: "Saturno",
-  uranus: "Urano",
-  neptune: "Netuno",
-  pluto: "Plutão",
-  chiron: "Quíron",
-  mean_lilith: "Lilith média",
-  true_node: "Nodo Norte",
-};
-
 const aspectMeanings: Readonly<
   Record<SynastryAspect["type"], { tone: SynastryAspectReading["tone"]; meaning: string }>
 > = {
@@ -260,8 +245,8 @@ function interpretAspect(
   secondName: string,
   aspect: SynastryAspect,
 ): SynastryAspectReading {
-  const firstBody = bodyNames[aspect.firstBody] ?? aspect.firstBody;
-  const secondBody = bodyNames[aspect.secondBody] ?? aspect.secondBody;
+  const firstBody = astrologicalBodyName(aspect.firstBody);
+  const secondBody = astrologicalBodyName(aspect.secondBody);
   const definition = aspectMeanings[aspect.type];
   return {
     ...aspect,
@@ -274,8 +259,8 @@ function interpretAspect(
 }
 
 function livedExperience(firstName: string, secondName: string, aspect: SynastryAspect): string {
-  const firstBody = bodyNames[aspect.firstBody] ?? aspect.firstBody;
-  const secondBody = bodyNames[aspect.secondBody] ?? aspect.secondBody;
+  const firstBody = astrologicalBodyName(aspect.firstBody);
+  const secondBody = astrologicalBodyName(aspect.secondBody);
   const pairKey = `${aspect.firstBody}-${aspect.secondBody}`;
   const pairMeaning =
     pairMeanings[pairKey] ?? composePairMeaning(aspect.firstBody, aspect.secondBody);
@@ -385,9 +370,8 @@ const receptiveRoles: Readonly<Record<string, string>> = {
 
 function composePairMeaning(firstBody: string, secondBody: string): string {
   const action =
-    relationalRoles[firstBody] ?? `a expressão de ${bodyNames[firstBody] ?? firstBody} encontra`;
-  const field =
-    receptiveRoles[secondBody] ?? `a linguagem de ${bodyNames[secondBody] ?? secondBody}`;
+    relationalRoles[firstBody] ?? `a expressão de ${astrologicalBodyName(firstBody)} encontra`;
+  const field = receptiveRoles[secondBody] ?? `a linguagem de ${astrologicalBodyName(secondBody)}`;
   return `${action} ${field}, dando a essa combinação uma assinatura específica no vínculo`;
 }
 

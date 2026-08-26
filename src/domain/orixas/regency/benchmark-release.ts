@@ -175,7 +175,10 @@ export function suppressRegencyBenchmarkCells(
     const visible = partition.filter((cell) => !cell.suppressed);
     let smallest = visible[0];
     for (const cell of visible)
-      if (smallest === undefined || (cell.count ?? Number.POSITIVE_INFINITY) < (smallest.count ?? Number.POSITIVE_INFINITY))
+      if (
+        smallest === undefined ||
+        (cell.count ?? Number.POSITIVE_INFINITY) < (smallest.count ?? Number.POSITIVE_INFINITY)
+      )
         smallest = cell;
     if (smallest === undefined) continue;
     smallest.count = null;

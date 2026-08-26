@@ -36,6 +36,8 @@ const profiles: Record<string, readonly string[]> = {
   onile: ["earth", "totality", "preservation"],
   "orisa-oko": ["agriculture", "fertility", "abundance"],
   aje: ["wealth", "market", "prosperity"],
+  logunan: ["time", "order", "concentration"],
+  egunita: ["fire", "justice", "purification"],
 };
 
 export const extractedSymbolicAttributes: ExtractedSymbolicAttribute[] = Object.entries(profiles)
@@ -113,6 +115,10 @@ const mappings: Record<string, readonly [SymbolicDerivationRule["factor"], strin
   agriculture: ["element", ["earth"]],
   market: ["planet", ["mercury"]],
   prosperity: ["planet", ["venus", "jupiter"]],
+  order: ["planet", ["saturn"]],
+  concentration: ["modality", ["fixed"]],
+  fire: ["element", ["fire"]],
+  purification: ["house", ["8"]],
 };
 
 export const symbolicDerivationRules: SymbolicDerivationRule[] = Object.entries(mappings)
@@ -217,6 +223,8 @@ function sourceIdsFor(orisa: string): string[] {
     oduduwa: ["source:scielo:oduduwa-creation"],
     orunmila: ["source:scielo:orunmila-divination"],
     "orisa-oko": ["source:ijssass:orisa-oko", "source:sacred-texts:orisa-oko"],
+    logunan: ["source:saraceni:sete-linhas", "source:saraceni:teogonia"],
+    egunita: ["source:saraceni:sete-linhas", "source:saraceni:teogonia"],
   };
   const ids = specialized[orisa] ?? [
     "source:scielo:geodiversity",

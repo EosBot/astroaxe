@@ -50,9 +50,7 @@ describe("parseCeremonialPolicy — accepted modes", () => {
 
   it("accepts an explicit loopback bind", () => {
     for (const bind of ["127.0.0.1", "::1", "localhost"])
-      expect(parseCeremonialPolicy({ ...LOCAL_ENV, CEREMONIAL_BIND: bind }).local?.bind).toBe(
-        bind,
-      );
+      expect(parseCeremonialPolicy({ ...LOCAL_ENV, CEREMONIAL_BIND: bind }).local?.bind).toBe(bind);
   });
 
   it("never reports both a public library and a local archive at once", () => {

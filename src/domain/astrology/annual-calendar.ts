@@ -9,6 +9,8 @@ import {
 } from "caelus";
 import { embeddedData } from "caelus/data-embedded";
 
+import { astrologicalBodyName } from "./labels";
+
 export const ANNUAL_CALENDAR_VERSION = "annual-sky-calendar-1.0.0";
 
 const engine = new Engine(embeddedData);
@@ -156,19 +158,9 @@ function translateEclipseType(type: string): string {
     annular: "anular",
     hybrid: "híbrido",
   };
-  return names[type] ?? type;
+  return names[type] ?? "não classificado";
 }
 
 function bodyName(body: string): string {
-  const names: Readonly<Record<string, string>> = {
-    mercury: "Mercúrio",
-    venus: "Vênus",
-    mars: "Marte",
-    jupiter: "Júpiter",
-    saturn: "Saturno",
-    uranus: "Urano",
-    neptune: "Netuno",
-    pluto: "Plutão",
-  };
-  return names[body] ?? body;
+  return astrologicalBodyName(body);
 }
