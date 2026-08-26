@@ -1,0 +1,57 @@
+T12 — falhas, adversários e defeitos encontrados na execução real (2026-08-26)
+
+## Cenários adversariais cobertos por teste (fixtures sintéticas em tmpdir)
+
+- Symlink apontando para FORA do acervo: registrado como QUARANTINED/SYMLINK, nunca
+  seguido. O teste confirma que o conteúdo do arquivo externo não aparece em lugar algum
+  do resultado. `lstat` (não `stat`) garante que um link seja visto como link.
+- Loop de diretório (symlink da raiz para dentro dela mesma): a varredura termina. Um
+  diretório já visitado nunca é reaberto, então o ciclo não gera recursão infinita.
+- Diretório sem permissão (chmod 000): registrado como QUARANTINED/UNREADABLE e o
+  restante do acervo continua sendo varrido — a falha não aborta a corrida.
+- Arquivo acima do teto de tamanho: QUARANTINED/TOO_LARGE, sem tentativa de hash.
+- Arquivo vazio: QUARANTINED/EMPTY.
+- Bytes não identificáveis: QUARANTINED/UNSUPPORTED_TYPE, mas mantendo o hash.
+- Interrupção no meio: retomada pelo checkpoint sem reprocessar o que já foi registrado.
+
+## Três defeitos reais encontrados ao rodar contra o acervo de verdade
+
+Nenhum destes apareceu nas fixtures sintéticas. Todos foram corrigidos e cobertos por
+teste de regressão.
+
+1. **Hash descartado em tipo desconhecido (grave).** A primeira versão zerava
+   `contentHash` sempre que não sabia nomear o formato. Como o acervo é 538 MP3, isso
+   quarentenava 554 de 801 arquivos e derrubava os hashes únicos de 737 para 188 — a
+   deduplicação por conteúdo, que é o objetivo da task, ficava destruída. Identidade é
+   propriedade dos bytes, não da minha capacidade de rotular o formato: um arquivo lido
+   com sucesso agora permanece endereçado por conteúdo mesmo em quarentena.
+
+2. **Detector cego para o conteúdo predominante.** Faltavam MP3 (ID3 e frame sync MPEG
+   nu), MP4 (`ftyp`), ASF/WMA (GUID) e WAV. O acervo é majoritariamente áudio ritual;
+   o detector fora desenhado presumindo texto. Após a correção: 788 indexados, 13 em
+   quarentena — todos `desktop.ini`, metadado do Windows, não conteúdo do acervo.
+
+3. **Falha transitória do mount virava quarentena permanente.** Duas corridas seguidas
+   devolveram censos truncados e divergentes (259 arquivos com 29 UNREADABLE; depois 695
+   com 32 UNREADABLE), com diretórios de topo inteiros marcados ilegíveis — embora o
+   mount estivesse íntegro e legível quando verificado à mão. `/mnt/e` é um mount 9p do
+   WSL2: uma boundary externa que falha transitoriamente sob carga sustentada. Tratar um
+   `readdir` instável como quarentena definitiva subnotificava o acervo em silêncio,
+   exatamente a omissão que o plano proíbe.
+
+   Correção conforme AGENTS.md §7 ("retry limitado com backoff nas boundaries externas"):
+   `withIoRetry` tenta até 4 vezes com backoff exponencial (60/120/240 ms) em `readdir`,
+   `lstat` e leitura. EACCES, EPERM e ENOENT não são repetidos, porque não melhoram com
+   espera — assim uma permissão realmente negada continua sendo registrada com motivo,
+   em vez de mascarada por tentativas.
+
+   Depois da correção, a varredura limpa devolveu 801 / 737 / 64 com zero UNREADABLE e
+   `matchesBaseline: true`.
+
+## Recusa fora do modo local
+
+  CEREMONIAL_MODE=disabled npm run ceremonial:inventory -- <destino>
+  -> "O inventário só roda em CEREMONIAL_MODE=local com acervo configurado.
+      Use compose.local.yml; a stack pública não tem acesso ao acervo."
+
+A recusa acontece antes de qualquer acesso ao filesystem.
