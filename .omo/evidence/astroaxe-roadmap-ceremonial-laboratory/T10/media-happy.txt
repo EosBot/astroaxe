@@ -1,0 +1,14 @@
+T10 — authenticated local artifact delivery (2026-08-26)
+
+Observed targeted checks:
+  npm test -- artifact-storage.test.ts route.test.ts -> 2 files, 21 tests passed
+  npm run typecheck                               -> pass
+  npm run lint                                    -> pass
+  npm run build                                   -> pass
+
+The production build reports /api/ceremonial/artifacts/[artifactId] as a dynamic route.
+Synthetic fixtures verified a regular PDF beneath the archive root, full 200 delivery,
+single-range 206 delivery, no-store/nosniff/CSP headers and an opaque attachment filename.
+Streaming uses the verified open descriptor; it does not reopen the stored path.
+
+No real corpus path, source text, account data or secret is included in this receipt.
