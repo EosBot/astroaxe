@@ -17,6 +17,14 @@ const redactedPaths = [
   "*.birthDate",
   "req.headers.authorization",
   "req.headers.cookie",
+  // Ceremonial laboratory: archive locations, keyring material and extracted source text
+  // are as sensitive as credentials and must never reach a log line.
+  "archiveRoot",
+  "keyringFile",
+  "sourceText",
+  "*.archiveRoot",
+  "*.keyringFile",
+  "*.sourceText",
 ];
 
 function loggerOptions(): LoggerOptions {

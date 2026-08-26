@@ -68,4 +68,37 @@ describe("createLogger", () => {
     expect(JSON.stringify(records[0])).not.toContain("raw-password");
     expect(JSON.stringify(records[0])).not.toContain("person@example.com");
   });
+
+  it("redacts ceremonial archive locations, keyring material and source text", () => {
+    const { destination, records } = capturingDestination();
+    const subject = createLogger(destination);
+
+    subject.info({
+      archiveRoot: "/srv/synthetic-archive",
+      keyringFile: "/run/secrets/synthetic-keyring.json",
+      sourceText: "trecho sintético do acervo privado",
+      ingest: {
+        archiveRoot: "/srv/synthetic-archive",
+        keyringFile: "/run/secrets/synthetic-keyring.json",
+        sourceText: "trecho sintético do acervo privado",
+      },
+      operation: "ceremonial-ingest",
+    });
+
+    expect(records[0]).toMatchObject({
+      archiveRoot: "[REDACTED]",
+      keyringFile: "[REDACTED]",
+      sourceText: "[REDACTED]",
+      ingest: {
+        archiveRoot: "[REDACTED]",
+        keyringFile: "[REDACTED]",
+        sourceText: "[REDACTED]",
+      },
+      operation: "ceremonial-ingest",
+    });
+    const serialized = JSON.stringify(records[0]);
+    expect(serialized).not.toContain("/srv/synthetic-archive");
+    expect(serialized).not.toContain("synthetic-keyring.json");
+    expect(serialized).not.toContain("acervo privado");
+  });
 });

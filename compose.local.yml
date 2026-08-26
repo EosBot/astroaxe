@@ -1,0 +1,112 @@
+# Ceremonial laboratory — LOCAL mode.
+#
+# Deliberately a standalone project, not an overlay on compose.yml: the local runtime must
+# never share a database, cache, credential, volume or network with the public runtime.
+# Nothing here may be merged into the public stack, and compose.yml stays free of every
+# archive path, keyring and derivative volume declared below.
+#
+#   docker compose -f compose.local.yml config
+#   docker compose -f compose.local.yml up -d --wait
+#
+# The archive is mounted read-only and the runtime publishes on loopback only.
+name: astroaxe_ceremonial_local
+
+services:
+  ceremonial-postgres:
+    image: pgvector/pgvector:0.8.6-pg18-trixie
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${CEREMONIAL_POSTGRES_DB:?CEREMONIAL_POSTGRES_DB is required}
+      POSTGRES_USER: ${CEREMONIAL_POSTGRES_USER:?CEREMONIAL_POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${CEREMONIAL_POSTGRES_PASSWORD:?CEREMONIAL_POSTGRES_PASSWORD is required}
+    volumes:
+      - ceremonial_postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    networks: [ceremonial_backend]
+    security_opt: [no-new-privileges:true]
+
+  ceremonial-redis:
+    image: redis:8.4.0-alpine
+    restart: unless-stopped
+    environment:
+      REDIS_PASSWORD: ${CEREMONIAL_REDIS_PASSWORD:?CEREMONIAL_REDIS_PASSWORD is required}
+    command: ["sh", "-c", 'exec redis-server --appendonly yes --requirepass "$$REDIS_PASSWORD"']
+    volumes:
+      - ceremonial_redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", 'redis-cli -a "$$REDIS_PASSWORD" ping | grep PONG']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+    networks: [ceremonial_backend]
+    security_opt: [no-new-privileges:true]
+
+  ceremonial-migrate:
+    build:
+      context: .
+      target: migrate-runner
+    environment:
+      DATABASE_URL: ${CEREMONIAL_DATABASE_URL:?CEREMONIAL_DATABASE_URL is required}
+    depends_on:
+      ceremonial-postgres:
+        condition: service_healthy
+    networks: [ceremonial_backend]
+    restart: "no"
+    security_opt: [no-new-privileges:true]
+
+  ceremonial-app:
+    build:
+      context: .
+      target: app-runner
+      args:
+        SITE_URL: ${CEREMONIAL_SITE_URL:-http://127.0.0.1:3300}
+    restart: unless-stopped
+    environment:
+      CEREMONIAL_MODE: local
+      # Container-side paths. The host locations stay in .env and out of the image.
+      CEREMONIAL_ARCHIVE_ROOT: /srv/ceremonial-archive
+      CEREMONIAL_KEYRING_FILE: /run/secrets/ceremonial-keyring.json
+      CEREMONIAL_BIND: 127.0.0.1
+      DATABASE_URL: ${CEREMONIAL_DATABASE_URL:?CEREMONIAL_DATABASE_URL is required}
+      REDIS_URL: ${CEREMONIAL_REDIS_URL:?CEREMONIAL_REDIS_URL is required}
+      GUEST_SESSION_SECRET: ${CEREMONIAL_GUEST_SESSION_SECRET:?CEREMONIAL_GUEST_SESSION_SECRET is required}
+      AUTH_SESSION_SECRET: ${CEREMONIAL_AUTH_SESSION_SECRET:?CEREMONIAL_AUTH_SESSION_SECRET is required}
+      FINGERPRINT_SECRET: ${CEREMONIAL_FINGERPRINT_SECRET:?CEREMONIAL_FINGERPRINT_SECRET is required}
+      NOMINATIM_USER_AGENT: ${NOMINATIM_USER_AGENT:?NOMINATIM_USER_AGENT is required}
+      SITE_URL: ${CEREMONIAL_SITE_URL:-http://127.0.0.1:3300}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      # The private corpus is read-only to the runtime; ingestion writes only derivatives.
+      - ${CEREMONIAL_ARCHIVE_HOST_PATH:?CEREMONIAL_ARCHIVE_HOST_PATH is required}:/srv/ceremonial-archive:ro
+      - ${CEREMONIAL_KEYRING_HOST_PATH:?CEREMONIAL_KEYRING_HOST_PATH is required}:/run/secrets/ceremonial-keyring.json:ro
+      - ceremonial_derivatives:/var/lib/ceremonial/derivatives
+    depends_on:
+      ceremonial-migrate:
+        condition: service_completed_successfully
+      ceremonial-redis:
+        condition: service_healthy
+    # Loopback only. The local runtime is never published to a routable interface.
+    ports:
+      - "127.0.0.1:${CEREMONIAL_HTTP_PORT:-3300}:3000"
+    networks: [ceremonial_backend]
+    security_opt: [no-new-privileges:true]
+
+volumes:
+  ceremonial_postgres_data:
+    name: astroaxe_ceremonial_postgres_data
+  ceremonial_redis_data:
+    name: astroaxe_ceremonial_redis_data
+  # Rebuildable extraction output. Excluded from backups; never contains source originals.
+  ceremonial_derivatives:
+    name: astroaxe_ceremonial_derivatives
+
+networks:
+  # Internal only: no egress, and no attachment to the public stack's networks.
+  ceremonial_backend:
+    internal: true

@@ -65,6 +65,10 @@ services:
       NOMINATIM_USER_AGENT: ${NOMINATIM_USER_AGENT:?NOMINATIM_USER_AGENT is required}
       SITE_URL: ${SITE_URL:?SITE_URL is required}
       LOG_LEVEL: ${LOG_LEVEL:-info}
+      # Only `disabled` or `public` are valid here. This file intentionally declares no
+      # archive root, keyring or derivative volume: selecting `local` from the public
+      # stack fails startup instead of silently exposing the private corpus.
+      CEREMONIAL_MODE: ${CEREMONIAL_MODE:-disabled}
     depends_on:
       migrate:
         condition: service_completed_successfully
