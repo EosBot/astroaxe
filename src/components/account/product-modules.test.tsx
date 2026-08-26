@@ -73,7 +73,7 @@ describe("account product modules", () => {
     expect(screen.getByText(/Quíron revela uma vulnerabilidade/)).toBeTruthy();
     expect(screen.getByText(/Sua força indomada se manifesta/)).toBeTruthy();
     expect(screen.getByText(/Seu caminho de crescimento se abre/)).toBeTruthy();
-    expect(screen.getByText(/Seu repertório ancestral e conhecido/)).toBeTruthy();
+    expect(screen.getByText(/Seu repertório conhecido e já praticado/)).toBeTruthy();
   });
 
   it("keeps modern points discoverable on legacy charts and offers recalculation", () => {
@@ -93,11 +93,34 @@ describe("account product modules", () => {
   it("loads the protected Orixás result without asserting certainty", async () => {
     vi.stubGlobal("fetch", vi.fn().mockResolvedValue(response(regencyResponse())));
     render(<OrisaResearchLab profileId="00000000-0000-4000-8000-000000000001" />);
+    answerRegencyQuestionnaire();
     expect(
       await screen.findByRole("heading", { name: "Tríade de Regências AstroAxe" }),
     ).toBeTruthy();
     expect(screen.getByText(/não substituem confirmação religiosa/)).toBeTruthy();
     expect(screen.getByText(/Métricas de validação serão publicadas/)).toBeTruthy();
+    expect(
+      screen.getByText(/Você já sabe quais são seus Orixás de frente, cabeça e costas/),
+    ).toBeTruthy();
+    fireEvent.click(screen.getByRole("radio", { name: "Sim, posso informar" }));
+    expect(screen.getAllByRole("option", { name: "Oxumarê" })).toHaveLength(3);
+  });
+
+  it("retries the protected Orixás result without discarding the profile", async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(response({ error: "temporarily_unavailable" }, 503))
+      .mockResolvedValueOnce(response(regencyResponse()));
+    vi.stubGlobal("fetch", fetchMock);
+    render(<OrisaResearchLab profileId="00000000-0000-4000-8000-000000000001" />);
+    answerRegencyQuestionnaire();
+    fireEvent.click(await screen.findByRole("button", { name: "Tentar novamente" }));
+    answerRegencyQuestionnaire();
+
+    expect(
+      await screen.findByRole("heading", { name: "Tríade de Regências AstroAxe" }),
+    ).toBeTruthy();
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it("opens the lunar area after resolving the current city", async () => {
@@ -164,11 +187,17 @@ describe("account product modules", () => {
   });
 });
 
-function response(body: unknown): Response {
+function response(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
-    status: 200,
+    status,
     headers: { "content-type": "application/json" },
   });
+}
+
+function answerRegencyQuestionnaire() {
+  for (const radio of screen.getAllByRole("radio", { name: /Os dois movimentos/ }))
+    fireEvent.click(radio);
+  fireEvent.click(screen.getByRole("button", { name: "Cruzar respostas e revelar tríade" }));
 }
 
 function houses() {
@@ -243,8 +272,8 @@ function regencyResponse() {
     { orisaId: "orisa:xango", displayName: "Xangô", affinity: "present" },
   ] as const;
   return {
-    methodVersion: "AstroAxe Regências 2.0 — pesquisa aplicada",
-    disclaimer: "Metodo autoral AstroAxe; consulte a metodologia.",
+    methodVersion: "AstroAxe Regências 3.0 — pesquisa aplicada",
+    disclaimer: "Método autoral AstroAxe; consulte a metodologia.",
     roles: {
       front: { selectedId: "orisa:ogum", candidates, stability: "high" },
       head: { selectedId: "orisa:oxala", candidates, stability: "medium" },

@@ -1,49 +1,52 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
+import {
+  REGENCY_QUESTIONNAIRE_VERSION,
+  regencyQuestionnaire,
+} from "@/domain/orixas/regency/questionnaire";
 import {
   publicRegencyResponseSchema,
   type PublicRegencyResponse,
 } from "@/lib/orixas/public-regency";
 
-const roles = [
-  ["front", "Frente", "expressão e modo de chegada"],
-  ["head", "Cabeça", "organização consciente e direção"],
-  ["back", "Costas", "base, memória e sustentação"],
-] as const;
-
-const affinityLabels = {
-  predominant: "predominante",
-  strong: "forte",
-  present: "presente",
-  subtle: "sutil",
-} as const;
-
-const stabilityLabels = {
-  unavailable: "amostra de fontes insuficiente",
-  low: "sensível",
-  medium: "moderada",
-  high: "alta",
-} as const;
+import { QuestionnaireStep } from "./orisa/questionnaire-step";
+import { RegencyFeedbackForm } from "./orisa/feedback-form";
+import { OrisaResultView } from "./orisa/result-view";
 
 export function OrisaResearchLab({
   profileId,
 }: Readonly<{ profileId: string }>): React.JSX.Element {
-  const [result, setResult] = useState<PublicRegencyResponse>();
-  const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
+  return <OrisaResearchLabContent key={profileId} profileId={profileId} />;
+}
 
-  useEffect(() => {
-    const controller = new AbortController();
-    void loadRegency(profileId, controller.signal)
-      .then((response) => {
-        setResult(response);
-        setStatus("ready");
-      })
-      .catch((error: unknown) => {
-        if (error instanceof DOMException && error.name === "AbortError") return;
-        setStatus("error");
-      });
-    return () => controller.abort();
-  }, [profileId]);
+function OrisaResearchLabContent({
+  profileId,
+}: Readonly<{ profileId: string }>): React.JSX.Element {
+  const [result, setResult] = useState<PublicRegencyResponse>();
+  const [status, setStatus] = useState<"questionnaire" | "loading" | "ready" | "error">(
+    "questionnaire",
+  );
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+
+  async function submitQuestionnaire() {
+    setStatus("loading");
+    try {
+      const response = await loadRegency(
+        profileId,
+        regencyQuestionnaire.map(({ id }) => ({ questionId: id, value: answers[id] })),
+        new AbortController().signal,
+      );
+      setResult(response);
+      setStatus("ready");
+    } catch {
+      setStatus("error");
+    }
+  }
+
+  if (status === "questionnaire")
+    return (
+      <QuestionnaireStep answers={answers} onAnswer={setAnswers} onSubmit={submitQuestionnaire} />
+    );
 
   if (status === "loading")
     return (
@@ -56,82 +59,56 @@ export function OrisaResearchLab({
     return (
       <LabState
         title="A leitura não abriu."
-        detail="Seu mapa continua preservado. Tente acessar este módulo novamente."
+        detail="Seu mapa continua preservado. Você pode repetir somente este cálculo."
+        actionLabel="Tentar novamente"
+        onAction={() => {
+          setStatus("questionnaire");
+        }}
       />
     );
 
   return (
-    <section className="orisa-research-lab" aria-labelledby="orisa-lab-title">
-      <header>
-        <div>
-          <p className="eyebrow orisa-method-label">
-            <span>V2</span> Leitura autoral em validação
-          </p>
-          <h1 id="orisa-lab-title">Tríade de Regências AstroAxe</h1>
-        </div>
-        <p>
-          O método cruza o mapa calculado com camadas simbólicas e numerológicas versionadas. Quando
-          a convergência não é suficiente, o papel permanece em aberto.
-        </p>
-      </header>
-      <div className="orisa-role-grid">
-        {roles.map(([role, label, description]) => {
-          const roleResult = result.roles[role];
-          return (
-            <article key={role}>
-              <small>{label}</small>
-              <h2>
-                {roleResult.selectedId === null
-                  ? "Em aberto"
-                  : roleResult.candidates.find(({ orisaId }) => orisaId === roleResult.selectedId)
-                      ?.displayName}
-              </h2>
-              <p>{description}</p>
-              <p className="orisa-stability">
-                Estabilidade entre fontes: <strong>{stabilityLabels[roleResult.stability]}</strong>
-              </p>
-              <ol>
-                {roleResult.candidates.map((candidate) => (
-                  <li key={candidate.orisaId}>
-                    <span>{candidate.displayName}</span>
-                    <strong>{affinityLabels[candidate.affinity]}</strong>
-                  </li>
-                ))}
-              </ol>
-              {roleResult.selectedId === null ? (
-                <p className="orisa-unresolved">
-                  Resultado não fechado: {explainReason(roleResult.unresolvedReason)}
-                </p>
-              ) : null}
-            </article>
-          );
-        })}
-      </div>
-      <footer>
-        <strong>{result.methodVersion}</strong>
-        <p>
-          A leitura combina sinais independentes e testa se a conclusão permanece estável quando uma
-          família de evidência é retirada. Instabilidade favorece uma resposta em aberto.
-        </p>
-        <p>{result.disclaimer}</p>
-        <p>
-          Estas correspondências não substituem confirmação religiosa, consulta a praticantes ou
-          jogo de búzios.
-        </p>
-        <p>Métricas de validação serão publicadas quando a amostra atingir o corte definido.</p>
-      </footer>
-    </section>
+    <>
+      <OrisaResultView result={result} />
+      <RegencyFeedbackForm
+        profileId={profileId}
+        result={result}
+        questionnaireAnswers={regencyQuestionnaire.map(({ id }) => ({
+          questionId: id,
+          value: answers[id],
+        }))}
+      />
+    </>
   );
 }
 
-async function loadRegency(profileId: string, signal: AbortSignal): Promise<PublicRegencyResponse> {
-  const response = await fetch(`/api/profiles/${profileId}/regency`, { signal });
+async function loadRegency(
+  profileId: string,
+  answers: { questionId: string; value: string | undefined }[],
+  signal: AbortSignal,
+): Promise<PublicRegencyResponse> {
+  const response = await fetch(`/api/profiles/${profileId}/regency`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ version: REGENCY_QUESTIONNAIRE_VERSION, answers }),
+    signal,
+  });
   const parsed = publicRegencyResponseSchema.safeParse(await response.json());
   if (!response.ok || !parsed.success) throw new Error("regency_load_failed");
   return parsed.data;
 }
 
-function LabState({ title, detail }: Readonly<{ title: string; detail: string }>) {
+function LabState({
+  title,
+  detail,
+  actionLabel,
+  onAction,
+}: Readonly<{
+  title: string;
+  detail: string;
+  actionLabel?: string;
+  onAction?: () => void;
+}>) {
   return (
     <section className="orisa-research-lab" aria-live="polite">
       <header>
@@ -140,16 +117,12 @@ function LabState({ title, detail }: Readonly<{ title: string; detail: string }>
           <h1>{title}</h1>
         </div>
         <p>{detail}</p>
+        {actionLabel && onAction ? (
+          <button type="button" className="quiet-button" onClick={onAction}>
+            {actionLabel}
+          </button>
+        ) : null}
       </header>
     </section>
   );
-}
-
-function explainReason(reason: string | undefined): string {
-  if (reason === "tradition_confirmation_required")
-    return "há um empate que pede confirmação no contexto tradicional";
-  if (reason === "insufficient_evidence_breadth") return "faltam fontes independentes suficientes";
-  if (reason === "distinct_candidate_unavailable")
-    return "não há candidato distinto para este papel";
-  return "a convergência ainda é insuficiente";
 }

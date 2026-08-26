@@ -1,0 +1,18 @@
+T3 — QA failure matrix, feedback-form.test.tsx (2026-08-26)
+
+- Unchecked consent + form submit dispatched directly (bypassing the disabled submit
+  button, which is the real-browser guard) -> fetch is never called; the JS-level guard
+  inside submit() (`if (status === "saving" || !consent) return;`) is what actually stops
+  it in a test environment that does not enforce native `required` validation. The submit
+  button also reports disabled=true while consent is unchecked.
+- Rapid double click on the submit button while the request is still pending -> fetch is
+  called exactly once (the same guard blocks the second call because status is already
+  "saving" by the time the second click's handler runs).
+- Server responds 503 -> component shows role="alert" with the exact sanitized message,
+  never renders the "Obrigado por fortalecer a pesquisa." saved state, and the previously
+  entered verdict selection ("close") remains in the form instead of being reset.
+
+Command: npm test -- src/components/account/orisa/feedback-form.test.tsx
+4/4 passed. Also re-ran the pre-existing src/components/account/product-modules.test.tsx
+(9/9 passed) to confirm the split components did not regress the questionnaire/result
+journey covered there.
