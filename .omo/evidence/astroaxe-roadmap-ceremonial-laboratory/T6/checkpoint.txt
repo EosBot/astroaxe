@@ -1,0 +1,80 @@
+T6 — Lock the Tríade v3 journey, documentation and quality checkpoint (2026-08-26)
+
+## Golden fixtures (src/domain/orixas/regency/v2.golden.test.ts)
+
+npm test -- src/domain/orixas/regency/v2.golden.test.ts -> 6/6 passed:
+- freezes the exact 27-entity eligible catalog (sorted id list, exact equality)
+- freezes the composed scorer/config/matrix version triple
+- leaves every role unresolved with no evidence (typed unresolvedRoles, never a guessed pick)
+- (plus the 3 pre-existing golden cases: head lens score, directed law feature, robustness)
+
+## Targeted Vitest (route/component/export/domain touched by Wave 1)
+
+npm test -- "src/app/api/profiles/[profileId]/regency/route.test.ts" \
+  src/lib/orixas/regency-feedback.test.ts src/lib/security/json-body.test.ts \
+  src/components/account/orisa/feedback-form.test.tsx src/components/account/product-modules.test.tsx \
+  src/app/api/auth/export/export-route.test.ts src/domain/orixas/regency/benchmark-release.test.ts \
+  src/domain/orixas/regency/v2.golden.test.ts src/app/privacidade/page.test.tsx \
+  src/app/metodologia/page.test.tsx
+-> all passed.
+
+## Full suite
+
+npm run typecheck -> pass.
+npm run lint -> pass.
+npm test (no coverage) -> 93 files passed (93) / 351 tests passed (351).
+npm run test:coverage (with --fileParallelism=false; see below) -> 93/93 files, 351/351 tests,
+86.45% statements / 71.98% branches / 89.17% functions / 88.62% lines.
+npm run build -> pass (33 routes, standard Next 16 output).
+
+Note on flakiness: the first two `npm run quality` attempts failed at the coverage step on
+profile-archive.test.tsx (and, once, ambient-sound-control.test.tsx / annual-calendar.test.ts) —
+none of which this Wave touched. Confirmed pre-existing and load-dependent: every failing test
+passes cleanly in isolation, and a full clean run was achieved twice with
+`vitest run --coverage --fileParallelism=false`. Added `testTimeout: 15_000` to vitest.config.ts
+(was the 5000ms default) as a general mitigation; a plain `npm test` afterward passed cleanly
+under normal parallelism too (93/93, 351/351).
+
+## E2E (npm run test:e2e, official wrapper, isolated astroaxe_e2e Compose project)
+
+First full run failed (exit 1) with no visible cause in a naively `| tail`-piped log — the real
+exit code was masked by the pipe (tail's exit code, not npm's). Re-ran with proper file
+redirection and found `scripts/release-smoke.sh` failing silently under `set -e` on a stale
+assertion (`grep -q "AstroAxe Regências 2.1"` on /metodologia, which has said "3.0" since v3
+shipped) — fixed. Re-running Playwright directly against the live stack then surfaced the same
+stale-version bug in `tests/e2e/methodology.spec.ts` — fixed identically. Final run through the
+official `npm run test:e2e` wrapper:
+
+  14 passed (5.6m)
+
+This includes the extended `authenticated-mvp.spec.ts` journey (both desktop-chromium and
+mobile-chromium projects): questionnaire (7 answers) -> POST result -> consent checkbox starts
+unchecked with the submit button disabled -> checking it enables submit -> PUT feedback (201) ->
+"Obrigado por fortalecer a pesquisa." -> personal export includes matrixVersion/configVersion/
+scorerVersion/methodVersion/questionnaireVersion for that feedback -> DELETE withdrawal (204) ->
+re-exported profile shows regencyFeedback: [] while the map/profile itself is untouched.
+
+## Operational note
+
+Mid-session, a `docker compose down` was run without an explicit `-p`/`COMPOSE_PROJECT_NAME`
+after a manual (non-wrapper) E2E debugging session, which — because the env var set in a prior
+Bash call does not persist across separate tool calls — targeted the main dev stack
+(project "astroaxe") instead of the intended isolated "astroaxe_e2e" one. Caught immediately via
+`docker ps -a`; no volumes were removed (`down` without `-v`), so no data was lost. The main stack
+was brought back up (`docker compose -f compose.yml -f compose.dev.yml up -d --wait`) and verified
+healthy with all prior data intact (guest_sessions=10, birth_profiles=13, matching pre-incident
+counts) before continuing.
+
+## SonarQube Quality Gate
+
+Ran against the already-running persistent quality stack (astroaxe-quality-sonarqube-1,
+astroaxe-quality-sonar-db-1). First scan failed with 4 new-code issues, all introduced this
+session: a MAJOR bug (`Array.reduce()` without an initial value in benchmark-release.ts) and
+three MAJOR code smells (ambiguous JSX whitespace between label text and the following
+select/textarea in feedback-form.tsx, matching the existing `{" "}` convention already used for
+the radio inputs in the same file). Fixed all four, regenerated coverage, re-scanned:
+
+  QUALITY GATE STATUS: PASSED
+  new_coverage: 81.6 (>= 80 required)
+  new_duplicated_lines_density: 1.52275 (<= 3 required)
+  new_violations: 0 (== 0 required)

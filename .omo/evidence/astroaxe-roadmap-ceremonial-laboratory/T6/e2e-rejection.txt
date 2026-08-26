@@ -1,0 +1,22 @@
+T6 — QA failure: rejected consent/version produces no row and no success message (2026-08-26)
+
+Covered at two layers, both passing:
+
+1. Component level (src/components/account/orisa/feedback-form.test.tsx, part of Task 3, re-run
+   as part of this checkpoint): "does not call fetch while consent is unchecked, even bypassing
+   the submit button" — fireEvent.submit dispatched directly on the form (bypassing the disabled
+   button) still never calls fetch; the submit button itself reports disabled=true. No PUT, no
+   "Obrigado por fortalecer a pesquisa." text ever renders.
+
+2. E2E level (tests/e2e/authenticated-mvp.spec.ts, extended this task): after filling verdict,
+   knowsOrisas and confirmationBasis but before checking consent, the spec asserts
+   `await expect(page.getByRole("button", { name: "Enviar avaliação" })).toBeDisabled();` against
+   the real running app — the button is genuinely disabled in the browser, not just in a mock.
+   Only after `.check()` on the consent checkbox does the PUT fire and the saved confirmation
+   appear. This ran as part of the full 14/14 passing `npm run test:e2e` suite (both
+   desktop-chromium and mobile-chromium projects), so the rejection path is proven live, not
+   simulated.
+
+Route-level rejection (server never persists a row on a malformed/unversioned request) is already
+covered by T2's route.test.ts (415/413/400/503 rejection matrix) and T4's constraint-rejections.txt
+(DB-level CHECK rejections) — not re-duplicated here.

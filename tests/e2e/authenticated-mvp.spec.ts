@@ -62,11 +62,38 @@ test("completes the authenticated MVP lifecycle", async ({ page }) => {
   await captureEvidence(page, "astroaxe-overview");
   await captureAccountModules(page);
   await openSecondaryModule(page, "Orixás");
-  await expect(page.getByRole("heading", { name: "Ressonâncias com Orixás" })).toBeVisible();
-  await expect(page.getByText("Recurso Beta — metodologia em desenvolvimento.")).toBeVisible();
-  await expect(page.getByText(/Estabilidade experimental:/).first()).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Antes da sua Tríade" })).toBeVisible({
+    timeout: 30_000,
+  });
+  for (const radio of await page.getByRole("radio", { name: /Os dois movimentos/ }).all())
+    await radio.click();
+  const regencyResponse = page.waitForResponse(
+    (response) => response.url().includes("/regency") && response.request().method() === "POST",
+  );
+  await page.getByRole("button", { name: "Cruzar respostas e revelar tríade" }).click();
+  expect((await regencyResponse).status()).toBe(200);
+  await expect(page.getByRole("heading", { name: "Tríade de Regências AstroAxe" })).toBeVisible({
+    timeout: 30_000,
+  });
+  await expect(page.getByText(/Leitura autoral em validação/)).toBeVisible();
+  await expect(page.getByText(/Estabilidade entre fontes:/).first()).toBeVisible();
   await expect(page.getByText(/não substituem confirmação religiosa/)).toBeVisible();
   await captureEvidence(page, "astroaxe-orixas");
+
+  // Consent-gated feedback: unchecked consent must not reach the server.
+  await page.getByRole("combobox", { name: "Como você avalia a tríade?" }).selectOption("close");
+  await page.getByRole("radio", { name: "Não ou não tenho certeza" }).click();
+  await page
+    .getByRole("combobox", { name: "Como você conhece essa informação?" })
+    .selectOption("personal_recognition");
+  await expect(page.getByRole("button", { name: "Enviar avaliação" })).toBeDisabled();
+  await page.getByLabel(/Autorizo o uso destas respostas/).check();
+  const feedbackResponse = page.waitForResponse(
+    (response) => response.url().includes("/regency") && response.request().method() === "PUT",
+  );
+  await page.getByRole("button", { name: "Enviar avaliação" }).click();
+  expect((await feedbackResponse).status()).toBe(201);
+  await expect(page.getByText("Obrigado por fortalecer a pesquisa.")).toBeVisible();
   await page.getByRole("button", { name: "Desativar sons de interface" }).click();
   await page.getByRole("button", { name: "Mapa natal", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Perfil Horizonte", exact: true })).toBeVisible();
@@ -145,10 +172,34 @@ test("completes the authenticated MVP lifecycle", async ({ page }) => {
         chart: { calculationMode: "timed" },
         chartRevisions: [{ calculationMode: "untimed" }],
         journal: [],
+        regencyFeedback: [
+          {
+            methodVersion: "AstroAxe Regências 3.0 — pesquisa aplicada",
+            matrixVersion: expect.any(String),
+            configVersion: expect.any(String),
+            scorerVersion: expect.any(String),
+            questionnaireVersion: "regency-questionnaire-1.0.0",
+            verdict: "close",
+            knowsOrisas: false,
+            confirmationBasis: "personal_recognition",
+          },
+        ],
       },
     ],
   });
   expect(JSON.stringify(accountExport.body)).not.toMatch(/passwordHash|tokenHash|inputFingerprint/);
+
+  const profileForWithdrawal = (await profiles(page))[0];
+  const withdrawal = await sameOriginApi(
+    page,
+    `/api/profiles/${profileForWithdrawal?.id}/regency?methodVersion=${encodeURIComponent("AstroAxe Regências 3.0 — pesquisa aplicada")}&questionnaireVersion=regency-questionnaire-1.0.0`,
+    { method: "DELETE" },
+  );
+  expect(withdrawal.status).toBe(204);
+  const exportAfterWithdrawal = await sameOriginApi(page, "/api/auth/export");
+  expect(exportAfterWithdrawal.body).toMatchObject({
+    profiles: [{ displayName: "Perfil Aurora", regencyFeedback: [] }],
+  });
 
   const firstProfiles = await profiles(page);
   expect(firstProfiles).toHaveLength(1);
@@ -205,7 +256,9 @@ test("completes the authenticated MVP lifecycle", async ({ page }) => {
   expect(await profiles(page)).toEqual([]);
 
   await page.goto("/conta");
-  await expect(page.getByRole("heading", { name: "Seu arquivo ainda está vazio." })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Seu arquivo ainda está vazio." })).toBeVisible({
+    timeout: 30_000,
+  });
   const passwordChange = await sameOriginApi(page, "/api/auth/password", {
     method: "PUT",
     body: { currentPassword: password, newPassword },
@@ -253,7 +306,9 @@ async function createGuestMap(
     place: typeof PLACE_ONE;
   },
 ): Promise<void> {
+  const hydrated = page.waitForResponse((response) => response.url().endsWith("/api/auth/status"));
   await page.goto("/");
+  await hydrated;
   await page.getByLabel("Nome ou apelido").fill(input.displayName);
   await page.getByRole("button", { name: "Continuar" }).click();
   await page.getByLabel("Data de nascimento").fill(input.birthDate);
@@ -266,7 +321,7 @@ async function createGuestMap(
   await page.getByRole("button", { name: "Calcular meu céu" }).click();
   await expect(
     page.getByRole("heading", { name: `Seu mapa natal, ${input.displayName}` }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: 30_000 });
 }
 
 async function mockGeocoding(page: Page): Promise<void> {

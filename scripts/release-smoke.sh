@@ -33,13 +33,17 @@ grep -q '"redis":"up"' "$work_dir/ready.body"
 
 request home /
 request methodology /metodologia
-grep -q "Da posição no céu à decisão explicável" "$work_dir/methodology.body"
-grep -q "Método autoral AstroAxe" "$work_dir/methodology.body"
+grep -q "Um método rastreável" "$work_dir/methodology.body"
+grep -q "AstroAxe Regências 3.0" "$work_dir/methodology.body"
+request privacy /privacidade
+grep -q "Seus dados servem à sua leitura" "$work_dir/privacy.body"
+grep -q "Não há integração ativa com LLM" "$work_dir/privacy.body"
 
 request robots /robots.txt
 grep -q "Disallow: /api/" "$work_dir/robots.body"
 request sitemap /sitemap.xml
 grep -q "/metodologia" "$work_dir/sitemap.body"
+grep -q "/privacidade" "$work_dir/sitemap.body"
 
 request account /conta
 grep -Eqi '<meta[^>]+name="robots"[^>]+content="[^"]*noindex' "$work_dir/account.body"

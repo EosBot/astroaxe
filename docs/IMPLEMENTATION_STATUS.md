@@ -108,6 +108,26 @@ O ponto curto de retomada entre sessões é `docs/PROJECT_MEMORY.md`.
 - O conteúdo não entra no logger, analytics, IA, MCP ou corpus editorial. As APIs validam JSON,
   mesma origem nas mutações, Zod e ownership no servidor.
 
+### Tríade de Regências v3 — questionário, feedback e provenança
+
+- A Tríade exige sete respostas de questionário antes do cálculo (`POST`); essas respostas são
+  cálculo-apenas — usadas somente naquela requisição e nunca persistidas, logadas ou devolvidas no
+  DTO público. Boundaries fail-closed: mesma origem, corpo JSON limitado (415/413), erro de cálculo
+  sanitizado (503) e ownership do perfil em toda operação.
+- Um coletor separado e explicitamente consentido (`PUT`) pergunta se a pessoa conhece seus Orixás
+  de frente, cabeça e costas; só então persiste `regency_feedback` com predição recalculada no
+  servidor, versões de método/matriz/config/scorer/questionário e origem da confirmação. O checkbox
+  de consentimento é um estado controlado — não é possível enviar sem marcá-lo, mesmo contornando o
+  botão. `knowsOrisas=false` proíbe correção; `knowsOrisas=true` exige ao menos um papel corrigido,
+  reforçado por CHECK constraints no banco (última defesa, não a primeira).
+- `DELETE` permite retirar um feedback específico (por método/questionário) sem apagar o mapa; a
+  exclusão do perfil ou da conta continua removendo tudo em cascata.
+- A exportação pessoal (`GET /api/auth/export`) inclui as cinco versões de cada feedback. Um novo
+  relatório agregado internamente restrito (`regency:evaluate -- --aggregate-release`) publica
+  contagens sobre dimensões fixas predeclaradas com amostra mínima de 30, supressão primária abaixo
+  de 10, supressão complementar e bloqueio por risco de ataque de diferenciação contra o release
+  anterior — nunca dados por linha, nunca abaixo do corte.
+
 ### Método autoral de regências v2
 
 - O módulo autenticado usa a composição v2: fatores natais, canais temporais disponíveis,

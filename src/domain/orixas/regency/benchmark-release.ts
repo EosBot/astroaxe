@@ -153,7 +153,8 @@ export function suppressRegencyBenchmarkCells(
   const minCohortSize = options.minCohortSize ?? MIN_COHORT_SIZE;
   const primaryThreshold = options.primaryThreshold ?? PRIMARY_SUPPRESSION_THRESHOLD;
   const cohortSize = records.length;
-  if (cohortSize < minCohortSize) return { ok: false, reason: "insufficient_cohort", cohortSize, minCohortSize };
+  if (cohortSize < minCohortSize)
+    return { ok: false, reason: "insufficient_cohort", cohortSize, minCohortSize };
 
   const cells: RegencyBenchmarkSuppressedCell[] = buildRegencyBenchmarkCells(records).map((cell) =>
     cell.count < primaryThreshold
@@ -172,9 +173,11 @@ export function suppressRegencyBenchmarkCells(
     const suppressedCount = partition.filter((cell) => cell.suppressed).length;
     if (suppressedCount !== 1 || partition.length <= 1) continue;
     const visible = partition.filter((cell) => !cell.suppressed);
-    const smallest = visible.reduce((min, cell) =>
-      (cell.count ?? Number.POSITIVE_INFINITY) < (min.count ?? Number.POSITIVE_INFINITY) ? cell : min,
-    );
+    let smallest = visible[0];
+    for (const cell of visible)
+      if (smallest === undefined || (cell.count ?? Number.POSITIVE_INFINITY) < (smallest.count ?? Number.POSITIVE_INFINITY))
+        smallest = cell;
+    if (smallest === undefined) continue;
     smallest.count = null;
     smallest.suppressed = true;
     smallest.suppressionReason = "complementary";

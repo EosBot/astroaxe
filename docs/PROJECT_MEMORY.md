@@ -1,5 +1,95 @@
 # Memória canônica do projeto
 
+## Atualização 2026-08-26 — Wave 1 do roteiro cerimonial: Tríade v3 fechada
+
+- Concluída a Wave 1 (`.omo/plans/astroaxe-roadmap-ceremonial-laboratory.md`, tarefas 1-6):
+  baseline congelada, boundaries da Tríade endurecidas (mesma origem em POST/PUT/DELETE, leitor
+  JSON limitado com 413/415, erro de cálculo sanitizado 503), consentimento do feedback vinculado
+  a estado controlado (não é mais possível enviar sem marcar, mesmo contornando o botão),
+  `orisa-research-lab.tsx` dividido em componentes menores que 250 linhas.
+- Nova migration `20260826000000_regency_feedback_constraints` adiciona CHECK constraints
+  (verdict, confirmation_basis, forma JSON, consistência knows_orisas/corrected_triad) como
+  última defesa. Nova rota `DELETE` permite retirar um feedback específico sem apagar o mapa.
+- Exportação pessoal passou a incluir as cinco versões (método/matriz/config/scorer/questionário)
+  de cada feedback. Novo relatório agregado internamente restrito
+  (`regency:evaluate -- --aggregate-release`) publica contagens sobre dimensões fixas
+  predeclaradas com amostra mínima de 30, supressão primária abaixo de 10, supressão
+  complementar e bloqueio por risco de ataque de diferenciação contra releases anteriores,
+  persistidos na nova tabela `regency_benchmark_releases` (decisão explícita do responsável:
+  Postgres, não arquivo). Migration `20260826010000_regency_benchmark_releases`.
+- Corrigida uma regressão pré-existente no worktree sujo: `v2-config.ts`/`v2-matrix.ts` ganharam
+  `import "server-only"`, o que quebrava silenciosamente `npm run regency:evaluate` fora do
+  Next.js. Corrigido com `--conditions=react-server` nos scripts do `package.json`.
+- Golden fixtures da Tríade v3 congelam o catálogo exato de 27 Orixás elegíveis, a tripla de
+  versões matriz/config/scorer e o caso em que todos os papéis ficam em aberto sem evidência.
+- O E2E autenticado (`tests/e2e/authenticated-mvp.spec.ts`) estava desatualizado desde a v3: pulava
+  o questionário obrigatório antes de esperar o resultado. Passou a responder as sete perguntas,
+  submeter feedback consentido, verificar as versões no export pessoal e exercitar a retirada
+  seletiva (`DELETE`) antes da exclusão do perfil. Duas regressões pré-existentes foram
+  descobertas e corrigidas nesse processo: `scripts/release-smoke.sh` e
+  `tests/e2e/methodology.spec.ts` ainda verificavam a string "AstroAxe Regências 2.1", desatualizada
+  desde a virada para 3.0 — ambas falhavam silenciosamente sob `set -e`/timeout sem imprimir erro.
+- Documentação reconciliada (`/privacidade`, `/metodologia`, `docs/IMPLEMENTATION_STATUS.md`) para
+  declarar explicitamente: as sete respostas do questionário são cálculo-apenas e nunca
+  persistidas; o feedback exige consentimento separado, é persistido versionado e pode ser
+  retirado individualmente. `docs/astrology-calculation-changelog.md` e o relatório de pesquisa já
+  declaravam essa regra corretamente.
+- Checkpoint observado nesta sessão: `npm run typecheck` e `npm run lint` passaram; `npm test`
+  (sem coverage) — 93 arquivos, 351 testes, todos passando; `npm run test:coverage` — mesma
+  contagem, 86,45% statements / 71,98% branches / 89,17% functions / 88,62% lines (uma
+  instabilidade de timeout pré-existente e não relacionada a este trabalho, em
+  `profile-archive.test.tsx` sob paralelismo total, some ao rodar com `--fileParallelism=false`;
+  `vitest.config.ts` ganhou `testTimeout: 15_000` como mitigação geral); `npm run build` passou;
+  `npm run test:e2e` — 14 cenários passaram (5,6 min) via o wrapper oficial após as duas correções
+  acima; Quality Gate do SonarQube passou após corrigir os quatro achados reais introduzidos nesta
+  sessão (um bug MAJOR de `reduce()` sem valor inicial e três code smells MAJOR de espaçamento
+  JSX ambíguo) — 0 novas violações, 81,6% de cobertura em código novo, 1,52275% de duplicação.
+- A migração da infraestrutura de Docker Swarm/homologação e o corpus `/mnt/e/Ocultismo` das
+  Waves 2-7 do roteiro cerimonial (fundação dual-mode, ingestão do acervo privado, workspaces de
+  tradição separadas, criptografia de planos privados) permanecem não iniciados; são mudanças de
+  arquitetura muito maiores que devem ser retomadas com aprovação explícita antes de prosseguir.
+
+## Atualização 2026-08-25 — regências v3 e nomenclatura astrológica
+
+- A Tríade passou a exigir um questionário de sete movimentos antes do cálculo. As respostas são
+  sinais auxiliares usados somente na requisição e incluem opções “ambos” e “prefiro não responder”.
+- Ao final, um coletor consentido pergunta se o usuário conhece seus Orixás de frente, cabeça e
+  costas e aceita correções por papel. O servidor recalcula a predição antes de congelar o exemplo;
+  feedbacks são versionados, exportáveis e removidos em cascata com o perfil.
+- O catálogo elegível foi ampliado de 25 para 27 com Logunan e Egunitá; Oxumarê continua explícito.
+  Os pares de Saraceni entram como uma família de evidência da Umbanda Sagrada, cruzável com todas
+  as demais no agregado e ainda mensurável separadamente por proveniência.
+- Versões: matriz `0.5.0-v3`, configuração `0.2.0-v3`, scorer `0.6.0`, questionário `1.0.0` e
+  contrato público `AstroAxe Regências 3.0 — pesquisa aplicada`.
+- Corpos, pontos e aspectos dos módulos astrológicos agora usam rótulos portugueses centrais e
+  fallbacks seguros; o caso `sun`/`true_node`/`sextile` possui regressão textual exata.
+- Checkpoint observado: 315 testes em 89 arquivos; 86,21% de statements e 88,39% de linhas;
+  typecheck, lint, formatação, build de produção, E2E e Quality Gate passaram. O cache webpack do
+  host voltou a apresentar a falha interna `WasmHash`; o build isolado compilou integralmente. A
+  stack principal foi reconstruída e permaneceu saudável em `http://localhost`.
+
+## Atualização 2026-08-25 — revisão integral de módulos e conteúdo
+
+- Todos os módulos públicos e autenticados foram confrontados com o estado real do produto. Textos
+  natais permanentes deixaram de se apresentar como leitura do período; trânsitos distinguem
+  proximidade geométrica do pico de uma alegação de exatidão; cards com hora desconhecida não
+  prometem casas ou ângulos.
+- A Regência pública foi elevada para `AstroAxe Regências 2.1 — pesquisa aplicada`, sem alteração
+  da matriz ou dos resultados. O módulo ganhou retry explícito e preserva o perfil quando a rota
+  falha. O histórico ANTES/DEPOIS/MOTIVO/IMPACTO está no changelog de cálculo.
+- `/privacidade` descreve a coleta e os controles realmente implementados, declara integrações
+  inativas e separa pendências jurídicas de funcionalidades existentes. Rodapé, sitemap e release
+  smoke cobrem a nova rota.
+- Foram removidos a cena Canvas substituída e um contrato especulativo de analytics sem chamadores,
+  com seus testes e estilos exclusivos. O TypeScript estrito com verificações de símbolos não
+  utilizados passou depois da limpeza.
+- O breakpoint do cabeçalho compacto passou a cobrir tablets de até 820 px, eliminando overflow no
+  limiar de 768 px. As expectativas E2E foram alinhadas à interface e às versões atuais.
+- Checkpoint final observado: 300 testes em 87 arquivos, 86,11% de statements e 88,31% de linhas;
+  typecheck, lint, formatação, build Docker, release smoke, 14 cenários E2E e Quality Gate passaram.
+  A stack principal foi reconstruída e permaneceu saudável. Sessenta e cinco arquivos estáticos do
+  cliente foram examinados sem marcador proprietário.
+
 ## Atualização 2026-08-25 — aplicação do método v2 e revisão pública
 
 - A área autenticada de Orixás passou da matriz baseline para `regency-matrix-0.4.0-v2-research`
@@ -150,15 +240,14 @@ estava com alterações ainda não commitadas neste handoff.
 - Essa correção alterou a apresentação, não o núcleo astronômico. Uma divergência futura deve ser
   reproduzida com input auditável de data, hora, cidade/timezone e modo de hora conhecida antes de
   alterar engine ou configuração.
-- O onboarding abre em um palco galáctico de viewport inteira, com formulário em vidro fumê,
-  instrumento orbital e partículas em profundidade por `src/components/onboarding/celestial-particles.tsx`.
+- O onboarding abre em um palco galáctico de viewport inteira, com formulário em vidro fumê e uma
+  única cena orbital em `src/components/onboarding/celestial-observatory-3d.tsx`. A camada Canvas
+  antiga, sem consumidor após essa substituição, foi removida com seus estilos e testes exclusivos.
 
-## Contrato atual de motion e partículas
+## Contrato atual de motion e cena orbital
 
-- Partículas determinísticas: até 180 no desktop e 72 no mobile, alvo de 30 fps e DPR limitado a
-  `1.5`.
-- A animação pausa quando a cena sai do viewport ou a aba fica oculta. Com redução de movimento, o
-  estado é estático.
+- A cena WebGL é progressiva e decorativa; falha de inicialização não bloqueia o conteúdo nem o
+  formulário. Com redução de movimento, o estado permanece estático.
 - A camada visual não intercepta o formulário e não contém texto ou ação essenciais.
 - Viewports `1440×1000`, `390×844` e `320×700` foram inspecionados visualmente sem quebra material
   no fluxo, overflow horizontal, overlay de erro ou erro de console.
@@ -197,7 +286,7 @@ não podem ser removidos sem backup, alvo explícito e nova autorização.
 - `npm run lint`: passou;
 - testes: 74 arquivos e 265 testes passaram;
 - cobertura: 87,54% statements, 72,27% branches, 93,81% functions e 89,68% lines;
-- componente de partículas: 97,18% statements e 100% lines;
+- a antiga implementação Canvas de partículas foi removida por não possuir consumidor;
 - `npm run build`: passou;
 - E2E em Chromium desktop e mobile: 14 cenários passaram;
 - `npm run test:release-smoke`: passou na stack local;

@@ -84,7 +84,7 @@ export function RegencyFeedbackForm({
         }}
       >
         <label>
-          Como você avalia a tríade?
+          Como você avalia a tríade?{" "}
           <select required value={verdict} onChange={(event) => setVerdict(event.target.value)}>
             <option value="">Selecione</option>
             <option value="matched">Corresponde</option>
@@ -140,7 +140,7 @@ export function RegencyFeedbackForm({
           </div>
         ) : null}
         <label>
-          Como você conhece essa informação?
+          Como você conhece essa informação?{" "}
           <select required value={basis} onChange={(event) => setBasis(event.target.value)}>
             <option value="">Selecione</option>
             <option value="personal_recognition">Reconhecimento pessoal</option>
@@ -150,7 +150,7 @@ export function RegencyFeedbackForm({
           </select>
         </label>
         <label>
-          Comentário opcional
+          Comentário opcional{" "}
           <textarea
             maxLength={1000}
             value={comment}
