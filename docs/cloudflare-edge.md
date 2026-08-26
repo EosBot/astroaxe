@@ -54,8 +54,21 @@ Swarm como `astroaxe_cloudflare_tunnel_v1`, conforme `docs/swarm-runbook.md`.
 | `_dmarc.staging` | TXT | `v=DMARC1; p=reject` | — |
 
 Os registros CAA restringem quais autoridades certificadoras podem emitir
-certificado para o domínio: apenas as duas usadas pelo Universal SSL da
-Cloudflare, e nenhuma emissão de curinga.
+certificado para o domínio. **A restrição efetiva é mais ampla do que os três
+registros acima sugerem:** a Cloudflare sintetiza, na resolução, registros CAA
+adicionais para as CAs que ela própria usa — `comodoca.com`, `digicert.com` e
+`ssl.com` — inclusive `issuewild`, de modo a não quebrar a emissão do Universal
+SSL. O `issuewild ";"` publicado aqui é, portanto, neutralizado, e o
+comportamento não é configurável no plano Free.
+
+O ganho real permanece: sem CAA, qualquer CA do mundo pode emitir para o
+domínio; com CAA, a emissão fica limitada a um conjunto conhecido e auditável.
+Confira o que é efetivamente servido, não o que está na zona:
+
+```bash
+curl -sS -H 'accept: application/dns-json' \
+  'https://cloudflare-dns.com/dns-query?name=astroaxe.net&type=CAA'
+```
 
 ## TLS
 
@@ -98,7 +111,7 @@ O plano Free permite cinco regras WAF custom e uma regra de rate limiting.
 | 1 | `/wp-*`, `/xmlrpc.php`, `/.env`, `/.git/`, `/vendor/`, `/phpmyadmin` | Block |
 | 2 | `/api/health/*` vindo da internet | Block |
 | 3 | `POST` em `/api/auth/*` sem user agent de navegador | Managed Challenge |
-| 4 | Métodos `TRACE` e `TRACK` | Block |
+| 4 | Métodos `TRACE` e `TRACK` | Block — **redundante, ver abaixo** |
 
 O quinto slot fica reservado para resposta a incidente. As expressões usam
 `starts_with` e `contains` em vez de expressão regular, porque o operador
@@ -106,6 +119,11 @@ O quinto slot fica reservado para resposta a incidente. As expressões usam
 
 A regra 2 é segura porque as probes de liveness e readiness do Swarm alcançam o
 container diretamente pela rede interna e nunca atravessam a Cloudflare.
+
+A regra 4 nunca chega a ser avaliada: a Cloudflare já recusa `TRACE` e `TRACK`
+na borda com `405`, antes do WAF. Verificado em 2026-08-26. Ela ocupa um dos
+cinco slots do plano Free sem produzir efeito e deve ser substituída por algo
+que proteja uma superfície real.
 
 ### Rate limiting
 
