@@ -25,9 +25,28 @@ test-results/
 .codex/agent-context/
 .claude/agent-context/
 .omo/run-continuation/
+.qwen/
 
 # Local data
 backups/
+
+# Python virtual environments (pipeline scripts)
+**/.venv/
+__pycache__/
+*.pyc
+
+# Corpus vetorizado (arquivos grandes, gerados pelo pipeline)
+conteudo/*.parquet
+conteudo/*.npy
+conteudo/*.faiss
+conteudo/*.jsonl
+# Catálogos de pontos são curadoria (metadados + letras coletadas), não artefato
+# regenerável: ficam versionados. Só o chunks.jsonl gerado continua fora.
+!conteudo/pontos_cantados.jsonl
+!conteudo/pontos_paginas.jsonl
+
+# Logs de execução do pipeline de condensação
+scripts/ocultismo-pipeline/*.log
 
 # Snapshot datado do scanner. O SBOM em ops/ceremonial/ é versionado; o relatório bruto
 # de vulnerabilidades é regenerado por `npm run ceremonial:scan` e envelhece em dias.

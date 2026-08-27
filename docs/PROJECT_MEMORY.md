@@ -1,5 +1,34 @@
 # Memória canônica do projeto
 
+## Atualização 2026-08-27 — Pipeline de condensação do acervo E:\Ocultismo
+
+- O corpus vetorizado do acervo está **pronto e consultável** em
+  `scripts/ocultismo-pipeline/` (venv Python próprio), saídas em `conteudo/`.
+  Desenho: extração (PDF/DOCX/ODT/TXT/RTF/JSON + OCR de 32 imagens) → limpeza/
+  dedup/chunking → embeddings `BAAI/bge-m3` (1024d, normalizados) → FAISS de
+  produto interno + parquet/jsonl/manifest. Busca: `query.py` (texto/json/jsonl,
+  filtro por categoria).
+- Números finais observados: 281 arquivos de texto + 32 imagens em
+  `/mnt/e/Ocultismo` (montado e acessível); 246 documentos únicos após dedup →
+  32.171 chunks; pipeline completo em ~74 min na RTX 2060 com `--batch-size 8`
+  (o default 64 estoura os 6 GB). Modelo bge-m3 em cache local do HuggingFace.
+- Pontos cantados: catálogo de 538 pontos (`conteudo/pontos_cantados.jsonl`) com
+  entidade/tipo/letra — **529 com letra** (98%). Em 2026-08-26 uma raspagem
+  contaminou o catálogo com páginas de busca de blog (197 entradas de lixo); elas
+  foram limpas e a coleta refeita com gate de qualidade (estrutura de verso +
+  vocabulário de Umbanda + âncora de título/entidade, rejeição de boilerplate):
+  `scrape_pages.py` varre as páginas estáticas do blog Rei dos Pontos
+  (`conteudo/pontos_paginas.jsonl`), `scrape_v3.py` faz busca DuckDuckGo com
+  parsing corrigido, `refine_lyrics.py` segmenta páginas inteiras no ponto exato
+  pelo marcador numerado. Os 529 pontos com letra foram embeddidos e mesclados
+  ao índice por `integrate_pontos.py` → corpus final com **32.700 chunks**.
+  Smoke test passou: consulta por categoria retorna ponto de Ogum correto
+  (score 0,68) e conteúdo de fitoterapia/banhos. Letras são insumo de pesquisa;
+  publicação segue a regra do acervo (síntese original nossa).
+- Retomada/reprocesso: `.venv/bin/python pipeline.py --output-dir conteudo
+  --device cuda --batch-size 8` → `integrate_pontos.py --device cuda` →
+  `query.py`. Logs em `scripts/ocultismo-pipeline/*_run.log` (gitignored).
+
 ## Atualização 2026-08-26 — Contradições retiradas da documentação
 
 - O plano e os documentos foram varridos para remover o que contradizia as duas decisões do dia
@@ -658,6 +687,20 @@ sem tocar em DNS.
 
 O runbook autoritativo é `docs/cloudflare-edge.md`; o desenho aprovado está em
 `docs/superpowers/specs/2026-08-26-cloudflare-edge-design.md`.
+
+## Integrações Codex, Citadel e Cloudflare
+
+Em 2026-08-26 a integração local do Citadel foi corrigida para executar os delegates CommonJS do
+projeto e a instalação global passou a usar o commit sanitizado `a3df1b9` do PR upstream #271. A
+correção cobre resolução portátil dos dois MCPs, aceitação do campo MCP `_meta`, envelopes nativos
+de `SessionStart` e `PostToolUse` e limite de três segundos para `SessionEnd`. Os testes de integração
+nativa e os 21 casos JSON-RPC do `citadel-state` passaram tanto no cache global ativo quanto pelo
+delegate do projeto. A instalação anterior foi preservada como rollback; uma nova sessão do Codex é
+necessária para recarregar hooks e definições já capturados pelo processo atual.
+
+Na configuração Cloudflare, a entrada duplicada foi removida e ficaram 17 endpoints únicos: dois
+públicos e quinze protegidos por OAuth. Não há credenciais, URLs de autorização nem estado OAuth
+versionados no projeto.
 
 ## Checklist curto de retomada
 

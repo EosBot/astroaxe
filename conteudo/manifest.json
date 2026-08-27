@@ -1,0 +1,35 @@
+{
+  "model": "BAAI/bge-m3",
+  "embedding_dim": 1024,
+  "total_chunks": 32700,
+  "total_docs": 769,
+  "categories": [
+    "apometria",
+    "backup",
+    "fitoterapia",
+    "judaismo",
+    "kundalini",
+    "livros",
+    "magia_angelical",
+    "magia_ervas",
+    "magia_fogo",
+    "oracao_pinheiro",
+    "oracoes_rezas",
+    "reiki",
+    "resumos",
+    "sepher_ra_hazim",
+    "templo_pena",
+    "pontos_cantados"
+  ],
+  "file_types": [
+    "docx",
+    "image_ocr",
+    "json",
+    "odt",
+    "pdf",
+    "rtf",
+    "txt"
+  ],
+  "normalized_embeddings": true,
+  "similarity_metric": "inner_product"
+}
