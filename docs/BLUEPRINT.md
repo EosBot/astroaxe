@@ -118,6 +118,39 @@ Consequências práticas:
 - a página de metodologia explica o método como um _model card_: entradas, processo,
   versionamento, avaliação e limites conhecidos, em profundidade.
 
+### 5.0.1 Condensação das tradições
+
+Decidido em 26 de agosto de 2026, corrigindo uma formulação anterior que proibia fundir
+tradições. A proibição era errada: muitas se complementam, os fundamentos se cruzam, e
+agrupá-los num sistema único é o produto.
+
+O que o método faz é **condensar por função estrutural**, em três camadas com uma saída:
+
+1. **Fonte.** Cada tradição afirma o que afirma, com identidade própria — escola, obra,
+   edição. Camada interna, nunca exposta como aparato de citação.
+2. **Função abstrata.** Extrai-se a posição estrutural independente do nome: abridor de
+   caminhos, limiar, ferro e ofício da guerra, regência de hora, quadrante elemental. É
+   aqui que as tradições se encontram, porque é aqui que elas de fato respondem à mesma
+   pergunta.
+3. **Condensação.** Agrupa por função. **Convergência entre escolas independentes aumenta
+   o peso**; divergência é registrada como conflito, não resolvida por média.
+
+A saída é um método único e robusto. A pessoa vê um sistema; a máquina sabe de onde cada
+peça veio e o quanto ela é sustentada.
+
+**Por que a proveniência sobrevive à condensação.** Não é freio: é o que dá peso. Três
+escolas independentes atribuindo a mesma função à mesma posição é evidência forte — mas só
+enquanto for possível ver que eram independentes. Achatar tudo numa tabela plana antes de
+pesar destrói exatamente esse sinal: uma linha só não distingue consenso de três escolas de
+repetição de uma. É a mesma razão pela qual o grafo do método v2 já separa arquivo, obra,
+família de fonte e escola, e não conta cópia nem tradução como confirmação independente.
+
+**O único limite, e ele é técnico.** Afirmamos **posição análoga**, não identidade. "Ocupa
+a mesma função estrutural" é o que a comparação de fato estabelece e se sustenta sob
+escrutínio; "é o mesmo ente" é uma afirmação diferente, falsificável, que nenhuma fonte
+sustenta e que derrubaria o método junto. A distinção não custa nada e é o que separa
+síntese comparativa de sincretismo ingênuo.
+
 ### 5.1 Cadeia de confiança
 
 `dados higienizados → motor astronômico → mapa validado → regras astrológicas → corpus derivado → composição → validação → apresentação`

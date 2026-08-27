@@ -18,9 +18,18 @@ simbólica afro-brasileira. Preserve estes princípios:
   síntese original escrita por nós, nunca transcrição de fonte. Isso está
   decidido em `docs/BLUEPRINT.md` §5.0 — não reabra a questão de direitos por
   fonte, elegibilidade ou parecer como pré-condição de publicação;
-- não misture tradições. Umbanda Sagrada, Candomblé Ketu/Nagô, corpus de Ifá e
-  magia cerimonial europeia são gramáticas distintas: comparar é legítimo,
-  fundir é erro. Onde as fontes divergem, registre o conflito;
+- **condense as tradições.** Muitas se complementam e seus fundamentos se
+  cruzam; agrupar isso num sistema único é o produto, não um risco. Condense
+  pela **função estrutural** — abridor de caminhos, limiar, ofício da guerra,
+  regência de hora — e não pelo nome que cada escola usa;
+- condensar não é achatar. A proveniência fica na camada de baixo porque é ela
+  que dá **peso**: convergência de escolas independentes é evidência forte, e só
+  continua contável enquanto dá para ver que eram independentes. Cópia e
+  tradução da mesma linhagem não valem como duas confirmações. Onde divergem,
+  registre o conflito em vez de tirar média;
+- a saída é um método único; a máquina sabe de onde cada peça veio. Afirme
+  posição análoga, não identidade: "ocupa a mesma função" é o que foi
+  descoberto e se sustenta, "é o mesmo" é falsificável e derruba o método;
 - símbolos e selos são redesenhados em SVG próprio, não recortados de scan;
 - profundidade é requisito. Um texto raso ocupa o lugar do conhecimento sem
   entregá-lo;

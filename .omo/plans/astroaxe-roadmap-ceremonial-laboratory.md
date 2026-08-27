@@ -29,6 +29,33 @@ O que isso invalida deste plano:
   método do acervo, escrever a síntese, publicá-la com profundidade real, e explicar o método
   na página como um _model card_.
 
+### Segunda correção — condensação, não separação (mesmo dia)
+
+A Wave 5 foi desenhada como **"five strictly separated workspaces"**, e a Task 27 era
+literalmente uma _leak regression suite_ impedindo que uma tradição vazasse para outra. Isso
+está invertido em relação à direção decidida: o responsável determinou que as tradições devem
+ser **condensadas**, porque muitas se complementam e seus fundamentos se cruzam.
+
+O desenho que substitui isso está em `docs/BLUEPRINT.md` §5.0.1: três camadas — fonte, função
+abstrata, condensação — com saída única. A separação por escola deixa de ser barreira e passa a
+ser **peso**: convergência entre escolas independentes é evidência forte, e cópia ou tradução da
+mesma linhagem não conta como segunda confirmação. O único limite é afirmar posição análoga em
+vez de identidade entre entes.
+
+Em consequência:
+
+- **Tasks 22–26** (Angelical, Ars Goetia, Theurgia-Goetia, espíritos olímpicos, inteligências
+  planetárias) deixam de ser catálogos isolados e passam a ser fontes que alimentam o mesmo
+  grafo de funções;
+- **Task 27 está invertida** e precisa virar o oposto: uma suíte que verifica que a condensação
+  **preserva a contagem de escolas independentes**, em vez de impedir o cruzamento;
+- **Wave 4** (Tasks 17–21) segue válida — contratos determinísticos de tempo e correspondência
+  são a camada de função abstrata de que a condensação depende.
+
+O schema da Task 8 já suporta isso: `CeremonialEntity` com `CeremonialEntityVariant` por edição,
+`CeremonialCorrespondence` e `CeremonialCrossReference` são exatamente as tabelas de posição
+análoga entre sistemas.
+
 O que substitui a Task 15 e as waves seguintes ainda não foi escrito. Escrever isso é o
 próximo passo de planejamento.
 

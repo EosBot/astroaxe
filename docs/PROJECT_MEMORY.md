@@ -15,6 +15,15 @@
   questão pela via correta — fato e ideia são livres, expressão é protegida, e a expressão
   publicada é nossa.
 - Símbolos são redesenhados em SVG próprio, não recortados de scan.
+- **Correção no mesmo dia:** uma formulação minha proibia fundir tradições. Estava errada e o
+  responsável corrigiu. As tradições **devem ser condensadas** — muitas se complementam e os
+  fundamentos se cruzam. O desenho está em `BLUEPRINT.md` §5.0.1: fonte → função abstrata →
+  condensação, com saída única. A proveniência por escola não é freio, é **peso**: convergência
+  entre escolas independentes é evidência forte, e só continua contável enquanto der para ver
+  que eram independentes. Cópia e tradução da mesma linhagem não valem como duas confirmações.
+  Único limite: afirmar posição análoga, não identidade entre entes.
+- Isso inverteu a Wave 5 do plano, que era "workspaces estritamente separados", e a Task 27,
+  que era uma suíte anti-vazamento entre tradições.
 - Pedido de qualidade em aberto: os textos existentes estão rasos. A barra é imersão e
   detalhe, e a página de metodologia deve explicar o método como um _model card_ de big tech.
 

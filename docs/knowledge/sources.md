@@ -18,8 +18,12 @@ O que continua valendo, porque é rigor e não trava:
    espúrio; manuscritos do Lemegeton não são uniformes; listas de Agrippa variam entre edições.
    Onde as fontes discordam, o método registra o conflito em vez de escolher um vencedor em
    silêncio.
-3. **Não misturar tradições.** Umbanda Sagrada, Candomblé Ketu/Nagô, corpus de Ifá, magia
-   cerimonial europeia e cabala são gramáticas distintas. Comparar é legítimo; fundir é erro.
+3. **Condensar por função, registrando a escola.** Umbanda Sagrada, Candomblé Ketu/Nagô,
+   corpus de Ifá, magia cerimonial europeia e cabala se cruzam e se complementam, e o método
+   as agrupa pela função estrutural que compartilham (ver `BLUEPRINT.md` §5.0.1). O registro
+   por escola sobrevive à condensação porque é ele que dá peso: convergência entre escolas
+   independentes é evidência forte, e cópia ou tradução da mesma linhagem não vale como duas
+   confirmações. Afirmamos posição análoga, não identidade.
 4. **Prioridade de voz:** comunidades e detentores culturais primeiro, depois instituições de
    patrimônio, depois etnografia acadêmica, depois análise comparativa — sempre identificada
    como análise.
@@ -30,10 +34,12 @@ Acesso verificado em 19 de agosto de 2026.
 
 ## Estruturas comparativas de magia cerimonial
 
-Estas fontes servem somente para desenhar uma gramática computacional de camadas, temporalidades,
-hierarquias, ofícios e facetas. Servem à gramática comparativa e **não** sustentam correspondência
-direta entre anjos, espíritos, Orixás, Voduns ou Nkisi: comparar estruturas é legítimo, fundir
-tradições é erro.
+Estas fontes desenham a gramática computacional de camadas, temporalidades, hierarquias, ofícios
+e facetas — a linguagem de **função estrutural** na qual o método condensa as tradições
+(`BLUEPRINT.md` §5.0.1). Onde anjos, espíritos, Orixás, Voduns e Nkisi ocupam a mesma posição
+funcional, isso é registrado como posição análoga e ganha peso pela convergência entre escolas
+independentes. O que não afirmamos é identidade entre entes: "cumpre a mesma função" se sustenta,
+"é o mesmo" não.
 
 ### Heptameron — tradição pseudo-Pedro de Abano
 
