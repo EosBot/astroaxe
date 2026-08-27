@@ -1,0 +1,29 @@
+{
+  "pipelineVersion": "ceremonial-import-1.0.0",
+  "summary": {
+    "artifactsConsidered": 729,
+    "resolved": 0,
+    "unresolved": 145,
+    "skippedWithoutContent": 584,
+    "distinctWorks": 139,
+    "distinctEditions": 139,
+    "locators": 18196,
+    "reviewsByReason": {
+      "AUTHOR_UNKNOWN": 145,
+      "EDITION_UNESTABLISHED": 145,
+      "LANGUAGE_UNVERIFIED": 145,
+      "NO_CITABLE_CONTENT": 584,
+      "NO_LOCATOR_SCHEME": 37,
+      "TITLE_FROM_FILENAME": 145
+    }
+  },
+  "applied": {
+    "sourceSystems": 1,
+    "works": 139,
+    "editions": 139,
+    "artifacts": 145,
+    "locators": 18196,
+    "reviewsOpened": 1201,
+    "reviewsAlreadyResolved": 0
+  }
+}

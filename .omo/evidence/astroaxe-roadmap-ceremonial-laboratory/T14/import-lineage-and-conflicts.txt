@@ -1,0 +1,95 @@
+T14 — linhagem, conflitos e o que o corpus real revelou (2026-08-26)
+
+Nenhum caminho, título ou conteúdo do acervo privado aparece neste arquivo. As fixtures
+citadas são sintéticas.
+
+## A regra que governa a task
+
+Um nome de arquivo é uma pista, nunca uma identidade. "lemegeton.pdf" não estabelece qual
+Lemegeton, qual família de manuscrito, qual tradução, nem se o volume é uma compilação que
+o contém. Então o caminho propõe e apenas um mapeamento feito por pessoa decide. Tudo que
+veio só do caminho entra na fila de revisão e fica impublicável até alguém resolver.
+
+A consequência é deliberada: na primeira importação, praticamente todo o acervo está
+irresolvido. Esse é o estado honesto de um corpus que ninguém catalogou, não uma falha.
+
+## Execução sobre o acervo real
+
+  npm run ceremonial:import -- <extraction.json> --apply
+
+  729 artefatos únicos considerados
+  145 importados com texto citável | 0 resolvidos | 145 irresolvidos
+  584 sem conteúdo citável (majoritariamente áudio, que a T13 não transcreve)
+  139 obras | 139 edições | 18.196 locators de página
+  1.201 itens abertos na fila, nenhum resolvido
+
+  por motivo: TITLE_FROM_FILENAME 145, AUTHOR_UNKNOWN 145, EDITION_UNESTABLISHED 145,
+              LANGUAGE_UNVERIFIED 145, NO_LOCATOR_SCHEME 37, NO_CITABLE_CONTENT 584
+
+139 obras para 145 artefatos porque seis arquivos compartilham a mesma pista de nome e,
+sem mapeamento, caem na mesma obra provisória. Isso é visível e corrigível na fila; não é
+uma fusão silenciosa.
+
+## Idempotência, verificada no corpus real
+
+Segunda execução sobre o mesmo manifesto, sem mudar nada:
+
+  works 0 | editions 0 | locators 0 | reviewsOpened 0 | reviewsAlreadyResolved 0
+  banco: 139 obras, 139 edições, 145 artefatos, 18.196 locators, 1.201 itens abertos
+
+## Propriedades verificadas contra PostgreSQL 18 real
+
+Os testes do store rodam contra um banco descartável, não contra mock: as constraints, os
+índices únicos, o CHECK de resolução e o rollback transacional vivem no banco, e um mock
+provaria apenas que o arquivo chama os métodos que chama.
+
+- linhagem completa gravada para um artefato mapeado, com edição correta e
+  access=LOCAL_ONLY / rights=UNKNOWN;
+- reexecução não cria nada;
+- arquivo renomeado segue os bytes: continua um artefato, com o novo caminho;
+- artefato não mapeado abre exatamente quatro itens, um por campo não verificado;
+- duas traduções permanecem edições distintas da mesma obra;
+- **rollback**: um título acima da largura da coluna derruba o plano inteiro, e a proposta
+  válida que vinha antes não sobrevive sozinha (0 artefatos, 0 obras depois da falha).
+
+Constraints exercitadas diretamente no banco:
+
+  RESOLVED sem data     -> ceremonial_import_reviews_resolution_check
+  item duplicado        -> ceremonial_import_reviews_hash_reason_key
+  hash inválido         -> ceremonial_import_reviews_hash_check
+  motivo inventado      -> ceremonial_import_reviews_reason_check
+
+## Conflito cria item, não sobrescrita
+
+Dois mapeamentos reivindicando o mesmo artefato com identidades diferentes não produzem um
+vencedor. Ambos são recusados, um CONFLICTING_MAPPING registra as duas reivindicações, e o
+artefato volta a ser tratado como não mapeado — com os quatro itens de campo reabertos.
+Um mapeamento apontando para bytes que a extração nunca produziu vira
+MAPPING_WITHOUT_ARTIFACT em vez de criar uma edição fantasma.
+
+## O gate de publicação
+
+A invariante "irresolvido não publica" foi colocada na política de acesso da T9, e não na
+camada de consulta, porque é ali que "isto pode ser público?" é decidido uma única vez.
+`unresolvedImport` nega **todas** as facetas, inclusive `metadata` — a única faceta que
+sobrevive a todas as outras negativas públicas. O motivo: conceder direitos sobre
+"lemegeton.pdf" concede direitos sobre nada que alguém tenha de fato identificado.
+
+O campo tem default `false`, então todo chamador escrito antes da fila existir continua
+compilando e continua fail-closed.
+
+## Dois defeitos reais, achados só rodando contra o corpus verdadeiro
+
+1. **Vocabulário de locator inventado.** A primeira versão emitia uma âncora
+   `WHOLE_ARTIFACT` por artefato. A T8 congelou o vocabulário de posições
+   (PAGE, FOLIO, SECTION, CHAPTER, APHORISM, PLATE, ENTRY) e o banco recusou. A correção
+   não foi ampliar o CHECK: foi parar de inventar. Só `PAGE` pode ser derivada de uma
+   extração; um artefato sem páginas não recebe locator nenhum e ganha um
+   NO_LOCATOR_SCHEME, porque "em algum lugar deste arquivo" não é uma citação.
+
+2. **Transação estourada por desenho O(n).** Inserir 18.196 locators com um `findUnique`
+   seguido de um `create` cada esgotou o limite de transação antes de terminar. A correção
+   não foi só aumentar o timeout — foi trocar por `createMany({ skipDuplicates: true })`,
+   uma sentença por edição, apoiando a idempotência no índice único em vez de numa consulta
+   anterior (mais rápido e sem corrida). O timeout também subiu para dez minutos, com o
+   motivo registrado: a alternativa é commitar uma linhagem pela metade.

@@ -137,3 +137,38 @@ describe("evaluateCeremonialAccess", () => {
       expect(result[facet]).toEqual({ decision: "deny", reason: "invalid_policy_input" });
   });
 });
+
+describe("importação não resolvida", () => {
+  /**
+   * Task 14's invariant, enforced here rather than at the query layer: identity that came
+   * from a filename is not identity, and no approval can cure it. Granting rights over
+   * "lemegeton.pdf" grants them over nothing anyone has actually identified.
+   */
+  it("denies every facet while the import review is open, even fully approved", () => {
+    const capabilities = evaluateCeremonialAccess(publicInput({ unresolvedImport: true }));
+    for (const facet of CEREMONIAL_FACETS)
+      expect(capabilities[facet]).toEqual({ decision: "deny", reason: "import_unresolved" });
+  });
+
+  it("denies metadata too, which every other public denial still allows", () => {
+    const restricted = evaluateCeremonialAccess(
+      publicInput({ sensitivity: "RESTRICTED_KNOWLEDGE" }),
+    );
+    expect(restricted.metadata.decision).toBe("allow");
+
+    const unresolved = evaluateCeremonialAccess(publicInput({ unresolvedImport: true }));
+    expect(unresolved.metadata).toEqual({ decision: "deny", reason: "import_unresolved" });
+  });
+
+  it("treats an omitted flag as resolved, so callers predating the queue still work", () => {
+    const capabilities = evaluateCeremonialAccess(publicInput());
+    expect(capabilities.metadata.decision).toBe("allow");
+  });
+
+  it("does not restrict the authenticated local runtime, which sees the whole corpus", () => {
+    const capabilities = evaluateCeremonialAccess(
+      publicInput({ mode: "local", authenticated: true, unresolvedImport: true }),
+    );
+    expect(capabilities.fullText.decision).toBe("allow");
+  });
+});

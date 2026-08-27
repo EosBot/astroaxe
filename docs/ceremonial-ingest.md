@@ -133,6 +133,59 @@ estado/adaptador/motivo, versões das ferramentas e total de páginas. Nenhum ca
 hash. É essa visão que vai para `.omo/evidence/.../T13/` e é essa que o comando imprime no
 stdout.
 
+## Importação da linhagem (Task 14)
+
+Depois da extração, `npm run ceremonial:import` mapeia artefatos para
+`obra → edição → artefato → locator`:
+
+```bash
+CEREMONIAL_MODE=local CEREMONIAL_ARCHIVE_ROOT=<acervo> CEREMONIAL_KEYRING_FILE=<keyring> \
+DATABASE_URL=<banco local> \
+  npm run ceremonial:import -- <extraction.json> [--mappings <arquivo.json>] \
+    [--apply] [--sanitized <saida.json>]
+```
+
+Sem `--apply` nada é gravado: o primeiro resultado útil é o tamanho da fila de revisão, e
+vale ler esse número antes de tocar no banco.
+
+**Um nome de arquivo é uma pista, nunca uma identidade.** Sem mapeamento, cada artefato abre
+quatro itens de fila — título, autoria, edição e idioma — e permanece impublicável. Só um
+`--mappings` escrito por pessoa, com nota de evidência, estabelece identidade. No acervo
+real isso significa 1.201 itens abertos e zero resolvidos na primeira execução: é o estado
+honesto de um corpus que ninguém catalogou.
+
+Formato do arquivo de mapeamento:
+
+```json
+{
+  "pipelineVersion": "ceremonial-import-1.0.0",
+  "mappings": [
+    {
+      "contentHash": "<sha256 do artefato>",
+      "sourceSystemSlug": "lemegeton",
+      "workTitle": "Ars Goetia",
+      "authorLabel": null,
+      "editionLabel": "tradução Mathers 1904",
+      "language": "en",
+      "publishedYear": 1904,
+      "evidenceNote": "conferido contra o exemplar impresso, folha de rosto e colofão"
+    }
+  ]
+}
+```
+
+`editionLabel` é o testemunho, não a obra: compilação e texto-fonte são edições distintas,
+e duas traduções são edições distintas da mesma obra. `authorLabel: null` é uma afirmação
+positiva — a pessoa olhou e a obra é anônima.
+
+Locators saem apenas do que a extração estabeleceu: uma posição `PAGE` por página. O
+vocabulário de posições foi congelado pela Task 8 e a importação não o amplia; um artefato
+sem páginas fica com `NO_LOCATOR_SCHEME` em vez de ganhar uma âncora falsa que nenhuma
+citação poderia usar.
+
+Reexecutar é idempotente e **nunca reabre um item já resolvido**: rodar um script de novo
+não é evidência nova de que a pessoa errou.
+
 ## Classificação dos derivados
 
 Todo derivado nasce `UNKNOWN` / `LOCAL_ONLY` / `CULTURALLY_SENSITIVE`, e o schema **recusa**

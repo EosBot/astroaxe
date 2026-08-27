@@ -1,5 +1,33 @@
 # Memória canônica do projeto
 
+## Atualização 2026-08-26 — Task 14: linhagem, locators e fila de revisão
+
+- Wave 3 em 14 de 39 tasks. A T14 mapeia artefatos extraídos para `obra → edição → artefato →
+locator`, com `npm run ceremonial:import` (relata por padrão, grava só com `--apply`) e a
+  migration `20260826130000_ceremonial_import_reviews`.
+- **Regra que governa tudo:** um nome de arquivo é pista, nunca identidade. Sem mapeamento
+  feito por pessoa, cada artefato abre quatro itens de fila — título, autoria, edição, idioma
+  — e fica impublicável. Um `--mappings` exige nota de evidência de como a identidade foi
+  estabelecida.
+- **Gate de publicação na política da T9**, não na camada de consulta: o novo
+  `unresolvedImport` nega **todas** as facetas, inclusive `metadata`. Conceder direitos sobre
+  "lemegeton.pdf" concede direitos sobre nada que alguém identificou. Default `false`, então
+  chamadores anteriores continuam compilando e continuam fail-closed.
+- Variantes não colapsam: compilação e texto-fonte são edições distintas; duas traduções são
+  edições distintas da mesma obra; duplicatas byte a byte convergem num artefato só.
+- **Acervo real:** 729 artefatos únicos, 145 importados com texto em 139 obras, 139 edições e
+  18.196 locators de página; 1.201 itens de fila abertos e **zero resolvidos**. Segunda
+  execução não criou nada. Esse é o estado honesto de um corpus não catalogado.
+- Testes do store rodam contra PostgreSQL 18 real (não mock), incluindo rollback transacional
+  de um plano inteiro. Rodar: `CEREMONIAL_TEST_DATABASE_URL=... npx vitest run import-store`.
+- **Dois defeitos achados só rodando:** (1) inventei um locator `WHOLE_ARTIFACT` que o CHECK
+  da T8 recusou — a correção foi parar de inventar, não ampliar o CHECK, e artefato sem
+  páginas agora recebe `NO_LOCATOR_SCHEME`; (2) inserir 18.196 locators um a um estourou a
+  transação — trocado por `createMany({skipDuplicates:true})`, apoiando idempotência no índice
+  único.
+- Próxima retomada: Task 15, classificação de direitos e sensibilidade — a task que o próprio
+  plano marca como dependente de julgamento jurídico do responsável.
+
 ## Atualização 2026-08-26 — Task 13: pipeline de extração isolado
 
 - A Wave 3 avançou para 13 de 39 tasks. A T13 entregou o ingest cerimonial: `compose.ingest.yml`

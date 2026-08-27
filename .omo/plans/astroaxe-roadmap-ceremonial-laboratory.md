@@ -11,8 +11,8 @@
 
 ## Execution status — updated 2026-08-26
 
-**Progress: 13 of 39 implementation todos complete (Waves 1 and 2 closed, Wave 3 in
-progress). Final-verification wave F1-F4 not started.** Tasks 1-13 are all committed
+**Progress: 14 of 39 implementation todos complete (Waves 1 and 2 closed, Wave 3 in
+progress). Final-verification wave F1-F4 not started.** Tasks 1-14 are all committed
 locally on `develop`. Nothing was pushed and `main` is untouched.
 
 **Task 13 ships with one open owner decision:** the supply-chain gate it introduces
@@ -22,7 +22,7 @@ currently BLOCKS its own image. See "Open blocker" below.
 | ----------------------------------- | ----- | ------------------------- |
 | 1 — Recovery and Tríade v3          | 1-6   | **Complete**              |
 | 2 — Dual-mode foundation            | 7-11  | **Complete**              |
-| 3 — Corpus ingestion                | 12-16 | 12-13 done; 14-16 pending |
+| 3 — Corpus ingestion                | 12-16 | 12-14 done; 15-16 pending |
 | 4 — Deterministic ceremonial domain | 17-21 | Not started               |
 | 5 — Tradition workspaces            | 22-27 | Not started               |
 | 6 — Product experience              | 28-33 | Not started               |
@@ -40,8 +40,9 @@ currently BLOCKS its own image. See "Open blocker" below.
 | 6    | `ba99696` | `test(regency): freeze the v3 calibration journey`           |
 | 7    | `19e6a64` | `feat(ceremonial): add fail-closed deployment modes`         |
 | 8    | `e16a461` | `feat(ceremonial): add provenance and private-record schema` |
-| 12   | `26f4889` | `feat(corpus): inventory ceremonial archive by content hash`  |
-| 13   | `e95dc09` | `feat(corpus): add sandboxed extraction pipeline`             |
+| 12   | `26f4889` | `feat(corpus): inventory ceremonial archive by content hash` |
+| 13   | `e95dc09` | `feat(corpus): add sandboxed extraction pipeline`            |
+| 14   | pending   | `feat(corpus): import source lineage and locators`           |
 
 Every commit line matches the **Commit:** field declared by its todo. Evidence for each
 task is under `.omo/evidence/astroaxe-roadmap-ceremonial-laboratory/T<n>/`.
@@ -140,10 +141,15 @@ shared dependency for the whole app and out of task 13's scope.
 
 ### Where to resume
 
-Task 14 (`Import works, editions, artifacts and locators without collapsing variants`),
-once the blocker above has an owner decision. Tasks 12 and 13 both ran against the real
-`/mnt/e/Ocultismo` archive, read-only, without following symlinks and without copying a
-single source file.
+Task 15 (`Classify rights, sensitivity and editorial eligibility per edition/artifact`).
+**This is the one the plan itself flags as needing owner input**: it makes rights and
+licensing determinations about real published works, which is a legal judgement an agent
+should not default. Task 14 left the corpus in exactly the right state for it — 145
+artifacts imported, all local-only with unknown rights, and 1.201 open queue items saying
+what is still unidentified.
+
+Tasks 12-14 all ran against the real `/mnt/e/Ocultismo` archive, read-only, without
+following symlinks and without copying a single source file.
 
 **Unstarted work that needs owner input before it can proceed honestly:** tasks 12-13 walk
 the real `/mnt/e/Ocultismo` corpus and build a sandboxed extraction/OCR container with SBOM
@@ -466,7 +472,33 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **QA failure:** corrupt/bomb/oversized file is quarantined within limits and cannot reach app runtime (`.../T13/extraction-adversarial.txt`).
   - **Commit:** `feat(corpus): add sandboxed extraction pipeline`.
 
-- [ ] 14. Import works, editions, artifacts and locators without collapsing variants
+- [x] 14. Import works, editions, artifacts and locators without collapsing variants — **DONE**
+  - **Delivered:** a pure planner (`src/domain/ceremonial/import.ts`) that maps extraction
+    rows into work → edition → artifact → locator, a transactional idempotent store, the
+    migration `20260826130000_ceremonial_import_reviews`, and `npm run ceremonial:import`
+    which reports by default and writes only with `--apply`.
+  - **The rule:** a filename is a hint, never an identity. Without an operator mapping every
+    artifact opens four queue items — title, author, edition, language — and stays
+    unpublishable. Only a `--mappings` file written by a person, carrying an evidence note,
+    establishes identity.
+  - **Publication gate:** the invariant lives in task 9's access policy rather than the query
+    layer, as a new `unresolvedImport` input denying **every** facet including `metadata`.
+    Granting rights over "lemegeton.pdf" grants them over nothing anyone identified. The
+    field defaults to false, so every pre-existing caller still compiles and still fails
+    closed.
+  - **Variants stay distinct:** compilation and source text are different editions;
+    two translations are different editions of one work; byte-identical duplicates converge
+    on one artifact instead of forking the lineage.
+  - **Real archive:** 729 unique artifacts, 145 imported with citable text into 139 works,
+    139 editions and 18.196 page locators, 1.201 queue items open and **zero resolved** —
+    the honest state of an uncatalogued corpus. A second run created nothing.
+  - **Verified against PostgreSQL 18, not mocks:** unique constraints, the resolution CHECK,
+    upsert idempotency, rename-follows-bytes, and transactional rollback of a whole failed
+    plan. Evidence: `.../T14/import-lineage-and-conflicts.txt`.
+  - **Two defects found only by running it:** an invented `WHOLE_ARTIFACT` locator kind the
+    task-8 CHECK rightly refused (fixed by not inventing, not by widening the CHECK), and a
+    transaction exhausted by inserting 18.196 locators one at a time (fixed with batched
+    `createMany`, not merely a longer timeout).
   - **Implement:** map extracted artifacts into work→edition→artifact→locator records; use review queues for ambiguous title/author/edition/language; never infer canonical identity from filename alone. Seed dedicated system IDs and keep compilations/translations as distinct editions.
   - **References:** planned task-8 schema; `docs/knowledge/sources.md:24-83`; `docs/cultural-content-operations.md`; `src/lib/editorial/contracts.ts`.
   - **Acceptance:** each imported claimable unit has artifact hash and locator; duplicate binaries do not duplicate editions; ambiguous matches remain unresolved and unusable by public publication.

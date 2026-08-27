@@ -33,6 +33,7 @@
     "ceremonial:bundle": "node --import tsx scripts/build-ceremonial-public-bundle.ts",
     "ceremonial:inventory": "node --conditions=react-server --import tsx scripts/inventory-ceremonial-archive.ts",
     "ceremonial:extract": "node --conditions=react-server --import tsx scripts/extract-ceremonial-archive.ts",
+    "ceremonial:import": "node --conditions=react-server --import tsx scripts/import-ceremonial-corpus.ts",
     "ceremonial:scan": "sh scripts/scan-ceremonial-ingest.sh",
     "ceremonial:scan-gate": "node --import tsx scripts/check-vulnerability-policy.ts",
     "backup:postgres": "sh scripts/backup-postgres.sh",

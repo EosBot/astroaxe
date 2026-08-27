@@ -33,12 +33,26 @@ const ceremonialAccessPolicyInputSchema = z
     access: ceremonialAccessSchema,
     sensitivity: ceremonialSensitivitySchema,
     reviews: z.array(ceremonialAccessReviewSchema),
+    /**
+     * Whether the record still has an open import-review item (task 14). Identity that
+     * came from a filename is not identity, and an approval cannot cure it: granting
+     * rights to "lemegeton.pdf" grants them to nothing anyone has actually identified.
+     * Defaults to false so callers predating the import queue keep working.
+     */
+    unresolvedImport: z.boolean().default(false),
     safety: z.object({ derivedGuidanceAllowed: z.boolean() }).strict(),
     now: z.date(),
   })
   .strict();
 
-export type CeremonialAccessPolicyInput = z.infer<typeof ceremonialAccessPolicyInputSchema>;
+/**
+ * What a caller passes in: `unresolvedImport` may be omitted, so every call site written
+ * before the import queue existed still typechecks and still fails closed.
+ */
+export type CeremonialAccessPolicyInput = z.input<typeof ceremonialAccessPolicyInputSchema>;
+
+/** What the policy reasons over once defaults are applied. */
+type ResolvedAccessPolicyInput = z.output<typeof ceremonialAccessPolicyInputSchema>;
 
 export const CEREMONIAL_ACCESS_DENIAL_REASONS = [
   "invalid_policy_input",
@@ -50,6 +64,7 @@ export const CEREMONIAL_ACCESS_DENIAL_REASONS = [
   "rights_ineligible",
   "rights_review_missing",
   "editorial_review_missing",
+  "import_unresolved",
 ] as const;
 
 export type CeremonialAccessDenialReason = (typeof CEREMONIAL_ACCESS_DENIAL_REASONS)[number];
@@ -67,7 +82,7 @@ function allDenied(reason: CeremonialAccessDenialReason): CeremonialCapabilities
 }
 
 function activeApprovalCovers(
-  input: CeremonialAccessPolicyInput,
+  input: ResolvedAccessPolicyInput,
   reviewKind: "RIGHTS" | "EDITORIAL",
   facet: CeremonialFacet,
 ): boolean {
@@ -83,10 +98,14 @@ function activeApprovalCovers(
 }
 
 function publicFacetDecision(
-  input: CeremonialAccessPolicyInput,
+  input: ResolvedAccessPolicyInput,
   facet: CeremonialFacet,
 ): CeremonialAccessDecision {
   if (input.access !== "PUBLIC") return { decision: "deny", reason: "record_local_only" };
+  // Checked before rights and sensitivity: a record whose work, edition or language is
+  // still a filename guess has no established identity to grant anything about, so this
+  // denies even the metadata facet.
+  if (input.unresolvedImport) return { decision: "deny", reason: "import_unresolved" };
   if (!input.safety.derivedGuidanceAllowed)
     return { decision: "deny", reason: "safety_policy_denied" };
   if (input.sensitivity === "RESTRICTED_KNOWLEDGE" && facet !== "metadata")

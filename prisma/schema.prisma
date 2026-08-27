@@ -90,22 +90,22 @@ model AccountSession {
 }
 
 model BirthProfile {
-  id             String         @id @default(uuid()) @db.Uuid
-  guestSessionId String?        @map("guest_session_id") @db.Uuid
-  userId         String?        @map("user_id") @db.Uuid
-  displayName    String         @map("display_name") @db.VarChar(100)
-  birthDate      DateTime       @map("birth_date") @db.Date
-  birthTime      String?        @map("birth_time") @db.VarChar(5)
-  timePrecision  TimePrecision  @map("time_precision")
-  latitude       Decimal        @db.Decimal(9, 6)
-  longitude      Decimal        @db.Decimal(9, 6)
-  timezone       String         @db.VarChar(100)
-  location       String         @db.VarChar(200)
-  createdAt      DateTime       @default(now()) @map("created_at") @db.Timestamptz(6)
-  guestSession   GuestSession?  @relation(fields: [guestSessionId], references: [id], onDelete: Cascade)
-  user           User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  chart          NatalChart?
-  journalEntries JournalEntry[]
+  id               String            @id @default(uuid()) @db.Uuid
+  guestSessionId   String?           @map("guest_session_id") @db.Uuid
+  userId           String?           @map("user_id") @db.Uuid
+  displayName      String            @map("display_name") @db.VarChar(100)
+  birthDate        DateTime          @map("birth_date") @db.Date
+  birthTime        String?           @map("birth_time") @db.VarChar(5)
+  timePrecision    TimePrecision     @map("time_precision")
+  latitude         Decimal           @db.Decimal(9, 6)
+  longitude        Decimal           @db.Decimal(9, 6)
+  timezone         String            @db.VarChar(100)
+  location         String            @db.VarChar(200)
+  createdAt        DateTime          @default(now()) @map("created_at") @db.Timestamptz(6)
+  guestSession     GuestSession?     @relation(fields: [guestSessionId], references: [id], onDelete: Cascade)
+  user             User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  chart            NatalChart?
+  journalEntries   JournalEntry[]
   regencyFeedbacks RegencyFeedback[]
   ceremonialPlans  CeremonialPlan[]
 
@@ -462,6 +462,25 @@ model CeremonialLocator {
 
   @@unique([editionId, kind, reference])
   @@map("ceremonial_locators")
+}
+
+/// Task 14 review queue. One row per field the importer could only guess from a path.
+/// Joined to artifacts by content hash, not by foreign key: rows also exist for hashes
+/// that were deliberately not imported, and those must stay recorded.
+model CeremonialImportReview {
+  id             String    @id @default(uuid()) @db.Uuid
+  contentHash    String    @map("content_hash") @db.Char(64)
+  reason         String    @db.VarChar(40)
+  proposedValue  String?   @map("proposed_value") @db.VarChar(300)
+  detail         String    @db.VarChar(600)
+  state          String    @default("OPEN") @db.VarChar(20)
+  resolvedAt     DateTime? @map("resolved_at") @db.Timestamptz(6)
+  resolutionNote String?   @map("resolution_note") @db.VarChar(1000)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@unique([contentHash, reason])
+  @@index([contentHash])
+  @@map("ceremonial_import_reviews")
 }
 
 model CeremonialEntity {
