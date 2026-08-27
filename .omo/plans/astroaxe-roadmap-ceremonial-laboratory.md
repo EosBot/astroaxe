@@ -42,7 +42,7 @@ currently BLOCKS its own image. See "Open blocker" below.
 | 8    | `e16a461` | `feat(ceremonial): add provenance and private-record schema` |
 | 12   | `26f4889` | `feat(corpus): inventory ceremonial archive by content hash` |
 | 13   | `e95dc09` | `feat(corpus): add sandboxed extraction pipeline`            |
-| 14   | pending   | `feat(corpus): import source lineage and locators`           |
+| 14   | `13158ab` | `feat(corpus): import source lineage and locators`           |
 
 Every commit line matches the **Commit:** field declared by its todo. Evidence for each
 task is under `.omo/evidence/astroaxe-roadmap-ceremonial-laboratory/T<n>/`.
