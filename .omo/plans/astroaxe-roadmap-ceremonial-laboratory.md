@@ -40,6 +40,8 @@ currently BLOCKS its own image. See "Open blocker" below.
 | 6    | `ba99696` | `test(regency): freeze the v3 calibration journey`           |
 | 7    | `19e6a64` | `feat(ceremonial): add fail-closed deployment modes`         |
 | 8    | `e16a461` | `feat(ceremonial): add provenance and private-record schema` |
+| 12   | `26f4889` | `feat(corpus): inventory ceremonial archive by content hash`  |
+| 13   | `e95dc09` | `feat(corpus): add sandboxed extraction pipeline`             |
 
 Every commit line matches the **Commit:** field declared by its todo. Evidence for each
 task is under `.omo/evidence/astroaxe-roadmap-ceremonial-laboratory/T<n>/`.
