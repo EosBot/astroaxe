@@ -1,3 +1,9 @@
+> **Nota de 26 de agosto de 2026.** Este relatório foi escrito sob o modelo de elegibilidade por
+> fonte, descartado desde então (`docs/BLUEPRINT.md` §5.0). Os achados de método continuam
+> válidos — inclusive o defeito matemático da redução decimal e a contradição interna da tabela
+> comercial. O que mudou é o enquadramento: não há mais status de direitos por obra; o que pesa é
+> a escola de origem e a convergência entre escolas independentes.
+
 # Numerologia, Odù, Ifá e correspondências com Orixás
 
 **Data:** 24 de agosto de 2026  
@@ -25,8 +31,9 @@ A página “Numerologia dos Orixás”, atualizada em julho de 2026, soma todos
 quando o total excede 16, soma novamente seus algarismos. O resultado indexa uma tabela de 16
 nomes de Odù e um ou mais Orixás. A própria página distingue esse “Orixá regente de nascimento” do
 Orixá de cabeça conhecido ritualisticamente. A autoria apresentada é editorial, sem bibliografia,
-linhagem, casa, corpus, edição ou locators que sustentem a tabela. Portanto, seu status adequado é
-`product-editorial` e `discovery_only`, nunca `CLAIM_ELIGIBLE`.
+linhagem, casa, corpus, edição ou locators que sustentem a tabela. Portanto ela vale como
+material editorial de descoberta, não como base do método: é uma afirmação sem sustentação, e o
+peso que recebe na condensação é zero.
 
 Há um defeito matemático importante: depois de uma soma acima de 16, a redução decimal produz
 quase sempre 1–9. Resultados 10–16 só aparecem quando a primeira soma já cai nesse intervalo. Logo,
@@ -103,8 +110,9 @@ taxonomia própria precisa ser lida integralmente e não reduzida a uma frase.
 
 Esse livro contradiz diretamente a universalização da tabela comercial e impede que “Umbanda” seja
 usada como rótulo único para ela. As demais obras de Saraceni no acervo são fontes primárias da
-`UmbandaSagradaSaraceni`, não evidência de Candomblé ou Ifá. Cópias sem cadeia legal/editorial
-verificável permanecem `REFERENCE_ONLY`; o repositório não reproduzirá seu conteúdo.
+`UmbandaSagradaSaraceni`, não evidência de Candomblé ou Ifá — a escola de origem é o que separa
+uma coisa da outra e é o que dá peso à convergência quando ela existe. O repositório não
+reproduz o conteúdo dessas obras; publica a síntese que escrevemos a partir delas.
 
 Os 538 áudios, imagens e materiais alheios ao escopo não foram transcritos nem tratados como fontes
 do cálculo. Pontos cantados e material ritual também não devem ser minerados automaticamente para

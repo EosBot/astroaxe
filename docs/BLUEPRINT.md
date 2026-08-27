@@ -46,7 +46,15 @@ Universalidade é uma hipótese operacional do método. O grafo conserva a orige
 
 ### 3.2 Conselho cultural
 
-Antes de publicar a camada de Axé, formar um conselho remunerado com lideranças e pesquisadores de mais de uma tradição. O acordo deve definir escopo público versus reservado, autoria, licenças, remuneração, direito de veto, processo de correção e repartição de receita quando aplicável.
+**Revisto em 26 de agosto de 2026.** A versão anterior condicionava a publicação da camada de Axé
+à formação de um conselho remunerado, com escopo reservado, licenças e direito de veto. Isso foi
+descartado junto com o modelo de direitos por fonte (§5.0): a publicação não depende mais de
+aprovação externa, e o que o site entrega é síntese escrita por nós.
+
+O que permanece é o processo de correção. O método é versionado e avaliado, e quando uma leitura
+se mostra errada — por leitura equivocada de uma fonte, por convergência mal pesada ou por
+apontamento de quem pratica — isso gera nova versão com registro do que mudou e por quê. Correção
+é mecanismo de qualidade do método, não permissão para operar.
 
 Casos sacerdotais podem ser usados com consentimento específico e dados minimizados. Casos públicos exigem autodeclaração inequívoca da regência e fonte natal verificável. Rumor, atribuição por terceiros, inferência por aparência ou dado reservado não são ground truth. Calibração e validação usam conjuntos separados, e o repositório guarda somente IDs opacos, features derivadas e rótulos necessários.
 

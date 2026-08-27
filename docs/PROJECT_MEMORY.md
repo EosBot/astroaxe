@@ -1,5 +1,23 @@
 # Memória canônica do projeto
 
+## Atualização 2026-08-26 — Contradições retiradas da documentação
+
+- O plano e os documentos foram varridos para remover o que contradizia as duas decisões do dia
+  (runtime único; condensação por função). Corrigidos: escopo IN/OUT do plano — cujo "OUT"
+  literalmente proibia condensar tradições —, estratégia de verificação, tabelas de waves,
+  critérios de sucesso, `BLUEPRINT` §3.2 (conselho cultural como pré-condição de publicação),
+  a fila P1 do `IMPLEMENTATION_STATUS`, o relatório de numerologia e o registro de fontes.
+- Tasks 7, 9, 10 e 11 ficam marcadas **SUPERADA** com o motivo; a Task 15 **CANCELADA**; a
+  Task 27 **INVERTIDA**; as Tasks 34, 36, 37 e 38 **REENQUADRADAS**. As descrições antigas
+  permanecem como histórico do que foi construído e por quê.
+- **Contradição doc↔código ainda aberta:** o banco exige `reviewer_id NOT NULL` para publicar
+  verbete cultural (`20260819040000_cultural_corpus`) e `src/lib/editorial/workflow.ts` exige
+  autor ≠ revisor. Num projeto de uma pessoa esse gate não pode ser satisfeito honestamente.
+  A decisão remove esse tipo de trava, mas o código não foi alterado — enquanto não for, o
+  comportamento real é o do banco. Está registrado em `cultural-content-operations.md`.
+- O corpus condensado de `E:` está sendo refeito pelo Qwen Code 3.8, com mais material. É a
+  fonte autoritativa da condensação; trabalhamos sobre a saída dele.
+
 ## Atualização 2026-08-26 — Modelo híbrido descartado
 
 - **Decisão do responsável:** runtime único, cobertura total, sem separação público/local.

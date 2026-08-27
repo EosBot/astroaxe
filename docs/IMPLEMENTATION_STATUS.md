@@ -28,16 +28,16 @@ Símbolos, selos e pontos riscados são redesenhados em SVG próprio.
 
 ## Resumo executivo por fase
 
-| Fase                   | Estado                                       | Entrega observável                                                                                 | Próxima fronteira                                                           |
-| ---------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| 0 — Governança         | Concluída no escopo local                    | Blueprint, política cultural/IA, fontes e operação editorial                                       | Formalizar créditos, contratos e remuneração quando fornecidos              |
-| 1 — Fundação           | Concluída                                    | Docker, PostgreSQL/pgvector, Redis, Traefik, health, Sonar e restore testado                       | Endurecer e medir a operação containerizada                                 |
-| 2 — Motor              | Concluída no escopo natal e trânsitos atuais | Cálculo determinístico, hora desconhecida, golden tests, cache e janelas                           | Ampliar efemérides/regras somente com snapshots e bump de versão            |
-| 3 — Conta e mapa       | Concluída no MVP local                       | Guest-first, autenticação, ownership, arquivo, edição, histórico e E2E                             | Exercitar continuamente os fluxos completos em desktop e mobile             |
-| 4 — Conteúdo           | V3 dirigida, validação em curso              | Workflow editorial, corpus público e Tríade v3 auditável                                           | Calibrar com casos elegíveis congelados e publicar métricas suficientes     |
-| 5 — Ritual e IA        | Parcial avançada                             | Tempo do Céu, diário privado versionado e exportável; sem LLM em runtime                           | Histórico longitudinal e RAG opcional quando houver chave/corpus autorizado |
-| 6 — Receita            | Não iniciada                                 | Hipóteses documentadas, sem cobrança simulada                                                      | Free/Pro, limites, Stripe e webhooks após decisões e credenciais de teste   |
-| 7 — Polimento/operação | Parcial avançada                             | Acessibilidade, E2E, SEO, backup/restore, métricas/alertas locais, gate e borda pública verificada | Destino externo de alertas e SLOs do ambiente real                          |
+| Fase                   | Estado                                       | Entrega observável                                                                                 | Próxima fronteira                                                         |
+| ---------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| 0 — Governança         | Concluída no escopo local                    | Blueprint, política cultural/IA, fontes e operação editorial                                       | Formalizar créditos, contratos e remuneração quando fornecidos            |
+| 1 — Fundação           | Concluída                                    | Docker, PostgreSQL/pgvector, Redis, Traefik, health, Sonar e restore testado                       | Endurecer e medir a operação containerizada                               |
+| 2 — Motor              | Concluída no escopo natal e trânsitos atuais | Cálculo determinístico, hora desconhecida, golden tests, cache e janelas                           | Ampliar efemérides/regras somente com snapshots e bump de versão          |
+| 3 — Conta e mapa       | Concluída no MVP local                       | Guest-first, autenticação, ownership, arquivo, edição, histórico e E2E                             | Exercitar continuamente os fluxos completos em desktop e mobile           |
+| 4 — Conteúdo           | V3 dirigida, validação em curso              | Workflow editorial, corpus público e Tríade v3 auditável                                           | Calibrar com casos elegíveis congelados e publicar métricas suficientes   |
+| 5 — Ritual e IA        | Parcial avançada                             | Tempo do Céu, diário privado versionado e exportável; sem LLM em runtime                           | Histórico longitudinal e RAG opcional sobre o corpus condensado           |
+| 6 — Receita            | Não iniciada                                 | Hipóteses documentadas, sem cobrança simulada                                                      | Free/Pro, limites, Stripe e webhooks após decisões e credenciais de teste |
+| 7 — Polimento/operação | Parcial avançada                             | Acessibilidade, E2E, SEO, backup/restore, métricas/alertas locais, gate e borda pública verificada | Destino externo de alertas e SLOs do ambiente real                        |
 
 ## Concluído
 
@@ -225,8 +225,7 @@ Símbolos, selos e pontos riscados são redesenhados em SVG próprio.
   restrita conforme o protocolo de pesquisa.
 - O benchmark comparativo gera fingerprint SHA-256 canônico e manifesto sanitizado. A política de
   promoção exige amostra mínima, ausência de perda top-1/top-3 e limite de aumento de abstenções;
-  mesmo quando passa, a versão fica somente elegível para revisão cultural, nunca ativa
-  automaticamente.
+  mesmo quando passa, a promoção é decisão explícita e versionada, nunca automática.
 - A rota pública `/metodologia` apresenta entradas, controles, versionamento e limites sem publicar
   matriz, pesos, limiares, regras de desempate ou corpus proprietário.
 - Percentuais normalizados deixaram a interface: o usuário vê intensidade relativa em linguagem
@@ -258,9 +257,12 @@ Símbolos, selos e pontos riscados são redesenhados em SVG próprio.
 18. `20260823010000_account_verification_and_recovery`;
 19. `20260825160000_regency_feedback`.
 
-A migration 11 adiciona `REFERENCE_ONLY`, `CLAIM_ELIGIBLE` e `WITHDRAWN` às fontes. Oito livros
-de Rubens Saraceni e dos corpus/estudos iorubás foram catalogados apenas como referência. O fluxo
-editorial bloqueia claims sem locator ou baseadas em obra ainda não lida e habilitada.
+A migration 11 adicionou `REFERENCE_ONLY`, `CLAIM_ELIGIBLE` e `WITHDRAWN` às fontes. **Esse
+vocabulário foi descartado** com o modelo de direitos por fonte (`BLUEPRINT.md` §5.0): as oito
+obras de Saraceni e dos corpus iorubás entram no estudo como qualquer outra. As colunas
+permanecem no banco por ora — removê-las é trabalho pendente, e enquanto isso o valor gravado
+nelas não significa nada. O que continua valendo é a exigência de locator: uma afirmação material
+aponta para uma posição citável.
 
 A migration 12 adiciona uma constraint de profundidade para textos astrológicos publicados e
 materializa 350 leituras `modular-ptbr-1`. No banco isolado, os mínimos observados foram 398
@@ -394,24 +396,24 @@ Runbook autoritativo: `docs/cloudflare-edge.md`. Desenho aprovado:
    retenção e revogação ainda precisam de contrato. Nenhuma data de nascimento, localização, email
    ou token pode sair nos eventos.
 
-### P1 — Completar conteúdo e regências culturais
+### P1 — Condensar o acervo e escrever o método
 
-1. A primeira Tríade direta já está modelada em modo de pesquisa, com inputs, pesos, claims,
-   tradição, justificativa, abstenção e testes golden. A ativação pública continua bloqueada até a
-   calibração por casos sacerdotais consentidos e autodeclarações públicas verificáveis, conforme
-   autorização de 20 de agosto de 2026.
-2. Ampliar o corpus com fontes efetivamente lidas e locators. As obras de Rubens Saraceni, Prandi,
-   Verger, Juana Elbein dos Santos, Abimbola e Bascom continuam `REFERENCE_ONLY` enquanto houver
-   apenas catálogo ou registro bibliográfico. Não copiar texto protegido nem misturar Umbanda
-   Sagrada, Candomblé Ketu/Nagô e corpus de Ifá.
-3. Criar novas versões longas e claims para cada narrativa aprovada, mantendo fonte, tradição,
-   limites e correção versionada. A aprovação é por bloco reutilizável, não por tela renderizada.
-4. Conectar o conteúdo cultural ao produto somente depois de ontologia, matriz, calibração e teste
-   congelado. A interface apresentará diretamente frente, cabeça e costas como resultado do método
-   autoral AstroAxe, com versão, fatores determinantes e disclaimer discreto no rodapé.
-5. Implementar RAG somente quando houver corpus autorizado e necessidade validada. Exigir anchors,
-   saída Zod, política contra PII, timeouts, retry limitado, fallback para texto preexistente e
-   rótulo de IA. A ausência de chave de IA não bloqueia o produto atual.
+1. **Condensar as tradições por função estrutural** (`docs/BLUEPRINT.md` §5.0.1). Angelical,
+   Ars Goetia, Theurgia-Goetia, espíritos olímpicos, inteligências planetárias, Umbanda Sagrada,
+   Ketu/Nagô e Ifá alimentam um grafo de funções comum. A escola de origem é registrada porque é
+   ela que dá peso: convergência entre escolas independentes é evidência forte; cópia e tradução
+   da mesma linhagem não são duas confirmações.
+2. **Escrever a síntese.** Todo texto publicado é obra nossa, derivada do estudo do acervo. A
+   barra é profundidade e imersão — um texto raso ocupa o lugar do conhecimento sem entregá-lo.
+3. **Explicar o método na página** no formato de _model card_: entradas, processo, versionamento,
+   avaliação, limites conhecidos. É o diferencial do produto e hoje `/metodologia` está raso.
+4. **Redesenhar os símbolos em SVG próprio.** Selo, ponto riscado e glifo são símbolo tradicional
+   e livre; o traço de um artista numa edição específica não é. Redesenhar rende vetor escalável,
+   temático e acessível.
+5. **Entregar a Tríade** como resultado do método autoral, com versão, fatores determinantes e o
+   limite declarado no rodapé. É interpretação do mapa, não identidade religiosa.
+6. **Correção versionada.** Quando uma leitura se mostrar errada, gerar nova versão registrando o
+   que mudou e por quê. É por isso que a proveniência interna permanece.
 
 ### P2 — Produto, receita e crescimento responsável
 

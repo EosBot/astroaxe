@@ -7,7 +7,7 @@
 - **What it will not do:** it will not merge traditions, republish third-party source text, send private data to external AI or analytics, claim supernatural efficacy, operationalize harmful goals, rewrite applied migrations or overwrite the dirty worktree.
 - **Shape:** 7 implementation waves, 39 implementation todos and 4 final-verification tasks. This is architecture-scale/high effort and should be executed incrementally with atomic commits and wave gates.
 - **Primary risks:** accidental local→public leakage, hostile/corrupt documents, rights/sensitivity mistakes, private-record exposure, migration drift and scope expansion into unrelated production integrations.
-- **Decisions locked:** calculation-only Tríade answers are ephemeral but consented feedback persists; public mode is hybrid-by-rights; local mode is complete/private/loopback; public data/storage/builds are physically separated; raw archival access is distinct from safe product guidance; external/legal provider work remains an explicit release blocker rather than mocked completion.
+- **Decisions locked:** calculation-only Tríade answers are ephemeral but consented feedback persists; one runtime with full coverage; the archive is an input to authoring and the site publishes only what we write from it; traditions are condensed by structural function with school-of-origin kept as evidence weight; external/legal provider work remains an explicit release blocker rather than mocked completion.
 
 ## MUDANÇA DE DIREÇÃO — 26 de agosto de 2026
 
@@ -68,15 +68,15 @@ locally on `develop`. Nothing was pushed and `main` is untouched.
 **Task 13 ships with one open owner decision:** the supply-chain gate it introduces
 currently BLOCKS its own image. See "Open blocker" below.
 
-| Wave                                | Tasks | Status                    |
-| ----------------------------------- | ----- | ------------------------- |
-| 1 — Recovery and Tríade v3          | 1-6   | **Complete**              |
-| 2 — Dual-mode foundation            | 7-11  | **Complete**              |
-| 3 — Corpus ingestion                | 12-16 | 12-14 done; 15-16 pending |
-| 4 — Deterministic ceremonial domain | 17-21 | Not started               |
-| 5 — Tradition workspaces            | 22-27 | Not started               |
-| 6 — Product experience              | 28-33 | Not started               |
-| 7 — Operations and release          | 34-39 | Not started               |
+| Wave                                | Tasks | Status                                      |
+| ----------------------------------- | ----- | ------------------------------------------- |
+| 1 — Recovery and Tríade v3          | 1-6   | **Complete**                                |
+| 2 — Provenance schema               | 7-11  | Schema (T8) vale; resto superado            |
+| 3 — Corpus ingestion                | 12-16 | 12-14 feitas; 15 cancelada; 16 a reescrever |
+| 4 — Deterministic ceremonial domain | 17-21 | Not started                                 |
+| 5 — Tradition condensation          | 22-27 | Not started (reframed)                      |
+| 6 — Product experience              | 28-33 | Not started                                 |
+| 7 — Operations and release          | 34-39 | Not started                                 |
 
 ### Commits, in order
 
@@ -195,8 +195,8 @@ Task 15 (`Classify rights, sensitivity and editorial eligibility per edition/art
 **This is the one the plan itself flags as needing owner input**: it makes rights and
 licensing determinations about real published works, which is a legal judgement an agent
 should not default. Task 14 left the corpus in exactly the right state for it — 145
-artifacts imported, all local-only with unknown rights, and 1.201 open queue items saying
-what is still unidentified.
+artifacts imported into a lineage, and a queue of what was still unidentified — a queue since
+removed along with the rest of the gating.
 
 Tasks 12-14 all ran against the real `/mnt/e/Ocultismo` archive, read-only, without
 following symlinks and without copying a single source file.
@@ -212,14 +212,15 @@ cultural judgments that should not be defaulted by an agent.
 ### IN
 
 - Preserve and complete the interrupted Tríade de Regências v3 before adding new sensitive-data models.
-- Keep `/mnt/e/Ocultismo` as the private source corpus and support two fail-closed modes over one provenance model: `local` (complete corpus) and `public` (hybrid-by-rights).
-- Build source/edition/artifact/locator/entity/variant/media/timing provenance, deterministic celestial timing, separate Angelical, Ars Goetia, Ars Theurgia-Goetia, Olympic-spirit and planetary-intelligence workspaces, plus a private planner/session journal.
+- Keep `/mnt/e/Ocultismo` as the private source corpus. It is an **input to authoring** read by one runtime; the site publishes the derived method, never the sources.
+- Build source/edition/artifact/locator/entity/variant/timing provenance, deterministic celestial timing, and a method that **condenses** the Angelical, Ars Goetia, Ars Theurgia-Goetia, Olympic-spirit and planetary-intelligence material by structural function, plus a private planner/session journal.
 - Reconcile the verified AstroAxe backlog, migrations, privacy, security, accessibility, operations and release evidence without overwriting the dirty `develop` worktree.
 
 ### OUT / Must NOT Have
 
-- No blending of distinct traditions, grimoires, manuscript families, Orixás or ceremonial entities into universal equivalences.
-- No public redistribution of local-only or rights-unknown source text/media; local availability never implies public permission.
+- No claim of **identity** between entities across traditions. Condensing by structural function is the method (see `docs/BLUEPRINT.md` §5.0.1); asserting that one entity _is_ another is a different, falsifiable claim no source supports.
+- No flattening that destroys the school of origin. Provenance is what gives condensation its weight: independent convergence only counts while it is still visible as independent, and a copy or translation of one lineage is not a second confirmation.
+- No republication of third-party source text or media. The site publishes what we write.
 - No claim of supernatural efficacy, diagnosis, guaranteed outcome, coercion, harm, sacrifice, illegality, crisis targeting or replacement of religious/specialist guidance.
 - No PII, birth data, ritual notes, belief inference or corpus text in logs, analytics, external LLMs, URLs or public caches.
 - No rewrite of an applied migration, no `db push`, no destructive volume command and no implicit publication from `/mnt/e/Ocultismo`.
@@ -227,11 +228,11 @@ cultural judgments that should not be defaulted by an agent.
 
 ## Verification strategy
 
-- **TDD:** pure timing, mode policy, rights/access policy, source/entity contracts, safety policy, encryption and tradition adapters. Each todo first adds a failing regression, then the smallest implementation.
+- **TDD:** pure timing, source/entity contracts, function-condensation and weighting, safety policy, encryption and tradition adapters. Each todo first adds a failing regression, then the smallest implementation.
 - **Tests-after:** Prisma migrations, route handlers, export/delete flows, ingestion wiring and React UI.
 - **Mandatory targeted gates:** `npm test -- <listed-test-files>`, `npm run typecheck`, `npm run lint`, and `npm run format:check` after every wave.
 - **Runtime gates:** `docker compose -f compose.yml -f compose.dev.yml config`, migration deploy against an isolated database, `npm run build`, `npm run test:e2e`, `npm run test:release-smoke`, backup/restore verification and `npm run quality`.
-- **Leak gates:** seed local-only corpus records into the test DB, exercise every public route/export/cache/sitemap/build, scan response bodies and `.next`/standalone/static artifacts for local paths, protected snippets, artifact hashes and local IDs; any match fails the release.
+- **Leak gates:** seed corpus records into the test DB, exercise every public route/export/cache/sitemap/build, and scan response bodies and `.next`/standalone/static artifacts for archive paths, verbatim source snippets and PII. The site serves derived text; a literal source passage or a host path in a response fails the release.
 - **Evidence:** every QA scenario writes sanitized command output, JSON manifests, screenshots or Playwright traces under `.omo/evidence/astroaxe-roadmap-ceremonial-laboratory/T<task>/`; never include source text, PII or secrets in evidence.
 - **Evidence fixtures:** screenshots, traces and response captures use synthetic corpus, accounts and private notes only; disable body capture where possible, sanitize retained traces, then recursively scan `.omo/evidence` for protected/private sentinels before handoff.
 
@@ -239,15 +240,15 @@ cultural judgments that should not be defaulted by an agent.
 
 ### Waves and dependencies
 
-| Wave                                | Tasks | Starts when             | Parallelism                                                                 |
-| ----------------------------------- | ----- | ----------------------- | --------------------------------------------------------------------------- |
-| 1 — Recovery and Tríade v3          | 1-6   | approval                | 2-5 after task 1                                                            |
-| 2 — Dual-mode foundation            | 7-11  | task 6                  | 7 after the verified Tríade checkpoint; 8 after 7; 9 after 8; 10-11 after 9 |
-| 3 — Corpus ingestion                | 12-16 | tasks 7-11              | 12 first; 13 after 12; 14-16 ordered                                        |
-| 4 — Deterministic ceremonial domain | 17-21 | tasks 7-9               | 17 first; 18 after 17; 19-20 parallel; 21 last                              |
-| 5 — Tradition workspaces            | 22-27 | tasks 14-21             | 22-26 parallel; 27 last                                                     |
-| 6 — Product experience              | 28-33 | tasks 16, 22-27         | 28 first; 29-30 after 28; 31-32 ordered; 33 last                            |
-| 7 — Operations and release          | 34-39 | tasks 6, 11, 16, 21, 33 | 34-36 parallel; 37-39 ordered                                               |
+| Wave                                      | Tasks | Starts when             | Parallelism                                                             |
+| ----------------------------------------- | ----- | ----------------------- | ----------------------------------------------------------------------- |
+| 1 — Recovery and Tríade v3                | 1-6   | approval                | 2-5 after task 1                                                        |
+| 2 — Provenance schema (partly superseded) | 7-11  | task 6                  | Task 8's schema survives; 7, 9, 10 and 11 built the discarded dual-mode |
+| 3 — Corpus ingestion                      | 12-16 | tasks 7-11              | 12 first; 13 after 12; 14-16 ordered                                    |
+| 4 — Deterministic ceremonial domain       | 17-21 | tasks 7-9               | 17 first; 18 after 17; 19-20 parallel; 21 last                          |
+| 5 — Tradition condensation                | 22-27 | tasks 14-21             | 22-26 parallel, feeding one function graph; 27 last                     |
+| 6 — Product experience                    | 28-33 | tasks 16, 22-27         | 28 first; 29-30 after 28; 31-32 ordered; 33 last                        |
+| 7 — Operations and release                | 34-39 | tasks 6, 11, 16, 21, 33 | 34-36 parallel; 37-39 ordered                                           |
 
 Before any edit, the worker must read `AGENTS.md`, `docs/PROJECT_MEMORY.md`, the relevant `node_modules/next/dist/docs/` guides, run `git status --short`, and record the pre-existing diff. Unrelated modified/untracked files are immutable inputs; use a task-owned worktree only if the user requests branch/PR delivery.
 
@@ -358,9 +359,13 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **QA failure:** E2E with rejected consent/version proves no row and no success message (`.../T6/e2e-rejection.txt`).
   - **Commit:** `test(regency): freeze the v3 calibration journey`.
 
-### Wave 2 — Establish the dual-mode ceremonial foundation
+### Wave 2 — Establish the dual-mode ceremonial foundation (SUPERADA, exceto a Task 8)
+
+> As descrições abaixo são o registro do que foi construído e removido no commit 610b512.
+> Mantidas como histórico. Só o schema de proveniência da Task 8 continua em uso.
 
 - [x] 7. Introduce a parsed, fail-closed deployment-mode contract — **DONE `19e6a64`**
+  - **SUPERADA — o modo de runtime `disabled|public|local` foi removido no commit 610b512. A imutabilidade do modo não descreve mais nada: existe um runtime só**
   - **Delivered:** `src/lib/ceremonial/mode.ts` (server-only) parses `CEREMONIAL_MODE` via a
     Zod discriminated union into one frozen, process-memoized policy object
     (`servesPublicLibrary` / `servesLocalArchive` / `local`). It accepts only an environment
@@ -409,6 +414,7 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **Commit:** `feat(ceremonial): add provenance and private-record schema`.
 
 - [x] 9. Centralize rights, sensitivity and mode authorization — **DONE in worktree 2026-08-26**
+  - **SUPERADA — a matriz de facetas/direitos (access-policy) foi removida. Não há autorização por faceta porque não há duas superfícies para autorizar entre**
   - **Delivered:** pure `src/domain/ceremonial/access-policy.ts` validates unknown inputs and
     returns a frozen capability for each of the seven facets with an explicit allow/deny reason.
     Disabled mode denies all; local mode requires authentication; public mode requires public
@@ -423,6 +429,7 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **Commit:** `feat(ceremonial): centralize dual-mode access policy`.
 
 - [x] 10. Isolate artifact/media storage from public delivery — **DONE in worktree 2026-08-26**
+  - **SUPERADA — a rota de artefato e o artifact-storage foram removidos. O acervo não é servido; é lido por quem escreve**
   - **Delivered:** `artifact-storage.ts` accepts only normalized relative paths, opens with
     `O_NOFOLLOW`, requires a regular non-empty file, verifies the opened descriptor remains under
     the canonical archive root through `/proc/self/fd`, and validates PDF/PNG/JPEG/GIF/WebP/text
@@ -439,6 +446,7 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **Commit:** `feat(ceremonial): isolate local artifact delivery`.
 
 - [x] 11. Create a deterministic reviewed public-publication bundle — **DONE in worktree 2026-08-26**
+  - **SUPERADA — o bundle público filtrado por direitos foi removido junto com seu ponteiro de ativação**
   - **Delivered:** strict source/manifest schemas and a canonical builder sort all records, fields,
     approvals and media before SHA-256. Explicit ineligible selections abort; ordinary exclusions
     are accounted for; metadata-only records cannot express source paths or bodies. The public
@@ -556,7 +564,8 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **QA failure:** conflicting metadata creates a review item, not an overwrite; task 14 will persist sanitized conflict JSON evidence.
   - **Commit:** `feat(corpus): import source lineage and locators`.
 
-- [ ] 15. Classify rights, sensitivity and editorial eligibility per edition/artifact
+- [~] 15. ~~Classify rights, sensitivity and editorial eligibility per edition/artifact~~
+  - **CANCELADA.** Era o workflow de revisão de direitos como pré-condição de publicação. Não publicamos fonte, então não há o que revisar. O aparato que ela construiria foi removido no commit 610b512
   - **Implement:** add reviewer workflow and audit trail for rights evidence, license terms, public-domain jurisdiction/date, restricted knowledge and per-facet eligibility. Default imports to `UNKNOWN + LOCAL_ONLY`; require independent rights and editorial approvals. Implement emergency takedown: revoke approval, invalidate bundle/version, atomically replace public DB/storage, purge Redis/CDN/media caches and search indexes, and record completion/failed purge targets.
   - **References:** `src/lib/editorial/workflow.ts:11-126`; `prisma/schema.prisma` cultural review models; `docs/cultural-content-operations.md`; task-9 policy.
   - **Acceptance:** no importer can self-publish; rights approval and editorial approval are separate; structured approval scope/reviewer/date/expiry/revocation and evidence locator are mandatory; rights/sensitivity changes are versioned and invalidate affected bundles, indexes and caches.
@@ -565,11 +574,11 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **Commit:** `feat(corpus): govern rights and sensitivity review`.
 
 - [ ] 16. Provide local full-text discovery and corpus integrity reporting
-  - **Implement:** use Node 24 `node:sqlite` FTS5 in the rebuildable private derivative volume—not PostgreSQL—for local extracted chunks, joined to artifact/locator IDs through validated metadata and mode-policy filters; no embeddings/external model. Public search uses only its imported reviewed bundle DB. Add corpus dashboard/report for counts, duplicates, extraction coverage, unresolved metadata, rights/sensitivity and stale derivatives.
+  - **Implement:** use Node 24 `node:sqlite` FTS5 in the rebuildable private derivative volume—not PostgreSQL—for local extracted chunks, joined to artifact/locator IDs through validated metadata and mode-policy filters; no embeddings/external model. There is one search over one corpus; the old split between a local index and a reviewed public bundle is gone. Add corpus dashboard/report for counts, duplicates, extraction coverage, unresolved metadata, rights/sensitivity and stale derivatives.
   - **References:** Node 24 `node:sqlite` documentation; `docs/data-inventory.md`; `src/components/cultural-content/cultural-archive.tsx:55-94`; task-12/13 manifests.
-  - **Acceptance:** search result always points to source+edition+locator; public mode searches only bundle records; report totals reconcile to inventory or explicitly explain quarantines.
+  - **Acceptance:** search result always points to source+edition+locator; report totals reconcile to inventory or explicitly explain quarantines.
   - **QA happy:** known fixture phrase returns the correct page/edition; task 16 will persist a sanitized successful-search JSON receipt.
-  - **QA failure:** protected local phrase returns zero through public query helpers; task 16 will persist a sanitized public-denial JSON receipt.
+  - **QA failure:** a verbatim source passage never reaches a public response; task 16 will persist a sanitized receipt showing the derived text served instead.
   - **Commit:** `feat(corpus): add local search and integrity reports`.
 
 ### Wave 4 — Build deterministic ceremonial domain contracts
@@ -614,7 +623,13 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **QA failure:** duplicate-source and conflicting-rule fixtures remain observable and never silently reconcile; task 21 will persist the sanitized conflict report as JSON evidence.
   - **Commit:** `test(ceremonial): freeze domain and conflict behavior`.
 
-### Wave 5 — Implement separate tradition workspaces
+### Wave 5 — Condensar as tradições numa gramática de funções
+
+> **Reenquadrada.** Estas tasks foram escritas como catálogos isolados, com a Task 27 impedindo
+> cruzamento entre eles. A direção é o oposto: cada tradição alimenta **um** grafo de funções, e
+> o registro por escola vira peso de evidência em vez de barreira. Ver `docs/BLUEPRINT.md`
+> §5.0.1. Os títulos abaixo permanecem como referência do material a cobrir; o entregável de
+> cada uma é a contribuição daquela tradição para a gramática comum, não um workspace próprio.
 
 - [ ] 22. Implement the Angelical adapters and catalog
   - **Implement:** create one distinct `sourceSystemId` and adapter for Heptameron, Ars Paulina, Dee/Enochian and every explicitly named Shem-derived modern school; group them only under `workspaceKind=ANGELICAL`. Model hierarchies, names, offices, seals and timing per edition without a universal angel hierarchy. Ingest only locator-backed records.
@@ -656,7 +671,8 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **QA failure:** attempted cross-class alias merge fails (`.../T26/planetary-separation.txt`).
   - **Commit:** `feat(ceremonial): add planetary intelligence workspace`.
 
-- [ ] 27. Add cross-workspace ontology and leak regression suite
+- [ ] 27. ~~Add cross-workspace ontology and leak regression suite~~ → **Verificar que a condensação preserva a contagem de escolas independentes**
+  - **INVERTIDA.** Era uma suíte anti-vazamento entre tradições. Passa a verificar o contrário: que ao condensar por função o método continua distinguindo convergência de escolas independentes de repetição da mesma linhagem, e que nenhuma correspondência afirma identidade entre entes
   - **Implement:** generate a deterministic report over all imported records proving unique IDs, valid locators, system separation, explicit cross-relation types, rights/access consistency and complete public filtering; include known confusing-name fixtures.
   - **References:** tasks 22-26; `src/domain/orixas/regency/correspondence-generation.test.ts`; task-11 bundle.
   - **Acceptance:** every entity belongs to exactly one primary system; every cross-system edge is explicit and sourced; public bundle contains no local-only body/media.
@@ -716,7 +732,8 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
 
 ### Wave 7 — Operations, isolation and release readiness
 
-- [ ] 34. Verify and harden the physically split public/local runtimes
+- [ ] 34. ~~Verify and harden the physically split public/local runtimes~~ → **Endurecer o runtime único**
+  - **REENQUADRADA.** Não há divisão física a verificar. O que resta é o isolamento que continua real: o container de ingest sem rede, o acervo montado read-only, e a garantia de que nenhuma resposta pública carrega caminho de host ou passagem literal de fonte
   - **Implement:** audit the task-7 split: public and local use separate PostgreSQL, Redis, storage, credentials and named volumes; keep `compose.yml` public-safe with no archive/key/derivative mount; local override mounts `/mnt/e/Ocultismo` read-only plus private derivative volume and ingest service. Pin images, non-root users, no-new-privileges, internal networks and healthchecks. Dockerfile public stages never `COPY` corpus/derivatives; process mode is immutable after startup.
   - **References:** `compose.yml:3-161`; `compose.dev.yml`; `Dockerfile`; `.dockerignore`; `docs/deployment-runbook.md`.
   - **Acceptance:** public config has no local path/key/ingest service; local config has no public bind by default beyond loopback; both configs validate and become healthy.
@@ -732,7 +749,8 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **QA failure:** wrong key or changed archive produces explicit degraded state, not data loss (`.../T35/restore-mismatch.txt`).
   - **Commit:** `ops(ceremonial): add private-data restore procedure`.
 
-- [ ] 36. Add privacy-safe observability and SLOs for both modes
+- [ ] 36. Add privacy-safe observability and SLOs
+  - **REENQUADRADA.** "Both modes" não existe mais; é um runtime só
   - **Implement:** instrument counts/durations/status categories only for ingest, policy denies, extraction failures, timing and APIs; update Pino redaction tests for archive paths, source text, ritual notes and encrypted envelopes. Define initial beta SLOs (99.5% monthly availability for public routes, p95 API <2s excluding ingestion, <1% 5xx) and provider-neutral Alertmanager webhook configuration.
   - **References:** `docs/performance-observability.md`; `compose.quality.yml`; `compose.yml:111-146`; central logger/redaction tests; `docs/IMPLEMENTATION_STATUS.md:264-269`.
   - **Acceptance:** no sensitive label/high-cardinality IDs; alert payloads contain service/route category only; local ingestion alerts remain local unless explicitly configured.
@@ -740,7 +758,8 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **QA failure:** canary secrets/path/snippet never appear in logs/metrics/alerts (`.../T36/redaction-scan.txt`).
   - **Commit:** `ops(ceremonial): add safe metrics and beta SLOs`.
 
-- [ ] 37. Add adversarial public-isolation and release-smoke gates
+- [ ] 37. ~~Add adversarial public-isolation and release-smoke gates~~ → **Gates de release e de não-vazamento de fonte**
+  - **REENQUADRADA.** O adversário deixou de ser "o modo público alcança dado local". Passa a ser: uma passagem literal de obra de terceiro, um caminho do acervo ou PII aparecendo numa resposta ou num artefato de build
   - **Implement:** seed restricted sentinel `ASTROAXE_LOCAL_ONLY_7F3C91` and publishable sentinel `ASTROAXE_PUBLIC_OK_42A8D0` across work/text/media/path/plan/cache fixtures; run public APIs, pages, RSC/static responses, sitemap, robots, JSON-LD, search, exports, logs, source maps, `.next`, public directory and standalone image/layers; assert zero restricted occurrences and publishable occurrence only in its approved response. Prime local cache first, then switch to public fixture to prove mode-separated keys. Add this to `scripts/release-smoke.sh` and quality documentation without using real protected strings.
   - **References:** `scripts/release-smoke.sh`; `src/app/sitemap.ts`; `src/app/robots.ts`; `src/app/api/auth/export/route.ts`; task-11 bundle; task-34 images.
   - **Acceptance:** gate fails on any local canary or internal rule/weight marker; test proves the scanner itself detects an intentionally contaminated fixture.
@@ -748,7 +767,8 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **QA failure:** contaminated bundle/build is rejected (`.../T37/contamination-proof.txt`).
   - **Commit:** `test(release): block local corpus leakage`.
 
-- [ ] 38. Reconcile privacy, rights, safety and operating documentation
+- [ ] 38. Reconcile privacy, safety and operating documentation
+  - **REENQUADRADA.** A parte de direitos saiu; a documentação a reconciliar é privacidade, segurança e operação
   - **Implement:** update privacy page, data inventory, cultural operations, knowledge sources, deployment, backup, quality, changelog, implementation status and project memory. Explain dual modes, local full/public hybrid, lawful publication criteria, sensitive-belief/private-record handling, retention/withdrawal status, no external LLM/analytics, safety boundaries and observed—not claimed—validation.
   - **References:** `src/app/privacidade/page.tsx`; `docs/data-inventory.md`; `docs/cultural-content-operations.md`; `docs/knowledge/sources.md`; `docs/IMPLEMENTATION_STATUS.md`; `docs/PROJECT_MEMORY.md`.
   - **Acceptance:** public copy never implies local material is licensed; controller/legal/provider items remain explicit blockers until supplied; docs match actual routes/models/migrations/counts.
@@ -788,9 +808,10 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
 ## Success criteria
 
 - Tríade v3 is consent-correct, withdrawable, version-complete, benchmark-ready and covered from domain to authenticated E2E.
-- Local mode can inventory/search/read the complete technically extractable private corpus; every artifact has explicit extraction status and provenance.
-- Published mode is hybrid-by-rights and demonstrably cannot expose local-only text, media, paths, records, private plans or keys even against a contaminated test database.
-- Angelical, Ars Goetia, Ars Theurgia-Goetia, Olympic and planetary-intelligence systems remain source-bound and separate while sharing only neutral provenance/timing/planner infrastructure.
+- The complete technically extractable private corpus is inventoried, extracted and searchable; every artifact has explicit extraction status and provenance.
+- No public response or build artifact carries a verbatim passage of a third-party source, an archive path, or PII — verified against a contaminated test database. What the site serves is what we wrote.
+- Angelical, Ars Goetia, Ars Theurgia-Goetia, Olympic and planetary-intelligence material is **condensed into one graph of structural functions**, with school of origin preserved as evidence weight: independent convergence is countable, a copy or translation of one lineage is not a second confirmation, and no correspondence asserts identity between entities.
+- The published method explains itself: a model-card page covering inputs, process, versioning, evaluation and known limits, at a depth that earns the reader's trust.
 - Deterministic timing reports versions, conflicts and uncertainty without efficacy claims; unsafe planner goals fail closed.
 - Private plans/sessions are encrypted, owner-scoped, exportable and deletable; logs/metrics/alerts remain free of PII, corpus text and ritual notes.
 - All task QA, F1-F4, migration, build, E2E, release leak, restore and Sonar gates pass with sanitized evidence; documentation records any external production blockers honestly.

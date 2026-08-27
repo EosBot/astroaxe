@@ -32,9 +32,16 @@ O que permanece — e permanece porque é qualidade de produto, não trava jurí
    para nós — saber o que revisar quando uma leitura se mostra errada.
 5. **Rótulo de IA quando houver.** Texto composto por IA é declarado como tal.
 
-O que saiu: parecer por fonte, revisão independente como pré-condição de publicação, nota de
-licença por obra, e o vocabulário de elegibilidade. Nada disso descrevia risco real e tudo isso
-custava trabalho de autoria.
+O que saiu: parecer por fonte, nota de licença por obra e o vocabulário de elegibilidade. Nada
+disso descrevia risco real e tudo isso custava trabalho de autoria.
+
+**Pendência conhecida — revisão independente.** O banco ainda exige `reviewer_id NOT NULL` e
+`reviewed_at NOT NULL` para publicar um verbete (`20260819040000_cultural_corpus`), e
+`src/lib/editorial/workflow.ts` ainda exige que autor e revisor sejam pessoas diferentes. Num
+projeto de uma pessoa isso é um gate que não pode ser satisfeito honestamente: ou se inventa uma
+segunda conta, ou nada é publicado. A decisão de arquitetura remove esse tipo de trava, mas o
+código ainda não foi alterado. Enquanto não for, **o comportamento real é o do banco**, não o
+descrito acima — relaxar a constraint e o workflow é trabalho pendente, não algo já feito.
 
 ## Identidade e APIs editoriais
 
