@@ -9,15 +9,15 @@ import {
   type InventoryEntry,
 } from "../src/domain/ceremonial/inventory";
 import { scanArchive } from "../src/lib/ceremonial/inventory-scan";
-import { parseCeremonialPolicy } from "../src/lib/ceremonial/mode";
+import { MissingArchiveRootError, resolveArchiveRoot } from "../src/lib/ceremonial/archive-root";
 
 /**
- * Local-only, read-only census of the private archive.
+ * Read-only census of the private archive.
  *
  *   npm run ceremonial:inventory -- <destino.json> [--baseline 801/737/64]
  *
- * Refuses to run outside `CEREMONIAL_MODE=local`, never copies or modifies a source file,
- * and writes a manifest that contains no absolute host path. Progress is checkpointed
+ * Never copies or modifies a source file, and writes a manifest that contains no absolute
+ * host path. Progress is checkpointed
  * after each file, so an interrupted run resumes instead of rehashing the whole archive.
  */
 
@@ -67,12 +67,13 @@ async function readCheckpoint(path: string): Promise<Map<string, InventoryEntry>
 }
 
 async function main(): Promise<void> {
-  const policy = parseCeremonialPolicy();
-  if (!policy.servesLocalArchive || policy.local === null)
-    fail(
-      "O inventário só roda em CEREMONIAL_MODE=local com acervo configurado.\n" +
-        "Use compose.local.yml; a stack pública não tem acesso ao acervo.",
-    );
+  let archiveRoot: string;
+  try {
+    archiveRoot = resolveArchiveRoot();
+  } catch (error) {
+    if (error instanceof MissingArchiveRootError) fail(error.message);
+    throw error;
+  }
 
   const argv = process.argv.slice(2);
   const destination = argv.find((argument) => !argument.startsWith("--"));
@@ -90,7 +91,7 @@ async function main(): Promise<void> {
 
   let sinceLastReport = 0;
   const entries = await scanArchive({
-    archiveRoot: policy.local.archiveRoot,
+    archiveRoot,
     completed,
     onEntry: async (entry) => {
       // Append-only checkpoint: one validated entry per line, flushed as we go.

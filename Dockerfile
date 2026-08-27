@@ -60,7 +60,6 @@ FROM dependencies AS ingest-runner
 WORKDIR /app
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
-    CEREMONIAL_MODE=local \
     LC_ALL=C.UTF-8 \
     TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
 # poppler-utils: pdftotext. tesseract-ocr plus language data: OCR for scanned pages and

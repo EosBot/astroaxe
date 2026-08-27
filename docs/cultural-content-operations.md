@@ -2,10 +2,9 @@
 
 ## Estado atual
 
-O banco e a API pública suportam conteúdo cultural versionado, autoria, revisão independente,
-claims e fontes. O corpus público contém quatro textos aprovados em lote pelo responsável do
-produto: três contextos IPHAN e uma narrativa iorubá historicamente situada. Novos verbetes não são
-criados automaticamente e continuam sujeitos ao mesmo fluxo.
+O banco e a API pública suportam conteúdo cultural versionado, com autoria e histórico. O corpus
+público contém quatro textos escritos pelo projeto. Novos verbetes não são criados
+automaticamente: alguém escreve cada um.
 
 `GET /api/cultural-content` lista as versões públicas mais recentes. A página
 `/acervo-cultural` apresenta os textos integrais e sua proveniência.
@@ -13,17 +12,29 @@ criados automaticamente e continuam sujeitos ao mesmo fluxo.
 publicação já chegou. Rascunhos, pareceres internos, conteúdo retirado e claims retiradas ou
 depreciadas não são expostos.
 
-## Fluxo editorial obrigatório
+## Fluxo de autoria — atualizado em 26 de agosto de 2026
 
-1. Cadastre a pessoa autora com o crédito público acordado.
-2. Cadastre cada fonte com tipo de evidência, URL, data de acesso e nota de licença.
-3. Crie o verbete como `DRAFT`, com versão imutável e claims situadas por tradição.
-4. Mova para `IN_REVIEW` e registre o parecer em `cultural_reviews`.
-5. Uma pessoa diferente da autora revisa linguagem, proveniência, acesso e limites culturais.
-6. Publique apenas com `reviewer_id`, `reviewed_at` e `published_at`; a constraint do banco impede
-   publicação sem revisão independente.
-7. Correções geram nova versão. Conteúdo cuja autorização foi retirada muda para `WITHDRAWN`; não
-   apague o histórico editorial.
+A decisão de arquitetura em `docs/BLUEPRINT.md` §5.0 encerrou o modelo de direitos por fonte.
+Não existe mais `REFERENCE_ONLY`, `CLAIM_ELIGIBLE`, elegibilidade por obra nem fila bloqueando
+autoria. O acervo é insumo e é usado por inteiro.
+
+O que permanece — e permanece porque é qualidade de produto, não trava jurídica:
+
+1. **Escrevemos o texto.** Todo verbete é síntese original a partir do estudo de muitas fontes.
+   Nunca transcrição, nunca paráfrase colada de um único texto. Fato e ideia são livres; a
+   expressão é nossa.
+2. **Profundidade é requisito.** Um verbete raso é pior que nenhum: ele ocupa o lugar do
+   conhecimento sem entregá-lo. A constraint de profundidade no banco continua valendo, e a barra
+   real é mais alta que ela.
+3. **Versão imutável.** Correção gera nova versão; o histórico não é apagado. É isso que permite
+   corrigir o método quando o entendimento muda.
+4. **Proveniência interna.** Registramos de onde veio a ideia, no banco, fora da interface. Serve
+   para nós — saber o que revisar quando uma leitura se mostra errada.
+5. **Rótulo de IA quando houver.** Texto composto por IA é declarado como tal.
+
+O que saiu: parecer por fonte, revisão independente como pré-condição de publicação, nota de
+licença por obra, e o vocabulário de elegibilidade. Nada disso descrevia risco real e tudo isso
+custava trabalho de autoria.
 
 ## Identidade e APIs editoriais
 
@@ -68,28 +79,24 @@ somente as claims registradas, não uma descrição geral de Xangô.
 
 ## Condição para ativar a Tríade
 
-O requisito quantitativo de três verbetes publicados foi atendido, assim como a aprovação coletiva
-de conteúdo. Isso não aprova automaticamente um método mapa→Orixá. A geração personalizada só pode
-ser conectada quando as correspondências possuírem claims, fontes e versão próprias. Até lá, o
-produto não deve fabricar equivalências nem apresentar a Tríade como identidade religiosa.
+A Tríade é entregue como resultado do método autoral AstroAxe, com versão, fatores determinantes e
+o limite declarado no rodapé. O que a habilita não é uma aprovação externa: é o método estar
+versionado, avaliado e explicado na página de metodologia. O produto apresenta uma interpretação
+do mapa, não uma identidade religiosa.
 
-## Elegibilidade de fontes
+## Uso do acervo
 
-Fontes recém-cadastradas assumem `REFERENCE_ONLY`. Catálogo, ISBN ou sinopse
-confirmam a existência e o escopo anunciado de uma obra, mas não habilitam claims.
-Antes de mudar para `CLAIM_ELIGIBLE`, registre acesso legal ao exemplar, edição,
-locator preciso, direitos de uso, sensibilidade cultural e responsável pela checagem.
-Submissão e aprovação falham se qualquer claim ativa estiver sem locator ou ligada a
-fonte `REFERENCE_ONLY`/`WITHDRAWN`.
+Não há mais classificação de elegibilidade por fonte. O acervo é lido por inteiro e alimenta a
+derivação do método. O que registramos por obra é identidade — título, edição, idioma — e serve
+para nós sabermos o que reestudar quando uma leitura se mostrar errada, não para autorizar nada.
 
-## Aprovação em lote versus revisão cultural
+## Composição determinística
 
-Interpretações estritamente astrológicas podem ser aprovadas em lote quando forem compostas de
-blocos versionados, passarem pelas constraints de profundidade e linguagem e preservarem autoria,
-revisor automatizado e método `AI_ASSISTED`. A renderização de uma combinação já publicada não
-exige nova revisão nem chamada de IA.
+Interpretações astrológicas são compostas de blocos versionados, passam pelas constraints de
+profundidade e declaram autoria e método (`AI_ASSISTED` quando houver IA). A renderização de uma
+combinação já publicada não exige nova composição nem chamada de IA.
 
-Essa automação não transforma um bloco cultural em conteúdo autorizado. Claims sobre Orixás,
-tradições, narrativas, ritos ou correspondências continuam exigindo fonte elegível e aprovação do
-bloco cultural por pessoa competente. Depois dessa aprovação única, o mesmo bloco pode ser
-reutilizado deterministicamente sem revisar cada tela ou usuário.
+A barra é a mesma para bloco cultural e bloco astrológico: **texto nosso, com profundidade real.**
+O que muda entre eles é o cuidado com a matéria, não um processo de aprovação. Correspondência com
+Orixá é interpretação cultural do método AstroAxe, declarada como tal, com versão e fatores
+determinantes visíveis — nunca confirmação religiosa, diagnóstico ou substituto do jogo de búzios.

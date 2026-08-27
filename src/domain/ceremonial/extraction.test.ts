@@ -29,25 +29,11 @@ function extracted(relativePath: string, overrides: Partial<ExtractionRecord> = 
     derivativeHash: DERIVATIVE_HASH,
     characterCount: 120,
     pageCount: 3,
-    rights: "UNKNOWN",
-    access: "LOCAL_ONLY",
-    sensitivity: "CULTURALLY_SENSITIVE",
     ...overrides,
   } as ExtractionRecord;
 }
 
 describe("extractionRecordSchema", () => {
-  it("refuses a derivative that claims public access", () => {
-    expect(extractionRecordSchema.safeParse(extracted("a.pdf", { access: "PUBLIC" })).success).toBe(
-      false,
-    );
-  });
-
-  it("refuses a derivative that claims established rights", () => {
-    for (const rights of ["PUBLIC_DOMAIN", "LICENSED", "PERMISSION_GRANTED"] as const)
-      expect(extractionRecordSchema.safeParse(extracted("a.pdf", { rights })).success).toBe(false);
-  });
-
   it("refuses an absolute host path so the archive location cannot leak", () => {
     for (const path of ["/mnt/e/Ocultismo/a.pdf", "C:/Ocultismo/a.pdf", "a/../b.pdf"])
       expect(extractionRecordSchema.safeParse(extracted(path)).success).toBe(false);
@@ -192,7 +178,7 @@ describe("summarizeExtraction", () => {
 describe("buildExtractionManifest", () => {
   it("rejects an invalid record instead of writing it as evidence", () => {
     expect(() =>
-      buildExtractionManifest([extracted("a.pdf", { access: "PUBLIC" })], new Date(0)),
+      buildExtractionManifest([extracted("a.pdf", { characterCount: 0 })], new Date(0)),
     ).toThrow();
   });
 

@@ -7,13 +7,13 @@ Zero Trust e postura de e-mail. O runtime correspondente está em
 A configuração foi aplicada em 2026-08-26, antes de qualquer VPS existir. Até o
 `cloudflared` conectar, o domínio responde erro 1033 — comportamento esperado.
 
-| Item | Valor |
-| --- | --- |
-| Zona | `astroaxe.net` — `b1ede1dc5187528fc6597d6262f6c3ab` |
-| Conta | `36febb0027e351e5058a1d81a94438c7` |
-| Plano | Free |
-| Hostname canônico | `astroaxe.net` (apex); `www` redireciona 301 |
-| Org Zero Trust | `eosbot.cloudflareaccess.com` |
+| Item              | Valor                                               |
+| ----------------- | --------------------------------------------------- |
+| Zona              | `astroaxe.net` — `b1ede1dc5187528fc6597d6262f6c3ab` |
+| Conta             | `36febb0027e351e5058a1d81a94438c7`                  |
+| Plano             | Free                                                |
+| Hostname canônico | `astroaxe.net` (apex); `www` redireciona 301        |
+| Org Zero Trust    | `eosbot.cloudflareaccess.com`                       |
 
 ## Princípio de origem
 
@@ -25,10 +25,10 @@ Cloudflare.** O break-glass é o próprio Tunnel, não uma porta publicada.
 
 Um Tunnel por ambiente, para isolar o raio de alcance de cada token:
 
-| Ambiente | Tunnel | ID | Ingress |
-| --- | --- | --- | --- |
-| Produção | `astroaxe-prod` | `bcdae972-63e8-47d2-b064-72b0e9394863` | `astroaxe.net` → `http://traefik:8080` |
-| Staging | `astroaxe-staging` | `04e8bbff-646f-4f23-b257-7246fa9e6acb` | `staging.astroaxe.net` → `http://traefik:8080` |
+| Ambiente | Tunnel             | ID                                     | Ingress                                        |
+| -------- | ------------------ | -------------------------------------- | ---------------------------------------------- |
+| Produção | `astroaxe-prod`    | `bcdae972-63e8-47d2-b064-72b0e9394863` | `astroaxe.net` → `http://traefik:8080`         |
+| Staging  | `astroaxe-staging` | `04e8bbff-646f-4f23-b257-7246fa9e6acb` | `staging.astroaxe.net` → `http://traefik:8080` |
 
 Ambos usam configuração gerenciada remotamente (`config_src: cloudflare`) e caem
 em `http_status:404` para qualquer hostname não declarado.
@@ -39,19 +39,19 @@ Swarm como `astroaxe_cloudflare_tunnel_v1`, conforme `docs/swarm-runbook.md`.
 
 ## Registros DNS
 
-| Nome | Tipo | Conteúdo | Proxy |
-| --- | --- | --- | --- |
-| `astroaxe.net` | CNAME | `bcdae972-….cfargotunnel.com` | sim |
-| `www` | CNAME | `astroaxe.net` | sim |
-| `staging` | CNAME | `04e8bbff-….cfargotunnel.com` | sim |
-| `astroaxe.net` | CAA | `0 issue "letsencrypt.org"` | — |
-| `astroaxe.net` | CAA | `0 issue "pki.goog"` | — |
-| `astroaxe.net` | CAA | `0 issuewild ";"` | — |
-| `astroaxe.net` | MX | `0 .` | — |
-| `astroaxe.net` | TXT | `v=spf1 -all` | — |
-| `_dmarc` | TXT | `v=DMARC1; p=reject; fo=1; pct=100` | — |
-| `_dmarc.www` | TXT | `v=DMARC1; p=reject` | — |
-| `_dmarc.staging` | TXT | `v=DMARC1; p=reject` | — |
+| Nome             | Tipo  | Conteúdo                            | Proxy |
+| ---------------- | ----- | ----------------------------------- | ----- |
+| `astroaxe.net`   | CNAME | `bcdae972-….cfargotunnel.com`       | sim   |
+| `www`            | CNAME | `astroaxe.net`                      | sim   |
+| `staging`        | CNAME | `04e8bbff-….cfargotunnel.com`       | sim   |
+| `astroaxe.net`   | CAA   | `0 issue "letsencrypt.org"`         | —     |
+| `astroaxe.net`   | CAA   | `0 issue "pki.goog"`                | —     |
+| `astroaxe.net`   | CAA   | `0 issuewild ";"`                   | —     |
+| `astroaxe.net`   | MX    | `0 .`                               | —     |
+| `astroaxe.net`   | TXT   | `v=spf1 -all`                       | —     |
+| `_dmarc`         | TXT   | `v=DMARC1; p=reject; fo=1; pct=100` | —     |
+| `_dmarc.www`     | TXT   | `v=DMARC1; p=reject`                | —     |
+| `_dmarc.staging` | TXT   | `v=DMARC1; p=reject`                | —     |
 
 Os registros CAA restringem quais autoridades certificadoras podem emitir
 certificado para o domínio. **A restrição efetiva é mais ampla do que os três
@@ -72,14 +72,14 @@ curl -sS -H 'accept: application/dns-json' \
 
 ## TLS
 
-| Ajuste | Valor | Razão |
-| --- | --- | --- |
-| `ssl` | `strict` | valida o certificado da origem |
-| `min_tls_version` | `1.2` | TLS 1.0 e 1.1 recusados |
-| `tls_1_3` | `on` | — |
-| `always_use_https` | `on` | — |
-| `automatic_https_rewrites` | `on` | — |
-| `0rtt` | `off` | 0-RTT permite replay de requisições não idempotentes |
+| Ajuste                     | Valor    | Razão                                                |
+| -------------------------- | -------- | ---------------------------------------------------- |
+| `ssl`                      | `strict` | valida o certificado da origem                       |
+| `min_tls_version`          | `1.2`    | TLS 1.0 e 1.1 recusados                              |
+| `tls_1_3`                  | `on`     | —                                                    |
+| `always_use_https`         | `on`     | —                                                    |
+| `automatic_https_rewrites` | `on`     | —                                                    |
+| `0rtt`                     | `off`    | 0-RTT permite replay de requisições não idempotentes |
 
 ### HSTS permanece desligado — e isso é deliberado
 
@@ -106,12 +106,12 @@ O plano Free permite cinco regras WAF custom e uma regra de rate limiting.
 
 ### Regras custom
 
-| # | Condição | Ação |
-| --- | --- | --- |
-| 1 | `/wp-*`, `/xmlrpc.php`, `/.env`, `/.git/`, `/vendor/`, `/phpmyadmin` | Block |
-| 2 | `/api/health/*` vindo da internet | Block |
-| 3 | `POST` em `/api/auth/*` sem user agent de navegador | Managed Challenge |
-| 4 | `/api/geocoding` sem user agent de navegador | Managed Challenge |
+| #   | Condição                                                             | Ação              |
+| --- | -------------------------------------------------------------------- | ----------------- |
+| 1   | `/wp-*`, `/xmlrpc.php`, `/.env`, `/.git/`, `/vendor/`, `/phpmyadmin` | Block             |
+| 2   | `/api/health/*` vindo da internet                                    | Block             |
+| 3   | `POST` em `/api/auth/*` sem user agent de navegador                  | Managed Challenge |
+| 4   | `/api/geocoding` sem user agent de navegador                         | Managed Challenge |
 
 O quinto slot fica reservado para resposta a incidente. As expressões usam
 `starts_with` e `contains` em vez de expressão regular, porque o operador
@@ -142,10 +142,10 @@ contas. O Free exige `mitigation_timeout` igual ao período.
 
 Nenhuma resposta autenticada pode ser servida do edge.
 
-| Regra | Escopo | Efeito |
-| --- | --- | --- |
-| 1 | `/api/*`, `/conta*`, `/entrar`, `/recuperar-senha`, `/redefinir-senha`, `/verificar-email` | cache desabilitado |
-| 2 | `/_next/static/*` | cache com TTL de um ano, edge e navegador |
+| Regra | Escopo                                                                                     | Efeito                                    |
+| ----- | ------------------------------------------------------------------------------------------ | ----------------------------------------- |
+| 1     | `/api/*`, `/conta*`, `/entrar`, `/recuperar-senha`, `/redefinir-senha`, `/verificar-email` | cache desabilitado                        |
+| 2     | `/_next/static/*`                                                                          | cache com TTL de um ano, edge e navegador |
 
 A regra 1 cumpre a exigência do runbook de Swarm: APIs autenticadas, conta,
 diário, exports e qualquer resposta com cookie permanecem fora do cache. A regra
@@ -156,12 +156,12 @@ diário, exports e qualquer resposta com cookie permanecem fora do cache. A regr
 `staging.astroaxe.net` inteiro fica atrás do Access. A requisição não autenticada
 é encerrada na borda e nunca alcança o Tunnel.
 
-| Item | Valor |
-| --- | --- |
-| Aplicação | `AstroAxe staging` — `0e4a5e65-2540-46fd-a9f7-cac8d8ee4985` |
-| Identidade | One-time PIN por e-mail |
-| Sessão | 24h, cookie `HttpOnly`, binding cookie ativo |
-| Política | allowlist explícita de e-mails |
+| Item       | Valor                                                       |
+| ---------- | ----------------------------------------------------------- |
+| Aplicação  | `AstroAxe staging` — `0e4a5e65-2540-46fd-a9f7-cac8d8ee4985` |
+| Identidade | One-time PIN por e-mail                                     |
+| Sessão     | 24h, cookie `HttpOnly`, binding cookie ativo                |
+| Política   | allowlist explícita de e-mails                              |
 
 `/api/editorial/*` fica fora do Access: é uma API sem interface, consumida
 programaticamente, e o Access quebraria seus clientes. A autorização continua na
@@ -201,11 +201,11 @@ MX pelos MX da Cloudflare e exige um endereço de destino verificado.
 Enquanto a VPS não existe, o apex não devolve erro 1033: um Worker responde antes do Tunnel e
 publica a página "em construção".
 
-| Item | Valor |
-| --- | --- |
-| Worker | `astroaxe-holding` |
-| Rota | `astroaxe.net/*` — `cd79257c55d24c389bec6fb3f7ae6df8` |
-| Fonte | `infra/cloudflare/holding-page/worker.js` |
+| Item     | Valor                                                  |
+| -------- | ------------------------------------------------------ |
+| Worker   | `astroaxe-holding`                                     |
+| Rota     | `astroaxe.net/*` — `cd79257c55d24c389bec6fb3f7ae6df8`  |
+| Fonte    | `infra/cloudflare/holding-page/worker.js`              |
 | Resposta | `503` + `Retry-After: 86400` + `X-Robots-Tag: noindex` |
 
 O status é `503`, não `200`, de propósito. Uma placeholder devolvendo `200` seria indexada pelos

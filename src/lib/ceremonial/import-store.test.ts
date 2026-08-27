@@ -1,3 +1,4 @@
+import { PrismaPg } from "@prisma/adapter-pg";
 import { afterAll, beforeEach, describe, expect, it } from "vitest";
 
 import {
@@ -5,20 +6,13 @@ import {
   type ImportCandidate,
   type ImportMapping,
 } from "@/domain/ceremonial/import";
-import { PrismaPg } from "@prisma/adapter-pg";
-
 import { PrismaClient } from "@/generated/prisma/client";
-import {
-  applyCorpusImport,
-  openImportReviewHashes,
-  resolveImportReview,
-} from "@/lib/ceremonial/import-store";
+import { applyCorpusImport } from "@/lib/ceremonial/import-store";
 
 /**
  * Runs against a real PostgreSQL, not a mock: every property worth asserting here — the
- * unique constraints, the CHECK on resolution, upsert idempotency, transactional rollback
- * — lives in the database, and a mocked client would only assert that this file calls the
- * methods it calls.
+ * unique constraints, upsert idempotency, transactional rollback — lives in the database,
+ * and a mocked client would only assert that this file calls the methods it calls.
  *
  * Skipped when no throwaway database is configured, so the default suite stays hermetic:
  *   CEREMONIAL_TEST_DATABASE_URL=postgresql://... npx vitest run import-store
@@ -65,7 +59,6 @@ function mapping(overrides: Partial<ImportMapping> = {}): ImportMapping {
 }
 
 async function clearCorpus(): Promise<void> {
-  await prisma.ceremonialImportReview.deleteMany({});
   await prisma.ceremonialLocator.deleteMany({});
   await prisma.ceremonialArtifact.deleteMany({});
   await prisma.ceremonialEdition.deleteMany({});
@@ -84,17 +77,15 @@ describeWithDatabase("applyCorpusImport", () => {
     const plan = proposeCorpusImport([candidate("Livros/a.pdf")], [mapping()]);
     const result = await applyCorpusImport(prisma, plan);
 
-    expect(result).toMatchObject({ works: 1, editions: 1, artifacts: 1, reviewsOpened: 0 });
+    expect(result).toMatchObject({ works: 1, editions: 1, artifacts: 1 });
     // One citable position per extracted page, and nothing invented beyond them.
     expect(result.locators).toBe(2);
 
     const artifact = await prisma.ceremonialArtifact.findUnique({
       where: { contentHash: hash("a") },
-      select: { access: true, rights: true, edition: { select: { label: true } } },
+      select: { edition: { select: { label: true, language: true } } },
     });
-    expect(artifact?.edition.label).toBe("tradução de teste");
-    expect(artifact?.access).toBe("LOCAL_ONLY");
-    expect(artifact?.rights).toBe("UNKNOWN");
+    expect(artifact?.edition).toEqual({ label: "tradução de teste", language: "en" });
   });
 
   it("is idempotent: a second run over an unchanged corpus adds nothing", async () => {
@@ -102,7 +93,7 @@ describeWithDatabase("applyCorpusImport", () => {
     await applyCorpusImport(prisma, plan);
     const second = await applyCorpusImport(prisma, plan);
 
-    expect(second).toMatchObject({ works: 0, editions: 0, locators: 0, reviewsOpened: 0 });
+    expect(second).toMatchObject({ works: 0, editions: 0, locators: 0 });
     expect(await prisma.ceremonialEdition.count()).toBe(1);
     expect(await prisma.ceremonialLocator.count()).toBe(2);
   });
@@ -120,24 +111,6 @@ describeWithDatabase("applyCorpusImport", () => {
       select: { relativePath: true },
     });
     expect(artifact?.relativePath).toBe("Livros/renomeado.pdf");
-  });
-
-  it("opens one queue item per unverified field when nothing is mapped", async () => {
-    const plan = proposeCorpusImport([candidate("Livros/a.pdf")], []);
-    const result = await applyCorpusImport(prisma, plan);
-
-    expect(result.reviewsOpened).toBe(4);
-    const rows = await prisma.ceremonialImportReview.findMany({
-      select: { reason: true, state: true },
-      orderBy: { reason: "asc" },
-    });
-    expect(rows.map((row) => row.reason)).toEqual([
-      "AUTHOR_UNKNOWN",
-      "EDITION_UNESTABLISHED",
-      "LANGUAGE_UNVERIFIED",
-      "TITLE_FROM_FILENAME",
-    ]);
-    expect(rows.every((row) => row.state === "OPEN")).toBe(true);
   });
 
   it("keeps two translations as distinct editions of one work", async () => {
@@ -176,63 +149,5 @@ describeWithDatabase("applyCorpusImport", () => {
     await expect(applyCorpusImport(prisma, corrupted)).rejects.toThrow();
     expect(await prisma.ceremonialArtifact.count()).toBe(0);
     expect(await prisma.ceremonialWork.count()).toBe(0);
-  });
-});
-
-describeWithDatabase("fila de revisão", () => {
-  beforeEach(clearCorpus);
-
-  it("reports every unresolved artifact to the publication gate", async () => {
-    await applyCorpusImport(prisma, proposeCorpusImport([candidate("a.pdf")], []));
-    expect(await openImportReviewHashes(prisma)).toEqual(new Set([hash("a")]));
-  });
-
-  it("stops reporting an artifact once every question about it is answered", async () => {
-    await applyCorpusImport(prisma, proposeCorpusImport([candidate("a.pdf")], []));
-    for (const reason of [
-      "TITLE_FROM_FILENAME",
-      "AUTHOR_UNKNOWN",
-      "EDITION_UNESTABLISHED",
-      "LANGUAGE_UNVERIFIED",
-    ])
-      expect(
-        await resolveImportReview(
-          prisma,
-          hash("a"),
-          reason,
-          "conferido com o exemplar",
-          new Date(),
-        ),
-      ).toBe(true);
-
-    expect(await openImportReviewHashes(prisma)).toEqual(new Set());
-  });
-
-  it("keeps reporting while even one question is still open", async () => {
-    await applyCorpusImport(prisma, proposeCorpusImport([candidate("a.pdf")], []));
-    await resolveImportReview(prisma, hash("a"), "TITLE_FROM_FILENAME", "conferido", new Date());
-    expect(await openImportReviewHashes(prisma)).toEqual(new Set([hash("a")]));
-  });
-
-  it("does not reopen a resolved item when the importer runs again", async () => {
-    const plan = proposeCorpusImport([candidate("a.pdf")], []);
-    await applyCorpusImport(prisma, plan);
-    await resolveImportReview(prisma, hash("a"), "TITLE_FROM_FILENAME", "conferido", new Date());
-
-    const second = await applyCorpusImport(prisma, plan);
-    expect(second.reviewsOpened).toBe(0);
-    expect(second.reviewsAlreadyResolved).toBe(1);
-
-    const row = await prisma.ceremonialImportReview.findUnique({
-      where: { contentHash_reason: { contentHash: hash("a"), reason: "TITLE_FROM_FILENAME" } },
-      select: { state: true, resolutionNote: true },
-    });
-    expect(row).toMatchObject({ state: "RESOLVED", resolutionNote: "conferido" });
-  });
-
-  it("refuses to resolve a question nobody asked", async () => {
-    expect(
-      await resolveImportReview(prisma, hash("f"), "TITLE_FROM_FILENAME", "nota", new Date()),
-    ).toBe(false);
   });
 });

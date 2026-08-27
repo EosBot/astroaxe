@@ -39,7 +39,10 @@ function escapeHtml(value) {
 /** Deslocamento do fuso do observador, no formato UTC−3 / UTC+5:30. */
 function utcOffsetLabel(now, timeZone) {
   try {
-    const parts = new Intl.DateTimeFormat("en-US", { timeZone, timeZoneName: "longOffset" }).formatToParts(now);
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone,
+      timeZoneName: "longOffset",
+    }).formatToParts(now);
     const raw = parts.find((part) => part.type === "timeZoneName")?.value ?? "";
     const match = /GMT([+-])(\d{2}):(\d{2})/.exec(raw);
     if (!match) return "UTC±0";
@@ -56,7 +59,8 @@ function readObserver(request) {
   const edge = request.cf ?? {};
   const city = typeof edge.city === "string" && edge.city.length > 0 ? edge.city : null;
   const region = typeof edge.country === "string" && edge.country.length > 0 ? edge.country : null;
-  const timeZone = typeof edge.timezone === "string" && edge.timezone.length > 0 ? edge.timezone : "UTC";
+  const timeZone =
+    typeof edge.timezone === "string" && edge.timezone.length > 0 ? edge.timezone : "UTC";
   const colo = typeof edge.colo === "string" && edge.colo.length > 0 ? edge.colo : null;
 
   const place = city ? (region ? `${city}, ${region}` : city) : "Posição indisponível";
@@ -263,7 +267,9 @@ h1 {
 </html>`;
 }
 
-export default {
+// Nomeado em vez de exportado anonimamente: o objeto aparece com nome em stack traces, e o
+// lint do repositório exige isso de todo default export.
+const holdingWorker = {
   async fetch(request) {
     const { pathname } = new URL(request.url);
 
@@ -288,3 +294,5 @@ export default {
     });
   },
 };
+
+export default holdingWorker;

@@ -1,5 +1,23 @@
 # Memória canônica do projeto
 
+## Atualização 2026-08-26 — Modelo híbrido descartado
+
+- **Decisão do responsável:** runtime único, cobertura total, sem separação público/local.
+  Canônico em `docs/BLUEPRINT.md` §5.0.
+- A separação real é entre **insumo** (o acervo, usado por inteiro para derivar o método) e
+  **obra** (o que o site publica: método, correspondências, síntese escrita por nós).
+  Publicamos a obra, nunca a fonte — não por trava, mas porque a fonte não é o produto.
+- Removido do código e do banco: modo de runtime, matriz de facetas/direitos, bundle público,
+  rota de artefato-fonte, `artifact-storage`, colunas rights/access/sensitivity, fila de
+  revisão de importação, tabela de pareceres. Migration `20260826140000`.
+- **Não perguntar de novo** sobre direitos por fonte, elegibilidade ou parecer cultural como
+  pré-condição: isso foi decidido e está registrado. Paráfrase e síntese original resolvem a
+  questão pela via correta — fato e ideia são livres, expressão é protegida, e a expressão
+  publicada é nossa.
+- Símbolos são redesenhados em SVG próprio, não recortados de scan.
+- Pedido de qualidade em aberto: os textos existentes estão rasos. A barra é imersão e
+  detalhe, e a página de metodologia deve explicar o método como um _model card_ de big tech.
+
 ## Atualização 2026-08-26 — Task 14: linhagem, locators e fila de revisão
 
 - Wave 3 em 14 de 39 tasks. A T14 mapeia artefatos extraídos para `obra → edição → artefato →
@@ -56,7 +74,11 @@ locator`, com `npm run ceremonial:import` (relata por padrão, grava só com `--
 - Runbook: `docs/ceremonial-ingest.md`. Próxima retomada: Task 14, importação de obras, edições,
   artefatos e locators sem colapsar variantes.
 
-## Atualização 2026-08-26 — Wave 2 dual-mode concluída
+## Atualização 2026-08-26 — Wave 2 dual-mode concluída (SUPERADA)
+
+> Esta seção descreve o modelo híbrido, descartado no mesmo dia. Mantida como histórico do
+> que foi construído e por quê; o estado atual está na atualização "Modelo híbrido descartado"
+> no topo deste arquivo.
 
 - A divergência anterior foi corrigida: as Tasks 7–11 do roteiro estão concluídas e a Wave 2 está
   fechada. O total observado é 11 de 39 tasks de implementação.
@@ -135,7 +157,7 @@ locator`, com `npm run ceremonial:import` (relata por padrão, grava só com `--
   acima; Quality Gate do SonarQube passou após corrigir os quatro achados reais introduzidos nesta
   sessão (um bug MAJOR de `reduce()` sem valor inicial e três code smells MAJOR de espaçamento
   JSX ambíguo) — 0 novas violações, 81,6% de cobertura em código novo, 1,52275% de duplicação.
-- A fundação dual-mode foi concluída posteriormente pelas Tasks 7–11, conforme a atualização acima. A
+- A fundação dual-mode foi construída pelas Tasks 7–11 e depois descartada; ver o topo do arquivo. A
   ingestão, os workspaces e a criptografia continuam pendentes e agora possuem autorização do
   responsável para execução incremental, preservando os gates jurídicos e culturais fail-closed.
 

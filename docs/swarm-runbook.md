@@ -8,9 +8,9 @@ construídas, publicadas em registry e identificadas por tag imutável ou digest
 
 O projeto possui exatamente dois destinos de deploy, além do ambiente de desenvolvimento:
 
-| Destino     | Execução                     | Entrada            | Dados                        | Email                       | Cloudflare |
-| ----------- | ---------------------------- | ------------------ | ---------------------------- | --------------------------- | ---------- |
-| Homologação | Docker Compose local         | `127.0.0.1:3200`   | volumes locais isolados      | Mailpit em `127.0.0.1:8025` | não        |
+| Destino     | Execução                     | Entrada                   | Dados                        | Email                       | Cloudflare |
+| ----------- | ---------------------------- | ------------------------- | ---------------------------- | --------------------------- | ---------- |
+| Homologação | Docker Compose local         | `127.0.0.1:3200`          | volumes locais isolados      | Mailpit em `127.0.0.1:8025` | não        |
 | Produção    | Docker Swarm nas VPS Contabo | `astroaxe.net` via Tunnel | PostgreSQL/Redis gerenciados | relay interno para Brevo    | sim        |
 
 Homologação não é um terceiro ambiente remoto e não usa credenciais de produção. O E2E automatizado
@@ -125,8 +125,8 @@ referência autoritativa. Esta seção registra apenas o que o Swarm precisa sab
 Dois Tunnels gerenciados remotamente já existem, um por ambiente, para isolar o raio de alcance de
 cada token:
 
-| Ambiente | Tunnel            | ID                                     | Hostname               |
-| -------- | ----------------- | -------------------------------------- | ---------------------- |
+| Ambiente | Tunnel             | ID                                     | Hostname               |
+| -------- | ------------------ | -------------------------------------- | ---------------------- |
 | Produção | `astroaxe-prod`    | `bcdae972-63e8-47d2-b064-72b0e9394863` | `astroaxe.net`         |
 | Staging  | `astroaxe-staging` | `04e8bbff-646f-4f23-b257-7246fa9e6acb` | `staging.astroaxe.net` |
 

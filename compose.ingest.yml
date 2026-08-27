@@ -1,8 +1,7 @@
 # Ceremonial ingest — sandboxed extraction of the private archive.
 #
-# A standalone project, like compose.local.yml and for the same reason: nothing here may
-# share a network, volume or credential with the public runtime. This one goes further —
-# it has no database, no Redis, no secret and no network interface at all. It reads the
+# A standalone project on purpose: extraction runs foreign parsers over the owner's files,
+# so it gets no database, no Redis, no secret and no network interface at all. It reads the
 # archive, writes text derivatives to a rebuildable volume, and exits.
 #
 #   docker compose -f compose.ingest.yml build ceremonial-ingest
@@ -36,11 +35,7 @@ services:
     memswap_limit: ${CEREMONIAL_INGEST_MEMORY:-3g}
     pids_limit: 256
     environment:
-      CEREMONIAL_MODE: local
       CEREMONIAL_ARCHIVE_ROOT: /srv/ceremonial-archive
-      # Required by the mode contract but unused here: ingestion never opens the keyring,
-      # and the file it names is not mounted.
-      CEREMONIAL_KEYRING_FILE: /run/secrets/ceremonial-keyring.json
       CEREMONIAL_DERIVATIVE_ROOT: /var/lib/ceremonial/derivatives
       LOG_LEVEL: ${LOG_LEVEL:-info}
     volumes:

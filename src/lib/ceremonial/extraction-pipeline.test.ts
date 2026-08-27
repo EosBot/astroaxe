@@ -201,9 +201,6 @@ describe("extractInventoriedArchive", () => {
       derivativeHash: derivativeContentHash(contents),
       characterCount: [...contents].length,
       pageCount: null,
-      rights: "UNKNOWN",
-      access: "LOCAL_ONLY",
-      sensitivity: "CULTURALLY_SENSITIVE",
     };
 
     // The archive is empty, so a fresh extraction would quarantine; resuming must not.

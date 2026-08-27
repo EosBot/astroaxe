@@ -1,7 +1,6 @@
 import "server-only";
 
 import {
-  DEFAULT_DERIVATIVE_CLASSIFICATION,
   EXTRACTION_ADAPTERS,
   derivativeContentHash,
   normalizeExtractedText,
@@ -71,7 +70,6 @@ function baseRecord(entry: InventoryEntry) {
     derivativeHash: null,
     characterCount: null,
     pageCount: null,
-    ...DEFAULT_DERIVATIVE_CLASSIFICATION,
   } as const;
 }
 

@@ -16,20 +16,19 @@ import {
   resolveExtractionToolchain,
 } from "../src/lib/ceremonial/extraction-pipeline";
 import { DerivativeStoreUnavailableError } from "../src/lib/ceremonial/derivative-store";
-import { parseCeremonialPolicy } from "../src/lib/ceremonial/mode";
+import { MissingArchiveRootError, resolveArchiveRoot } from "../src/lib/ceremonial/archive-root";
 
 /**
- * Local-only extraction of the private archive into text derivatives.
+ * Extraction of the private archive into text derivatives.
  *
  *   npm run ceremonial:extract -- <inventario.json> <destino.json> [--sanitized <arquivo.json>]
  *
- * Refuses to run outside `CEREMONIAL_MODE=local`. Sources are opened read-only and only
- * after their bytes are re-verified against the inventory; nothing in the archive is
- * written, moved or copied. Progress is checkpointed per row, so an interrupted run
+ * Sources are opened read-only and only after their bytes are re-verified against the
+ * inventory; nothing in the archive is written, moved or copied. Progress is checkpointed per row, so an interrupted run
  * resumes instead of re-running OCR over the whole archive.
  *
  * The full manifest lists one relative path per row and therefore describes the owner's
- * shelf: it stays local. `--sanitized` writes the shareable counts-only view.
+ * shelf; it is not committed. `--sanitized` writes the shareable counts-only view.
  */
 
 const CHECKPOINT_SUFFIX = ".checkpoint.jsonl";
@@ -81,12 +80,13 @@ async function writeAtomic(path: string, value: unknown): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  const policy = parseCeremonialPolicy();
-  if (!policy.servesLocalArchive || policy.local === null)
-    fail(
-      "A extração só roda em CEREMONIAL_MODE=local com acervo configurado.\n" +
-        "Use compose.ingest.yml; a stack pública não tem acesso ao acervo.",
-    );
+  let archiveRoot: string;
+  try {
+    archiveRoot = resolveArchiveRoot();
+  } catch (error) {
+    if (error instanceof MissingArchiveRootError) fail(error.message);
+    throw error;
+  }
 
   const argv = process.argv.slice(2);
   // A positional argument is one that is neither a flag nor the value following a flag.
@@ -138,7 +138,7 @@ async function main(): Promise<void> {
   let records;
   try {
     records = await extractInventoriedArchive({
-      archiveRoot: policy.local.archiveRoot,
+      archiveRoot,
       derivativeRoot,
       entries: inventory.entries,
       toolchain,
@@ -174,7 +174,7 @@ async function main(): Promise<void> {
   // Only the sanitized view reaches stdout: a path here would name the owner's shelf.
   process.stdout.write(`${JSON.stringify(sanitized, null, 2)}\n`);
   process.stderr.write(
-    `Manifesto completo gravado (local-only). O checkpoint permanece em ${CHECKPOINT_SUFFIX} ` +
+    `Manifesto completo gravado (não versionado). O checkpoint permanece em ${CHECKPOINT_SUFFIX} ` +
       "para auditoria; remova-o manualmente para forçar uma extração completa.\n",
   );
 }

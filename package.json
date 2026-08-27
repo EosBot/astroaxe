@@ -30,7 +30,6 @@
     "regency:evaluate-v2": "node --conditions=react-server --import tsx scripts/evaluate-regency.ts --v2",
     "regency:prepare-case": "node --import tsx scripts/prepare-regency-case.ts",
     "regency:correspondence-report": "node --import tsx scripts/report-generated-correspondences.ts",
-    "ceremonial:bundle": "node --import tsx scripts/build-ceremonial-public-bundle.ts",
     "ceremonial:inventory": "node --conditions=react-server --import tsx scripts/inventory-ceremonial-archive.ts",
     "ceremonial:extract": "node --conditions=react-server --import tsx scripts/extract-ceremonial-archive.ts",
     "ceremonial:import": "node --conditions=react-server --import tsx scripts/import-ceremonial-corpus.ts",

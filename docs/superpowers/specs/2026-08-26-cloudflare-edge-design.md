@@ -18,24 +18,24 @@ configurações no default de fábrica — incluindo `min_tls_version=1.0`,
 
 ## Decisões
 
-| Decisão | Escolha | Motivo |
-| --- | --- | --- |
-| Hostname canônico | `astroaxe.net` (apex) | `www` redireciona 301 |
-| Plano | Free | cobre lançamento; Pro fica para quando houver tráfego real |
-| Origem | Cloudflare Tunnel | nenhum IP de origem existe para ser exposto |
-| HSTS | faseado, desligado no dia 1 | evita travar o domínio antes da origem responder |
-| E-mail | domínio declarado não-remetente | não há relay nem endereço de contato ainda |
+| Decisão           | Escolha                         | Motivo                                                     |
+| ----------------- | ------------------------------- | ---------------------------------------------------------- |
+| Hostname canônico | `astroaxe.net` (apex)           | `www` redireciona 301                                      |
+| Plano             | Free                            | cobre lançamento; Pro fica para quando houver tráfego real |
+| Origem            | Cloudflare Tunnel               | nenhum IP de origem existe para ser exposto                |
+| HSTS              | faseado, desligado no dia 1     | evita travar o domínio antes da origem responder           |
+| E-mail            | domínio declarado não-remetente | não há relay nem endereço de contato ainda                 |
 
 ## Arquitetura DNS
 
 Dois Tunnels gerenciados remotamente (`config_src: cloudflare`), um por ambiente,
 para isolar o raio de alcance de cada token.
 
-| Nome | Tipo | Conteúdo | Proxy |
-| --- | --- | --- | --- |
-| `astroaxe.net` | CNAME | `<id-prod>.cfargotunnel.com` | sim |
-| `www` | CNAME | `astroaxe.net` | sim |
-| `staging` | CNAME | `<id-staging>.cfargotunnel.com` | sim |
+| Nome           | Tipo  | Conteúdo                        | Proxy |
+| -------------- | ----- | ------------------------------- | ----- |
+| `astroaxe.net` | CNAME | `<id-prod>.cfargotunnel.com`    | sim   |
+| `www`          | CNAME | `astroaxe.net`                  | sim   |
+| `staging`      | CNAME | `<id-staging>.cfargotunnel.com` | sim   |
 
 Nenhum registro `A` e nenhum wildcard. O break-glass é o próprio Tunnel; não
 existe origem pública permanente contornando a Cloudflare.
@@ -47,12 +47,12 @@ Restringe globalmente quais autoridades podem emitir certificado para o domínio
 
 ### Postura de e-mail (domínio não-remetente)
 
-| Nome | Tipo | Conteúdo |
-| --- | --- | --- |
-| `astroaxe.net` | MX | `0 .` (null MX, RFC 7505) |
-| `astroaxe.net` | TXT | `v=spf1 -all` |
-| `_dmarc` | TXT | `v=DMARC1; p=reject; fo=1; pct=100` |
-| `_dmarc.www`, `_dmarc.staging` | TXT | `v=DMARC1; p=reject` |
+| Nome                           | Tipo | Conteúdo                            |
+| ------------------------------ | ---- | ----------------------------------- |
+| `astroaxe.net`                 | MX   | `0 .` (null MX, RFC 7505)           |
+| `astroaxe.net`                 | TXT  | `v=spf1 -all`                       |
+| `_dmarc`                       | TXT  | `v=DMARC1; p=reject; fo=1; pct=100` |
+| `_dmarc.www`, `_dmarc.staging` | TXT  | `v=DMARC1; p=reject`                |
 
 Transição futura, quando houver relay e endereço de contato: publicar o DKIM
 vindo do painel do provedor, trocar o SPF para incluir o mecanismo do relay,
@@ -62,14 +62,14 @@ da conta real do provedor.
 
 ## TLS
 
-| Ajuste | Valor |
-| --- | --- |
-| `ssl` | `strict` |
-| `min_tls_version` | `1.2` |
-| `tls_1_3` | `on` |
-| `always_use_https` | `on` |
-| `automatic_https_rewrites` | `on` |
-| `0rtt` | `off` (risco de replay em requisições não idempotentes) |
+| Ajuste                     | Valor                                                   |
+| -------------------------- | ------------------------------------------------------- |
+| `ssl`                      | `strict`                                                |
+| `min_tls_version`          | `1.2`                                                   |
+| `tls_1_3`                  | `on`                                                    |
+| `always_use_https`         | `on`                                                    |
+| `automatic_https_rewrites` | `on`                                                    |
+| `0rtt`                     | `off` (risco de replay em requisições não idempotentes) |
 
 HSTS permanece desligado até a origem responder. Sequência de ativação:
 `max_age=86400` sem `includeSubDomains` → observar uma semana →
@@ -82,12 +82,12 @@ Limites do plano Free: cinco regras custom e uma regra de rate limiting.
 - Managed Free Ruleset ativado.
 - Bot Fight Mode ativado (não afeta bots verificados).
 
-| # | Condição | Ação |
-| --- | --- | --- |
-| 1 | Paths de scanner (`/wp-*`, `/xmlrpc.php`, `.env`, `.git/`, `/vendor/`, `/phpmyadmin`) | Block |
-| 2 | `/api/health/*` vindo da internet | Block |
-| 3 | `POST` em rotas de autenticação com bot score baixo | Managed Challenge |
-| 4 | Métodos `TRACE` e `TRACK` | Block |
+| #   | Condição                                                                              | Ação              |
+| --- | ------------------------------------------------------------------------------------- | ----------------- |
+| 1   | Paths de scanner (`/wp-*`, `/xmlrpc.php`, `.env`, `.git/`, `/vendor/`, `/phpmyadmin`) | Block             |
+| 2   | `/api/health/*` vindo da internet                                                     | Block             |
+| 3   | `POST` em rotas de autenticação com bot score baixo                                   | Managed Challenge |
+| 4   | Métodos `TRACE` e `TRACK`                                                             | Block             |
 
 O quinto slot fica reservado para resposta a incidente.
 

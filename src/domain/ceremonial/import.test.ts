@@ -113,8 +113,6 @@ describe("proposeCorpusImport — sem mapeamento", () => {
       editionLabel: "unestablished",
       language: "und",
       sourceSystemSlug: "unassigned",
-      access: "LOCAL_ONLY",
-      rights: "UNKNOWN",
     });
   });
 
@@ -143,13 +141,13 @@ describe("proposeCorpusImport — com mapeamento", () => {
     });
   });
 
-  it("still imports as local-only with unknown rights: identity is not permission", () => {
+  it("records identity without claiming anything about permission", () => {
+    // The plan carries lineage only. There is no rights, access or sensitivity field to
+    // set: the site publishes what we write, so nothing here needs authorizing.
     const plan = proposeCorpusImport([candidate("Livros/lemegeton.pdf")], [mapping()]);
-    expect(plan.proposals[0]).toMatchObject({
-      access: "LOCAL_ONLY",
-      rights: "UNKNOWN",
-      sensitivity: "CULTURALLY_SENSITIVE",
-    });
+    expect(Object.keys(plan.proposals[0] ?? {})).toEqual(
+      expect.not.arrayContaining(["rights", "access", "sensitivity"]),
+    );
   });
 
   it("keeps a compilation and its source text as distinct editions of distinct works", () => {

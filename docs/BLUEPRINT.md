@@ -88,13 +88,43 @@ Cadências complementares: céu coletivo diário, leitura semanal, fases da Lua,
 
 ## 5. Conteúdo e IA
 
+### 5.0 Decisão de arquitetura — 26 de agosto de 2026
+
+**Runtime único, cobertura total.** O modelo anterior — dois runtimes, modo
+`disabled|public|local`, bundle público filtrado por direitos, classificação de direitos e
+sensibilidade por artefato, fila de revisão bloqueando publicação — foi descartado por
+decisão do responsável. Ele resolvia um problema que o produto não tem.
+
+A separação real não é entre dois ambientes. É entre **insumo** e **obra**:
+
+- **Insumo:** o acervo privado do responsável. Alimenta a derivação do método. Usado por
+  inteiro, sem trava por fonte, sem fila, sem classificação prévia.
+- **Obra:** o que o site publica. Método, correspondências, regências, regras de tempo,
+  síntese escrita por nós. Original, e por isso publicável sem ressalva.
+
+O site publica a obra, nunca o insumo. Não porque um gate impeça, mas porque texto-fonte de
+terceiros não é o produto — o método derivado dele é. Isso resolve a questão jurídica pela
+via correta: fato e ideia não são protegidos, expressão é, e a nossa expressão é nossa.
+
+Consequências práticas:
+
+- não existe modo de runtime; não existe bundle público; não existe rota que entregue
+  artefato-fonte; não existe matriz de facetas ou de direitos por registro;
+- símbolos, selos e pontos riscados são **redesenhados em SVG próprio**. O símbolo é
+  tradicional e livre; o que carrega autoria é o traço de um artista numa edição específica.
+  Redesenhar também rende vetor escalável, temático e acessível, em vez de recorte de scan;
+- a proveniência continua registrada **internamente** — de onde veio a ideia — para permitir
+  corrigir o método quando uma fonte se mostrar errada. Ela sai da interface;
+- a página de metodologia explica o método como um _model card_: entradas, processo,
+  versionamento, avaliação e limites conhecidos, em profundidade.
+
 ### 5.1 Cadeia de confiança
 
-`dados higienizados → motor astronômico → mapa validado → regras astrológicas → corpus autorizado → composição → validação → apresentação`
+`dados higienizados → motor astronômico → mapa validado → regras astrológicas → corpus derivado → composição → validação → apresentação`
 
 - O motor calcula; o LLM nunca calcula posições.
-- O corpus RAG contém apenas material licenciado, assinado e versionado.
-- A resposta referencia os placements e trânsitos usados e preserva autoria do conteúdo-base.
+- O corpus de composição contém apenas texto que escrevemos, derivado do estudo do acervo.
+- A resposta referencia os placements e trânsitos usados.
 - Zod valida o formato, mas validadores semânticos verificam coerência com o mapa e proíbem fatos não presentes no contexto.
 - Falha de validação não é exibida como interpretação; o job é reprocessado ou enviado para revisão.
 

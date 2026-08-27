@@ -1,31 +1,39 @@
 # Registro de fontes culturais
 
-## Política de fontes
+## Para que serve este registro
 
-Este registro sustenta a taxonomia e os limites descritos em
-`regency-method.md`. A prioridade é:
+Atualizado em 26 de agosto de 2026, conforme `docs/BLUEPRINT.md` §5.0.
 
-1. voz publicada de comunidades, sacerdotes e detentores culturais;
-2. inventários e documentos de instituições de patrimônio;
-3. etnografias e trabalhos acadêmicos revisados ou depositados em universidades;
-4. análises comparativas, sempre identificadas como análise.
+Este é um **mapa de estudo**, não um cadastro de licenças. Ele registra o que foi lido, onde a
+ideia aparece e o que cada obra sustenta — para que possamos reestudar o ponto certo quando uma
+leitura do método se mostrar errada. Nenhuma entrada aqui autoriza ou proíbe coisa alguma: o
+vocabulário de elegibilidade (`REFERENCE_ONLY`, `CLAIM_ELIGIBLE`) foi descartado com o modelo de
+direitos por fonte.
 
-Uma fonte descreve um contexto; ela não cria uma regra universal. A ausência de
-fonte também não prova inexistência. Claims materiais devem citar página, seção
-ou trecho localizável no cadastro interno. Acesso verificado em 19 de agosto de 2026.
+O que continua valendo, porque é rigor e não trava:
 
-O cadastro distingue `REFERENCE_ONLY`, `CLAIM_ELIGIBLE` e `WITHDRAWN`.
-Uma obra encontrada em catálogo fica em `REFERENCE_ONLY`: título, autoria e escopo
-bibliográfico foram confirmados, mas isso não equivale à leitura. Ela só pode virar
-`CLAIM_ELIGIBLE` depois de acesso legal ao exemplar, registro da edição e do locator,
-checagem de direitos/sensibilidade e revisão editorial. O workflow bloqueia submissão
-e publicação de claims ligadas a fontes não habilitadas ou sem locator.
+1. **Uma fonte descreve um contexto; não cria uma regra universal.** Ausência de fonte também não
+   prova inexistência.
+2. **Testemunhos divergem, e a divergência é dado.** Heptameron atribuído a Pedro de Abano é
+   espúrio; manuscritos do Lemegeton não são uniformes; listas de Agrippa variam entre edições.
+   Onde as fontes discordam, o método registra o conflito em vez de escolher um vencedor em
+   silêncio.
+3. **Não misturar tradições.** Umbanda Sagrada, Candomblé Ketu/Nagô, corpus de Ifá, magia
+   cerimonial europeia e cabala são gramáticas distintas. Comparar é legítimo; fundir é erro.
+4. **Prioridade de voz:** comunidades e detentores culturais primeiro, depois instituições de
+   patrimônio, depois etnografia acadêmica, depois análise comparativa — sempre identificada
+   como análise.
+5. **O que publicamos é nosso.** O site entrega síntese escrita por nós a partir deste estudo,
+   nunca o texto das obras.
+
+Acesso verificado em 19 de agosto de 2026.
 
 ## Estruturas comparativas de magia cerimonial
 
 Estas fontes servem somente para desenhar uma gramática computacional de camadas, temporalidades,
-hierarquias, ofícios e facetas. Permanecem `REFERENCE_ONLY` e não sustentam correspondência direta
-entre anjos, espíritos, Orixás, Voduns ou Nkisi.
+hierarquias, ofícios e facetas. Servem à gramática comparativa e **não** sustentam correspondência
+direta entre anjos, espíritos, Orixás, Voduns ou Nkisi: comparar estruturas é legítimo, fundir
+tradições é erro.
 
 ### Heptameron — tradição pseudo-Pedro de Abano
 
@@ -87,7 +95,7 @@ entre anjos, espíritos, Orixás, Voduns ou Nkisi.
 Estas obras são fontes doutrinárias primárias de uma corrente específica. Claims
 derivadas delas devem usar `traditionId: UmbandaSagradaSaraceni`; não representam
 consenso de todas as Umbandas e não devem ser transportadas para Candomblé, Ifá ou
-tradições iorubás. Todas permanecem `REFERENCE_ONLY`.
+tradições iorubás.
 
 ### Código de Umbanda — Rubens Saraceni
 
@@ -126,7 +134,7 @@ corroboração explícita em obra de fundamento e revisão por praticantes da co
 “Lenda iorubá” não é uma categoria única. O produto deve registrar se a narrativa
 vem de corpus de Ifá, tradição oral localizada, compilação etnográfica ou recontagem
 brasileira. Variantes não são erros a fundir em uma história definitiva. As obras
-abaixo permanecem `REFERENCE_ONLY` até leitura legal e localizada.
+abaixo entram no estudo como qualquer outra.
 
 ### Mitologia dos Orixás — Reginaldo Prandi
 
@@ -314,7 +322,7 @@ abaixo permanecem `REFERENCE_ONLY` até leitura legal e localizada.
 - Cuidado: o próprio estudo conclui que Matta e Silva fez escolhas independentes ao elaborar a
   Umbanda Esotérica e aponta fragilidade particular em Oxóssi–Vênus. Yori e Yorimá são linhas da
   formulação do autor, não devem ser silenciosamente convertidos em Orixás de outras tradições.
-- Status: `CLAIM_ELIGIBLE` apenas para representar essa matriz histórica localizada; pesos do
+- Alcance: representa essa matriz histórica localizada, não uma regra universal; pesos do
   algoritmo AstroAxe continuam sendo hipóteses versionadas e sujeitas à validação empírica.
 
 ### Sessões em Casa: práticas religiosas e variação em Almas e Angola
@@ -447,13 +455,13 @@ O estudo completo e a proposta de modelagem estão em
 - Imaginário Brasileiro, “Como saber o meu Orixá?”: `discovery_only`. Combina teste não
   documentado, signo, dia da semana e recomendação de consulta tradicional; não possui método ou
   proveniência suficientes para claims.
-- _Etnomatemática e Candomblé: a mística numérica por trás dos ritos_: `REFERENCE_ONLY` até revisão
-  metodológica e cultural. Registra a soma da data, mas não demonstra que a tabela seja universal.
-- Alice Macedo, tese USP, p. 162: `CLAIM_ELIGIBLE` somente para afirmar que a casa de Umbanda
+- _Etnomatemática e Candomblé: a mística numérica por trás dos ritos_: registra a soma da data, mas
+  não demonstra que a tabela seja universal.
+- Alice Macedo, tese USP, p. 162: sustenta apenas afirmar que a casa de Umbanda
   estudada combinava numerologia de nome/data com outras leituras. Não generalizar o procedimento.
-- Rubens Saraceni, _As Sete Linhas de Umbanda_, pp. 48–49: acervo privado e `REFERENCE_ONLY` até
-  confirmar edição e acesso elegível. Na corrente do autor, contradiz a identificação do Orixá
-  regente pela data natal.
+- Rubens Saraceni, _As Sete Linhas de Umbanda_, pp. 48–49: acervo privado; confirmar edição ao
+  reestudar. Na corrente do autor, contradiz a identificação do Orixá regente pela data natal —
+  divergência que o método registra em vez de resolver em silêncio.
 
 Essas fontes estabelecem divergência, não convergência. “Cabala de Odù” permanece termo de fonte a
 ser genealogicamente investigado e não uma tradição única cadastrada pelo produto.

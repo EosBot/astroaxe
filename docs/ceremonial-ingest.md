@@ -90,9 +90,8 @@ limite lógico antes de bater no limite físico.
 # 1. Gate de suprimentos: SBOM + Trivy fixado + política. Precisa de rede no host.
 npm run ceremonial:scan
 
-# 2. Censo (T12), se ainda não existir um manifesto atual.
-CEREMONIAL_MODE=local CEREMONIAL_ARCHIVE_ROOT=<acervo> \
-CEREMONIAL_KEYRING_FILE=<keyring> \
+# 2. Censo, se ainda não existir um manifesto atual.
+CEREMONIAL_ARCHIVE_ROOT=<acervo> \
   npm run ceremonial:inventory -- <dir-local>/inventory.json --baseline 801/737/64
 
 # 3. Extração, dentro do container sem rede.
@@ -126,7 +125,7 @@ Duas consequências práticas:
 ## Dois manifestos, um privado e um compartilhável
 
 O manifesto completo tem uma linha por arquivo, e neste acervo **um caminho é o título de um
-livro que alguém possui**. Ele é local-only e não vai para o repositório.
+livro que alguém possui**. Ele não vai para o repositório.
 
 `--sanitized` grava a visão compartilhável: versão do pipeline, fingerprint, contagens por
 estado/adaptador/motivo, versões das ferramentas e total de páginas. Nenhum caminho, nenhum
@@ -139,8 +138,7 @@ Depois da extração, `npm run ceremonial:import` mapeia artefatos para
 `obra → edição → artefato → locator`:
 
 ```bash
-CEREMONIAL_MODE=local CEREMONIAL_ARCHIVE_ROOT=<acervo> CEREMONIAL_KEYRING_FILE=<keyring> \
-DATABASE_URL=<banco local> \
+CEREMONIAL_ARCHIVE_ROOT=<acervo> DATABASE_URL=<banco> \
   npm run ceremonial:import -- <extraction.json> [--mappings <arquivo.json>] \
     [--apply] [--sanitized <saida.json>]
 ```
@@ -186,11 +184,16 @@ citação poderia usar.
 Reexecutar é idempotente e **nunca reabre um item já resolvido**: rodar um script de novo
 não é evidência nova de que a pessoa errou.
 
-## Classificação dos derivados
+## O que o site faz com isso
 
-Todo derivado nasce `UNKNOWN` / `LOCAL_ONLY` / `CULTURALLY_SENSITIVE`, e o schema **recusa**
-gravar um derivado que declare outra coisa. Extração não concede direito de publicação: essa
-determinação é a Task 15, com revisão de direitos separada da revisão editorial.
+Nada diretamente. O texto extraído é **insumo de autoria**: alguém o lê, estuda e escreve a
+síntese que o site publica. Não existe rota que entregue artefato-fonte, nem classificação de
+direitos por artefato, nem fila bloqueando publicação — o modelo híbrido que exigia tudo isso
+foi descartado (`docs/BLUEPRINT.md` §5.0).
+
+O que o pipeline entrega é um corpus legível e endereçável por conteúdo, mais a linhagem que
+diz de qual obra e edição cada trecho veio. Isso serve para nós: quando uma leitura do método
+se mostra errada, sabemos o que reestudar.
 
 ## Política de vulnerabilidades
 

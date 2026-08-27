@@ -2,14 +2,6 @@ import { createHash } from "node:crypto";
 
 import { z } from "zod";
 
-import {
-  DEFAULT_CEREMONIAL_ACCESS,
-  DEFAULT_CEREMONIAL_RIGHTS,
-  DEFAULT_CEREMONIAL_SENSITIVITY,
-  ceremonialAccessSchema,
-  ceremonialRightsSchema,
-  ceremonialSensitivitySchema,
-} from "./contracts";
 import { inventoryRelativePathSchema } from "./inventory";
 
 /**
@@ -22,8 +14,8 @@ import { inventoryRelativePathSchema } from "./inventory";
  *    derivative volume.
  * 2. Every source reaches exactly one explicit outcome. "We had no adapter" is a recorded
  *    state with a reason, not an absence — silence would misreport coverage.
- * 3. A derivative inherits the fail-closed defaults of an import: unknown rights,
- *    local-only, culturally sensitive. Extraction never grants a publication right.
+ * 3. A derivative is an input to authoring, not something the site serves. The archive
+ *    feeds the method; the site publishes what we write from it.
  */
 
 export const EXTRACTION_PIPELINE_VERSION = "ceremonial-extraction-1.0.0";
@@ -145,9 +137,6 @@ export const extractionRecordSchema = z
     derivativeHash: sha256Schema.nullable(),
     characterCount: z.number().int().nonnegative().nullable(),
     pageCount: z.number().int().nonnegative().nullable(),
-    rights: ceremonialRightsSchema,
-    access: ceremonialAccessSchema,
-    sensitivity: ceremonialSensitivitySchema,
   })
   .strict()
   .superRefine((record, context) => {
@@ -198,20 +187,9 @@ export const extractionRecordSchema = z
         "derivativeHash",
         "só uma extração bem-sucedida produz derivado",
       );
-
-    // The whole point of the fail-closed default: extraction is not a publication right.
-    demand(record.access === "LOCAL_ONLY", "access", "derivado nasce local-only");
-    demand(record.rights === "UNKNOWN", "rights", "derivado nasce com direitos desconhecidos");
   });
 
 export type ExtractionRecord = z.infer<typeof extractionRecordSchema>;
-
-/** The fail-closed classification every newly extracted derivative starts from. */
-export const DEFAULT_DERIVATIVE_CLASSIFICATION = Object.freeze({
-  rights: DEFAULT_CEREMONIAL_RIGHTS,
-  access: DEFAULT_CEREMONIAL_ACCESS,
-  sensitivity: DEFAULT_CEREMONIAL_SENSITIVITY,
-});
 
 export interface ExtractionCoverage {
   readonly eligibleSources: number;

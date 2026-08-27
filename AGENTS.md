@@ -14,8 +14,16 @@ simbólica afro-brasileira. Preserve estes princípios:
   catálogo genérico de efeitos;
 - correspondências astrológicas com Orixás são interpretações culturais, nunca
   confirmação religiosa, diagnóstico ou substituto do jogo de búzios;
-- fontes, nomenclaturas e narrativas afro-brasileiras devem ser revisadas com
-  praticantes e lideranças das tradições representadas;
+- o acervo é insumo e o site publica obra derivada: todo texto publicado é
+  síntese original escrita por nós, nunca transcrição de fonte. Isso está
+  decidido em `docs/BLUEPRINT.md` §5.0 — não reabra a questão de direitos por
+  fonte, elegibilidade ou parecer como pré-condição de publicação;
+- não misture tradições. Umbanda Sagrada, Candomblé Ketu/Nagô, corpus de Ifá e
+  magia cerimonial europeia são gramáticas distintas: comparar é legítimo,
+  fundir é erro. Onde as fontes divergem, registre o conflito;
+- símbolos e selos são redesenhados em SVG próprio, não recortados de scan;
+- profundidade é requisito. Um texto raso ocupa o lugar do conhecimento sem
+  entregá-lo;
 - comunique incerteza. Hora desconhecida, geocoding ambíguo e baixa confiança
   precisam aparecer no produto, não ser escondidos pelo texto;
 - o primeiro resultado deve gerar valor antes do paywall, sem medo, fatalismo,

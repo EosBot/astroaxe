@@ -2,12 +2,35 @@
 
 ## TL;DR (For humans)
 
-- **What you will get:** a verified Tríade v3 plus a provenance-first Ceremonial Laboratory with five strictly separated workspaces, deterministic celestial timing, private encrypted planning records and complete local corpus discovery over `/mnt/e/Ocultismo`.
-- **Why this approach:** one shared schema and policy vocabulary supports two physically separated deliveries: the published site receives only a reviewed hybrid-by-rights bundle, while the loopback local runtime can read the complete technically extractable archive.
-- **What it will not do:** it will not merge traditions, publish rights-unknown source bodies/media, send corpus/private data to external AI or analytics, claim supernatural efficacy, operationalize harmful/coercive goals, rewrite applied migrations or overwrite the dirty worktree.
+- **What you will get:** a verified Tríade v3, a complete read of the private archive at `/mnt/e/Ocultismo`, and a ceremonial method derived from it — deterministic celestial timing, entity and correspondence records, and private planning.
+- **Why this approach:** the archive is an _input to authoring_, and the site publishes the _derived method_ written in our own words. One runtime, full coverage. (Superseded the earlier two-delivery, rights-gated design — see the direction change below.)
+- **What it will not do:** it will not merge traditions, republish third-party source text, send private data to external AI or analytics, claim supernatural efficacy, operationalize harmful goals, rewrite applied migrations or overwrite the dirty worktree.
 - **Shape:** 7 implementation waves, 39 implementation todos and 4 final-verification tasks. This is architecture-scale/high effort and should be executed incrementally with atomic commits and wave gates.
 - **Primary risks:** accidental local→public leakage, hostile/corrupt documents, rights/sensitivity mistakes, private-record exposure, migration drift and scope expansion into unrelated production integrations.
 - **Decisions locked:** calculation-only Tríade answers are ephemeral but consented feedback persists; public mode is hybrid-by-rights; local mode is complete/private/loopback; public data/storage/builds are physically separated; raw archival access is distinct from safe product guidance; external/legal provider work remains an explicit release blocker rather than mocked completion.
+
+## MUDANÇA DE DIREÇÃO — 26 de agosto de 2026
+
+**O modelo híbrido foi descartado por decisão do responsável.** Runtime único, cobertura
+total. Ver `docs/BLUEPRINT.md` §5.0 para a decisão canônica.
+
+O que isso invalida deste plano:
+
+- **Waves 1–4 permanecem válidas.** Tríade v3, censo, extração e linhagem descrevem trabalho
+  que continua fazendo sentido: o acervo é insumo de autoria e precisa ser lido, extraído e
+  identificado.
+- **O aparato de direitos e publicação foi removido do código** (commit de remoção): modo de
+  runtime, matriz de facetas, bundle público filtrado, rota de artefato-fonte, classificação
+  de direitos por edição/artefato/mídia, fila de revisão bloqueando publicação. As Tasks 7,
+  9, 10, 11 e parte da 14 descreviam esse aparato e estão **superadas**.
+- **A Task 15 está cancelada.** Ela era o workflow de revisão de direitos. Não há mais o que
+  revisar: não publicamos fonte.
+- **Waves 5–7 precisam ser reescritas** em torno do que o produto passa a ser: derivar o
+  método do acervo, escrever a síntese, publicá-la com profundidade real, e explicar o método
+  na página como um _model card_.
+
+O que substitui a Task 15 e as waves seguintes ainda não foi escrito. Escrever isso é o
+próximo passo de planejamento.
 
 ## Execution status — updated 2026-08-26
 

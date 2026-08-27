@@ -222,7 +222,6 @@ model CulturalContributor {
   reviews              CulturalReview[]
   transitTextsAuthored TransitInterpretationTemplate[] @relation("TransitTextAuthor")
   transitTextsReviewed TransitInterpretationTemplate[] @relation("TransitTextReviewer")
-  ceremonialReviews    CeremonialReview[]
 
   @@map("cultural_contributors")
 }
@@ -354,24 +353,11 @@ model CeremonialSourceSystem {
   summary     String?  @db.VarChar(2000)
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
-  workspaceMemberships CeremonialWorkspaceMembership[]
-  works                CeremonialWork[]
-  entities             CeremonialEntity[]
-  timingProfiles       CeremonialTimingProfile[]
+  works          CeremonialWork[]
+  entities       CeremonialEntity[]
+  timingProfiles CeremonialTimingProfile[]
 
   @@map("ceremonial_source_systems")
-}
-
-model CeremonialWorkspaceMembership {
-  id             String                 @id @default(uuid()) @db.Uuid
-  workspaceKind  String                 @map("workspace_kind") @db.VarChar(40)
-  sourceSystemId String                 @map("source_system_id") @db.Uuid
-  createdAt      DateTime               @default(now()) @map("created_at") @db.Timestamptz(6)
-  sourceSystem   CeremonialSourceSystem @relation(fields: [sourceSystemId], references: [id], onDelete: Cascade)
-
-  @@unique([workspaceKind, sourceSystemId])
-  @@index([workspaceKind])
-  @@map("ceremonial_workspace_memberships")
 }
 
 model CeremonialWork {
@@ -390,17 +376,11 @@ model CeremonialWork {
 /// A specific witness: manuscript family, printing, translation or compilation.
 /// Compilations and translations stay distinct editions, never collapsed into the work.
 model CeremonialEdition {
-  id          String  @id @default(uuid()) @db.Uuid
-  workId      String  @map("work_id") @db.Uuid
-  label       String  @db.VarChar(200)
-  language    String  @db.VarChar(35)
-  publishedAt Int?    @map("published_at")
-  /// Provenance/rights facets. Import default is UNKNOWN + LOCAL_ONLY.
-  rights      String  @default("UNKNOWN") @db.VarChar(30)
-  access      String  @default("LOCAL_ONLY") @db.VarChar(20)
-  sensitivity String  @default("CULTURALLY_SENSITIVE") @db.VarChar(30)
-  /// Free-text jurisdiction/evidence note; never a substitute for a review row.
-  rightsNote  String? @map("rights_note") @db.VarChar(1000)
+  id          String @id @default(uuid()) @db.Uuid
+  workId      String @map("work_id") @db.Uuid
+  label       String @db.VarChar(200)
+  language    String @db.VarChar(35)
+  publishedAt Int?   @map("published_at")
 
   createdAt       DateTime                   @default(now()) @map("created_at") @db.Timestamptz(6)
   work            CeremonialWork             @relation(fields: [workId], references: [id], onDelete: Cascade)
@@ -411,7 +391,6 @@ model CeremonialEdition {
   timingProfiles  CeremonialTimingProfile[]
 
   @@unique([workId, label, language])
-  @@index([access, rights])
   @@map("ceremonial_editions")
 }
 
@@ -427,9 +406,6 @@ model CeremonialArtifact {
   extractionState  String  @default("PENDING") @map("extraction_state") @db.VarChar(20)
   extractionReason String? @map("extraction_reason") @db.VarChar(300)
   pageCount        Int?    @map("page_count")
-  rights           String  @default("UNKNOWN") @db.VarChar(30)
-  access           String  @default("LOCAL_ONLY") @db.VarChar(20)
-  sensitivity      String  @default("CULTURALLY_SENSITIVE") @db.VarChar(30)
 
   createdAt DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime            @updatedAt @map("updated_at") @db.Timestamptz(6)
@@ -458,29 +434,9 @@ model CeremonialLocator {
   correspondences CeremonialCorrespondence[]
   crossReferences CeremonialCrossReference[]
   timingProfiles  CeremonialTimingProfile[]
-  reviews         CeremonialReview[]
 
   @@unique([editionId, kind, reference])
   @@map("ceremonial_locators")
-}
-
-/// Task 14 review queue. One row per field the importer could only guess from a path.
-/// Joined to artifacts by content hash, not by foreign key: rows also exist for hashes
-/// that were deliberately not imported, and those must stay recorded.
-model CeremonialImportReview {
-  id             String    @id @default(uuid()) @db.Uuid
-  contentHash    String    @map("content_hash") @db.Char(64)
-  reason         String    @db.VarChar(40)
-  proposedValue  String?   @map("proposed_value") @db.VarChar(300)
-  detail         String    @db.VarChar(600)
-  state          String    @default("OPEN") @db.VarChar(20)
-  resolvedAt     DateTime? @map("resolved_at") @db.Timestamptz(6)
-  resolutionNote String?   @map("resolution_note") @db.VarChar(1000)
-  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-
-  @@unique([contentHash, reason])
-  @@index([contentHash])
-  @@map("ceremonial_import_reviews")
 }
 
 model CeremonialEntity {
@@ -523,21 +479,17 @@ model CeremonialEntityVariant {
 }
 
 model CeremonialMedia {
-  id          String  @id @default(uuid()) @db.Uuid
-  artifactId  String  @map("artifact_id") @db.Uuid
-  entityId    String? @map("entity_id") @db.Uuid
-  locatorId   String? @map("locator_id") @db.Uuid
-  kind        String  @db.VarChar(30)
-  rights      String  @default("UNKNOWN") @db.VarChar(30)
-  access      String  @default("LOCAL_ONLY") @db.VarChar(20)
-  sensitivity String  @default("CULTURALLY_SENSITIVE") @db.VarChar(30)
+  id         String  @id @default(uuid()) @db.Uuid
+  artifactId String  @map("artifact_id") @db.Uuid
+  entityId   String? @map("entity_id") @db.Uuid
+  locatorId  String? @map("locator_id") @db.Uuid
+  kind       String  @db.VarChar(30)
 
   createdAt DateTime           @default(now()) @map("created_at") @db.Timestamptz(6)
   artifact  CeremonialArtifact @relation(fields: [artifactId], references: [id], onDelete: Cascade)
   entity    CeremonialEntity?  @relation(fields: [entityId], references: [id], onDelete: SetNull)
   locator   CeremonialLocator? @relation(fields: [locatorId], references: [id], onDelete: SetNull)
 
-  @@index([access, rights])
   @@map("ceremonial_media")
 }
 
@@ -598,29 +550,6 @@ model CeremonialTimingProfile {
   @@map("ceremonial_timing_profiles")
 }
 
-/// Structured approval. Rights review and editorial review are separate rows, so one
-/// reviewer cannot satisfy both, and an expiry/revocation invalidates publication.
-model CeremonialReview {
-  id                String    @id @default(uuid()) @db.Uuid
-  subjectType       String    @map("subject_type") @db.VarChar(30)
-  subjectId         String    @map("subject_id") @db.Uuid
-  reviewKind        String    @map("review_kind") @db.VarChar(20)
-  decision          String    @db.VarChar(30)
-  /// Facets this approval covers, e.g. ["metadata","quotation"].
-  facetScope        Json      @map("facet_scope")
-  reviewerId        String    @map("reviewer_id") @db.Uuid
-  evidenceLocatorId String?   @map("evidence_locator_id") @db.Uuid
-  decidedAt         DateTime  @default(now()) @map("decided_at") @db.Timestamptz(6)
-  expiresAt         DateTime? @map("expires_at") @db.Timestamptz(6)
-  revokedAt         DateTime? @map("revoked_at") @db.Timestamptz(6)
-
-  reviewer        CulturalContributor @relation(fields: [reviewerId], references: [id], onDelete: Restrict)
-  evidenceLocator CeremonialLocator?  @relation(fields: [evidenceLocatorId], references: [id], onDelete: SetNull)
-
-  @@index([subjectType, subjectId, reviewKind])
-  @@map("ceremonial_reviews")
-}
-
 /// Private practice planning. Every user-authored field is stored as an encrypted
 /// envelope (Task 31); the columns below hold ciphertext, never plaintext.
 model CeremonialPlan {
@@ -656,36 +585,4 @@ model CeremonialSession {
 
   @@index([planId, occurredAt])
   @@map("ceremonial_sessions")
-}
-
-/// Immutable reviewed bundle imported into a public-only namespace. The manifest contains
-/// public projections and media hashes, never local paths or archive identifiers.
-model CeremonialPublicBundle {
-  id               String    @id @default(uuid()) @db.Uuid
-  schemaVersion    Int       @map("schema_version")
-  manifestHash     String    @unique @map("manifest_hash") @db.Char(64)
-  manifest         Json
-  storageNamespace String    @unique @map("storage_namespace") @db.VarChar(120)
-  status           String    @default("INACTIVE") @db.VarChar(20)
-  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
-  verifiedAt       DateTime? @map("verified_at") @db.Timestamptz(6)
-  activatedAt      DateTime? @map("activated_at") @db.Timestamptz(6)
-
-  activePointers   CeremonialPublicBundlePointer[] @relation("ActivePublicBundle")
-  previousPointers CeremonialPublicBundlePointer[] @relation("PreviousPublicBundle")
-
-  @@index([status, createdAt])
-  @@map("ceremonial_public_bundles")
-}
-
-/// Singleton transactional pointer. The previous namespace remains addressable for rollback.
-model CeremonialPublicBundlePointer {
-  id               Int                     @id
-  activeBundleId   String?                 @map("active_bundle_id") @db.Uuid
-  previousBundleId String?                 @map("previous_bundle_id") @db.Uuid
-  updatedAt        DateTime                @updatedAt @map("updated_at") @db.Timestamptz(6)
-  activeBundle     CeremonialPublicBundle? @relation("ActivePublicBundle", fields: [activeBundleId], references: [id], onDelete: Restrict)
-  previousBundle   CeremonialPublicBundle? @relation("PreviousPublicBundle", fields: [previousBundleId], references: [id], onDelete: Restrict)
-
-  @@map("ceremonial_public_bundle_pointer")
 }

@@ -5,6 +5,27 @@ representa deploy, revisão humana externa ou commit Git.
 
 O ponto curto de retomada entre sessões é `docs/PROJECT_MEMORY.md`.
 
+## Mudança de direção — 26 de agosto de 2026
+
+**O modelo híbrido público/local foi descartado.** Runtime único, cobertura total. A decisão
+canônica está em `docs/BLUEPRINT.md` §5.0.
+
+O acervo privado é **insumo de autoria**; o site publica **obra derivada e original**. Como
+não publicamos texto-fonte de terceiros, todo o aparato que existia para filtrar entre duas
+superfícies deixou de descrever o produto e foi removido do código e do banco:
+
+- modo de runtime `disabled|public|local` e o Compose do runtime local;
+- matriz de facetas/direitos, bundle público filtrado e seu ponteiro de ativação;
+- rota que entregava artefato-fonte e o storage que a servia;
+- colunas `rights`/`access`/`sensitivity` em edições, artefatos e mídia;
+- fila de revisão de importação e a tabela de pareceres cerimoniais.
+
+O que permanece do pipeline: censo do acervo, extração com OCR, e a linhagem
+obra→edição→artefato→locator como **proveniência interna** — para sabermos o que reestudar
+quando uma leitura do método se mostrar errada.
+
+Símbolos, selos e pontos riscados são redesenhados em SVG próprio.
+
 ## Resumo executivo por fase
 
 | Fase                   | Estado                                       | Entrega observável                                                                                 | Próxima fronteira                                                           |
@@ -20,7 +41,10 @@ O ponto curto de retomada entre sessões é `docs/PROJECT_MEMORY.md`.
 
 ## Concluído
 
-### Laboratório Cerimonial — fundação dual-mode
+### Laboratório Cerimonial — fundação dual-mode (SUPERADA)
+
+> Histórico do que foi construído nas Tasks 7–11 e depois removido. Ver "Mudança de direção"
+> no topo deste documento.
 
 - O roteiro cerimonial está em 11 de 39 tasks: Waves 1 e 2 completas.
 - Os processos aceitam somente `disabled`, `public` ou `local`; o modo é imutável e não pode ser

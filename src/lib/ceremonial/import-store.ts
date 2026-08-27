@@ -6,11 +6,8 @@ import type { Prisma, PrismaClient } from "@/generated/prisma/client";
 /**
  * Persisting an import plan.
  *
- * Two properties matter more than speed here. First, re-running must be idempotent: the
- * importer runs again after every extraction, and a second pass over an unchanged corpus
- * must not fork editions or pile up duplicate queue items. Second, a resolved review must
- * never reopen — a person answered that question, and re-running a script is not new
- * evidence that they were wrong.
+ * Re-running must be idempotent: the importer runs again after every extraction, and a
+ * second pass over an unchanged corpus must not fork editions.
  *
  * Identity is keyed on the artifact's content hash throughout, so byte-identical files
  * under different names converge on one lineage instead of forking it.
@@ -22,9 +19,6 @@ export interface CorpusImportResult {
   readonly editions: number;
   readonly artifacts: number;
   readonly locators: number;
-  readonly reviewsOpened: number;
-  /** Queue items skipped because a person had already resolved that exact question. */
-  readonly reviewsAlreadyResolved: number;
 }
 
 /**
@@ -91,10 +85,6 @@ async function upsertLineage(
         label: proposal.editionLabel,
         language: proposal.language,
         publishedAt: proposal.publishedYear,
-        // Import never establishes rights. Task 15 does, through independent review.
-        rights: proposal.rights,
-        access: proposal.access,
-        sensitivity: proposal.sensitivity,
       },
       select: { id: true },
     }));
@@ -112,9 +102,6 @@ async function upsertLineage(
       mimeType: proposal.mimeType,
       extractionState: "EXTRACTED",
       pageCount: proposal.pageCount,
-      rights: proposal.rights,
-      access: proposal.access,
-      sensitivity: proposal.sensitivity,
     },
     select: { id: true },
   });
@@ -165,42 +152,12 @@ export async function applyCorpusImport(
         locators += created.count;
       }
 
-      // Queue items are read in one query and written in one statement, for the same
-      // reason: a first import over an uncatalogued archive raises several per artifact.
-      const proposed = plan.reviews.flatMap((item) =>
-        item.contentHash === null ? [] : [{ ...item, contentHash: item.contentHash }],
-      );
-      const existing = await tx.ceremonialImportReview.findMany({
-        where: { contentHash: { in: [...new Set(proposed.map((item) => item.contentHash))] } },
-        select: { contentHash: true, reason: true, state: true },
-      });
-      const known = new Map(existing.map((row) => [`${row.contentHash}:${row.reason}`, row.state]));
-
-      // Re-running a script is not new evidence that a person's answer was wrong.
-      const reviewsAlreadyResolved = proposed.filter(
-        (item) => known.get(`${item.contentHash}:${item.reason}`) === "RESOLVED",
-      ).length;
-      const missing = proposed.filter((item) => !known.has(`${item.contentHash}:${item.reason}`));
-
-      const openedResult = await tx.ceremonialImportReview.createMany({
-        data: missing.map((item) => ({
-          contentHash: item.contentHash,
-          reason: item.reason,
-          proposedValue: item.proposedValue,
-          detail: item.detail,
-        })),
-        skipDuplicates: true,
-      });
-      const reviewsOpened = openedResult.count;
-
       return {
         sourceSystems: sourceSystems.size,
         works,
         editions,
         artifacts: plan.proposals.length,
         locators,
-        reviewsOpened,
-        reviewsAlreadyResolved,
       };
     },
     {
@@ -211,35 +168,4 @@ export async function applyCorpusImport(
       maxWait: 30_000,
     },
   );
-}
-
-/**
- * The hashes the publication gate must refuse. Returned as a set so a caller resolving
- * many records does one query instead of one per record.
- */
-export async function openImportReviewHashes(prisma: PrismaClient): Promise<ReadonlySet<string>> {
-  const rows = await prisma.ceremonialImportReview.findMany({
-    where: { state: "OPEN" },
-    select: { contentHash: true },
-    distinct: ["contentHash"],
-  });
-  return new Set(rows.map((row) => row.contentHash));
-}
-
-/**
- * Records a person's answer. Resolving is deliberately not "delete the row": the queue is
- * the audit trail of what was once unidentified and who settled it.
- */
-export async function resolveImportReview(
-  prisma: PrismaClient,
-  contentHash: string,
-  reason: string,
-  resolutionNote: string,
-  now: Date,
-): Promise<boolean> {
-  const result = await prisma.ceremonialImportReview.updateMany({
-    where: { contentHash, reason, state: "OPEN" },
-    data: { state: "RESOLVED", resolvedAt: now, resolutionNote },
-  });
-  return result.count > 0;
 }

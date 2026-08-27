@@ -12,7 +12,6 @@ import {
 } from "../src/domain/ceremonial/import";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { applyCorpusImport } from "../src/lib/ceremonial/import-store";
-import { parseCeremonialPolicy } from "../src/lib/ceremonial/mode";
 
 /**
  * Maps an extraction manifest into a citable lineage.
@@ -95,13 +94,6 @@ function toCandidates(manifest: z.infer<typeof extractionManifestSchema>): Impor
 }
 
 async function main(): Promise<void> {
-  const policy = parseCeremonialPolicy();
-  if (!policy.servesLocalArchive)
-    fail(
-      "A importação só roda em CEREMONIAL_MODE=local.\n" +
-        "A stack pública não conhece o acervo nem sua proveniência.",
-    );
-
   const argv = process.argv.slice(2);
   const positional = argv.filter(
     (argument, index) => !argument.startsWith("--") && !(argv[index - 1] ?? "").startsWith("--"),
