@@ -170,6 +170,9 @@ cd scripts/ocultismo-pipeline
 # Mesclar pontos cantados com letra ao corpus (após o pipeline)
 .venv/bin/python integrate_pontos.py --device cuda
 
+# OCR de PDFs escaneados sem camada de texto (idempotente, mescla ao índice)
+.venv/bin/python ingest_scanned_pdfs.py          # --dry-run para listar candidatos
+
 # Coleta de letras: páginas estáticas do blog + busca, depois segmentação
 .venv/bin/python scrape_pages.py
 .venv/bin/python scrape_v3.py

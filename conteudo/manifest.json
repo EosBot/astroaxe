@@ -1,8 +1,8 @@
 {
   "model": "BAAI/bge-m3",
   "embedding_dim": 1024,
-  "total_chunks": 32700,
-  "total_docs": 769,
+  "total_chunks": 33451,
+  "total_docs": 785,
   "categories": [
     "apometria",
     "backup",
@@ -19,7 +19,9 @@
     "resumos",
     "sepher_ra_hazim",
     "templo_pena",
-    "pontos_cantados"
+    "pontos_cantados",
+    "magia_7_cruzes",
+    "magia_cigana"
   ],
   "file_types": [
     "docx",
@@ -27,6 +29,7 @@
     "json",
     "odt",
     "pdf",
+    "pdf_ocr",
     "rtf",
     "txt"
   ],

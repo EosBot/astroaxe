@@ -28,6 +28,14 @@
 - Retomada/reprocesso: `.venv/bin/python pipeline.py --output-dir conteudo
   --device cuda --batch-size 8` → `integrate_pontos.py --device cuda` →
   `query.py`. Logs em `scripts/ocultismo-pipeline/*_run.log` (gitignored).
+- PDFs escaneados sem camada de texto: `ingest_scanned_pdfs.py` detecta,
+  renderiza (dpi 150) e aplica OCR página a página, mesclando ao índice
+  existente (idempotente). Rodado em 2026-08-27: 20 candidatos, 16 geraram
+  751 chunks (corpus final **33.451 chunks**, `pdf_ocr` em file_types) —
+  incluindo A Bíblia do Tarot (216 mil chars), Árvore da Vida (284 mil) e o
+  Ritual com Ervas/Banhos do Adriano Camargo (342 mil). O Quimbanda
+  (ilide.info) escaneou mal: 52 páginas → ~0,9 mil chars, segue praticamente
+  ilegível; imagem solta sem texto e página escaneada ruim não viram chunk.
 
 ## Atualização 2026-08-26 — Contradições retiradas da documentação
 
