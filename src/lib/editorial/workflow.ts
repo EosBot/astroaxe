@@ -20,10 +20,9 @@ export async function submitCulturalEntry(
       status: "DRAFT",
       claims: {
         some: { status: { in: ["ACTIVE", "CONTESTED"] } },
-        none: {
-          status: { in: ["ACTIVE", "CONTESTED"] },
-          OR: [{ sourceLocator: null }, { source: { usageStatus: { not: "CLAIM_ELIGIBLE" } } }],
-        },
+        // Toda claim ativa precisa de locator. O status de elegibilidade da fonte saiu
+        // com o modelo de direitos por obra; a posição citável continua obrigatória.
+        none: { status: { in: ["ACTIVE", "CONTESTED"] }, sourceLocator: null },
       },
     },
     data: { status: "IN_REVIEW", reviewerId: null, reviewedAt: null, publishedAt: null },
@@ -37,18 +36,14 @@ export async function submitCulturalEntry(
       status: true,
       claims: {
         where: { status: { in: ["ACTIVE", "CONTESTED"] } },
-        select: { sourceLocator: true, source: { select: { usageStatus: true } } },
+        select: { sourceLocator: true },
       },
     },
   });
   if (entry === null) return { status: "not_found" };
   if (entry.authorId !== actor.id) return { status: "forbidden" };
   if (entry.claims.length === 0) return { status: "missing_claims" };
-  if (
-    entry.claims.some(
-      (claim) => claim.sourceLocator === null || claim.source.usageStatus !== "CLAIM_ELIGIBLE",
-    )
-  )
+  if (entry.claims.some((claim) => claim.sourceLocator === null))
     return { status: "ineligible_sources" };
   return { status: "invalid_state" };
 }
@@ -73,24 +68,27 @@ export async function reviewCulturalEntry(
           select: {
             id: true,
             sourceLocator: true,
-            source: { select: { usageStatus: true } },
           },
         },
       },
     });
     if (entry === null) return { status: "not_found" };
-    if (entry.authorId === actor.id) return { status: "forbidden" };
+    // Autoria e revisão podem ser a mesma pessoa. A regra oposta vinha do modelo em que
+    // publicar dependia de aprovação externa (BLUEPRINT §5.0); num projeto de uma pessoa
+    // ela só se satisfazia com uma segunda conta assinando a própria revisão, o que
+    // transformava a garantia numa ficção registrada no banco.
     if (review.decision !== "WITHDRAWN" && entry.status !== "IN_REVIEW")
       return { status: "invalid_state" };
     if (review.decision === "WITHDRAWN" && entry.status !== "PUBLISHED")
       return { status: "invalid_state" };
     if (review.decision === "APPROVED" && entry.claims.length === 0)
       return { status: "missing_claims" };
+    // A exigência de locator permanece: uma afirmação material aponta para uma posição
+    // citável, e sem isso não há como reestudar o ponto quando a leitura se mostrar errada.
+    // O status de elegibilidade da fonte saiu junto com o modelo de direitos por obra.
     if (
       review.decision === "APPROVED" &&
-      entry.claims.some(
-        (claim) => claim.sourceLocator === null || claim.source.usageStatus !== "CLAIM_ELIGIBLE",
-      )
+      entry.claims.some((claim) => claim.sourceLocator === null)
     )
       return { status: "ineligible_sources" };
 

@@ -10,6 +10,9 @@ export default defineConfig([
     ".citadel/**",
     // Scratch directory another local tool drops in the repo root, like .citadel above.
     ".tmp/**",
+    // Ambientes e caches de ferramentas Python que vivem dentro de scripts/.
+    "**/.venv/**",
+    "**/__pycache__/**",
     ".planning/**",
     ".codex/agent-context/**",
     "coverage/**",

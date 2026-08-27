@@ -46,7 +46,11 @@ describe("ProfileArchive", () => {
     vi.unstubAllGlobals();
   });
 
-  it("lists an owned profile and recalculates it", { timeout: 10_000 }, async () => {
+  // Sem override de timeout: este teste percorre a jornada inteira (boas-vindas → mapa →
+  // configurações → recálculo) e leva ~11 s. O override de 10 s era mais estrito que o
+  // global de 15 s do projeto — definido justamente para esta instabilidade — e por isso
+  // falhava sob paralelismo por carga, não por defeito.
+  it("lists an owned profile and recalculates it", async () => {
     let profileReads = 0;
     const fetchMock = vi.fn().mockImplementation((input: string, init?: RequestInit) => {
       if (input === "/api/auth/account")

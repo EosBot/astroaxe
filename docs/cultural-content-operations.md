@@ -35,13 +35,25 @@ O que permanece — e permanece porque é qualidade de produto, não trava jurí
 O que saiu: parecer por fonte, nota de licença por obra e o vocabulário de elegibilidade. Nada
 disso descrevia risco real e tudo isso custava trabalho de autoria.
 
-**Pendência conhecida — revisão independente.** O banco ainda exige `reviewer_id NOT NULL` e
-`reviewed_at NOT NULL` para publicar um verbete (`20260819040000_cultural_corpus`), e
-`src/lib/editorial/workflow.ts` ainda exige que autor e revisor sejam pessoas diferentes. Num
-projeto de uma pessoa isso é um gate que não pode ser satisfeito honestamente: ou se inventa uma
-segunda conta, ou nada é publicado. A decisão de arquitetura remove esse tipo de trava, mas o
-código ainda não foi alterado. Enquanto não for, **o comportamento real é o do banco**, não o
-descrito acima — relaxar a constraint e o workflow é trabalho pendente, não algo já feito.
+**Revisão independente deixou de ser pré-condição.** A migration `20260826150000` relaxou a
+constraint que exigia `reviewer_id <> author_id` para publicar verbete cultural e texto de
+trânsito, e `src/lib/editorial/workflow.ts` deixou de vetar autor = revisor. Num projeto de uma
+pessoa aquele gate só se satisfazia com uma segunda conta assinando a própria revisão — uma
+ficção gravada no banco com aparência de rigor.
+
+O que o banco continua exigindo, verificado contra PostgreSQL 18 real:
+
+- `published_at IS NOT NULL` para qualquer verbete publicado;
+- a constraint de profundidade (`published_cultural_entry_depth`): resumo com pelo menos 240
+  caracteres e corpo com pelo menos 1.800. Texto raso continua recusado pelo banco.
+
+`reviewer_id` e `reviewed_at` permanecem nas tabelas e são gravados quando houver de fato uma
+segunda pessoa revisando. Deixaram de ser pré-condição; passaram a ser registro do que
+aconteceu.
+
+Também saiu a exigência de que a fonte da claim estivesse `CLAIM_ELIGIBLE`. **A exigência de
+locator permanece**: uma afirmação material aponta para uma posição citável, porque é isso que
+permite reestudar o ponto quando a leitura se mostrar errada.
 
 ## Identidade e APIs editoriais
 

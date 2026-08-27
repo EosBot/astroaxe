@@ -43,7 +43,12 @@ describe("editorial workflow", () => {
     });
   });
 
-  it("prevents a reviewer from approving their own entry", async () => {
+  /**
+   * A regra anterior exigia revisor diferente do autor. Num projeto de uma pessoa ela só
+   * se satisfazia com uma segunda conta assinando a própria revisão — uma ficção gravada
+   * no banco com aparência de rigor. Ver BLUEPRINT §5.0 e a migration 20260826150000.
+   */
+  it("lets one person author and publish their own entry", async () => {
     const tx = transactionWithEntry({ authorId: reviewer.id, status: "IN_REVIEW", claims: [{}] });
     const result = await reviewCulturalEntry(
       tx.prisma,
@@ -52,8 +57,8 @@ describe("editorial workflow", () => {
       { decision: "APPROVED" },
       new Date("2026-08-19T14:00:00.000Z"),
     );
-    expect(result).toEqual({ status: "forbidden" });
-    expect(tx.createReview).not.toHaveBeenCalled();
+    expect(result).toEqual({ status: "updated", entryStatus: "PUBLISHED" });
+    expect(tx.createReview).toHaveBeenCalled();
   });
 
   it("publishes atomically after independent review", async () => {
@@ -88,17 +93,16 @@ describe("editorial workflow", () => {
     ).resolves.toEqual({ status: "missing_claims" });
   });
 
-  it("blocks approval when a book was only catalogued", async () => {
+  /**
+   * O status de elegibilidade da fonte saiu com o modelo de direitos por obra. O que
+   * continua bloqueando é claim sem locator: sem posição citável não há como reestudar o
+   * ponto quando a leitura se mostrar errada.
+   */
+  it("blocks approval when a claim has no citable position", async () => {
     const tx = transactionWithEntry({
       authorId: author.id,
       status: "IN_REVIEW",
-      claims: [
-        {
-          id: entryId(),
-          sourceLocator: "p. 42",
-          source: { usageStatus: "REFERENCE_ONLY" },
-        },
-      ],
+      claims: [{ id: entryId(), sourceLocator: null }],
     });
     await expect(
       reviewCulturalEntry(
