@@ -7,15 +7,15 @@ O ponto curto de retomada entre sessões é `docs/PROJECT_MEMORY.md`.
 
 ## Resumo executivo por fase
 
-| Fase                   | Estado                                       | Entrega observável                                                           | Próxima fronteira                                                           |
-| ---------------------- | -------------------------------------------- | ---------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
-| 0 — Governança         | Concluída no escopo local                    | Blueprint, política cultural/IA, fontes e operação editorial                 | Formalizar créditos, contratos e remuneração quando fornecidos              |
-| 1 — Fundação           | Concluída                                    | Docker, PostgreSQL/pgvector, Redis, Traefik, health, Sonar e restore testado | Endurecer e medir a operação containerizada                                 |
-| 2 — Motor              | Concluída no escopo natal e trânsitos atuais | Cálculo determinístico, hora desconhecida, golden tests, cache e janelas     | Ampliar efemérides/regras somente com snapshots e bump de versão            |
-| 3 — Conta e mapa       | Concluída no MVP local                       | Guest-first, autenticação, ownership, arquivo, edição, histórico e E2E       | Exercitar continuamente os fluxos completos em desktop e mobile             |
-| 4 — Conteúdo           | V3 dirigida, validação em curso              | Workflow editorial, corpus público e Tríade v3 auditável                     | Calibrar com casos elegíveis congelados e publicar métricas suficientes     |
-| 5 — Ritual e IA        | Parcial avançada                             | Tempo do Céu, diário privado versionado e exportável; sem LLM em runtime     | Histórico longitudinal e RAG opcional quando houver chave/corpus autorizado |
-| 6 — Receita            | Não iniciada                                 | Hipóteses documentadas, sem cobrança simulada                                | Free/Pro, limites, Stripe e webhooks após decisões e credenciais de teste   |
+| Fase                   | Estado                                       | Entrega observável                                                                                 | Próxima fronteira                                                           |
+| ---------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| 0 — Governança         | Concluída no escopo local                    | Blueprint, política cultural/IA, fontes e operação editorial                                       | Formalizar créditos, contratos e remuneração quando fornecidos              |
+| 1 — Fundação           | Concluída                                    | Docker, PostgreSQL/pgvector, Redis, Traefik, health, Sonar e restore testado                       | Endurecer e medir a operação containerizada                                 |
+| 2 — Motor              | Concluída no escopo natal e trânsitos atuais | Cálculo determinístico, hora desconhecida, golden tests, cache e janelas                           | Ampliar efemérides/regras somente com snapshots e bump de versão            |
+| 3 — Conta e mapa       | Concluída no MVP local                       | Guest-first, autenticação, ownership, arquivo, edição, histórico e E2E                             | Exercitar continuamente os fluxos completos em desktop e mobile             |
+| 4 — Conteúdo           | V3 dirigida, validação em curso              | Workflow editorial, corpus público e Tríade v3 auditável                                           | Calibrar com casos elegíveis congelados e publicar métricas suficientes     |
+| 5 — Ritual e IA        | Parcial avançada                             | Tempo do Céu, diário privado versionado e exportável; sem LLM em runtime                           | Histórico longitudinal e RAG opcional quando houver chave/corpus autorizado |
+| 6 — Receita            | Não iniciada                                 | Hipóteses documentadas, sem cobrança simulada                                                      | Free/Pro, limites, Stripe e webhooks após decisões e credenciais de teste   |
 | 7 — Polimento/operação | Parcial avançada                             | Acessibilidade, E2E, SEO, backup/restore, métricas/alertas locais, gate e borda pública verificada | Destino externo de alertas e SLOs do ambiente real                          |
 
 ## Concluído
@@ -42,7 +42,42 @@ O ponto curto de retomada entre sessões é `docs/PROJECT_MEMORY.md`.
   recente eleva o histórico aplicado para 23 migrations.
 - O responsável autorizou continuar as Tasks 12–13, 15 e 22–26. Direitos e competência cultural
   não serão inferidos dessa autorização: sem evidência específica, o acesso público continua
-  metadata-only ou negado. Próxima task executável: T12, inventário read-only do corpus local.
+  metadata-only ou negado.
+
+### Ingest cerimonial — inventário e extração (Tasks 12–13)
+
+- A T12 censou o acervo real: 801 arquivos, 737 hashes únicos, 64 duplicatas, 13 em quarentena
+  por tipo não identificado. O censo foi reproduzido nesta sessão com `matchesBaseline: true`.
+- A T13 acrescentou um pipeline de extração isolado (`compose.ingest.yml`, alvo `ingest-runner`).
+  O container roda **sem rede** (`network_mode: none`), com rootfs somente leitura, uid 1000,
+  todas as capabilities removidas, `no-new-privileges`, CPU/memória/PIDs limitados e `/tmp` em
+  tmpfs `noexec`. O acervo é montado `:ro`.
+- Antes de extrair, cada fonte é reaberta com `O_NOFOLLOW` e reconferida contra o censo por
+  tamanho e SHA-256. **O adaptador recebe o descritor já verificado como stdin, nunca um
+  caminho**, então não existe janela para troca de nome entre a verificação e a leitura. Depois
+  da extração o `fstat` é comparado de novo (inode, device, tamanho, mtime).
+- Derivados passam por quarentena, são relidos, reconferidos por hash e só então promovidos por
+  rename atômico para um volume reconstruível, endereçado por conteúdo, modo 600. Todo derivado
+  nasce `UNKNOWN` / `LOCAL_ONLY` / `CULTURALLY_SENSITIVE`; o schema recusa outra classificação.
+  Extração não concede direito de publicação — isso é a Task 15.
+- Adaptadores: `pdftotext` 22.12.0 (PDF), `tesseract` 5.3.0 por+eng (imagens e PDFs escaneados,
+  via fallback `pdf-ocr`), `bsdtar` 3.6.2 (DOCX/ODT) e código puro para texto e RTF.
+- **Áudio não é transcrito.** 539 dos 801 arquivos são pontos cantados e recebem `NO_ADAPTER`
+  com motivo `AUDIO_NOT_TRANSCRIBED`: não existe ASR local determinístico aceitável, o plano
+  proíbe modelo externo, e transcrever canto sagrado é decisão cultural que ninguém tomou. A
+  cobertura é reportada sobre todas as linhas do censo, não sobre as tentadas.
+- Dois manifestos: o completo é local-only, porque cada caminho é o título de um livro do
+  responsável; o sanitizado (`--sanitized`) carrega apenas versões, fingerprint e contagens.
+- `npm run ceremonial:scan` gera SBOM CycloneDX e relatório Trivy 0.74.0 fixado e aplica uma
+  política em código com relógio injetado: Critical/High bloqueiam sem forma de exceção; Medium
+  exige responsável, remediação real e validade de no máximo 30 dias; exceção vencida volta a
+  bloquear. **O gate hoje bloqueia a própria imagem de ingest** — 201 achados (8 CRITICAL,
+  62 HIGH, 131 MEDIUM), quase todos pacotes Debian bookworm sem correção upstream. A política
+  não foi afrouxada. Um experimento com base trixie reduz Critical+High de 70 para 25, mas não
+  a zero: nenhuma imagem Node baseada em Debian atinge hoje a barra de zero Critical/High. A
+  decisão é do responsável e está registrada no plano.
+- Runbook: `docs/ceremonial-ingest.md`. Desvio declarado: não há perfil seccomp próprio; vale o
+  allowlist padrão do Docker, não desabilitado, reforçado por rede nenhuma e `cap_drop: ALL`.
 
 ### Fundação e motor natal
 

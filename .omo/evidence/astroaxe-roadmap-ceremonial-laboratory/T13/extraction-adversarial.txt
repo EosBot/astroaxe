@@ -1,0 +1,157 @@
+T13 — adversários, limites e defeitos encontrados na execução real (2026-08-26)
+
+Todas as fixtures citadas aqui são sintéticas, geradas para o teste. Nenhum caminho, título
+ou conteúdo do acervo privado aparece neste arquivo.
+
+## Matriz de fixtures — executada pelo container de ingest real
+
+Comando:
+  docker compose -f compose.ingest.yml run --rm ceremonial-ingest \
+    /work/inventory.json /work/extraction.json --sanitized /work/extraction-sanitized.json
+
+Toolchain observada dentro da imagem:
+  pdftotext version 22.12.0
+  tesseract 5.3.0 (dados por + eng)
+  bsdtar 3.6.2 - libarchive 3.6.2
+
+Resultado: 8 fontes, 6 extraídas, 2 em quarentena, extractedRatio 0,75.
+
+  fixture           estado       adaptador   chars  pags  motivo
+  ---------------------------------------------------------------------------
+  livro.pdf         EXTRACTED    pdf-text       39     2  —
+  pagina.png        EXTRACTED    ocr-image      19     —  —
+  nota.txt          EXTRACTED    plain-text     43     —  —
+  carta.rtf         EXTRACTED    rtf            25     —  —
+  texto.docx        EXTRACTED    ooxml          29     —  —
+  texto.odt         EXTRACTED    ooxml          24     —  —
+  corrompido.pdf    QUARANTINED  pdf-text        —     —  ADAPTER_FAILED
+  bomba.docx        QUARANTINED  ooxml           —     —  OUTPUT_TOO_LARGE
+
+Texto conferido byte a byte no volume de derivados:
+
+  livro.pdf   -> "AXE PRIMEIRA PAGINA\n\nAXE SEGUNDA PAGINA"  (2 páginas contadas pelos
+                 form feeds do poppler; os form feeds somem na normalização)
+  pagina.png  -> "AXE PRIMEIRA PAGINA"  (OCR sobre a página 1 renderizada a 300 dpi;
+                 é texto real renderizado, não bitmap desenhado à mão)
+  nota.txt    -> "Ogum abre os caminhos.\n\nOxossi e o cacador."  (CRLF, espaços à
+                 direita e a linha em branco extra colapsados de forma determinística)
+  carta.rtf   -> "Exú guarda a encruzilhada"  (escape hex \'fa decodificado; a fonttbl
+                 não vazou para o texto)
+  texto.docx  -> "Xango e justica\nOya e o vento"  (parágrafos viraram linhas)
+  texto.odt   -> "Nana e a lama primordial"  (a mesma rota ZIP encontrou content.xml
+                 depois de word/document.xml não existir, sem consumir a fonte)
+
+Diretório de quarentena vazio ao final. Todo derivado gravado com modo 600.
+
+## Adversários cobertos
+
+### Bomba de descompressão (executada, não simulada)
+
+Um ZIP de 204 KiB contendo um membro de 200 MiB de zeros. O adaptador é interrompido ao
+ultrapassar 32 MiB de saída e o resultado é OUTPUT_TOO_LARGE — recusa, não truncamento. Um
+truncamento silencioso produziria um derivado plausível a partir de uma fonte hostil.
+
+### Documento corrompido
+
+Cabeçalho %PDF-1.4 válido seguido de lixo. O poppler sai com código diferente de zero e o
+registro vira ADAPTER_FAILED. O tipo detectado continua sendo PDF: a quarentena descreve o
+que falhou, não reclassifica a fonte.
+
+### TOCTOU — fonte adulterada entre o censo e a extração
+
+Acervo separado, censo tirado, e então:
+
+  - nota.txt reescrita com o MESMO número de bytes e conteúdo diferente
+    -> SOURCE_HASH_MISMATCH
+  - livro.pdf substituído por um symlink apontando para /etc/hostname (fora do acervo)
+    -> SOURCE_NOT_REGULAR_FILE
+
+Nenhum byte de fora do acervo apareceu em derivado, manifesto ou saída. O O_NOFOLLOW faz o
+open falhar no symlink; o hash confere a identidade antes de qualquer adaptador rodar.
+
+### Adulteração durante a leitura
+
+Coberto por teste (extraction-source.test.ts): com o descritor aberto, o arquivo é reescrito
+no lugar e o mtime avançado. confirmSourceUnchanged compara inode, device, tamanho e mtime
+depois da extração e recusa o derivado.
+
+## Três defeitos reais, encontrados só ao rodar o container de verdade
+
+Nenhum apareceu nos testes unitários. Todos corrigidos.
+
+1. **Falha de armazenamento reportada como conteúdo inválido (grave).** O volume nomeado
+   nasce root:root e o container roda como uid 1000, então todo mkdir dava EACCES. O catch
+   genérico do store transformava isso em OUTPUT_INVALID: a primeira execução da matriz
+   reportou 8 de 8 em quarentena, 6 delas como "conteúdo inválido". Um volume mal montado
+   ficava indistinguível de um acervo corrompido — e sobre 801 arquivos isso seria um censo
+   falso, não um erro visível.
+   Correção: DerivativeStoreUnavailableError para EACCES/EPERM/EROFS/ENOSPC/ENOENT/EDQUOT/EIO,
+   que **aborta a execução** em vez de virar motivo de quarentena. Regressão coberta em
+   derivative-store.test.ts.
+
+2. **Volume de derivados sem dono correto.** Causa raiz do item 1. Um volume nomeado herda a
+   propriedade do caminho que cobre na imagem, então o ingest-runner passou a criar
+   /var/lib/ceremonial/derivatives como node:node antes do USER node.
+
+3. **Versão da ferramenta perdida no adaptador mais usado.** O pdftotext -v imprime em stderr
+   e sai com código diferente de zero; como stderr é descartado durante a extração, o
+   manifesto registrava apenas "pdftotext", sem versão — derrubando justamente a propriedade
+   que torna o derivado reproduzível.
+   Correção: um probe de versão separado (probeVersion) que lê stdout e stderr, com timeout e
+   teto próprios. Durante a extração real stderr continua descartado, porque ali ele poderia
+   citar conteúdo do acervo em log.
+
+## Um quarto ponto, corrigido antes de rodar
+
+A adapterVersions do manifesto sanitizado era derivada dos registros, então uma execução em
+que tudo quarentenou saía com adapterVersions vazio — perdendo a informação exatamente quando
+ela mais importa ("qual poppler não produziu nada?"). O manifesto passou a carregar a
+toolchain configurada explicitamente.
+
+## Um quinto ponto, no próprio gate de suprimentos
+
+A primeira versão do script fixava aquasec/trivy:0.68.0, uma tag que não existe. O scan
+falhou no pull. Fixado em aquasec/trivy:0.74.0, verificado contra o registro real.
+
+## Execução completa sobre o acervo real (801 arquivos)
+
+Manifesto sanitizado em `extraction-manifest-sanitized.json`. Zero caminhos, zero hashes de
+fonte — verificado por grep contra os nomes de diretório do acervo.
+
+  801 fontes | 164 extraídas | 82 vazias | 555 sem adaptador | **0 em quarentena**
+  34.519.880 caracteres | 21.005 páginas | extractedRatio 0,2047
+
+  sem adaptador: 539 AUDIO_NOT_TRANSCRIBED, 14 UNSUPPORTED_FORMAT, 2 VIDEO_NOT_TRANSCRIBED
+
+Zero quarentenas sobre 801 arquivos reais é o resultado que importa: a barreira de integridade
+não produziu falso positivo em nenhuma linha, e a razão de 20% é honesta — dois terços do
+acervo é canto gravado que o pipeline se recusa a transcrever.
+
+## O fallback pdf-ocr veio depois desta execução
+
+Esta corrida expôs 20 PDFs escaneados, somando 1.044 páginas, que saíam como EMPTY_RESULT por
+não terem camada de texto — justamente o material que mais precisa de OCR. O fallback
+`pdf-ocr` foi implementado em resposta, verificado na matriz de fixtures (`pagina.png` prova a
+rota render → OCR) e já produziu registros `pdf-ocr` na reexecução.
+
+**A reexecução completa com OCR não foi concluída nesta sessão.** Ela é retomável pelo
+checkpoint e ficou em 102 de 801 registros; foi interrompida porque o OCR de um livro escaneado
+de 58 MiB monopolizava a CPU e contaminava a medição de cobertura. O custo de tempo está
+documentado em `docs/ceremonial-ingest.md`. Retomar:
+
+  CEREMONIAL_ARCHIVE_HOST_PATH=<acervo> CEREMONIAL_WORK_HOST_PATH=<dir> \
+    docker compose -f compose.ingest.yml run --rm ceremonial-ingest \
+      /work/inventory.json /work/extraction.json --sanitized /work/extraction-sanitized.json
+
+## Gate de suprimentos — bloqueia, e isso é o resultado
+
+  npm run ceremonial:scan  ->  BLOQUEADO: 201 achados
+  8 CRITICAL, 62 HIGH, 131 MEDIUM; apenas 16 com correção disponível.
+
+Quase todos são pacotes Debian bookworm sem patch upstream: libexpat1 (21), libcurl4 (14),
+perl-base (13), libglib2.0-0 (9), libc6/libc-bin (16), libsqlite3-0, zlib1g, libxml2.
+
+A política não foi afrouxada para passar. Experimento executado: escanear
+`node:24.19.0-trixie-slim` direto dá 25 Critical+High contra os 70 do bookworm — melhor, mas
+não zero. Nenhuma imagem Node baseada em Debian atinge hoje a barra de zero Critical/High que a
+própria task define. A decisão é do responsável e está registrada no plano.

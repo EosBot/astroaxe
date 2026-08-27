@@ -8,6 +8,8 @@ export default defineConfig([
   globalIgnores([
     ".next/**",
     ".citadel/**",
+    // Scratch directory another local tool drops in the repo root, like .citadel above.
+    ".tmp/**",
     ".planning/**",
     ".codex/agent-context/**",
     "coverage/**",

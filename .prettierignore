@@ -1,0 +1,4 @@
+# Artefatos gerados. Como src/generated/, não são escritos à mão e são substituídos
+# inteiros a cada execução — formatá-los só produz ruído no diff.
+ops/ceremonial/sbom-ingest.cdx.json
+ops/ceremonial/trivy-ingest.json

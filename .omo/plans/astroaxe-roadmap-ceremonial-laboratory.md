@@ -11,20 +11,22 @@
 
 ## Execution status — updated 2026-08-26
 
-**Progress: 12 of 39 implementation todos complete (Waves 1 and 2 closed, Wave 3 started).
-Final-verification wave F1-F4 not started.** Tasks 1-12 are all committed locally on
-`develop`; the worktree holds no uncommitted task work. Nothing was pushed and `main` is
-untouched.
+**Progress: 13 of 39 implementation todos complete (Waves 1 and 2 closed, Wave 3 in
+progress). Final-verification wave F1-F4 not started.** Tasks 1-13 are all committed
+locally on `develop`. Nothing was pushed and `main` is untouched.
 
-| Wave                                | Tasks | Status                 |
-| ----------------------------------- | ----- | ---------------------- |
-| 1 — Recovery and Tríade v3          | 1-6   | **Complete**           |
-| 2 — Dual-mode foundation            | 7-11  | **Complete**           |
-| 3 — Corpus ingestion                | 12-16 | 12 done; 13-16 pending |
-| 4 — Deterministic ceremonial domain | 17-21 | Not started            |
-| 5 — Tradition workspaces            | 22-27 | Not started            |
-| 6 — Product experience              | 28-33 | Not started            |
-| 7 — Operations and release          | 34-39 | Not started            |
+**Task 13 ships with one open owner decision:** the supply-chain gate it introduces
+currently BLOCKS its own image. See "Open blocker" below.
+
+| Wave                                | Tasks | Status                    |
+| ----------------------------------- | ----- | ------------------------- |
+| 1 — Recovery and Tríade v3          | 1-6   | **Complete**              |
+| 2 — Dual-mode foundation            | 7-11  | **Complete**              |
+| 3 — Corpus ingestion                | 12-16 | 12-13 done; 14-16 pending |
+| 4 — Deterministic ceremonial domain | 17-21 | Not started               |
+| 5 — Tradition workspaces            | 22-27 | Not started               |
+| 6 — Product experience              | 28-33 | Not started               |
+| 7 — Operations and release          | 34-39 | Not started               |
 
 ### Commits, in order
 
@@ -109,11 +111,37 @@ intact against pre-incident counts. Recorded in
 `.omo/evidence/.../T6/checkpoint.txt`. **Lesson for the remaining waves: always pass `-p`
 explicitly to any Compose command that stops or removes containers.**
 
+### Open blocker — needs an owner decision before the ingest image is cleared
+
+Task 13's own gate refuses the image it built. A pinned Trivy 0.74.0 scan of
+`ingest-runner` reports **201 blocking findings: 8 CRITICAL, 62 HIGH, 131 MEDIUM**, and
+only 16 of them have any fix available. Essentially all are Debian bookworm OS packages
+that Debian stable has not patched (libexpat1, libcurl4, perl-base, libglib2.0-0, libc6,
+libsqlite3-0, zlib1g, libxml2).
+
+The policy was **not** weakened to make this green — Critical and High have no exception
+form, by design. A bounded experiment was run instead: scanning `node:24.19.0-trixie-slim`
+directly gives **25 Critical+High** versus bookworm's 70. Better, but still not zero, so
+**no available Debian-based Node image clears the task's own acceptance bar today.**
+
+Three honest paths, all requiring the owner:
+
+1. Move `ingest-runner` to a trixie base (cuts Critical+High from 70 to ~25, needs a
+   separate dependency stage since the app runtime stays on bookworm);
+2. accept a documented, time-bounded exception set — but that means changing the policy to
+   permit Critical/High exceptions, which is exactly the loosening the plan forbids;
+3. keep the gate red and treat the ingest image as run-at-owner's-discretion, which is the
+   current state: the pipeline is verified and works, and the gate says so out loud.
+
+The npm `tar` 7.5.16 → 7.5.19 finding is separately fixable via the lockfile, but that is a
+shared dependency for the whole app and out of task 13's scope.
+
 ### Where to resume
 
-Task 12 (`Build a resumable, content-addressed inventory of /mnt/e/Ocultismo`). The owner authorized
-real local-corpus processing on 2026-08-26. Inventory remains read-only, never follows symlinks and
-must not copy source files or persist absolute paths.
+Task 14 (`Import works, editions, artifacts and locators without collapsing variants`),
+once the blocker above has an owner decision. Tasks 12 and 13 both ran against the real
+`/mnt/e/Ocultismo` archive, read-only, without following symlinks and without copying a
+single source file.
 
 **Unstarted work that needs owner input before it can proceed honestly:** tasks 12-13 walk
 the real `/mnt/e/Ocultismo` corpus and build a sandboxed extraction/OCR container with SBOM
@@ -396,7 +424,39 @@ directedPair}` — a `.strict()` schema with only those nine fields, so ids, com
   - **QA failure:** symlink loop, permission error and mid-run interruption resume safely (`.../T12/inventory-failures.txt`).
   - **Commit:** `feat(corpus): inventory ceremonial archive by content hash`.
 
-- [ ] 13. Add a sandboxed local extraction/OCR pipeline with explicit coverage
+- [x] 13. Add a sandboxed local extraction/OCR pipeline with explicit coverage — **DONE**
+  - **Delivered:** `compose.ingest.yml`, a standalone Compose project with `network_mode: none`,
+    read-only rootfs, uid 1000, `cap_drop: ALL`, `no-new-privileges`, bounded cpu/memory/pids
+    and a `noexec` tmpfs; a pinned `ingest-runner` image carrying poppler 22.12.0,
+    tesseract 5.3.0 (por+eng) and libarchive 3.6.2. Adapters for PDF text, OCR, plain text,
+    RTF and OOXML/OpenDocument, plus a **`pdf-ocr` fallback** for scanned PDFs with no text
+    layer. Every source is re-verified against the task-12 census (size + SHA-256) through a
+    descriptor opened `O_NOFOLLOW`, and the adapter receives **that descriptor as stdin, never
+    a path**, so there is no window for a name swap. `fstat` is compared again after the
+    adapter runs. Derivatives are written to quarantine, re-read, re-hashed and only then
+    renamed into a content-addressed private volume at mode 600, born
+    `UNKNOWN`/`LOCAL_ONLY`/`CULTURALLY_SENSITIVE` — the schema refuses any other classification.
+  - **Audio is declared, not attempted.** 539 of 801 files are recorded chant. They get
+    `NO_ADAPTER` + `AUDIO_NOT_TRANSCRIBED`: no deterministic local ASR exists, the plan bans
+    external models, and transcribing sacred song is a cultural decision nobody has taken.
+    Coverage is reported over every census row, so the honest ratio is visible rather than
+    flattered by counting only what was attempted.
+  - **Supply chain:** `npm run ceremonial:scan` builds the image, writes a CycloneDX SBOM and a
+    pinned Trivy 0.74.0 report, then applies a policy that lives in code
+    (`vulnerability-policy.ts`) with an injected clock: Critical/High block with no exception
+    form, Medium needs an owner, a real remediation and a ≤30-day expiry, and an expired
+    exception turns back into a blocker. **The gate currently blocks — see "Open blocker".**
+  - **Adversarial, executed not simulated:** a 200 MiB zip bomb ends `OUTPUT_TOO_LARGE`
+    (refused, never truncated); a corrupt PDF ends `ADAPTER_FAILED`; a same-size byte swap
+    ends `SOURCE_HASH_MISMATCH`; a symlink to `/etc/hostname` ends `SOURCE_NOT_REGULAR_FILE`
+    with no outside byte reaching any output.
+  - **Five real defects found only by running it** (all fixed, all with regression tests) —
+    see `.../T13/extraction-adversarial.txt`. The worst: an unwritable volume was reported as
+    `OUTPUT_INVALID` per row, making a misconfigured mount indistinguishable from a corrupt
+    archive across 801 files. Storage failure now aborts loudly instead.
+  - **Declared deviation:** no hand-authored seccomp profile ships. The container runs under
+    Docker's default seccomp allowlist (not disabled), reinforced by `network_mode: none` and
+    `cap_drop: ALL`. Rationale in `docs/ceremonial-ingest.md`.
   - **Implement:** create a pinned local-only ingest container/profile with read-only root/archive, non-root UID, capabilities dropped, no network, seccomp allowlist, bounded CPU/memory/time/tmpfs. Reopen every inventoried source descriptor-relative with no-follow, verify regular-file type, before/after `fstat`, size and SHA-256 against Task 12, and quarantine any changed/mismatched source. Add deterministic extraction/OCR adapters; disable active behavior and treat metadata/output as sensitive. Derivatives stay quarantined until schema/MIME/size/integrity validation, then enter a rebuildable private volume. Generate SBOM/license inventory and scan npm, OS packages, extraction binaries and container with pinned Trivy; Critical/High block, Medium requires documented owner, remediation and ≤30-day expiry.
   - **References:** `Dockerfile`; `compose.yml:3-161`; `compose.dev.yml`; prior extraction metrics in `docs/research/orixa-method-v2/report-source.md`.
   - **Acceptance:** every artifact has explicit state/reason; TOCTOU/mismatch quarantines; SBOM is complete; no unexpired Critical/High and every Medium exception is scoped/time-bounded; no silent omission.

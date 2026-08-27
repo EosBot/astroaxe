@@ -1,5 +1,33 @@
 # Memória canônica do projeto
 
+## Atualização 2026-08-26 — Task 13: pipeline de extração isolado
+
+- A Wave 3 avançou para 13 de 39 tasks. A T13 entregou o ingest cerimonial: `compose.ingest.yml`
+  (projeto Compose separado, sem banco, sem Redis, sem segredo e **sem rede**) e o alvo
+  `ingest-runner` com poppler 22.12.0, tesseract 5.3.0 (por+eng) e libarchive 3.6.2 fixados.
+- A barreira de integridade é a parte que importa: a fonte é reaberta com `O_NOFOLLOW`,
+  conferida contra o censo da T12 por tamanho e SHA-256, e **o adaptador recebe esse descritor
+  como stdin, nunca um caminho**. Depois da extração o `fstat` é comparado de novo. Um symlink
+  plantado ou uma troca de bytes do mesmo tamanho terminam em quarentena explícita, verificado
+  contra o container real.
+- Derivados nascem `UNKNOWN` / `LOCAL_ONLY` / `CULTURALLY_SENSITIVE` e o schema recusa outra
+  classificação. Extração não concede direito de publicação; isso é a Task 15.
+- **Decisão registrada:** áudio não é transcrito. 539 dos 801 arquivos são pontos cantados e
+  recebem `NO_ADAPTER` + `AUDIO_NOT_TRANSCRIBED`. Não existe ASR local determinístico aceitável,
+  o plano proíbe modelo externo, e transcrever canto sagrado é decisão cultural que ninguém
+  tomou. A cobertura é reportada sobre todas as linhas do censo, nunca só sobre as tentadas.
+- PDFs escaneados sem camada de texto caem num fallback `pdf-ocr` que renderiza e reconhece
+  página a página. Sem ele, 20 volumes e 1.044 páginas ficariam silenciosamente vazios.
+- Cinco defeitos reais só apareceram rodando o container de verdade, todos com regressão. O pior:
+  volume não gravável era reportado como `OUTPUT_INVALID` por linha, tornando um mount errado
+  indistinguível de um acervo corrompido sobre 801 arquivos. Falha de armazenamento agora aborta.
+- **Bloqueio aberto para o responsável:** o gate de suprimentos da própria T13 recusa a imagem.
+  Trivy 0.74.0 fixado reporta 201 achados bloqueantes (8 CRITICAL, 62 HIGH, 131 MEDIUM), quase
+  todos pacotes Debian bookworm sem correção upstream. A política não foi afrouxada. Base trixie
+  reduz Critical+High de 70 para 25, mas não a zero. A decisão está descrita no plano.
+- Runbook: `docs/ceremonial-ingest.md`. Próxima retomada: Task 14, importação de obras, edições,
+  artefatos e locators sem colapsar variantes.
+
 ## Atualização 2026-08-26 — Wave 2 dual-mode concluída
 
 - A divergência anterior foi corrigida: as Tasks 7–11 do roteiro estão concluídas e a Wave 2 está

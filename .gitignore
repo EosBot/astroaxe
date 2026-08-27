@@ -21,12 +21,17 @@ test-results/
 .scannerwork-user/
 .citadel/
 .planning/
+.tmp/
 .codex/agent-context/
 .claude/agent-context/
 .omo/run-continuation/
 
 # Local data
 backups/
+
+# Snapshot datado do scanner. O SBOM em ops/ceremonial/ é versionado; o relatório bruto
+# de vulnerabilidades é regenerado por `npm run ceremonial:scan` e envelhece em dias.
+ops/ceremonial/trivy-ingest.json
 
 
 #Ignore vscode AI rules

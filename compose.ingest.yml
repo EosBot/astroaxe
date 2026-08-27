@@ -1,0 +1,61 @@
+# Ceremonial ingest — sandboxed extraction of the private archive.
+#
+# A standalone project, like compose.local.yml and for the same reason: nothing here may
+# share a network, volume or credential with the public runtime. This one goes further —
+# it has no database, no Redis, no secret and no network interface at all. It reads the
+# archive, writes text derivatives to a rebuildable volume, and exits.
+#
+#   docker compose -f compose.ingest.yml build ceremonial-ingest
+#   docker compose -f compose.ingest.yml run --rm ceremonial-ingest \
+#     /work/inventory.json /work/extraction.json --sanitized /work/extraction-sanitized.json
+#
+# The container cannot reach the network, cannot write outside two explicit mounts and a
+# noexec tmpfs, cannot gain privileges and does not run as root.
+name: astroaxe_ceremonial_ingest
+
+services:
+  ceremonial-ingest:
+    build:
+      context: .
+      target: ingest-runner
+    # No interface exists inside the container: extraction tooling has no reason to speak
+    # to anything, so a parser bug has nowhere to send what it read.
+    network_mode: "none"
+    # The image is immutable at runtime; every writable location is declared below.
+    read_only: true
+    user: "1000:1000"
+    cap_drop: [ALL]
+    security_opt:
+      # Docker's default seccomp allowlist stays in force — deliberately NOT disabled.
+      # docs/ceremonial-ingest.md records why no hand-authored profile ships in its place.
+      - no-new-privileges:true
+    # Bounded so a pathological page or a decompression bomb cannot take the host with it.
+    # The pipeline's own ceilings (32 MiB of output, 180 s per source) sit inside these.
+    cpus: ${CEREMONIAL_INGEST_CPUS:-2.0}
+    mem_limit: ${CEREMONIAL_INGEST_MEMORY:-3g}
+    memswap_limit: ${CEREMONIAL_INGEST_MEMORY:-3g}
+    pids_limit: 256
+    environment:
+      CEREMONIAL_MODE: local
+      CEREMONIAL_ARCHIVE_ROOT: /srv/ceremonial-archive
+      # Required by the mode contract but unused here: ingestion never opens the keyring,
+      # and the file it names is not mounted.
+      CEREMONIAL_KEYRING_FILE: /run/secrets/ceremonial-keyring.json
+      CEREMONIAL_DERIVATIVE_ROOT: /var/lib/ceremonial/derivatives
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+    volumes:
+      # The private corpus, read-only. Extraction never writes into the archive.
+      - ${CEREMONIAL_ARCHIVE_HOST_PATH:?CEREMONIAL_ARCHIVE_HOST_PATH is required}:/srv/ceremonial-archive:ro
+      # Rebuildable extraction output. Excluded from backups; never holds source originals.
+      - ceremonial_derivatives:/var/lib/ceremonial/derivatives
+      # Manifests and checkpoints, so an interrupted run resumes from the host side.
+      - ${CEREMONIAL_WORK_HOST_PATH:?CEREMONIAL_WORK_HOST_PATH is required}:/work
+    tmpfs:
+      # The adapters' working directory. Wiped when the container exits, and noexec: a
+      # temporary file written by a parser cannot become a program.
+      - /tmp:rw,noexec,nosuid,nodev,size=256m
+    restart: "no"
+
+volumes:
+  ceremonial_derivatives:
+    name: astroaxe_ceremonial_derivatives
