@@ -48,9 +48,9 @@ conteudo/*.jsonl
 # Logs de execução do pipeline de condensação
 scripts/ocultismo-pipeline/*.log
 
-# Snapshot datado do scanner. O SBOM em ops/ceremonial/ é versionado; o relatório bruto
+# Snapshot datado do scanner. O SBOM em infra/security/ é versionado; o relatório bruto
 # de vulnerabilidades é regenerado por `npm run ceremonial:scan` e envelhece em dias.
-ops/ceremonial/trivy-ingest.json
+infra/security/trivy-ingest.json
 
 
 #Ignore vscode AI rules

@@ -15,7 +15,7 @@ set -eu
 
 trivy_image="${TRIVY_IMAGE:-aquasec/trivy:0.74.0}"
 ingest_image="${INGEST_IMAGE:-astroaxe_ceremonial_ingest-ceremonial-ingest:latest}"
-output_dir="${SCAN_OUTPUT_DIR:-ops/ceremonial}"
+output_dir="${SCAN_OUTPUT_DIR:-infra/security}"
 sbom_path="$output_dir/sbom-ingest.cdx.json"
 report_path="$output_dir/trivy-ingest.json"
 
