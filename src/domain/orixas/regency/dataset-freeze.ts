@@ -1,5 +1,7 @@
 import { createHash } from "node:crypto";
 
+import { canonicalize } from "@/domain/canonical-json";
+
 import {
   regencyEvaluationDatasetSchema,
   type RegencyEvaluationDataset,
@@ -134,17 +136,6 @@ function canonicalDataset(dataset: RegencyEvaluationDataset): string {
       cases: [...dataset.cases].sort((a, b) => a.caseId.localeCompare(b.caseId)),
     }),
   );
-}
-
-function canonicalize(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(canonicalize);
-  if (value !== null && typeof value === "object")
-    return Object.fromEntries(
-      Object.entries(value)
-        .sort(([left], [right]) => left.localeCompare(right))
-        .map(([key, item]) => [key, canonicalize(item)]),
-    );
-  return value;
 }
 
 function countValues<
