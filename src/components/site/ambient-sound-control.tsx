@@ -5,10 +5,20 @@ import { useEffect, useRef, useState } from "react";
 export function AmbientSoundControl(): React.JSX.Element {
   const [enabled, setEnabled] = useState(false);
   const contextRef = useRef<AudioContext | null>(null);
+  /**
+   * Espelho síncrono de `enabled`, lido pelo listener global.
+   *
+   * O listener não pode depender da limpeza do efeito para parar de tocar:
+   * desligar o som atualiza o estado só depois do `await` do tom de desligamento,
+   * e a limpeza roda depois da pintura. Nessa janela o rótulo já dizia "Ativar" e
+   * um clique ainda soava — som que a pessoa acabara de desligar. O ref fecha a
+   * janela porque muda no mesmo tick do clique.
+   */
+  const enabledRef = useRef(false);
 
   useEffect(() => {
-    if (!enabled) return;
     function interact(event: PointerEvent): void {
+      if (!enabledRef.current) return;
       const target = event.target;
       if (!(target instanceof Element)) return;
       const control = target.closest("button, a[href]");
@@ -17,14 +27,16 @@ export function AmbientSoundControl(): React.JSX.Element {
     }
     document.addEventListener("pointerdown", interact, { capture: true });
     return () => document.removeEventListener("pointerdown", interact, { capture: true });
-  }, [enabled]);
+  }, []);
 
   async function toggle(): Promise<void> {
-    if (enabled) {
+    if (enabledRef.current) {
+      enabledRef.current = false;
       await playTone(contextRef, 300, 0.045);
       setEnabled(false);
       return;
     }
+    enabledRef.current = true;
     setEnabled(true);
     await playTone(contextRef, 480, 0.07);
   }
