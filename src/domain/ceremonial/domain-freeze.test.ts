@@ -111,13 +111,26 @@ describe("congelamento do domínio cerimonial", () => {
    *   autoridade a um engano.
    * - IMPACTO: nenhuma contagem mudou. O schema passou a recusar conflito mudo,
    *   então a exigência vale para todo conflito futuro, não só para este.
+   *
+   * E uma terceira vez, na task 23:
+   *
+   * - ANTES: `0.5.0-research`, 32 atribuições, duas funções `single_school`.
+   * - DEPOIS: `0.6.0-research`, 37 atribuições, **nenhuma** `single_school`.
+   * - MOTIVO: cinco atribuições do Lemegeton, linhagem genuinamente independente
+   *   das escolas praticantes brasileiras. Marbas sustenta aflição e cura nas
+   *   duas metades — o que as fontes angélicas não faziam — e Bune sustenta a
+   *   passagem entre planos.
+   * - IMPACTO: as duas funções mais frágeis do grafo saíram de uma escola só
+   *   para duas linhagens independentes. É a primeira vez que o congelamento
+   *   registra **aumento** de convergência, e ele é real: um grimório solomônico
+   *   do século XVII e a Umbanda do século XX não se copiaram.
    */
   it("congela as versões declaradas de cada módulo do domínio", () => {
     expect(frozenDomainVersions).toEqual({
       electionEngine: "election-engine-0.2.0-research",
       electionProfileSchema: "election-profiles-0.2.0-research",
       entityRecords: "ceremonial-entity-records-0.1.0-research",
-      functionGraph: "regency-function-graph-0.5.0-research",
+      functionGraph: "regency-function-graph-0.6.0-research",
       guidancePolicy: "ceremonial-guidance-policy-0.1.0",
       planetaryHours: "planetary-hours-0.1.0",
       structuralFunctions: "structural-functions-0.1.0-research",
@@ -187,19 +200,27 @@ describe("cobertura de fontes", () => {
     expect(report.consensus).toHaveLength(9);
     expect(
       report.consensus.reduce((total, { assignmentCount }) => total + assignmentCount, 0),
-    ).toBe(32);
+    ).toBe(37);
     expect(strengths.filter((strength) => strength === "convergent")).toHaveLength(6);
-    expect(strengths.filter((strength) => strength === "corroborated")).toHaveLength(1);
-    expect(strengths.filter((strength) => strength === "single_school")).toHaveLength(2);
+    expect(strengths.filter((strength) => strength === "corroborated")).toHaveLength(3);
+    // Nenhuma função continua sustentada por uma escola só desde a task 23.
+    expect(strengths.filter((strength) => strength === "single_school")).toHaveLength(0);
 
-    // O colapso é real, não hipotético: as duas atribuições desta função saem
-    // de obras de Saraceni, e por isso ela permanece `single_school`.
+    // O colapso continua real e continua visível: das três atribuições desta
+    // função, duas saem de obras de Saraceni e contam como uma linhagem só. A
+    // segunda família é o Lemegeton, não a segunda entrada de Saraceni.
     expect(
       report.consensus.find(({ functionId }) => functionId === "function:passage-between-planes"),
     ).toMatchObject({
-      assignmentCount: 2,
-      independentFamilyCount: 1,
-      strength: "single_school",
+      assignmentCount: 3,
+      independentFamilyCount: 2,
+      strength: "corroborated",
+      collapsedWorkGroups: [
+        {
+          familyId: "family:saraceni",
+          workIds: ["work:saraceni-fundamentos-doutrinarios", "work:saraceni-teogonia"],
+        },
+      ],
     });
   });
 

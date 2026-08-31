@@ -196,18 +196,37 @@ describe("grafo de funções estruturais", () => {
       new Set(["school:umbanda-sagrada-saraceni"]),
     );
 
+    // Desde a task 23 o Lemegeton é a segunda linhagem desta função, mas as duas
+    // atribuições de Saraceni continuam contando como uma: três atribuições,
+    // duas famílias.
     const passage = groupFor(regencyFunctionGraph, "function:passage-between-planes");
-    expect(passage?.assignmentCount).toBe(2);
-    expect(passage?.independentFamilyCount).toBe(1);
-    expect(passage?.strength).toBe("single_school");
+    expect(passage?.assignmentCount).toBe(3);
+    expect(passage?.independentFamilyCount).toBe(2);
+    expect(passage?.strength).toBe("corroborated");
+    expect(
+      passage?.members.filter(({ familyIds }) => familyIds.includes("family:saraceni")),
+    ).toHaveLength(2);
   });
 
   it("gradua funções sustentadas por uma só linhagem sem escondê-las", () => {
     // Uma função com uma escola só continua no grafo: o rótulo diz o que ela é,
     // em vez de a omissão sugerir sustentação que não existe.
+    //
+    // Desde a task 23 nenhuma função real é `single_school` — o Lemegeton deu
+    // segunda linhagem às duas que eram. A garantia é testada em recorte para
+    // não desaparecer junto com o caso que a motivou.
     const groups = condenseStructuralFunctions(regencyFunctionGraph);
-    expect(groups.some(({ strength }) => strength === "single_school")).toBe(true);
     expect(groups.every(({ independentFamilyCount }) => independentFamilyCount >= 1)).toBe(true);
+    expect(groups.some(({ strength }) => strength === "single_school")).toBe(false);
+
+    const recorte = condenseStructuralFunctions({
+      ...regencyFunctionGraph,
+      assignments: regencyFunctionGraph.assignments.filter(
+        ({ sourceFamilyId }) => sourceFamilyId === "family:saraceni",
+      ),
+      divergences: [],
+    });
+    expect(recorte.every(({ strength }) => strength === "single_school")).toBe(true);
   });
 
   it("preserva três linhagens localizadas de adivinhação sem universalizar Bascom", () => {
@@ -215,12 +234,13 @@ describe("grafo de funções estruturais", () => {
     // A tradição angélica entrou na versão 0.4.0 com Gabriel e Raphael, ambos da
     // mesma obra: duas atribuições, uma linhagem. A quarta família é a angélica,
     // não a segunda entrada dela.
-    expect(ifa?.assignmentCount).toBe(5);
-    expect(ifa?.independentFamilyCount).toBe(4);
+    expect(ifa?.assignmentCount).toBe(6);
+    expect(ifa?.independentFamilyCount).toBe(5);
     expect(ifa?.strength).toBe("convergent");
     expect(ifa?.members.map(({ entityId }) => entityId)).toEqual([
       "entity:ceremonial:gabriel",
       "entity:ceremonial:raphael",
+      "entity:goetia:gusion",
       "entity:ifa:orunmila",
       "entity:yoruba:orishala",
     ]);
@@ -279,9 +299,9 @@ describe("grafo de funções estruturais", () => {
     // linhagem: somam testemunho, não somam convergência.
     expect(angelicais).toHaveLength(2);
     expect(new Set(angelicais.map(({ claimSchoolId }) => claimSchoolId)).size).toBe(2);
-    expect(ferro?.assignmentCount).toBe(6);
-    expect(ferro?.independentFamilyCount).toBe(5);
-    expect(ferro?.schoolCount).toBe(6);
+    expect(ferro?.assignmentCount).toBe(7);
+    expect(ferro?.independentFamilyCount).toBe(6);
+    expect(ferro?.schoolCount).toBe(7);
   });
 
   it("classifica a divergência de Vênus como disputa de posto, não erro", () => {
@@ -307,5 +327,23 @@ describe("grafo de funções estruturais", () => {
     // Colisão muda diz que duas fontes batem de frente e não diz se é grafia,
     // esquema ou erro da fonte — e tratar as três como uma só foi o defeito.
     expect(() => condenseStructuralFunctions(mudo)).toThrow();
+  });
+
+  it("reúne Orixá e espírito goético na mesma função sem fundir os panteões", () => {
+    const aflicao = groupFor(regencyFunctionGraph, "function:affliction-and-cure");
+
+    // Marbas "cura e causa doenças"; Omolu ocupa a mesma função na Umbanda. A
+    // afirmação é posição análoga e nada além disso — as categorias continuam
+    // distintas no mesmo grupo, e a relação declarada nunca é identidade.
+    expect(aflicao?.relation).toBe("analogous_position");
+    expect(aflicao?.entityCategories).toEqual(["goetic_spirit", "orisa"]);
+    expect(aflicao?.strength).toBe("corroborated");
+    expect(aflicao?.independentFamilyCount).toBe(2);
+
+    // Um grimório solomônico do século XVII e a Umbanda do século XX não se
+    // copiaram: a corroboração aqui é entre linhagens de fato independentes.
+    expect(new Set(aflicao?.members.flatMap(({ familyIds }) => familyIds))).toEqual(
+      new Set(["family:lemegeton", "family:saraceni"]),
+    );
   });
 });

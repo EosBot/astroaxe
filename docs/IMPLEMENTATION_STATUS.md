@@ -32,7 +32,7 @@ função estrutural.
   sem passagem primária acessível. Catálogo, snippet e citação secundária não
   bastam para preencher esse restante.
 
-O grafo `regency-function-graph-0.5.0-research` possui 9 funções e 32 atribuições:
+O grafo `regency-function-graph-0.6.0-research` possui 9 funções e 37 atribuições:
 seis `convergent`, uma `corroborated` e duas `single_school`. Esses números
 descrevem o artefato atual, não uma alegação de que toda a bibliografia
 prioritária foi exaurida. Checkpoint: 589 testes passando e 5 ignorados;
@@ -438,10 +438,10 @@ agosto de 2026 o índice passou por higiene: material fora do assunto, extraçã
 da mesma obra saíram, e as letras dos pontos foram validadas uma a uma. Os portões que decidem o
 que entra estão em `corpus_hygiene.py` e valem para execuções futuras, não só para esta limpeza.
 
-A ponte entre corpus e produto começou. `regency-function-graph-0.5.0-research` implementa as três
+A ponte entre corpus e produto começou. `regency-function-graph-0.6.0-research` implementa as três
 camadas do §5.0.1: vocabulário de funções estruturais, atribuições com escola/obra/família/locator
 e condensação que pesa **famílias independentes**, não contagem de atribuições. O grafo possui
-**nove funções e 32 atribuições** e reúne Umbanda, Quimbanda, Arbatel, a linhagem angélica
+**nove funções e 37 atribuições** e reúne Umbanda, Quimbanda, Arbatel, a linhagem angélica
 renascentista, Ifá e uma via acadêmica afro-brasileira. As atribuições do corpus foram localizadas
 por busca semântica e conferidas no texto; as externas possuem fonte aberta e locator explícito —
 nenhuma foi escrita de memória.
@@ -667,7 +667,7 @@ era a contradição existente até esta consolidação.
   - **QA failure:** a name shared across systems remains separate and locatorless data is quarantined; task 22 will persist a sanitized conflict report.
   - **Commit:** `feat(ceremonial): add source-specific angelical workspace`.
 
-- [ ] 23. Implement Ars Goetia as its own source family
+- [x] **23. Implement Ars Goetia as its own source family — FEITA em 31 de agosto de 2026, no enquadramento novo.** Cinco atribuições do Lemegeton, todas com o ofício citado literalmente: Marbas em `affliction-and-cure`, Bune em `passage-between-planes`, Gusion em `divination-and-counsel`, Leraie em `iron-and-war-craft` e Beleth em `attraction-and-concord`. O acervo tem **três cópias** do Lemegeton mais a edição de Crowley e DuQuette, e elas entram como **uma** `family:lemegeton` — quatro exemplares, uma voz. Categoria `goetic_spirit` acrescentada ao vocabulário para que a condensação não funda panteões: espírito goético e Orixá podem ocupar a mesma função sem que um vire o outro, e a relação declarada segue sendo `analogous_position`. A fonte permanece registro histórico; converter descrição de arquivo em conselho acionável é recusado pela política da task 20. **Impacto real:** as duas funções mais frágeis do grafo deixaram de ser sustentadas por uma escola só — Marbas sustenta aflição e cura **nas duas metades**, que é justamente o que as fontes angélicas não faziam, e Bune sustenta a passagem entre planos. Nenhuma função continua `single_school`. Grafo de 0.5.0 para 0.6.0-research, 32 para 37 atribuições. **Exclusão exemplar:** Bael não entrou em `generative-waters` apesar de a tradução o chamar "senhor da tempestade e da fecundidade" — isso é o tradutor sobrepondo Baal, o deus cananeu, ao Bael do grimório, cujo ofício declarado na mesma frase é tornar invisível. Codificá-lo daria estatuto de tradição a um deslize de tradução. Focalor e Vepar governam águas para afogar e naufragar, não para gerar vida; Buer remedia sem impor limite.
   - **Implement:** model 72-spirit records by manuscript/edition with rank, office, seal variants, correspondences and source locators; keep archival descriptions distinct from safe planner guidance and do not convert coercive source language into recommendations.
   - **References:** `/mnt/e/Ocultismo`; `docs/METHOD.md`; tasks 14, 19, 20.
   - **Acceptance:** variant seals/offices can coexist; entity count is evidence-derived, not hardcoded as universal; no Theurgia record appears in Ars Goetia queries.

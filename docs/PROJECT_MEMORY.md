@@ -1,5 +1,45 @@
 # Memória canônica do projeto
 
+## Atualização 2026-08-31 — Task 23: a Goetia entra, e as funções frágeis deixam de ser frágeis
+
+- Cinco atribuições do Lemegeton, todas com o ofício citado literalmente: Marbas
+  em aflição e cura, Bune na passagem entre planos, Gusion na adivinhação, Leraie
+  no ferro e na guerra, Beleth na atração e concórdia.
+- **Quatro exemplares, uma voz.** O acervo tem três cópias do Lemegeton mais a
+  edição ilustrada de Crowley e DuQuette. Entram sob uma única `family:lemegeton`.
+- A categoria `goetic_spirit` foi acrescentada ao vocabulário do grafo — e só a
+  ele. O contrato público `sacredCategorySchema`, do acervo cultural, não foi
+  tocado: a categoria nova é vocabulário interno de pesquisa, não classificação
+  publicada. Ela existe para que a condensação não funda panteões: espírito
+  goético e Orixá podem ocupar a mesma função sem que um vire o outro, e o que se
+  afirma continua sendo `analogous_position`.
+- **O que mudou de verdade.** As duas funções mais frágeis do grafo deixaram de
+  ser sustentadas por uma escola só. **Marbas — "Ele cura e causa doenças" —
+  sustenta `affliction-and-cure` nas duas metades**, que é exatamente o que as
+  fontes angélicas não faziam: lá, cura e limite do corpo moram em planetas
+  distintos. E Bune, que "altera o lugar onde estão os mortos", sustenta
+  `passage-between-planes`. Nenhuma função continua `single_school`.
+- A corroboração é honesta: um grimório solomônico do século XVII e a Umbanda do
+  século XX não se copiaram. E ela responde parcialmente à dúvida levantada na
+  task 22 — o vocabulário de funções talvez não seja tão recortado pela Umbanda
+  quanto pareceu, já que a Goetia reúne aflição e cura na mesma potência.
+- **A exclusão que mais ensina, e que é o caso exemplar do erro de autor.** Bael
+  não entrou em `generative-waters` apesar de esta tradução o chamar "senhor da
+  tempestade e da fecundidade". Isso não é ofício goético: é o tradutor sobrepondo
+  Baal, o deus cananeu, ao Bael do grimório — cujo ofício declarado na mesma frase
+  é tornar invisível. Codificá-lo daria estatuto de tradição a um deslize de
+  tradução, que é precisamente o que o registro de divergências passou a existir
+  para separar.
+- Também ficaram de fora Focalor e Vepar, que governam as águas para afogar homens
+  e naufragar navios — domínio sobre um elemento não é a função que aquele
+  elemento sugere, como já valera para a Lua —, e Buer, que "remedia os
+  destemperos" sem impor o limite do corpo, a mesma metade solta que barrou Phul e
+  Aratron.
+- Grafo de `0.5.0-research` para `0.6.0-research`, de 32 para 37 atribuições. É a
+  **primeira vez que o congelamento registra aumento de convergência**; as duas
+  anteriores foram neutras. Checkpoint: **609 testes passando**; typecheck, lint e
+  formatação limpos.
+
 ## Atualização 2026-08-31 — por que as fontes divergem, e como o grafo passou a dizer isso
 
 - A pergunta que originou esta entrada é boa e o registro anterior não a
@@ -374,7 +414,7 @@ de entrada e traz o índice e a ordem de leitura. Não crie um sexto documento.
 
 | Frente                     | Estado                                                                                                                                                                                                                                                                                                                                                                                |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P1.1 — condensar tradições | Grafo com **9 funções e 32 atribuições**. Adivinhação reúne UNESCO, Abimbola e o corpus localizado de Salakọ em Bascom; Prandi sustenta Exu Òrìṣà no limiar; Ogum/ferro possui via acadêmica. **Cobertura ainda fina:** Verger segue sem passagem primária acessível; Juana Elbein foi autenticada, mas os trechos recuperados não cabem nas funções atuais sem forçar o vocabulário. |
+| P1.1 — condensar tradições | Grafo com **9 funções e 37 atribuições**. Adivinhação reúne UNESCO, Abimbola e o corpus localizado de Salakọ em Bascom; Prandi sustenta Exu Òrìṣà no limiar; Ogum/ferro possui via acadêmica. **Cobertura ainda fina:** Verger segue sem passagem primária acessível; Juana Elbein foi autenticada, mas os trechos recuperados não cabem nas funções atuais sem forçar o vocabulário. |
 | P1.2 — escrever a síntese  | Primeiro verbete publicado e verificado em banco real. É trabalho contínuo, um verbete por vez.                                                                                                                                                                                                                                                                                       |
 | P1.3, P1.4, P1.5, P1.6     | Feitos. O glifo de Júpiter já foi refeito; permanece a ampliação gradual do conjunto de selos fundamentados.                                                                                                                                                                                                                                                                          |
 | Wave 4 do roteiro          | **Concluída.** T18 tem quatro perfis sustentados — Agrippa, Arbatel, Khan Secretum e Heptameron. Agrippa fica `unavailable` enquanto requisitos celestes não forem computáveis; Ars Paulina permanece fora por não conter regra de eleição. T21 congelou as cinco superfícies determinísticas e o comportamento diante de conflito.                                                   |

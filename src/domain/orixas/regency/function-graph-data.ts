@@ -81,9 +81,41 @@ import { regencyFunctionGraphSchema, type RegencyFunctionGraph } from "./functio
  *   de que a potência governa a passagem — a diferença decide, e ficou de fora.
  * - **`_texto_magia_angelical_simples`** é material de apoio de uma videoaula, sem
  *   fontes declaradas. Identificável não basta: nada dali entrou.
+ *
+ * Sobre a Goetia, entrada na versão 0.6.0. O acervo tem **três cópias** do
+ * Lemegeton e a edição ilustrada de Crowley e DuQuette. São uma linhagem, não
+ * quatro: entram sob `family:lemegeton`. A categoria `goetic_spirit` existe para
+ * que a condensação não faça o que o método proíbe — um espírito goético e um
+ * Orixá podem ocupar a mesma função estrutural sem que um vire o outro, e a
+ * fonte permanece tratada como registro histórico, nunca como orientação. Quem
+ * transforma descrição de arquivo em conselho acionável é a política da task 20,
+ * e ela recusa.
+ *
+ * O que a Goetia mudou de verdade: as duas funções mais frágeis do grafo
+ * deixaram de ser sustentadas por uma escola só. Marbas — "Ele cura e causa
+ * doenças" — sustenta `affliction-and-cure` **nas duas metades**, que é
+ * precisamente o que as fontes angélicas não faziam; e Bune, que "altera o lugar
+ * onde estão os mortos", sustenta `passage-between-planes`. Um grimório
+ * solomônico do século XVII e a Umbanda do século XX são linhagens genuinamente
+ * independentes, então a corroboração é real.
+ *
+ * O que ficou de fora da Goetia, de propósito:
+ *
+ * - **Bael em `function:generative-waters`.** Esta tradução o chama de "senhor da
+ *   tempestade e da fecundidade". Isso não é ofício goético: é o tradutor
+ *   sobrepondo Baal, o deus cananeu, ao Bael do grimório, cujo ofício declarado
+ *   na mesma frase é tornar invisível. É o caso exemplar de erro de autor que o
+ *   grafo precisa recusar em vez de herdar — codificá-lo daria estatuto de
+ *   tradição a um deslize de tradução.
+ * - **Focalor e Vepar em `function:generative-waters`.** Governam as águas, sim,
+ *   mas para afogar homens e naufragar navios. A função pergunta pela potência
+ *   que gera e sustenta a vida que nasce. Domínio sobre um elemento não é a
+ *   função que aquele elemento sugere — vale aqui como valeu para a Lua.
+ * - **Buer.** "Remedia os destemperos no homem" é cura sem o limite do corpo, a
+ *   mesma metade solta que barrou Phul e Aratron.
  */
 export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSchema.parse({
-  version: "regency-function-graph-0.5.0-research",
+  version: "regency-function-graph-0.6.0-research",
   status: "research",
   assignments: [
     // --- Abertura de caminho e passagem ---
@@ -113,6 +145,16 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
     }),
 
     // --- Ferro, forja e ofício da guerra ---
+    assignment("leraie-iron-lemegeton", "iron-and-war-craft", "goetia", "leraie", "goetic_spirit", {
+      tradition: "lemegeton",
+      school: "lemegeton-chave-menor",
+      family: "lemegeton",
+      work: "lemegeton-chave-menor-de-salomao",
+      locator:
+        "Corpus local, lemegeton-a-chave-menor-de-salomao, Parte I, verbete 14 — Leraie: “Ele causa grandes batalhas e disputas; e traz a putrefação pelo ferimento que é feito com as setas por Arqueiros”",
+      confidence: 0.7,
+      extractionMethod: "manual_review",
+    }),
     assignment("khamael-iron-dalton", "iron-and-war-craft", "ceremonial", "khamael", "angel", {
       tradition: "angelical",
       school: "dalton-alta-magia-angelical",
@@ -252,6 +294,23 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
 
     // --- Atração e concórdia ---
     assignment(
+      "beleth-attraction-lemegeton",
+      "attraction-and-concord",
+      "goetia",
+      "beleth",
+      "goetic_spirit",
+      {
+        tradition: "lemegeton",
+        school: "lemegeton-chave-menor",
+        family: "lemegeton",
+        work: "lemegeton-chave-menor-de-salomao",
+        locator:
+          "Corpus local, lemegeton-a-chave-menor-de-salomao, Parte I, verbete 13 — Beleth: “Beleth causa todo tipo de amor que pode haver entre homens e mulheres”",
+        confidence: 0.85,
+        extractionMethod: "manual_review",
+      },
+    ),
+    assignment(
       "uriel-attraction-rankine",
       "attraction-and-concord",
       "ceremonial",
@@ -331,6 +390,23 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
     }),
 
     // --- Aflição e cura ---
+    assignment(
+      "marbas-affliction-lemegeton",
+      "affliction-and-cure",
+      "goetia",
+      "marbas",
+      "goetic_spirit",
+      {
+        tradition: "lemegeton",
+        school: "lemegeton-chave-menor",
+        family: "lemegeton",
+        work: "lemegeton-chave-menor-de-salomao",
+        locator:
+          "Corpus local, lemegeton-a-chave-menor-de-salomao, Parte I, verbete 5 — Marbas: “Ele cura e causa doenças”",
+        confidence: 0.9,
+        extractionMethod: "manual_review",
+      },
+    ),
     assignment("omolu-cure-saraceni", "affliction-and-cure", "umbanda", "omolu", "orisa", {
       tradition: "umbanda",
       school: "umbanda-sagrada-saraceni",
@@ -342,6 +418,23 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
     }),
 
     // --- Passagem entre planos ---
+    assignment(
+      "bune-passage-lemegeton",
+      "passage-between-planes",
+      "goetia",
+      "bune",
+      "goetic_spirit",
+      {
+        tradition: "lemegeton",
+        school: "lemegeton-chave-menor",
+        family: "lemegeton",
+        work: "lemegeton-chave-menor-de-salomao",
+        locator:
+          "Corpus local, lemegeton-a-chave-menor-de-salomao, Parte I, verbete 26 — Bune: “Ele altera o lugar onde estão os mortos, e faz os espíritos que estejam sob seu comando ascender acima dos sepulcros”",
+        confidence: 0.85,
+        extractionMethod: "manual_review",
+      },
+    ),
     assignment(
       "obaluaie-passage-saraceni",
       "passage-between-planes",
@@ -369,6 +462,23 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
     }),
 
     // --- Adivinhação e conselho ---
+    assignment(
+      "gusion-divination-lemegeton",
+      "divination-and-counsel",
+      "goetia",
+      "gusion",
+      "goetic_spirit",
+      {
+        tradition: "lemegeton",
+        school: "lemegeton-chave-menor",
+        family: "lemegeton",
+        work: "lemegeton-chave-menor-de-salomao",
+        locator:
+          "Corpus local, lemegeton-a-chave-menor-de-salomao, Parte I, verbete 11 — Gusion: “Mostra todas as coisas, passadas, presentes, e futuras, e demonstra e responde quaisquer questões que o magista venha a perguntar”",
+        confidence: 0.9,
+        extractionMethod: "manual_review",
+      },
+    ),
     assignment(
       "gabriel-divination-dalton",
       "divination-and-counsel",
@@ -497,7 +607,7 @@ function assignment(
   functionSlug: string,
   entityGroup: string,
   entitySlug: string,
-  entityCategory: "orisa" | "guide_entity" | "angel" | "olympic_spirit",
+  entityCategory: "orisa" | "guide_entity" | "angel" | "olympic_spirit" | "goetic_spirit",
   evidence: {
     tradition: string;
     school: string;
