@@ -1,3 +1,6 @@
+import Link from "next/link";
+
+import { RitualSeal } from "@/components/site/ritual-seal";
 import type { PublicRegencyResponse } from "@/lib/orixas/public-regency";
 
 import { affinityLabels, explainReason, roles, stabilityLabels } from "./shared";
@@ -25,16 +28,31 @@ export function OrisaResultView({
           return (
             <article key={role}>
               <small>{label}</small>
-              <h2>
-                {roleResult.selectedId === null
-                  ? "Em aberto"
-                  : roleResult.candidates.find(({ orisaId }) => orisaId === roleResult.selectedId)
-                      ?.displayName}
-              </h2>
+              <div className="orisa-role-heading">
+                {roleResult.selectedId === null ? null : (
+                  <RitualSeal orisaId={roleResult.selectedId} size={44} />
+                )}
+                <h2>
+                  {roleResult.selectedId === null
+                    ? "Em aberto"
+                    : roleResult.candidates.find(({ orisaId }) => orisaId === roleResult.selectedId)
+                        ?.displayName}
+                </h2>
+              </div>
               <p>{description}</p>
               <p className="orisa-stability">
                 Estabilidade entre fontes: <strong>{stabilityLabels[roleResult.stability]}</strong>
               </p>
+              {roleResult.determiningFactors.length === 0 ? null : (
+                <div className="orisa-factors">
+                  <h3>O que sustentou esta leitura</h3>
+                  <ul>
+                    {roleResult.determiningFactors.map((factor) => (
+                      <li key={factor}>{factor}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
               <ol>
                 {roleResult.candidates.map((candidate) => (
                   <li key={candidate.orisaId}>
@@ -64,6 +82,10 @@ export function OrisaResultView({
           jogo de búzios.
         </p>
         <p>Métricas de validação serão publicadas quando a amostra atingir o corte definido.</p>
+        <p>
+          <Link href="/metodologia">Como este método funciona</Link> — entradas, processo,
+          versionamento, avaliação e limites.
+        </p>
       </footer>
     </section>
   );

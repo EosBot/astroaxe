@@ -2312,6 +2312,54 @@ a.celestial-module:hover {
   font-family: Georgia, serif;
   font-size: 1rem;
 }
+.celestial-glyph {
+  display: inline-block;
+  vertical-align: -0.14em;
+}
+.ritual-seal {
+  flex: none;
+  color: var(--copper);
+}
+.orisa-role-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.orisa-role-heading h2 {
+  margin: 0;
+}
+
+.orisa-factors {
+  margin: 1rem 0 0;
+  padding-top: 0.9rem;
+  border-top: 1px solid var(--line);
+}
+.orisa-factors h3 {
+  margin: 0 0 0.6rem;
+  color: var(--muted);
+  font-family: ui-monospace, monospace;
+  font-size: 0.68rem;
+  font-weight: 400;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+.orisa-factors ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.orisa-factors li {
+  padding: 0.25rem 0;
+  color: var(--ivory, inherit);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+.orisa-factors li::before {
+  content: "·";
+  padding-right: 0.5rem;
+  color: var(--copper);
+}
+
 .methodology-shell {
   max-width: 1040px;
 }
@@ -2430,6 +2478,137 @@ a.celestial-module:hover {
   font-family: ui-monospace, monospace;
   font-size: 0.82rem;
 }
+.method-detail-list {
+  margin: 2.5rem 0 0;
+  border-top: 1px solid var(--line);
+}
+.method-detail-list > div {
+  display: grid;
+  grid-template-columns: minmax(0, 0.32fr) minmax(0, 1fr);
+  gap: clamp(1rem, 4vw, 3rem);
+  padding: 1.6rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.method-detail-list dt {
+  color: var(--aqua);
+  font-family: ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.method-detail-list dd {
+  max-width: 62ch;
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.75;
+}
+.method-emphasis {
+  max-width: 66ch;
+  margin: 2.5rem 0 0;
+  padding-left: clamp(1rem, 3vw, 1.75rem);
+  border-left: 2px solid var(--copper);
+  color: var(--ivory, inherit);
+  line-height: 1.75;
+}
+.method-limit {
+  border-left-color: var(--aqua);
+}
+.method-strengths {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 2.5rem 0 1.5rem;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.method-strengths li {
+  min-width: 0;
+  padding: 1.1rem 1rem 1.1rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.method-strengths li + li {
+  padding-left: 1rem;
+  border-left: 1px solid var(--line);
+}
+.method-strengths strong,
+.method-strengths span {
+  display: block;
+}
+.method-strengths strong {
+  color: var(--copper);
+  font-family: ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.method-strengths span {
+  margin-top: 0.6rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+.method-criteria {
+  max-width: 68ch;
+  margin: 2rem 0;
+  padding: 0;
+  list-style: none;
+}
+.method-criteria li {
+  padding: 0.9rem 0 0.9rem 1.75rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  line-height: 1.7;
+  text-indent: -1.75rem;
+}
+.method-criteria li::before {
+  content: "—";
+  padding-right: 0.75rem;
+  color: var(--copper);
+}
+.method-subheading {
+  margin: 3rem 0 1rem;
+  font-family: "Iowan Old Style", Baskerville, Georgia, serif;
+  font-size: clamp(1.3rem, 3vw, 1.9rem);
+  font-weight: 500;
+}
+.method-corrections {
+  margin: 2rem 0 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+.method-corrections li {
+  max-width: 72ch;
+  padding: 1.6rem 0;
+  border-bottom: 1px solid var(--line);
+}
+.method-corrections p {
+  margin: 0 0 0.7rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+.method-corrections p:last-child {
+  margin-bottom: 0;
+}
+.method-corrections strong {
+  color: var(--aqua);
+}
+.method-correction-meta {
+  display: flex;
+  gap: 1rem;
+  font-family: ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.method-correction-meta span {
+  color: var(--copper);
+}
+.method-correction-change {
+  color: var(--ivory, inherit) !important;
+}
+
 .methodology-columns {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -3510,8 +3689,17 @@ button:disabled {
   }
   .methodology-hero,
   .methodology-columns,
-  .method-versions {
+  .method-versions,
+  .method-strengths,
+  .method-detail-list > div {
     grid-template-columns: 1fr;
+  }
+  .method-detail-list > div {
+    gap: 0.6rem;
+  }
+  .method-strengths li + li {
+    padding-left: 0;
+    border-left: 0;
   }
   .method-chain {
     grid-template-columns: 1fr;

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { CelestialGlyph, hasCelestialGlyph } from "@/components/site/celestial-glyph";
 
 import { zodiacPlacement } from "@/domain/astrology/western/zodiac";
 import type { CreateMapResponse } from "@/lib/maps/contracts";
@@ -134,7 +135,7 @@ export function NatalChartWheel({
                   style={{ left: `${point.x}%`, top: `${point.y}%` }}
                   onClick={() => setSelectedId(planet.id)}
                 >
-                  <span aria-hidden="true">{planetMeta(planet).glyph}</span>
+                  <PlanetGlyph id={planet.id} fallback={planetMeta(planet).glyph} />
                 </button>
               );
             })}
@@ -171,7 +172,7 @@ export function NatalChartWheel({
                     aria-pressed={planet.id === selected?.id}
                     onClick={() => setSelectedId(planet.id)}
                   >
-                    <span aria-hidden="true">{planetMeta(planet).glyph}</span>
+                    <PlanetGlyph id={planet.id} fallback={planetMeta(planet).glyph} />
                     <strong>{planetMeta(planet).label}</strong>
                     <small>
                       {placement.sign} · {placement.signDegree.toFixed(2)}°
@@ -290,7 +291,7 @@ function PlanetReading({
     >
       <p className="eyebrow">{compact ? "Corpo em foco" : meta.theme}</p>
       <div className="natal-reading-title">
-        <span aria-hidden="true">{meta.glyph}</span>
+        <PlanetGlyph id={planet.id} fallback={meta.glyph} />
         <h4>
           {meta.label} em {placement.sign}
         </h4>
@@ -453,4 +454,18 @@ function planetMeta(planet: Planet): { label: string; glyph: string; theme: stri
       theme: "uma dimensão simbólica da experiência",
     }
   );
+}
+
+/**
+ * Glifo do corpo celeste, sempre decorativo — o nome acompanha em texto.
+ *
+ * Corpo sem glifo desenhado cai no caractere Unicode em vez de sumir da roda:
+ * perder o marcador seria pior que renderizá-lo com a fonte do sistema.
+ */
+function PlanetGlyph({
+  id,
+  fallback,
+}: Readonly<{ id: string; fallback: string }>): React.JSX.Element {
+  if (!hasCelestialGlyph(id)) return <span aria-hidden="true">{fallback}</span>;
+  return <CelestialGlyph body={id} />;
 }
