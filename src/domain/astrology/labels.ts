@@ -23,7 +23,27 @@ const aspectNames: Readonly<Record<string, string>> = {
   opposition: "oposição",
 };
 
+const zodiacSignNames: Readonly<Record<string, string>> = {
+  aries: "Áries",
+  taurus: "Touro",
+  gemini: "Gêmeos",
+  cancer: "Câncer",
+  leo: "Leão",
+  virgo: "Virgem",
+  libra: "Libra",
+  scorpio: "Escorpião",
+  sagittarius: "Sagitário",
+  capricorn: "Capricórnio",
+  aquarius: "Aquário",
+  pisces: "Peixes",
+};
+
 const masculineAspects = new Set(["sextile", "trine"]);
+
+/** Nome do signo a partir do identificador em inglês usado pelo motor. */
+export function zodiacSignName(sign: string): string {
+  return zodiacSignNames[sign.toLowerCase()] ?? "signo";
+}
 
 export function astrologicalBodyName(body: string): string {
   return bodyNames[body.toLowerCase()] ?? "corpo celeste";

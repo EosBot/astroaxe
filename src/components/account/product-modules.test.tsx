@@ -99,6 +99,14 @@ describe("account product modules", () => {
     ).toBeTruthy();
     expect(screen.getByText(/não substituem confirmação religiosa/)).toBeTruthy();
     expect(screen.getByText(/Métricas de validação serão publicadas/)).toBeTruthy();
+    // Fatores determinantes visíveis no papel fechado; o papel em aberto não os
+    // exibe, porque listá-los sugeriria uma conclusão que o método não tomou.
+    expect(screen.getByText("Ascendente em Áries")).toBeTruthy();
+    expect(screen.getByText("Marte angular")).toBeTruthy();
+    expect(screen.getAllByRole("heading", { name: "O que sustentou esta leitura" })).toHaveLength(
+      2,
+    );
+    expect(screen.getByRole("link", { name: "Como este método funciona" })).toBeTruthy();
     expect(
       screen.getByText(/Você já sabe quais são seus Orixás de frente, cabeça e costas/),
     ).toBeTruthy();
@@ -275,11 +283,22 @@ function regencyResponse() {
     methodVersion: "AstroAxe Regências 3.0 — pesquisa aplicada",
     disclaimer: "Método autoral AstroAxe; consulte a metodologia.",
     roles: {
-      front: { selectedId: "orisa:ogum", candidates, stability: "high" },
-      head: { selectedId: "orisa:oxala", candidates, stability: "medium" },
+      front: {
+        selectedId: "orisa:ogum",
+        candidates,
+        determiningFactors: ["Ascendente em Áries", "Marte angular"],
+        stability: "high",
+      },
+      head: {
+        selectedId: "orisa:oxala",
+        candidates,
+        determiningFactors: ["Sol em domicílio"],
+        stability: "medium",
+      },
       back: {
         selectedId: null,
         candidates,
+        determiningFactors: [],
         stability: "low",
         unresolvedReason: "insufficient_score",
       },

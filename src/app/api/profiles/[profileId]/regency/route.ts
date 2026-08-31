@@ -11,6 +11,7 @@ import {
   extractRegencyQuestionnaireFeatures,
   regencyQuestionnaireSubmissionSchema,
 } from "@/domain/orixas/regency/questionnaire";
+import { describeRegencyFactors } from "@/domain/orixas/regency/public-factors";
 import { PUBLIC_REGENCY_METHOD_VERSION } from "@/domain/orixas/regency/public-method";
 import { assessRegencyRobustness } from "@/domain/orixas/regency/robustness";
 import { scoreRegencies } from "@/domain/orixas/regency/scorer";
@@ -231,6 +232,7 @@ function calculateRegency(
             displayName: candidate.displayName,
             affinity: affinity(candidate.normalizedScore),
           })),
+          determiningFactors: determiningFactors(result, role),
           stability: stability(robustness.roles[role]),
           ...(result.unresolvedRoles[role] === undefined
             ? {}
@@ -263,6 +265,24 @@ function feedbackData(
     comment: feedback.comment ?? null,
     consentVersion: feedback.consentVersion,
   };
+}
+
+/**
+ * Fatores do candidato efetivamente escolhido.
+ *
+ * Papel em aberto não tem fatores determinantes: listar os do primeiro
+ * colocado sugeriria uma conclusão que o método justamente não tomou.
+ */
+function determiningFactors(
+  result: ReturnType<typeof scoreRegencies>,
+  role: "front" | "head" | "back",
+): string[] {
+  const selectedId = result.triad[role];
+  if (selectedId === null) return [];
+  const selected = result.rankingsByRole[role].find(
+    (candidate) => candidate.orisaId === selectedId,
+  );
+  return selected === undefined ? [] : describeRegencyFactors(selected.contributions);
 }
 
 function affinity(score: number): "predominant" | "strong" | "present" | "subtle" {

@@ -136,9 +136,19 @@ function result(): PublicRegencyResponse {
     methodVersion: PUBLIC_REGENCY_METHOD_VERSION,
     disclaimer: AUTHORIAL_REGENCY_DISCLAIMER,
     roles: {
-      front: { selectedId: "orisa:ogum", candidates, stability: "high" },
-      head: { selectedId: "orisa:oxala", candidates, stability: "medium" },
-      back: { selectedId: "orisa:xango", candidates, stability: "low" },
+      front: {
+        selectedId: "orisa:ogum",
+        candidates,
+        determiningFactors: ["Ascendente em Áries", "Marte angular"],
+        stability: "high",
+      },
+      head: {
+        selectedId: "orisa:oxala",
+        candidates,
+        determiningFactors: ["Sol em domicílio"],
+        stability: "medium",
+      },
+      back: { selectedId: "orisa:xango", candidates, determiningFactors: [], stability: "low" },
     },
   };
 }

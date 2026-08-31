@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+import { PUBLIC_REGENCY_FACTOR_LIMIT } from "@/domain/orixas/regency/public-factors";
 import { PUBLIC_REGENCY_METHOD_VERSION } from "@/domain/orixas/regency/public-method";
 import { AUTHORIAL_REGENCY_DISCLAIMER } from "./contracts";
 
@@ -19,6 +20,12 @@ const publicRoleResultSchema = z
       .regex(/^orisa:[a-z0-9-]+$/)
       .nullable(),
     candidates: z.array(publicCandidateSchema).length(3),
+    /**
+     * Os fatos astrológicos que mais sustentaram o papel, do maior para o menor
+     * peso. Nunca identificador de regra, coeficiente ou fonte estrutural: a
+     * ordem é pública, o valor não. Vazio quando o papel fica em aberto.
+     */
+    determiningFactors: z.array(z.string().trim().min(1).max(120)).max(PUBLIC_REGENCY_FACTOR_LIMIT),
     stability: z.enum(["unavailable", "low", "medium", "high"]),
     unresolvedReason: z
       .enum([

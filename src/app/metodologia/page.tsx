@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { listMethodCorrections } from "@/domain/orixas/regency/method-corrections";
 import {
+  PUBLIC_REGENCY_METHOD_CARD,
   PUBLIC_REGENCY_METHOD_SUMMARY,
   PUBLIC_REGENCY_METHOD_VERSION,
 } from "@/domain/orixas/regency/public-method";
@@ -9,33 +11,19 @@ import {
 export const metadata: Metadata = {
   title: "Como funciona o método",
   description:
-    "Conheça as entradas, controles de qualidade e limites do método autoral de regências AstroAxe.",
+    "Model card do método autoral de regências AstroAxe: entradas, processo, condensação das tradições, versionamento, avaliação e limites conhecidos.",
   alternates: { canonical: "/metodologia" },
   openGraph: {
     type: "website",
     title: "Como funciona o método — AstroAxe",
     description:
-      "Astrologia calculada, camadas simbólicas versionadas e controles de estabilidade em uma leitura autoral.",
+      "Astrologia calculada, condensação de tradições por função estrutural e controles de estabilidade em uma leitura autoral.",
     url: "/metodologia",
   },
 };
 
-const stages = [
-  ["Calcular", "O céu natal é calculado com data, hora e lugar informados."],
-  [
-    "Interpretar",
-    "O sistema organiza padrões astrológicos, temporais e numerológicos compatíveis.",
-  ],
-  [
-    "Cruzar",
-    "Correspondências documentadas são avaliadas sem tratar repetição editorial como consenso.",
-  ],
-  ["Testar", "A estabilidade da leitura é verificada antes de apresentar cada papel."],
-  [
-    "Explicar",
-    "O resultado mostra os sinais predominantes e informa quando um papel fica em aberto.",
-  ],
-] as const;
+const { chain, condensation, versioning, evaluation, limits } = PUBLIC_REGENCY_METHOD_CARD;
+const corrections = listMethodCorrections();
 
 export default function MethodologyPage(): React.JSX.Element {
   return (
@@ -43,22 +31,22 @@ export default function MethodologyPage(): React.JSX.Element {
       <article className="methodology-document">
         <header className="methodology-hero">
           <div>
-            <p className="eyebrow">Transparência técnica · propriedade intelectual preservada</p>
+            <p className="eyebrow">Model card · método autoral de regências</p>
             <h1>Um método rastreável, sem transformar profundidade em caixa-preta.</h1>
           </div>
           <p>
             O AstroAxe combina cálculo astrológico determinístico com um sistema autoral de
-            correspondências culturais. Publicamos o que entra, como a qualidade é controlada e
-            quais são os limites. A matriz, os pesos e as regras proprietárias permanecem
-            protegidos.
+            correspondências culturais. Esta página publica o que entra, como as tradições são
+            condensadas, como a qualidade é controlada e onde o método termina. A matriz, os pesos e
+            as regras proprietárias permanecem protegidos.
           </p>
         </header>
 
         <ol className="method-chain" aria-label="Etapas públicas do método AstroAxe">
-          {stages.map(([title, description]) => (
+          {chain.map(({ title, summary }) => (
             <li key={title}>
               <strong>{title}</strong>
-              <span>{description}</span>
+              <span>{summary}</span>
             </li>
           ))}
         </ol>
@@ -75,49 +63,125 @@ export default function MethodologyPage(): React.JSX.Element {
           </div>
         </section>
 
+        <section className="methodology-section" aria-labelledby="method-process">
+          <p className="eyebrow">Processo</p>
+          <h2 id="method-process">Cada etapa, com o que ela de fato faz.</h2>
+          <dl className="method-detail-list">
+            {chain.map(({ title, detail }) => (
+              <div key={title}>
+                <dt>{title}</dt>
+                <dd>{detail}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        <section className="methodology-section" aria-labelledby="method-condensation">
+          <p className="eyebrow">Condensação das tradições</p>
+          <h2 id="method-condensation">Tradições diferentes respondendo à mesma pergunta.</h2>
+          <p>
+            O que o método faz não é escolher uma tradição nem misturar todas num caldo. É separar a
+            afirmação da tradição da posição estrutural que ela descreve, e depois agrupar por
+            posição — em três camadas.
+          </p>
+          <dl className="method-detail-list">
+            {condensation.layers.map(({ title, detail }) => (
+              <div key={title}>
+                <dt>{title}</dt>
+                <dd>{detail}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <p className="method-emphasis">{condensation.lineageRule}</p>
+
+          <ul className="method-strengths" aria-label="Graus de sustentação">
+            {condensation.strengthLabels.map(({ label, detail }) => (
+              <li key={label}>
+                <strong>{label}</strong>
+                <span>{detail}</span>
+              </li>
+            ))}
+          </ul>
+          <p>
+            A sustentação é dita em palavras, e não em percentual: não existe amostra que calibre um
+            número aqui, e um número seria lido como certeza.
+          </p>
+
+          <p className="method-emphasis method-limit">{condensation.limit}</p>
+        </section>
+
+        <section className="methodology-section" aria-labelledby="method-versioning">
+          <p className="eyebrow">Versionamento</p>
+          <h2 id="method-versioning">Versão antes de promessa.</h2>
+          <p>{versioning.principle}</p>
+          <dl className="method-versions">
+            {versioning.surfaces.map(({ label, value }) => (
+              <div key={label}>
+                <dt>{label}</dt>
+                <dd>{value}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <h3 className="method-subheading">O que já foi corrigido</h3>
+          <p>
+            Um princípio de correção sem registro é promessa. Estas são as correções que o método já
+            sofreu, com a causa e o efeito de cada uma — inclusive quando o efeito foi mostrar menos
+            do que se mostrava antes.
+          </p>
+          <ol className="method-corrections">
+            {corrections.map((correction) => (
+              <li key={correction.id}>
+                <p className="method-correction-meta">
+                  <time dateTime={correction.recordedOn}>{formatDate(correction.recordedOn)}</time>
+                  <span>{correction.area}</span>
+                </p>
+                <p className="method-correction-change">{correction.whatChanged}</p>
+                <p>
+                  <strong>Por quê:</strong> {correction.why}
+                </p>
+                <p>
+                  <strong>Efeito:</strong> {correction.consequence}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className="methodology-section" aria-labelledby="method-evaluation">
+          <p className="eyebrow">Avaliação</p>
+          <h2 id="method-evaluation">O que uma versão nova precisa provar.</h2>
+          <p>{evaluation.intro}</p>
+          <ul className="method-criteria">
+            {evaluation.criteria.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+          <p>{evaluation.decisionStates}</p>
+        </section>
+
+        <section className="methodology-section" aria-labelledby="method-limits">
+          <p className="eyebrow">Limites conhecidos</p>
+          <h2 id="method-limits">O método sabe onde termina.</h2>
+          <dl className="method-detail-list">
+            {limits.map(({ title, detail }) => (
+              <div key={title}>
+                <dt>{title}</dt>
+                <dd>{detail}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
         <section className="methodology-section" aria-labelledby="method-privacy">
           <p className="eyebrow">Tecnologia proprietária</p>
           <h2 id="method-privacy">Transparência não exige publicar a receita.</h2>
           <p>
-            O produto identifica a versão aplicada e explica os fatores que sustentam a leitura. Não
-            divulga a matriz completa, coeficientes, limiares, regras de desempate nem o corpus
-            interno. Essa separação permite auditoria do resultado sem entregar o mecanismo que
-            constitui a propriedade intelectual do AstroAxe.
-          </p>
-        </section>
-
-        <section
-          className="methodology-section methodology-columns"
-          aria-label="Precisão e limites"
-        >
-          <div>
-            <p className="eyebrow">Precisão proporcional</p>
-            <h2>Dados ausentes reduzem a leitura.</h2>
-            <p>
-              Sem hora natal, casas, ângulos e outros fatores dependentes de horário não entram. O
-              sistema não preenche lacunas com estimativas silenciosas e pode manter um papel em
-              aberto quando a convergência é insuficiente.
-            </p>
-          </div>
-          <div>
-            <p className="eyebrow">Limites publicados</p>
-            <h2>O método sabe onde termina.</h2>
-            <ul>
-              {PUBLIC_REGENCY_METHOD_SUMMARY.disclosedLimitations.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        <section className="methodology-section" aria-labelledby="method-validation">
-          <p className="eyebrow">Validação contínua</p>
-          <h2 id="method-validation">Versão antes de promessa.</h2>
-          <p>
-            Cada alteração que possa mudar um resultado recebe nova versão e testes de regressão.
-            Métricas de acurácia só serão publicadas com população, amostra e protocolo de validação
-            claramente informados. Até lá, o score expressa aderência ao método — não porcentagem de
-            certeza espiritual.
+            Tudo acima descreve o que entra, como se decide e onde o método para. O que fica de fora
+            é o mecanismo: a matriz completa, os coeficientes, os limiares e as regras de desempate.
+            Essa separação permite auditar o resultado sem entregar a construção que constitui a
+            propriedade intelectual do AstroAxe.
           </p>
         </section>
 
@@ -128,6 +192,11 @@ export default function MethodologyPage(): React.JSX.Element {
       </article>
     </main>
   );
+}
+
+function formatDate(isoDate: string): string {
+  const [year, month, day] = isoDate.split("-");
+  return `${day}/${month}/${year}`;
 }
 
 function MethodList({ title, items }: Readonly<{ title: string; items: readonly string[] }>) {
