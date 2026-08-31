@@ -9,6 +9,11 @@ import logging
 import re
 from dataclasses import dataclass, field
 
+from corpus_hygiene import (
+    find_duplicate_groups,
+    is_mostly_garbage,
+    is_out_of_scope,
+)
 from extract import ExtractedDocument
 
 logger = logging.getLogger(__name__)
@@ -72,30 +77,25 @@ def clean_text(raw: str) -> str:
     return text.strip()
 
 
-def is_mostly_garbage(text: str) -> bool:
-    if not text:
-        return True
-    alpha_ratio = sum(1 for c in text if c.isalpha() or c.isspace()) / max(len(text), 1)
-    return alpha_ratio < 0.5
-
-
 # --- Deduplication ---
 
 def deduplicate_documents(docs: list[ExtractedDocument]) -> list[ExtractedDocument]:
-    seen_hashes: dict[str, str] = {}
-    unique: list[ExtractedDocument] = []
-    dupes = 0
+    """
+    Remove cópias da mesma obra.
 
-    for doc in docs:
-        content_hash = hashlib.md5(doc.text[:5000].encode()).hexdigest()
-        if content_hash in seen_hashes:
-            dupes += 1
-            logger.debug("Duplicate skipped: %s (matches %s)", doc.title, seen_hashes[content_hash])
-        else:
-            seen_hashes[content_hash] = doc.title
-            unique.append(doc)
-
-    logger.info("Deduplication: %d → %d documents (%d dupes removed)", len(docs), len(unique), dupes)
+    O critério anterior era o hash dos primeiros 5000 caracteres, que só
+    reconhece arquivos idênticos: quatro cópias de *Magia Prática* do Bardon
+    entraram no índice porque diferiam no cabeçalho. A assinatura de n-gramas
+    compara o documento inteiro e tolera divergência de paginação.
+    """
+    dropped = find_duplicate_groups(
+        [(doc.doc_id, doc.title, doc.text, len(doc.text)) for doc in docs]
+    )
+    unique = [doc for doc in docs if doc.doc_id not in dropped]
+    logger.info(
+        "Deduplication: %d → %d documents (%d cópias removidas)",
+        len(docs), len(unique), len(dropped),
+    )
     return unique
 
 
@@ -206,15 +206,24 @@ def normalize_corpus(
     cleaned: list[ExtractedDocument] = []
     garbage_count = 0
 
+    out_of_scope_count = 0
+
     for doc in documents:
+        if (reason := is_out_of_scope(doc.title)):
+            out_of_scope_count += 1
+            logger.warning("Fora do escopo (%s): %s", reason, doc.title)
+            continue
         doc.text = clean_text(doc.text)
         if is_mostly_garbage(doc.text):
             garbage_count += 1
-            logger.warning("Garbage document skipped: %s", doc.title)
+            logger.warning("Extração degenerada, documento descartado: %s", doc.title)
             continue
         cleaned.append(doc)
 
-    logger.info("Cleaning: %d → %d documents (%d garbage removed)", len(documents), len(cleaned), garbage_count)
+    logger.info(
+        "Cleaning: %d → %d documents (%d ilegíveis, %d fora do escopo)",
+        len(documents), len(cleaned), garbage_count, out_of_scope_count,
+    )
 
     unique = deduplicate_documents(cleaned)
 

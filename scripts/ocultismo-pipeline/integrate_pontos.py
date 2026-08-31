@@ -23,18 +23,31 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-CONTENT_DIR = Path("/home/thalis/Projetos/orixas-mapa-astral/conteudo")
+CONTENT_DIR = Path(__file__).parent.parent.parent / "conteudo"
 MODEL_NAME = "BAAI/bge-m3"
 
 
 def load_pontos_with_lyrics(catalog_path: Path) -> list[dict]:
+    """
+    Pontos cujo campo `lyrics` passou pela validação de `validate_lyrics.py`.
+
+    O comprimento mínimo não basta como critério: um artigo de blog tem milhares
+    de caracteres e não é letra. O catálogo carrega `lyrics_status` desde a
+    validação, e só o que está validado ou recuperado entra no índice.
+    """
+    accepted = {"validada", "recuperada por segmentação"}
     pontos = []
     with catalog_path.open("r", encoding="utf-8") as f:
         for line in f:
             ponto = json.loads(line)
-            if ponto.get("lyrics") and len(ponto["lyrics"]) > 30:
-                pontos.append(ponto)
-    logger.info("Found %d pontos with lyrics", len(pontos))
+            lyrics = (ponto.get("lyrics") or "").strip()
+            status = ponto.get("lyrics_status")
+            if not lyrics:
+                continue
+            if status is not None and status not in accepted:
+                continue
+            pontos.append(ponto)
+    logger.info("Found %d pontos with validated lyrics", len(pontos))
     return pontos
 
 
@@ -61,6 +74,15 @@ def integrate_pontos(device: str = "cuda") -> None:
     manifest = json.loads(manifest_path.read_text())
 
     logger.info("Existing corpus: %d chunks, embedding shape %s", len(df), embeddings.shape)
+
+    # Idempotência: o catálogo é reescrito a cada validação, então os pontos já
+    # indexados saem antes de os novos entrarem. Sem isso, cada execução
+    # acrescentaria uma segunda cópia de cada letra ao índice.
+    stale = (df.file_type == "ponto_letra").values
+    if stale.any():
+        logger.info("Removendo %d chunks de pontos já indexados", int(stale.sum()))
+        df = df[~stale].reset_index(drop=True)
+        embeddings = embeddings[~stale]
 
     # Prepare ponto texts for embedding
     ponto_texts = []
@@ -125,7 +147,13 @@ def integrate_pontos(device: str = "cuda") -> None:
     manifest["total_docs"] = len({r["doc_id"] for r in combined_df.to_dict("records")})
     if "pontos_cantados" not in manifest["categories"]:
         manifest["categories"].append("pontos_cantados")
+    manifest["categories"] = sorted(combined_df.category.unique())
+    manifest["file_types"] = sorted(combined_df.file_type.unique())
     manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2))
+
+    from clean_corpus import write_jsonl
+
+    write_jsonl(combined_df, CONTENT_DIR / "chunks.jsonl")
 
     logger.info(
         "Integrated %d pontos. New corpus: %d chunks, embedding shape %s",

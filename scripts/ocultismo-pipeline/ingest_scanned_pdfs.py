@@ -21,6 +21,7 @@ import numpy as np
 import pymupdf
 from sentence_transformers import SentenceTransformer
 
+from corpus_hygiene import is_mostly_garbage
 from embed import EMBEDDING_DIM, MODEL_NAME, build_faiss_index
 from extract import SOURCE_ROOT, ExtractedDocument, compute_doc_id, extract_pdf, get_category
 from normalize import normalize_corpus
@@ -39,13 +40,21 @@ BATCH_SIZE = 8
 
 
 def find_scanned_pdfs() -> list[Path]:
-    """PDFs cuja camada de texto é insuficiente (candidatos a OCR)."""
+    """
+    PDFs que precisam de OCR.
+
+    Duas condições, não uma. A ausência de camada de texto é a óbvia; a outra é
+    a camada de texto *degenerada* — um PDF com fonte embutida sem mapa de
+    caracteres devolve muitos caracteres, todos ilegíveis, e passa por qualquer
+    teste que meça apenas o tamanho do texto extraído. Foi assim que o Curso
+    Básico de Astrologia entrou no índice como 173 chunks de símbolos.
+    """
     candidates: list[Path] = []
     for path in sorted(SOURCE_ROOT.rglob("*.pdf")):
         if not path.is_file():
             continue
         text, _ = extract_pdf(path)
-        if len(text.strip()) < MIN_TEXT_CHARS:
+        if len(text.strip()) < MIN_TEXT_CHARS or is_mostly_garbage(text):
             candidates.append(path)
     return candidates
 
@@ -156,6 +165,13 @@ def merge_into_corpus(chunks) -> None:
     combined_df.to_parquet(parquet_path, index=False, engine="pyarrow")
     np.save(npy_path, combined_embeddings)
     faiss.write_index(cpu_index, str(faiss_path))
+
+    # O JSONL sai do parquet a cada gravação. Quando o merge não o regerava, ele
+    # ficava atrás do índice — foi assim que a primeira leva de OCR deixou 1280
+    # chunks fora do arquivo usado para fine-tuning.
+    from clean_corpus import write_jsonl
+
+    write_jsonl(combined_df, CONTENT_DIR / "chunks.jsonl")
 
     manifest["total_chunks"] = len(combined_df)
     manifest["total_docs"] = int(combined_df["doc_id"].nunique())
