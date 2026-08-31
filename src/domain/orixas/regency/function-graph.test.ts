@@ -54,9 +54,12 @@ describe("grafo de funções estruturais", () => {
   });
 
   it("gradua a força pela quantidade de linhagens independentes", () => {
+    // Recortar atribuições deixa divergências órfãs, e o schema recusa isso —
+    // é a mesma regra que impede conflito sem explicação.
     const single = condenseStructuralFunctions({
       ...regencyFunctionGraph,
       assignments: [firstAssignment],
+      divergences: [],
     });
     expect(single[0]?.strength).toBe("single_school");
     expect(single[0]?.independentFamilyCount).toBe(1);
@@ -66,6 +69,7 @@ describe("grafo de funções estruturais", () => {
       assignments: regencyFunctionGraph.assignments.filter(({ id }) =>
         ["assignment:ogum-iron-pena", "assignment:ogum-iron-ramatis"].includes(id),
       ),
+      divergences: [],
     });
     expect(twoFamilies[0]?.strength).toBe("corroborated");
 
@@ -87,7 +91,24 @@ describe("grafo de funções estruturais", () => {
       conflictsWith: ["assignment:disputa-a"],
     };
 
-    const group = groupFor(graphWith(left, right), "function:path-opening");
+    const group = groupFor(
+      {
+        ...graphWith(left, right),
+        divergences: [
+          ...regencyFunctionGraph.divergences,
+          {
+            id: "divergence:disputa-sintetica",
+            functionId: "function:path-opening",
+            between: ["assignment:disputa-a", "assignment:disputa-b"],
+            kind: "competing_scheme",
+            explanation: "Fixture: duas escolas atribuem a função a potências distintas.",
+            functionRemainsStable: true,
+            locators: ["Fixture sintética"],
+          },
+        ],
+      },
+      "function:path-opening",
+    );
 
     expect(group?.conflicts).toEqual([
       { left: "assignment:disputa-a", right: "assignment:disputa-b" },
@@ -261,5 +282,30 @@ describe("grafo de funções estruturais", () => {
     expect(ferro?.assignmentCount).toBe(6);
     expect(ferro?.independentFamilyCount).toBe(5);
     expect(ferro?.schoolCount).toBe(6);
+  });
+
+  it("classifica a divergência de Vênus como disputa de posto, não erro", () => {
+    const atracao = groupFor(regencyFunctionGraph, "function:attraction-and-concord");
+    const divergencia = atracao?.divergences.find(
+      ({ id }) => id === "divergence:venus-archangel-rank",
+    );
+
+    // A pergunta que decide se a condensação sobrevive: a função se mantém?
+    expect(divergencia?.kind).toBe("rank_scheme");
+    expect(divergencia?.functionRemainsStable).toBe(true);
+    // Cinco locators: quatro em Rankine e d'Este, um em Dalton. A classificação
+    // não é opinião — é o que sustenta chamá-la de esquema em vez de descuido.
+    expect(divergencia?.locators.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it("recusa conflito declarado sem divergência que o explique", () => {
+    const mudo = {
+      ...regencyFunctionGraph,
+      divergences: [],
+    };
+
+    // Colisão muda diz que duas fontes batem de frente e não diz se é grafia,
+    // esquema ou erro da fonte — e tratar as três como uma só foi o defeito.
+    expect(() => condenseStructuralFunctions(mudo)).toThrow();
   });
 });

@@ -83,7 +83,7 @@ import { regencyFunctionGraphSchema, type RegencyFunctionGraph } from "./functio
  *   fontes declaradas. Identificável não basta: nada dali entrou.
  */
 export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSchema.parse({
-  version: "regency-function-graph-0.4.0-research",
+  version: "regency-function-graph-0.5.0-research",
   status: "research",
   assignments: [
     // --- Abertura de caminho e passagem ---
@@ -471,6 +471,24 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
       confidence: 0.85,
       extractionMethod: "table_review",
     }),
+  ],
+  divergences: [
+    {
+      id: "divergence:venus-archangel-rank",
+      functionId: "function:attraction-and-concord",
+      between: ["assignment:haniel-attraction-angelical", "assignment:uriel-attraction-rankine"],
+      kind: "rank_scheme",
+      explanation:
+        "As duas escolas concordam sobre a função de Vênus — atração, beleza, união, concórdia — e discordam sobre qual nome ocupa o posto de arcanjo. Não é descuido de nenhuma das duas. Rankine e d'Este põem Uriel no posto de forma deliberada e consistente em quatro lugares independentes da obra, e a tabela hebraica registra Uriel e Anael lado a lado na coluna de Vênus: eles conhecem Anael e ainda assim atribuem a Uriel o posto de arcanjo, dizendo-o de Vênus e da Terra. Dalton usa Anael na tabela planetária e Haniel na oração de sexta-feira, que são grafias de um mesmo nome. Logo a disputa é de posto entre esquemas, não de ortografia nem de erro. O que isso demonstra para o método é o essencial: a função permanece estável sob a divergência, e é por isso que condensar por função sobrevive a disputas de nome que derrubariam qualquer síntese feita por identidade.",
+      functionRemainsStable: true,
+      locators: [
+        "Corpus local, _texto_magia_pratica_planetaria, correspondências de Vênus: “Arcanjo Uriel”",
+        "Corpus local, _texto_magia_pratica_planetaria, hierarquia planetária (p. 84): “3 Vênus Uriel Principados Hagiel Kedemel”",
+        "Corpus local, _texto_magia_pratica_planetaria, As Criaturas Espirituais de Vênus (p. 92): “Uriel, também conhecido como Auriel ou Oriel, é o Arcanjo de Vênus e da Terra”",
+        "Corpus local, _texto_magia_pratica_planetaria, tabela hebraica (p. 182), coluna de Vênus: Uriel e Anael registrados juntos",
+        "Corpus local, _texto_magia_angelical_72, Correspondências Planetárias, VÊNUS (pp. 26–27): “Arcanjo: Anael”",
+      ],
+    },
   ],
 });
 

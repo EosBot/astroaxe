@@ -98,13 +98,26 @@ describe("congelamento do domínio cerimonial", () => {
    *   `convergent`, uma `corroborated` e duas `single_school`. As escolas novas
    *   entraram na família que já existia, então somaram testemunho e não somaram
    *   convergência. Surgiu o primeiro conflito real registrado no grafo.
+   *
+   * E uma segunda vez, na investigação das divergências:
+   *
+   * - ANTES: `0.4.0-research`, conflito registrado sem natureza declarada.
+   * - DEPOIS: `0.5.0-research`, conflito exige um registro de divergência que
+   *   diga se é grafia, disputa de posto, esquema concorrente ou erro da fonte,
+   *   e se a função permanece estável apesar dele.
+   * - MOTIVO: `conflictsWith` dizia *que* duas fontes colidem e nunca *como*.
+   *   Sem isso o produto trata igual variante ortográfica, divergência
+   *   estruturada e engano de autor — e chamar erro de tradição empresta
+   *   autoridade a um engano.
+   * - IMPACTO: nenhuma contagem mudou. O schema passou a recusar conflito mudo,
+   *   então a exigência vale para todo conflito futuro, não só para este.
    */
   it("congela as versões declaradas de cada módulo do domínio", () => {
     expect(frozenDomainVersions).toEqual({
       electionEngine: "election-engine-0.2.0-research",
       electionProfileSchema: "election-profiles-0.2.0-research",
       entityRecords: "ceremonial-entity-records-0.1.0-research",
-      functionGraph: "regency-function-graph-0.4.0-research",
+      functionGraph: "regency-function-graph-0.5.0-research",
       guidancePolicy: "ceremonial-guidance-policy-0.1.0",
       planetaryHours: "planetary-hours-0.1.0",
       structuralFunctions: "structural-functions-0.1.0-research",

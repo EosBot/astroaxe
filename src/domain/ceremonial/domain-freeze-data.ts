@@ -341,6 +341,20 @@ export const duplicateLineageGraph = regencyFunctionGraphSchema.parse({
       conflictsWith: ["assignment:conflito-a"],
     },
   ],
+  // O schema recusa conflito sem natureza declarada: a fixture precisa dizer se
+  // a colisão é grafia, posto, esquema ou erro da fonte, como qualquer dado real.
+  divergences: [
+    {
+      id: "divergence:fixture-linhagens",
+      functionId: "function:iron-and-war-craft",
+      between: ["assignment:conflito-a", "assignment:conflito-b"],
+      kind: "competing_scheme",
+      explanation:
+        "Fixture: duas linhagens atribuem a mesma função a potências distintas, e a divergência precisa continuar observável em vez de conciliada.",
+      functionRemainsStable: true,
+      locators: ["Fixture sintética, verbete de exemplo"],
+    },
+  ],
 });
 
 function assignment(slug: string, functionSlug: string, entitySlug: string, workId: string) {

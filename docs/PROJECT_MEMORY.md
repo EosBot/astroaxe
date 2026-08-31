@@ -1,5 +1,48 @@
 # Memória canônica do projeto
 
+## Atualização 2026-08-31 — por que as fontes divergem, e como o grafo passou a dizer isso
+
+- A pergunta que originou esta entrada é boa e o registro anterior não a
+  respondia: **muitos autores simplesmente erram nas atribuições**, e um grafo
+  que só marca "estas duas colidem" empresta a mesma autoridade ao engano e à
+  tradição.
+- **Primeiro, verifiquei se a divergência de Vênus era real ou artefato meu.** Eu
+  a havia registrado a partir de uma única linha de tabela OCRizada. Fui ao texto:
+  as colunas de Inteligências (Agiel, Jophiel, Graphiel, Nakhiel, Hagiel, Tiriel,
+  Malka) e de Espíritos (Zazel, Hismael, Bartzabel, Sorath, Kedemel,
+  Taphthartharath, Schad) estão todas corretas e alinhadas nas sete linhas. A
+  tabela não está torta; `Uriel` está mesmo na coluna de arcanjo de Vênus.
+- **Depois, se era erro da fonte.** Não é. Rankine e d'Este põem Uriel no posto de
+  forma deliberada e consistente em **quatro lugares independentes** da obra: as
+  correspondências de Vênus, a hierarquia planetária da p. 84, "As Criaturas
+  Espirituais de Vênus" da p. 92 — onde dizem "Uriel, também conhecido como Auriel
+  ou Oriel, é o Arcanjo de Vênus **e da Terra**" — e a tabela hebraica da p. 182.
+- **O detalhe decisivo:** naquela tabela hebraica, a coluna de Vênus traz **Uriel e
+  Anael juntos**. Eles conhecem Anael e ainda assim atribuem a Uriel o posto de
+  arcanjo. Não é ignorância da alternativa; é outro esquema de postos.
+- Do outro lado, Dalton usa `Anael` na tabela planetária e `Haniel` na oração de
+  sexta-feira. Essas duas **são grafias de um mesmo nome** e não constituem
+  divergência nenhuma.
+- **Três coisas diferentes estavam sendo tratadas como uma só:** variante
+  ortográfica, disputa de posto entre esquemas coerentes, e erro de autor.
+  `conflictsWith` dizia _que_ havia colisão e nunca _como_.
+- Por isso o grafo ganhou `divergences`, com `kind` em quatro valores —
+  `name_variant`, `rank_scheme`, `competing_scheme`, `internal_inconsistency` —,
+  explicação em prosa, locators e o campo que mais importa,
+  `functionRemainsStable`. **O schema passou a recusar conflito sem divergência que
+  o explique**, e a exigência vale para todo conflito futuro, não só para este.
+- A divergência de Vênus ficou classificada como `rank_scheme`, com cinco locators.
+- **O achado que vale para o método inteiro:** as duas escolas **concordam sobre a
+  função** — Vênus é atração, beleza, união e concórdia nas duas — e discordam só
+  sobre qual nome ocupa o posto. A função permanece estável sob a divergência. É a
+  demonstração mais forte até agora de que condensar por função sobrevive a
+  disputas de nome que derrubariam qualquer síntese feita por identidade.
+- A regra nova pegou três fixtures existentes que declaravam conflito sem
+  explicá-lo, inclusive a fixture adversarial da própria task 21. Todas passaram a
+  declarar a natureza da colisão.
+- Grafo de `0.4.0-research` para `0.5.0-research`. Nenhuma contagem de convergência
+  mudou. Checkpoint: **608 testes passando**; typecheck, lint e formatação limpos.
+
 ## Atualização 2026-08-31 — Task 22: a tradição angélica entra na gramática comum
 
 - A task foi executada no enquadramento novo da Wave 5: o entregável não é um

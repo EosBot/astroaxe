@@ -32,7 +32,7 @@ função estrutural.
   sem passagem primária acessível. Catálogo, snippet e citação secundária não
   bastam para preencher esse restante.
 
-O grafo `regency-function-graph-0.4.0-research` possui 9 funções e 32 atribuições:
+O grafo `regency-function-graph-0.5.0-research` possui 9 funções e 32 atribuições:
 seis `convergent`, uma `corroborated` e duas `single_school`. Esses números
 descrevem o artefato atual, não uma alegação de que toda a bibliografia
 prioritária foi exaurida. Checkpoint: 589 testes passando e 5 ignorados;
@@ -438,7 +438,7 @@ agosto de 2026 o índice passou por higiene: material fora do assunto, extraçã
 da mesma obra saíram, e as letras dos pontos foram validadas uma a uma. Os portões que decidem o
 que entra estão em `corpus_hygiene.py` e valem para execuções futuras, não só para esta limpeza.
 
-A ponte entre corpus e produto começou. `regency-function-graph-0.4.0-research` implementa as três
+A ponte entre corpus e produto começou. `regency-function-graph-0.5.0-research` implementa as três
 camadas do §5.0.1: vocabulário de funções estruturais, atribuições com escola/obra/família/locator
 e condensação que pesa **famílias independentes**, não contagem de atribuições. O grafo possui
 **nove funções e 32 atribuições** e reúne Umbanda, Quimbanda, Arbatel, a linhagem angélica
