@@ -232,7 +232,7 @@ Bibliotecas de UI entram apenas quando houver uso concreto. Componentes copy-pas
 - `app`: Next standalone, usuário não-root;
 - `worker`: jobs, métricas e graceful shutdown;
 - `traefik`: entrada HTTP local e roteamento; em produção ele permanece privado e é alcançado
-  apenas pelo Cloudflare Tunnel, conforme `docs/cloudflare-edge.md`;
+  apenas pelo Cloudflare Tunnel, conforme `docs/OPERATIONS.md`;
 - `sonarqube`: análise local em profile de qualidade;
 - `backup`: profile sob demanda com restore testado.
 
@@ -300,7 +300,7 @@ Extensões úteis e amplamente adotadas: Docker DX, Prisma, ESLint, Prettier, Ta
 - Motion é semântico, interrompível, respeita redução de movimento e pausa fora de viewport. Não usar scroll-jacking, autoplay sonoro ou densidade fixa de partículas.
 - Preservar a identidade afro-brasileira por autoria, linguagem e padrões aprovados, nunca por símbolos sagrados usados como ornamento.
 
-A análise, tokens, layouts e critérios estão em [`docs/design-references.md`](./design-references.md).
+A análise, tokens, layouts e critérios estão em [`docs/BLUEPRINT.md`](./BLUEPRINT.md).
 
 ## 11. Métricas de produto
 
@@ -458,3 +458,488 @@ trabalhar`, expõe autoria e revisão e recusa improvisar quando não existe tem
   AstroAxe, condicionado a matriz versionada, proveniência, validação separada e governança
   cultural; o resultado não constitui confirmação religiosa nem substitui consulta tradicional.
 - **6.0.0 (2026-08-19):** atualiza stack e mercado; substitui determinação automatizada de Orixá por ressonância simbólica governada; formaliza hora desconhecida, autoria/IA transparente, monetização em dois planos, SonarQube Community local e LSPs.
+
+---
+
+# Anexos absorvidos em 28 de agosto de 2026
+
+## Referências de design
+
+**Análise inicial:** 2026-08-19
+
+**Implementação revisada:** 2026-08-21
+
+**Escopo:** contrato de experiência e direção visual do AstroAxe
+
+### Método e limites
+
+As referências foram abertas em Chromium a `1440×1000` e `390×844`. Astrarise foi inspecionado diretamente. No caso do NFTmap, foi possível analisar o registro visual responsivo publicado pelo Awwwards; o domínio original `nftmap.com` não concluiu o carregamento e não deve ser tratado como referência funcional atual.
+
+- [NFTmap — Explore a solar system, Awwwards](https://www.awwwards.com/inspiration/ntfmap-provenance-record-nftmap-buy-yourself-a-planet)
+- [Astrarise](https://astrarise.vercel.app/)
+
+Screenshots de trabalho ficaram somente em `/tmp`; não foram incorporados ao repositório nem usados como assets.
+
+### Leitura das referências
+
+#### NFTmap
+
+O elemento publicado coloca o sistema solar no centro da interface: fundo quase preto, órbitas concêntricas, Sol luminoso, planetas em escalas distintas e um card ancorado ao corpo selecionado. Navegação e ações ficam nas bordas para preservar o palco central.
+
+**Aproveitável:**
+
+- espaço orbital como estrutura de navegação, não apenas decoração;
+- um objeto selecionado por vez, com anotação próxima à origem;
+- profundidade produzida por escala, brilho e sobreposição controlada;
+- centro visual forte e controles periféricos;
+- mandala como instrumento explorável.
+
+**Limites observados:**
+
+- a miniatura mobile reduz a cena inteira até perder legibilidade e área de toque;
+- estética preto+ciano e glow aproxima o produto de Web3/jogo espacial;
+- tooltip claro sobre cena escura parece um elemento importado se não compartilhar tokens;
+- muitos corpos simultâneos competem com a ação principal.
+
+#### Astrarise
+
+Astrarise usa uma galáxia Three.js de partículas em tela cheia como hero e suporte para uma narrativa de scroll. Há marca condensada em caixa alta, CTA branco no canto, texto grande sobre a cena e controles que alteram cor, quantidade de partículas, raio, ramificações e aleatoriedade. O projeto declara Three.js, GSAP e Tailwind CSS em sua apresentação.
+
+**Aproveitável:**
+
+- uma única cena generativa memorável como assinatura;
+- narrativa editorial que emerge depois do impacto visual;
+- sensação de profundidade e resposta direta à interação;
+- parâmetros visuais que tornam o universo pessoal, quando ligados a dados reais.
+
+**Anti-patterns visíveis no mobile:**
+
+- o mesmo enquadramento desktop é recortado, não recomposto;
+- título e parágrafo ocupam a cena e sofrem clipping na dobra;
+- badges flutuantes cobrem conteúdo e reduzem a área útil;
+- marca e CTA disputam o topo;
+- partículas densas prejudicam leitura, bateria e hierarquia;
+- dependência de WebGL deixa pouco valor sem a camada visual.
+
+### Síntese para o Observatório Ritual
+
+AstroAxe deve herdar **a lógica espacial do NFTmap** e **a presença imersiva do Astrarise**, mas não suas identidades. A metáfora não é “viajar pelo espaço” nem “comprar um planeta”: é observar o próprio céu com calma e abrir camadas de significado.
+
+#### Elementos-assinatura por momento
+
+**Carta em formação (onboarding):** data, hora e local acrescentam coordenadas legíveis ao instrumento. No cálculo, as marcas resolvem na mandala natal real. Nome personaliza a leitura, mas não finge participar do cálculo.
+
+**Janela de Trânsito (dashboard futuro):** uma mandala tratada como instrumento de observatório. Um meridiano de cobre cruza a roda; ao abrir a leitura, o trânsito principal percorre uma única vez sua órbita e ancora uma ficha editorial com planeta, aspecto, início, pico e fim. Depois da revelação, a cena fica estável.
+
+Cada tela escolhe no máximo um desses gestos. Partículas, shimmer, parallax e sons não devem competir com ele.
+
+#### Matéria visual
+
+Usar referências de observação — latão envelhecido, vidro fumê, papel de efemérides, tinta noturna e linhas cartográficas — em vez de “misticismo neon”. A identidade afro-brasileira deve vir de linguagem, conteúdo com autoria e padrões encomendados/aprovados, nunca de glifos sagrados usados como ornamento.
+
+### Tokens de direção
+
+Os valores são ponto de partida e exigem teste de contraste antes de implementação.
+
+#### Cor
+
+| Token                |     Valor | Uso                                  |
+| -------------------- | --------: | ------------------------------------ |
+| `breu`               | `#070A10` | fundo principal                      |
+| `azul-atlantico`     | `#123047` | superfícies e profundidade           |
+| `nevoa`              | `#D8D3C7` | texto principal                      |
+| `cobre-instrumento`  | `#C47A4A` | foco, seleção e CTA primário         |
+| `verde-agua-tecnico` | `#68A8A4` | dados, foco secundário e coordenadas |
+
+- Não usar ciano elétrico como cor dominante.
+- Cor ligada a Orixá aparece apenas dentro de conteúdo cultural aprovado e não redefine os tokens globais.
+- Glow é consequência de foco/seleção, nunca borda padrão de todo card.
+
+#### Tipografia
+
+- **Display:** `Anybody Variable`, explorando largura condensada com moderação para títulos de observatório.
+- **Leitura:** `Literata`, para narrativa e interpretações longas.
+- **Dados:** `IBM Plex Mono`, para graus, duração, engine/config e labels técnicos.
+- Títulos não devem ficar permanentemente em caixa alta; usar caixa alta somente em marcações instrumentais curtas.
+- Corpo mobile mínimo de `1rem`, entrelinha de `1.5–1.65` e linha de leitura entre 45–72 caracteres no desktop.
+
+#### Espaço, forma e grid
+
+- escala espacial: `4, 8, 12, 16, 24, 32, 48, 72, 96`;
+- raio instrumental `6px`, cards editoriais `18px`, pills apenas para estados;
+- desktop: grid de 12 colunas, palco/mandala em 7 e trilho editorial em 5;
+- largura de conteúdo `min(1280px, calc(100vw - 64px))`;
+- linhas de órbita e divisores codificam relações reais; não adicionar círculos decorativos sem semântica.
+
+### Layout por breakpoint
+
+#### Desktop
+
+```text
+┌ marca ───── navegação ───────────── ações ┐
+│                                            │
+│  mandala / janela de trânsito │ leitura   │
+│  palco estável, 7 colunas      │ 5 col.    │
+│                                │ evidência │
+│                                            │
+└ tempo do céu ─ próximos movimentos ───────┘
+```
+
+- O canvas pode ocupar `60–72vh`, sem esconder o início do conteúdo.
+- Ficha do objeto selecionado fica ancorada quando houver espaço; caso contrário, usa o trilho lateral.
+- Navegação, privacidade e ações essenciais continuam DOM/HTML, nunca dentro do canvas.
+
+#### Mobile
+
+```text
+┌ marca ───────────── menu ┐
+│ mandala simplificada     │
+│ 42–50vh, foco central    │
+├ ficha do trânsito        ┤
+│ leitura em fluxo normal  │
+│ evidência / ação         │
+└ navegação inferior       ┘
+```
+
+- Reenquadrar a cena; nunca apenas encolher o desktop.
+- Reduzir corpos, partículas e DPR; preservar o objeto relevante.
+- Tooltip vira ficha abaixo da mandala ou bottom sheet acessível.
+- Tap substitui hover; nenhuma informação depende de gesto oculto.
+- Badges, selos e controles de demonstração não flutuam sobre o conteúdo.
+
+### Motion
+
+| Movimento                       | Duração alvo | Regra                          |
+| ------------------------------- | -----------: | ------------------------------ |
+| revelação da Janela de Trânsito | `900–1400ms` | uma vez, interrompível         |
+| entrada de ficha/painel         |  `220–280ms` | opacity + pequeno deslocamento |
+| hover/foco                      |  `140–180ms` | sem escala excessiva           |
+| troca de planeta/camada         |  `300–450ms` | continuidade espacial          |
+| ambiente                        |        lento | pausar fora de viewport/aba    |
+
+- Não usar scroll-jacking.
+- Com `prefers-reduced-motion`, mostrar estado final sem órbita animada, parallax ou partículas.
+- Limitar DPR do canvas e densidade por viewport/capacidade; o número “200000 partículas” do Astrarise é demonstração, não meta.
+- Canvas deve pausar em aba oculta e nunca bloquear input, formulário ou leitura.
+- Som é opt-in e não participa do feedback essencial.
+
+### Estado implementado até 2026-08-23
+
+- O onboarding usa palco orbital, entradas em sequência e transições curtas com CSS.
+- A cena WebGL `celestial-observatory-3d.tsx` concentra o ambiente orbital. A antiga camada Canvas
+  paralela foi removida para evitar dois loops visuais concorrentes e código sem consumidor.
+- A cena pausa fora do viewport e com a aba oculta. `prefers-reduced-motion` entrega uma composição
+  estática.
+- Formulário, mensagens, foco e ações permanecem no DOM; a camada visual não intercepta input.
+- As composições foram verificadas em `1440×1000` e `390×844`.
+- O resultado possui mandala natal real, explorável e ligada aos dados calculados, com ficha
+  equivalente no DOM e composição própria para mobile.
+
+### Evolução da abertura em 2026-08-22
+
+- A página inicial passou a usar um palco de viewport inteira, com nebulosa em camadas e profundidade
+  controlada pela cena orbital única.
+- O formulário virou uma superfície de vidro fumê sobre a cena, sem retirar foco, semântica ou
+  contraste dos campos.
+- No mobile, observação celeste e coleta de coordenadas são momentos consecutivos no scroll, em vez
+  de uma miniatura da composição desktop.
+- Canvas continua decorativo, limitado a 30 fps e DPR `1.5`, pausando fora do viewport e com a aba
+  oculta. Redução de movimento remove avanço em profundidade e resposta ao ponteiro.
+
+### Critérios de aceite permanentes
+
+- A página permanece compreensível e navegável com WebGL, JS, motion ou som indisponíveis.
+- Nenhum texto essencial é renderizado dentro do canvas.
+- Mobile possui composição própria e não apresenta clipping horizontal a `320px`.
+- A mandala mantém alvo de toque, foco visível, alternativa textual e ficha equivalente por teclado/leitor de tela.
+- O conteúdo conserva contraste sobre o pior frame possível da cena.
+- Uma tela usa no máximo um efeito ambiente e um momento de revelação.
+- Performance é medida em dispositivo intermediário real; reduzir densidade é preferível a degradar interação.
+- Elementos culturais têm proveniência e aprovação registradas; não são aplicados como textura genérica.
+
+### Evidência normativa aplicada à conta
+
+Na revisão autenticada de 2026-08-23, o desenho foi confrontado com fontes primárias atuais:
+
+- WCAG 2.2, critérios 1.4.10 (reflow), 2.4.11 (foco não obscurecido) e 2.5.8 (tamanho de alvo),
+  publicados pelo W3C;
+- padrão de diálogo modal do WAI-ARIA Authoring Practices, adotando o elemento `dialog` nativo para
+  confinamento de foco, tecla Escape e retorno ao fluxo;
+- documentação oficial do Motion para animação de layout e preferência de movimento reduzido.
+
+Consequências no produto: nenhuma coordenada essencial fica em rótulo flutuante sujeito a colisão;
+ações destrutivas exigem etapa separada e confirmação digitada; grids recompõem para uma coluna; e
+motion nunca é requisito para compreender ou concluir o fluxo.
+
+### Decisão
+
+Adotar as referências como estudos de **espacialidade, foco e coreografia**, não como moodboard cromático. O Observatório Ritual será mais quente, editorial e legível: o céu fornece estrutura; a tradição fornece contexto; a interface fornece calma.
+
+O próximo marco visual é medir frame time e resposta ao toque em dispositivo físico intermediário,
+antes de elevar novamente a densidade. A memória de retomada está em `docs/PROJECT_MEMORY.md`.
+
+### Complemento editorial — Astrolink e Personare
+
+**Revisão:** 2026-08-22
+
+As superfícies públicas de [Astrolink sobre a Casa 1](https://www.astrolink.com.br/casa1) e do
+[Personare sobre Ascendente e Descendente](https://www.personare.com.br/conteudo/ascendente-descendente-m242633)
+foram usadas como referência de arquitetura da informação, não como fonte para copiar identidade,
+texto ou componentes. Ambas tratam Ascendente/Casa 1 como parte central do mapa e relacionam o
+Descendente à Casa 7; o Personare também organiza a compreensão do mapa por planetas, signos, casas
+e aspectos.
+
+O resultado do AstroAxe passa a aplicar essa profundidade por camadas: mandala em uma primeira dobra
+dedicada, eixo ASC–DSC explícito, casas numeradas e capítulos editoriais no scroll. A interpretação
+continua separada dos dados astronômicos calculados, declara seu caráter simbólico e não imita a
+linguagem visual, comercial ou autoral das referências.
+
+## Contexto de produto e marketing
+
+**Versão do documento:** v2
+
+**Última atualização:** 2026-08-25
+
+**Status:** posicionamento vigente; preços continuam hipóteses até pesquisa com usuários
+
+### Visão do produto
+
+**One-liner:** Seu céu calculado, explicado com clareza e conectado a uma leitura autoral brasileira.
+
+**O que faz:** AstroAxe calcula mapa natal, ciclos e trânsitos, explica o que está ativo e apresenta
+uma Tríade de Regências pelo método autoral AstroAxe. A leitura não confirma identidade religiosa
+nem substitui consulta tradicional.
+
+**Categoria:** aplicativo de astrologia personalizada, autoconhecimento e ritual diário.
+
+**Tipo:** SaaS B2C freemium, inicialmente web responsivo/PWA.
+
+**Modelo:** assinatura Pro e leituras avulsas; consultas humanas somente em fase posterior.
+
+### Posicionamento
+
+#### Declaração
+
+Para brasileiros que gostam de astrologia, mas querem ir além do horóscopo genérico, AstroAxe é um observatório ritual pessoal que mostra o céu calculado sobre o mapa natal e oferece uma leitura clara para o momento. Diferente de aplicativos importados ou de associações superficiais com Orixás, combina rastreabilidade técnica, autoria visível e governança afro-brasileira.
+
+#### Promessa
+
+**Entenda seu céu de hoje, saiba de onde a leitura veio e escolha como caminhar com ela.**
+
+#### Pilares
+
+1. **Clareza:** primeiro insight em linguagem simples; técnica disponível sob demanda.
+2. **Rastreabilidade:** placements, trânsito, duração, versão e autoria acessíveis.
+3. **Método verificável:** versão, classes de entrada, fatores explicativos e limites visíveis; matriz,
+   pesos e regras proprietárias protegidos.
+4. **Ritual possível:** uma ação pequena, opcional e não fatalista.
+5. **Brasil real:** português natural, referências locais e estética própria.
+
+### Audiência
+
+#### Público primário
+
+Adultos brasileiros de 20–45 anos que já consomem signos, mapa astral, Tarot, espiritualidade ou wellness digital e buscam uma leitura mais pessoal do que conteúdo por signo solar.
+
+#### Segmentos prioritários
+
+| Segmento                          | Necessidade                                          | Entrada no produto                     |
+| --------------------------------- | ---------------------------------------------------- | -------------------------------------- |
+| Curioso em astrologia             | entender o mapa sem jargão                           | primeiro mapa e mandala educativa      |
+| Praticante de ritual/reflexão     | criar uma rotina curta e significativa               | Tempo do Céu diário                    |
+| Usuário avançado                  | conferir cálculo, aspectos e duração                 | detalhes técnicos e histórico          |
+| Brasileiro buscando representação | encontrar linguagem e símbolos locais sem exotização | conteúdo de Axé com autoria e contexto |
+
+#### Jobs to be done
+
+- “Quando o meu dia parece confuso, quero entender quais temas estão ativos para refletir com mais clareza.”
+- “Quando vejo meu mapa, quero compreender cada elemento sem precisar estudar um manual antes.”
+- “Quando encontro conteúdo sobre Orixás, quero saber quem criou, de qual contexto vem e o que ele não pretende afirmar.”
+- “Quando uma leitura parece certeira, quero abrir a evidência astrológica em vez de confiar numa caixa-preta.”
+
+#### Anti-personas
+
+- quem procura previsão garantida, diagnóstico ou decisão médica, jurídica ou financeira;
+- quem espera que um aplicativo revele seu Orixá ou substitua prática religiosa;
+- quem busca chat psíquico irrestrito, medo, dependência ou promessa de destino inevitável;
+- menores sem fluxo de consentimento e proteção apropriado.
+
+### Problema e tensão
+
+**Problema central:** o mercado alterna entre horóscopos genéricos, interfaces técnicas difíceis e textos hiperpersonalizados cuja autoria ou origem não é clara.
+
+**Limitações das alternativas:**
+
+- conteúdo apenas por signo solar perde contexto natal;
+- mapas detalhados podem intimidar iniciantes;
+- IA sem fonte pode inventar ou uniformizar interpretações;
+- estética “mística genérica” não representa a experiência brasileira;
+- associação automática signo→Orixá transforma tradição religiosa em quiz de personalidade.
+
+**Tensão emocional:** a pessoa quer sentir-se compreendida, mas não manipulada; quer profundidade, mas não fatalismo; quer identidade cultural, mas não apropriação.
+
+### Ritual diário
+
+O ritual **Tempo do Céu** é o principal loop de valor e deve caber em 60–90 segundos:
+
+1. ler o tema mais relevante do mapa para agora;
+2. abrir “Por quê” para ver trânsito, duração e pico;
+3. escolher uma pergunta de journaling ou ação pequena;
+4. explorar uma ressonância cultural somente quando houver conteúdo revisado pertinente;
+5. salvar a reflexão ou encerrar sem punição de streak.
+
+Princípios de retenção:
+
+- notificações opt-in, com frequência e horário controlados pelo usuário;
+- sem culpa por ausência e sem alertas alarmistas;
+- cadências diária, semanal, lunar e anual conectadas, não feeds infinitos;
+- compartilhamento gera um card sem expor dados natais;
+- streak, gamificação e áudio só entram após validação de bem-estar e acessibilidade.
+
+### Planos e oferta
+
+| Plano      |           Hipótese de preço | Valor entregue                                                                             |
+| ---------- | --------------------------: | ------------------------------------------------------------------------------------------ |
+| Free       |                        R$ 0 | mapa resumido, mandala educativa, Tempo do Céu, até 3 perfis e previews                    |
+| Pro mensal |                    R$ 19,90 | perfis e leituras ilimitadas, trânsitos completos, histórico, sinastria e compartilhamento |
+| Pro anual  | desconto de 20–30% a testar | mesmos benefícios, faturamento anual                                                       |
+| Avulsos    |       a definir por produto | ano pessoal, relatório de relacionamento e conteúdos especiais                             |
+
+Não lançar um plano Premium baseado em “consultor” ou voz até que exista operação real, segura e economicamente validada. Paywall vem após o primeiro valor e deve mostrar claramente o que será desbloqueado. Trial e desconto são experimentos, não dogmas do nicho.
+
+### Concorrência e benchmarks
+
+| Produto          | Força observada                                               | Espaço para AstroAxe                                                        |
+| ---------------- | ------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Co–Star          | snapshot, social, notificações e voz editorial                | mais contexto, menos opacidade e experiência brasileira                     |
+| CHANI            | autoria humana, ritual, áudio, journaling e missão social     | personalização natal diária em português e camada afro-brasileira governada |
+| The Pattern      | linguagem psicológica, relações e ciclos sem jargão           | evidência astrológica acessível e autoria mais clara                        |
+| TimePassages     | profundidade técnica, educação e conteúdo humano              | acolhimento, narrativa e ritual sem perder auditabilidade                   |
+| Astrolink        | ecossistema brasileiro, social, Tarot e IA Orbia              | foco mais nítido, governança cultural e cadeia de confiança da IA           |
+| Personare        | autoridade editorial brasileira, trânsitos e serviços humanos | experiência diária mais coesa e visualmente explorável                      |
+| Sanctuary/Nebula | marketplace de especialistas                                  | futura rede local verificada, sem misturar consulta com automação           |
+
+#### Fatos usados como referência
+
+- Co–Star combina humanos, dados astronômicos e IA; monetiza assinatura e leituras avulsas. [FAQ](https://www.costarastrology.com/faq/) e [App Store](https://apps.apple.com/us/app/co-star-personalized-astrology/id1264782561).
+- CHANI declara conteúdo escrito e gravado por astrólogos, usa horóscopo diário, leitura semanal, trânsitos, meditações e journaling. [Produto](https://www.chani.com/app) e [App Store](https://apps.apple.com/us/app/chani-your-astrology-guide/id1532791252).
+- The Pattern oferece ciclos, relacionamentos, comunidade, “Time Travel” e conversa com IA “In-Depth”. [Site](https://www.thepattern.com/) e [App Store](https://apps.apple.com/us/app/the-pattern-astrology/id1071085727).
+- TimePassages destaca interpretação humana, mapa/horóscopo gratuito, detalhes técnicos e modelo de assinatura mais compras por mapa. [App Store](https://apps.apple.com/us/app/timepassages-astrology/id488946918) e [preços](https://support.astrograph.com/support/solutions/articles/66000530329-how-does-the-timepassages-3-1-update-affect-my-desktop-software-license-).
+- Astrolink reúne mapa, sinastria, Tarot, ciclo lunar, diário/social e a IA Orbia. [App Store Brasil](https://apps.apple.com/br/app/astrolink-mapa-astral/id1598327566) e [Orbia](https://www.astrolink.com.br/mapa-astral-orbia).
+- Personare oferece horóscopo gratuito calculado pelo mapa completo e conteúdo assinado por astrólogo. [Horóscopo](https://www.personare.com.br/horoscopo-personalizado) e [App Store Brasil](https://apps.apple.com/br/app/personare-hor%C3%B3scopo-e-tarot/id1588090821).
+
+Preços e ratings de lojas são fotografias por país/data. Não usar ratings como prova de causalidade nem repetir alegações de “10× retenção”, “três tiers maximizam receita” ou “trials não funcionam” sem fonte e dados próprios.
+
+### Diferenciação defensável
+
+- Motor e versões auditáveis; IA não calcula o céu.
+- Modo honesto para hora desconhecida, sem Ascendente/casas falsamente precisos.
+- Conteúdo-base assinado, licenciado e rastreável.
+- Separação explícita entre astrologia ocidental e ressonância afro-brasileira.
+- Conselho cultural remunerado com poder de revisão e veto.
+- Português brasileiro e design “Observatório Ritual”, não cópia visual de concorrentes.
+
+### Mensagem e voz
+
+**Tom:** acolhedor, lúcido, poético com contenção, brasileiro e respeitoso.
+
+**Estilo:** insight primeiro; explicação depois; técnica quando solicitada.
+
+**Personalidade:** observadora, calorosa, rigorosa, curiosa e não dogmática.
+
+#### Usar
+
+- “tema”, “tendência”, “possibilidade”, “ressonância”, “reflexão”;
+- “calculado a partir do seu mapa”;
+- “veja por que esta leitura apareceu”;
+- “regência calculada pelo método autoral AstroAxe”;
+- “se fizer sentido para você”.
+
+#### Evitar
+
+- “seu destino”, “vai acontecer”, “garantido”, “cientificamente comprovado”;
+- “descubra seu Orixá pelo signo” ou porcentagem de certeza sem calibração publicada;
+- “cura”, “diagnóstico”, “a IA sabe quem você é”;
+- “ancestral” como adjetivo decorativo sem origem, autoria e contexto;
+- medo, urgência artificial e jargão sem explicação.
+
+### Objeções
+
+| Objeção                                | Resposta de produto                                                                                                                                                        |
+| -------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| “É só um horóscopo genérico.”          | Mostrar mapa natal, trânsito exato, período e motivo da seleção.                                                                                                           |
+| “A IA inventou isso.”                  | Rotular a composição, abrir fontes/placements e identificar o conteúdo-base e seu autor.                                                                                   |
+| “Um app não pode confirmar meu Orixá.” | Concordar explicitamente: o produto apresenta uma regência calculada pelo método autoral AstroAxe, não uma confirmação religiosa nem substituição de consulta tradicional. |
+| “Não sei minha hora de nascimento.”    | Oferecer modo sem hora, retirar resultados dependentes dela e explicar como atualizar depois.                                                                              |
+| “Isso parece apropriação.”             | Expor conselho, autoria, contexto, remuneração, política de correção e limites do produto.                                                                                 |
+
+### Provas e limites
+
+Ainda não existem clientes, métricas de retenção ou depoimentos do AstroAxe. Não fabricar prova social. As primeiras provas publicáveis devem ser:
+
+- regressões do motor contra referências independentes;
+- autores e revisores identificados;
+- política cultural e de IA publicada;
+- métricas de compreensão, acessibilidade e satisfação de pesquisa beta;
+- depoimentos consentidos e apresentados sem editar seu sentido.
+
+### Objetivos e métricas
+
+**Objetivo inicial:** validar que usuários compreendem e retornam ao ritual sem perder confiança na origem da leitura.
+
+**Conversão principal:** concluir o primeiro mapa e abrir o primeiro “Por quê”.
+
+**Conversão paga:** assinar Pro depois de experimentar valor personalizado.
+
+Métricas prioritárias:
+
+- conclusão do onboarding e tempo até primeiro insight;
+- compreensão declarada do insight e da diferença entre cálculo/interpretação/IA;
+- ativação D1/D7 e retenção D30;
+- uso saudável do Tempo do Céu e opt-out de notificações;
+- expansão da evidência astrológica;
+- conversão Free→Pro, churn e motivo;
+- incidentes/correções culturais e tempo de resposta.
+
+### Perguntas de pesquisa abertas
+
+- “Ressonância de Axé” é compreendida como simbólica ou ainda parece determinação religiosa?
+- Quais tradições e termos devem permanecer fora do produto público?
+- Usuários preferem autoria humana na leitura principal e IA apenas em perguntas, ou aceitam composição rotulada?
+- O ritual diário ajuda a refletir ou cria pressão de uso?
+- Qual benefício sustenta Pro no Brasil: profundidade, histórico, sinastria ou relatórios avulsos?
+
+### Changelog
+
+- **v2 (2026-08-25):** incorpora a Tríade v2 aplicada, linguagem pública sem percentuais de certeza
+  e política de transparência técnica com proteção da propriedade intelectual.
+- **v1 (2026-08-19):** contexto inicial consolidado com posicionamento, audiência, ritual diário, oferta em dois planos, benchmarks atuais e limites culturais/IA.
+
+## Analytics e privacidade
+
+### Estado atual
+
+Não existe coletor, SDK, endpoint, variável de ativação ou envio de analytics. O contrato Zod que
+não possuía chamador foi removido na auditoria de código morto de 25 de agosto de 2026: manter uma
+API especulativa não criava proteção real e poderia parecer uma integração pronta.
+
+Uma implementação futura deverá nascer junto do fluxo de consentimento, fornecedor e finalidade
+aprovados. Até lá, ausência de código de coleta é o comportamento fail-closed.
+
+### Vocabulário mínimo permitido
+
+O vocabulário candidato permanece limitado a três eventos estruturais: conclusão do onboarding,
+abertura da explicação do mapa e conclusão do claim da conta. Uma futura boundary deverá aceitar
+apenas superfície e classe de viewport e rejeitar IDs, texto livre, email, data/hora natal,
+localização e quaisquer campos extras.
+
+Antes de ativar coleta é obrigatório definir e revisar:
+
+- finalidade, base legal, texto e mecanismo de retirada do consentimento;
+- fornecedor, região, subprocessadores, retenção, acesso e exclusão;
+- agregação, limites de cardinalidade e teste de redaction;
+- responsável por incidentes e procedimento de revogação;
+- UI acessível que não use dark patterns nem bloqueie funções essenciais.
+
+Até esse contrato externo e a política LGPD final existirem, nenhum módulo de analytics deve ser
+reintroduzido.

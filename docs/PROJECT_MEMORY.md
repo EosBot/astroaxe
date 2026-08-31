@@ -1,41 +1,656 @@
 # Memória canônica do projeto
 
-## Atualização 2026-08-27 — Pipeline de condensação do acervo E:\Ocultismo
+## Atualização 2026-08-28 — auditoria de proveniência externa concluída
 
-- O corpus vetorizado do acervo está **pronto e consultável** em
-  `scripts/ocultismo-pipeline/` (venv Python próprio), saídas em `conteudo/`.
-  Desenho: extração (PDF/DOCX/ODT/TXT/RTF/JSON + OCR de 32 imagens) → limpeza/
-  dedup/chunking → embeddings `BAAI/bge-m3` (1024d, normalizados) → FAISS de
-  produto interno + parquet/jsonl/manifest. Busca: `query.py` (texto/json/jsonl,
-  filtro por categoria).
-- Números finais observados: 281 arquivos de texto + 32 imagens em
-  `/mnt/e/Ocultismo` (montado e acessível); 246 documentos únicos após dedup →
-  32.171 chunks; pipeline completo em ~74 min na RTX 2060 com `--batch-size 8`
-  (o default 64 estoura os 6 GB). Modelo bge-m3 em cache local do HuggingFace.
-- Pontos cantados: catálogo de 538 pontos (`conteudo/pontos_cantados.jsonl`) com
-  entidade/tipo/letra — **529 com letra** (98%). Em 2026-08-26 uma raspagem
-  contaminou o catálogo com páginas de busca de blog (197 entradas de lixo); elas
-  foram limpas e a coleta refeita com gate de qualidade (estrutura de verso +
-  vocabulário de Umbanda + âncora de título/entidade, rejeição de boilerplate):
-  `scrape_pages.py` varre as páginas estáticas do blog Rei dos Pontos
-  (`conteudo/pontos_paginas.jsonl`), `scrape_v3.py` faz busca DuckDuckGo com
-  parsing corrigido, `refine_lyrics.py` segmenta páginas inteiras no ponto exato
-  pelo marcador numerado. Os 529 pontos com letra foram embeddidos e mesclados
-  ao índice por `integrate_pontos.py` → corpus final com **32.700 chunks**.
-  Smoke test passou: consulta por categoria retorna ponto de Ogum correto
-  (score 0,68) e conteúdo de fitoterapia/banhos. Letras são insumo de pesquisa;
-  publicação segue a regra do acervo (síntese original nossa).
+- A afirmação anterior de que Agrippa, Abimbola e Prandi haviam simplesmente
+  “deixado a fila” era prematura: localizar texto não encerra a cadeia de
+  verificação. A auditoria atual separa autenticidade da edição, integridade da
+  passagem, identidade da entidade e aderência à função estrutural.
+- **Abimbola foi confirmado nesta etapa.** O fac-símile de 1997 identifica a
+  obra e o autor, e seu capítulo I declara explicitamente que `Ifá` e
+  `Òrúnmìlà` nomeiam a mesma divindade, embora `Ifá` também nomeie o sistema de
+  adivinhação (p. 3 da edição; p. 10 do PDF). Assim, as passagens seguintes
+  sobre sabedoria, conselho e consulta sustentam a entidade e a função usadas
+  no grafo. O registro da reedição também foi confrontado com Google Books e o
+  original de 1976 com WorldCat.
+- **Prandi permanece sustentado, mas em escopo estreito.** O PDF está no domínio
+  institucional do próprio autor na USP e a p. 503 diz somente que Exu guarda a
+  fronteira do além. Isso autoriza a dimensão de limiar da pergunta “abre,
+  fecha e ordena a passagem entre os planos”; não autoriza, isoladamente, uma
+  tese geral de que Exu “abre caminhos”.
+- **Agrippa foi confirmado nesta etapa.** A passagem da transcrição de Joseph
+  H. Peterson foi confrontada com a imagem da p. 280 da edição inglesa de 1651
+  (scan da Michigan State University, também catalogado pela University of
+  Pennsylvania); a mesma edição possui fac-símiles institucionais na Library of
+  Congress e no CESIMA/PUC-SP. A página traz literalmente dignidades, condição
+  afortunada e poderosa, regência do dia, hora e figura do céu. O perfil segue
+  corretamente `unavailable` enquanto o motor não computar todos esses itens.
+- **Bascom foi parcialmente fechado com texto primário autenticado.** A edição
+  digital da Indiana University Press no JSTOR expõe a introdução e o capítulo
+  III de _Sixteen Cowries_. Bascom adverte que os versos variam entre cultos e
+  registra que, no corpus de Salakọ, Òrìṣàlá controla os dezesseis búzios. A nova
+  atribuição é deliberadamente `school:salako-igana`: não transforma um corpus
+  localizado em regra yorùbá universal.
+- **Juana Elbein foi localizada, mas não encaixada.** Um scan repostado pôde ser
+  autenticado por frontispício e ficha catalográfica contra Google Books,
+  Smithsonian e UFBA. As passagens recuperadas definem Èṣù como princípio
+  dinâmico, de comunicação e individualização; nenhuma das nove perguntas
+  estruturais atuais formula essa função. Empurrá-la para “abertura de caminho”
+  seria um falso positivo, portanto nenhum dado entrou.
+- **Verger continua aberto.** BnF, IFAN, Google Books, Edusp e a resenha de Roger
+  Bastide no Persée confirmam obra, edição, estrutura e importância, mas a busca
+  não encontrou fac-símile/texto primário acessível com passagem verificável.
+- O grafo `regency-function-graph-0.3.0-research` termina esta auditoria com **9
+  funções e 27 atribuições**: seis `convergent`, uma `corroborated` e duas
+  `single_school`. O teste dirigido possui 16 casos e passou.
+- Checkpoint completo posterior à auditoria: **589 testes passando** e 5
+  ignorados; cobertura 86,65% de statements, 72,95% de branches, 89,22% de
+  funções e 88,76% de linhas; typecheck, lint, formatação e build de produção
+  passaram. Nenhum commit foi criado.
+
+## Atualização 2026-08-28 — Task 20: orientação acionável separada do arquivo
+
+- `src/domain/ceremonial/guidance-policy.ts` introduz a política pura e
+  versionada `ceremonial-guidance-policy-0.1.0`. Ela recebe apenas categoria,
+  alvo e operação estruturados; texto livre não entra na decisão nem pode ser
+  repetido numa recusa.
+- Criação, atualização e exportação passam pela mesma função. Categoria ausente
+  ou desconhecida falha no schema, em vez de assumir intenção segura.
+- Objetivos de estudo, reflexão, memória e rotina pessoal recebem checklists
+  curtos e limitados. Coerção, violência, autolesão, sacrifício ou ferimento,
+  ilegalidade e promessas médicas ou financeiras retornam recusas e categorias
+  de ajuda tipadas. Alvo não consentinte é recusado antes de gerar checklist.
+- A visualização de fonte histórica possui contrato próprio,
+  `archival_source`, com sistema, edição, locator e aviso de que descrição da
+  fonte não é orientação AstroAxe. A política não reescreve nem censura o
+  artefato histórico.
+- Ainda não existem APIs de planner no produto. Quando forem criadas, a boundary
+  deve classificar a intenção em categoria fechada e chamar esta política em
+  `create`, `update` e `export`; aceitar prompt arbitrário como categoria seria
+  contornar o contrato.
+- Teste direcionado: 14 casos cobrindo as três operações, todas as recusas,
+  consentimento, input adversarial sem eco, fail-closed e separação do arquivo.
+  Checkpoint completo: **589 testes passando** e 5 ignorados; cobertura 86,71%
+  de statements, 73,09% de branches, 89,30% de funções e 88,80% de linhas;
+  typecheck, lint, formatação e build de produção limpos.
+
+## Atualização 2026-08-28 — Agrippa, Abimbola e Prandi deixam a fila de fontes inacessíveis
+
+- A edição inglesa de 1651 do livro II de Agrippa foi localizada integralmente.
+  Os capítulos XXIX–XXX exigem que o planeta correspondente à operação esteja
+  dignificado, afortunado e poderoso, governando o dia, a hora e a figura do céu.
+  O quarto perfil de eleição foi adicionado com locator nas páginas 279–281.
+- O perfil de Agrippa **não produz falso `matched`**: o motor já observa regência
+  de dia e hora, mas ainda não calcula todas as dignidades e condições da figura
+  exigidas pela fonte. Esse requisito fica `indeterminate` e o perfil permanece
+  `unavailable` até o domínio suportá-lo.
+- O novo tipo de condição dependente do planeta da operação e o requisito-fonte
+  não computável elevam schema e engine de eleições de 0.1.0 para 0.2.0.
+- Uma edição integral aberta de Wande Abimbola foi localizada. As páginas 9–10 de
+  _Ifa: An Exposition of Ifa Literary Corpus_ sustentam Ifá como sabedoria,
+  conselho, mediação e adivinhação. A atribuição entrou como família independente
+  da UNESCO.
+- O trecho oficial de _Mitologia dos Orixás_ disponibilizado pelo próprio Prandi
+  na USP situa Exu como guardião da fronteira do além (p. 503). A passagem permite
+  registrar Èṣù/Exu Òrìṣà na função de limiar sem repetir a ambiguidade entre
+  Òrìṣà e entidade-guia encontrada no artigo de geodiversidade.
+- O grafo agora possui **9 funções e 26 atribuições**: cinco `convergent`, duas
+  `corroborated` e duas `single_school`. Permanecem sem texto integral aberto e
+  verificável Verger, Juana Elbein e Bascom.
+- Checkpoint: **575 testes passando** e 5 explicitamente ignorados; cobertura
+  86,64% de statements, 73,05% de branches, 89,26% de funções e 88,74% de
+  linhas. Typecheck, lint, formatação e build de produção passaram.
+
+## Atualização 2026-08-28 — Erros resolvidos e pesquisa em fonte primária
+
+### O flake não era do teste
+
+`ambient-sound-control.test.tsx` falhava de forma intermitente com "expected 3
+times, got 4". Eu havia registrado como vazamento de estado entre arquivos. Estava
+errado: **era defeito do componente.** Em `toggle()`, ao desativar, o
+`setEnabled(false)` só roda depois do `await playTone(...)`, e a remoção do
+listener global depende da limpeza do efeito, que roda depois da pintura. Nessa
+janela o rótulo já dizia "Ativar" e um clique **ainda tocava** — som que a pessoa
+acabara de desligar.
+
+A correção é um `enabledRef` que muda no mesmo tick do clique e é lido pelo
+listener; o efeito passou a registrar o listener uma vez só. Verificado com 20
+execuções isoladas e 3 execuções da suíte completa, todas verdes.
+
+### Heptameron: perfil escrito a partir da fonte primária
+
+Com autorização para pesquisar fora do acervo, o texto do Heptameron em
+esotericarchives.com deu a regra que o corpus local não tinha: seção IX, «Of the
+manner of working» — _"Let the Moon be increasing and equal, if it may then be
+done, and let her not be combust."_ Virou o terceiro perfil de eleição.
+
+A condição lunar passou a aceitar **conjunto de fases** em vez de uma só. As
+fontes falam em "Lua crescente" e "depois da combustão", que abrangem várias das
+oito fases do motor lunar; forçar fase única distorceria a regra para caber no
+tipo.
+
+### Os dois que continuam sem perfil, e por quê
+
+- **Agrippa:** os capítulos xxix e xxx do livro II, que tratam do momento da
+  operação, **não constam da digitalização pública** de esotericarchives.com —
+  aparecem só no índice. A versão que circula em _The Magus_, de Barrett, é plágio
+  de Agrippa e não serve como fonte.
+- **Ars Paulina:** o texto existe, mas sua regra **não é de eleição**. Ela manda
+  observar _"the time of the years Day and hour that you call the Angells"_ e
+  construir o selo para aquele dia e hora — é regra de construção vinculada à hora
+  escolhida, não critério para escolhê-la. Forçá-la a virar perfil deturparia a
+  fonte.
+
+Os dois motivos estão em `electionProfileGaps`, cobertos por teste. São
+qualitativamente diferentes: um é falta de texto, o outro é regra de outra
+natureza.
+
+### Glifo de Júpiter
+
+Refeito com arco explícito (`A`) em vez de bezier. As três tentativas anteriores
+com curva de controle saíam angulares em tamanho pequeno. Agora lê como o glifo
+tradicional: arco superior, haste à direita e barra inferior.
+
+## Atualização 2026-08-28 — Ketu/Nagô e Ifá por fonte primária externa
+
+- Com autorização para pesquisar fora do acervo, duas fontes abertas e citáveis
+  entraram no grafo de funções, ambas **independentes** das escolas praticantes
+  já presentes:
+  - **UNESCO**, Patrimônio Cultural Imaterial (2008), dossiê do sistema de
+    adivinhação Ifá: _"the deity of wisdom and intellectual development"_. Criou
+    `function:divination-and-counsel` com Òrúnmìlà e **fez Ifá entrar no grafo**
+    pela primeira vez.
+  - **Mercator/SciELO v. 23 (2024)**, Ferreira et al., «Simbolismo da
+    Geodiversidade nas Religiões Afro-Brasileiras», Tabela 2: _"Ogum é o
+    responsável pelos minerais, tendo o Ferro, Aço e Manganês"_. Levou
+    `function:iron-and-war-craft` de três para **quatro linhagens
+    independentes**, agora incluindo uma via acadêmica.
+- **O que deixei de fora, de propósito.** A mesma tabela do artigo descreve Exu
+  como "aquele que abre e fecha caminhos", que casaria com `function:path-opening`
+  quase palavra por palavra. Não codifiquei: o artigo trata "religiões
+  afro-brasileiras" como um bloco e **não distingue** o Exu Òrìṣà de Ketu/Nagô da
+  entidade-guia de Umbanda e Quimbanda. A taxonomia deste projeto exige a
+  distinção, e escolhê-la por conta própria seria decidir pela fonte o que ela não
+  decidiu. O motivo está no docblock de `function-graph-data.ts`.
+- Também ficaram de fora Xangô (o artigo o liga à rocha e à pedreira, não à
+  expansão e à sentença), Omolu (interior da Terra, não aflição e cura) e Oxum
+  (águas doces, não atração e concórdia). As citações são boas, mas descrevem
+  domínios geográficos, não as funções que o vocabulário define.
+- **O que continuava bloqueado naquele ponto:** Prandi, Verger, Juana Elbein, Abimbola e Bascom
+  seguem sem texto acessível. Britannica, Smithsonian e Metropolitan Museum
+  recusaram a requisição com 403 e 429, e não há digitalização aberta dessas obras
+  que eu tenha encontrado. Ketu/Nagô fica com cobertura fina até que o acervo as
+  tenha.
+- Estado do grafo naquele checkpoint: **9 funções**, das quais cinco `convergent`, uma
+  `corroborated` e três `single_school`. A entrada posterior de Abimbola atualiza
+  esse total conforme o bloco acima.
+
+## RETOMADA — estado em 28 de agosto de 2026
+
+Leia este bloco primeiro. As entradas abaixo dele são o histórico, da mais
+recente para a mais antiga.
+
+**Portões:** o checkpoint mais recente está no bloco acima: 589 testes passando,
+typecheck, lint, formatação e build de produção limpos. Working tree **não commitado** — cerca de cem arquivos alterados
+aguardando decisão de commit do responsável.
+
+**Documentação:** cinco documentos em `docs/`, um plano só. `AGENTS.md` é a porta
+de entrada e traz o índice e a ordem de leitura. Não crie um sexto documento.
+
+**Onde parei, por prioridade:**
+
+| Frente                     | Estado                                                                                                                                                                                                                                                                                                                                                                                |
+| -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| P1.1 — condensar tradições | Grafo com **9 funções e 27 atribuições**. Adivinhação reúne UNESCO, Abimbola e o corpus localizado de Salakọ em Bascom; Prandi sustenta Exu Òrìṣà no limiar; Ogum/ferro possui via acadêmica. **Cobertura ainda fina:** Verger segue sem passagem primária acessível; Juana Elbein foi autenticada, mas os trechos recuperados não cabem nas funções atuais sem forçar o vocabulário. |
+| P1.2 — escrever a síntese  | Primeiro verbete publicado e verificado em banco real. É trabalho contínuo, um verbete por vez.                                                                                                                                                                                                                                                                                       |
+| P1.3, P1.4, P1.5, P1.6     | Feitos. O glifo de Júpiter já foi refeito; permanece a ampliação gradual do conjunto de selos fundamentados.                                                                                                                                                                                                                                                                          |
+| Wave 4 do roteiro          | **T17, T18 e T19 feitas.** T18 tem quatro perfis sustentados — Agrippa, Arbatel, Khan Secretum e Heptameron. Agrippa fica `unavailable` enquanto requisitos celestes não forem computáveis; Ars Paulina permanece fora por não conter regra de eleição. T20 e T21 abertas.                                                                                                            |
+| Wave 5                     | Substrato e T27 feitos; 22-26 abertas, e dependem do acervo acima.                                                                                                                                                                                                                                                                                                                    |
+| Wave 6                     | **Texto superado** — descreve o modo dual removido em 26 de agosto. Precisa ser reescrita antes de executar.                                                                                                                                                                                                                                                                          |
+
+**A regra que mais importa neste projeto:** sustentação se conta por linhagem, não
+por obra. Quatro livros do mesmo autor são uma voz. Foi assim que se descobriu
+que quatro das obras mais presentes do acervo são todas de Rubens Saraceni.
+
+**Nunca escreva claim sem a passagem que a sustenta.** As três obras de
+referência ainda inacessíveis permanecem em aberto exatamente por isso. Ars
+Paulina não é uma lacuna de passagem: o texto foi localizado, mas sua regra é de
+construção vinculada à hora, não de eleição. Ficar em aberto ou fora do tipo é o
+comportamento correto quando a fonte não autoriza a modelagem.
+
+## Atualização 2026-08-28 — Reconciliação com o roteiro `.omo`
+
+- **As sessões de 27 e 28 de agosto não consultaram `docs/`.** A execução
+  seguiu a fila P1 de `docs/IMPLEMENTATION_STATUS.md`. O trabalho é real e está
+  verificado, mas nasceu sem número de task e sem as mensagens de commit que o
+  roteiro declara. Isso foi corrigido no próprio roteiro, não escondido.
+- O que encaixa onde: o corpus vetorizado e sua higiene estendem a Wave 3 além
+  das tasks 12-14; `structural-functions.ts`, `function-graph.ts` e a condensação
+  são o **substrato da Wave 5**; os testes de convergência por linhagem e de
+  posição análoga **satisfazem a Task 27**, com evidência escrita em
+  `docs/IMPLEMENTATION_STATUS.md` (índice de evidências). Model card,
+  símbolos, fatores determinantes, correções versionadas e o primeiro verbete não
+  têm task correspondente no roteiro.
+- **Contradições corrigidas no roteiro:** a tabela de status dizia "15 cancelada"
+  enquanto a seção "Where to resume" mandava retomar justamente a Task 15. O
+  ponto de retomada real é a Wave 4 (tasks 17-21), que segue intocada e é
+  pré-requisito declarado da Wave 5 — construída antes dela.
+- A **Wave 6 inteira tem texto superado** e recebeu aviso: foi escrita para o
+  modelo `disabled|public|local`, com bundle público filtrado por direitos e rota
+  servindo artefato-fonte. Nada disso existe desde 26 de agosto, e as colunas de
+  direitos saíram do banco na migration `20260826140000`. Precisa ser reescrita
+  antes de qualquer execução.
+- **Causa raiz de eu ter perdido o plano:** a linha "Antes de retomar" de
+  `IMPLEMENTATION_STATUS.md` listava `AGENTS.md`, `BLUEPRINT.md`, ele mesmo e
+  `cultural-content-operations.md` — e não o `.omo`. O `.omo` só era citado de
+  `ceremonial-ingest.md` e de uma entrada antiga desta memória. A lista de
+  retomada foi corrigida. Em seguida, na consolidação documental do mesmo dia, o
+  roteiro foi absorvido e o `.omo/` removido: **passou a existir um plano só**, o
+  que elimina a divergência na raiz em vez de apenas a sinalizar.
+
+## Atualização 2026-08-28 — Consolidação documental
+
+- `docs/` passou de **vinte arquivos para cinco**. Cada assunto tem exatamente um
+  lugar: `BLUEPRINT.md` (o que o produto é e por quê), `IMPLEMENTATION_STATUS.md`
+  (o que falta e em que ordem, incluindo o roteiro granular), `METHOD.md` (método,
+  fontes, protocolo de pesquisa e operação editorial), `OPERATIONS.md` (borda,
+  orquestração, deploy, backup, email, qualidade, observabilidade, ingestão) e
+  `PROJECT_MEMORY.md` (este histórico).
+- **Nada foi reescrito na absorção.** O conteúdo dos documentos originais foi
+  movido inteiro, com os títulos rebaixados um nível e agrupado sob um índice. O
+  que mudou foram as referências cruzadas, reescritas para os novos caminhos.
+- `.omo/` foi absorvido e removido: as waves abertas viraram a seção "Roteiro
+  granular" de `IMPLEMENTATION_STATUS.md`, com os critérios de aceite preservados,
+  e as 26 evidências viraram um índice de uma linha cada. O texto integral delas
+  segue recuperável pelo histórico do Git.
+- `.planning/` foi removido — 218 MB de screenshots, telemetria e templates
+  genéricos, mais quatro markdowns com conteúdo de projeto que foram absorvidos
+  antes (arquitetura Swarm, manifesto de infraestrutura, validação pública de
+  Orixás e o relatório de QA de 24 de agosto). Era gitignored: **essa remoção não
+  tem rollback pelo Git.**
+- `AGENTS.md` ganhou o índice dos cinco documentos, a ordem de leitura para
+  retomada e uma regra explícita: não criar um sexto documento em `docs/`. Se um
+  assunto não couber nos cinco, o recorte de um deles é que está errado — foi
+  abrindo arquivo novo que se chegou a vinte.
+- Defeito introduzido e corrigido na mesma sessão: a reescrita de referências
+  passou por dentro de um bloco de listagem histórica em `OPERATIONS.md` e
+  transformou três nomes de arquivo distintos no mesmo nome. Os nomes originais
+  foram restaurados a partir da cópia movida, com a anotação de onde cada um vive
+  hoje.
+
+## Atualização 2026-08-28 — Reestruturação de pastas
+
+- A raiz tinha duas árvores de infraestrutura. `ops/` foi absorvido em `infra/`:
+  `ops/prometheus` → `infra/prometheus`, `ops/ceremonial` → `infra/security`.
+  Agora há **uma** raiz de infraestrutura, com `swarm/`, `cloudflare/`,
+  `prometheus/` e `security/`.
+- `test-support/` existia na raiz com **um arquivo** e virou `tests/support/`.
+  Teste unitário continua ao lado do código que testa; `tests/` guarda só E2E e
+  apoio de runtime.
+- `competitor-profiles/` saiu da raiz para `docs/research/competitors/`. É
+  artefato bruto de pesquisa, não documento — a conclusão relevante já vive no
+  `BLUEPRINT.md`.
+- `.agents/`, que estava vazio, foi removido.
+- **Os arquivos Compose ficam na raiz, por decisão verificada.** Cheguei a
+  planejar movê-los para `docker/` e testei antes: `docker compose config` sobre
+  uma cópia numa subpasta reportou `name: composetest`, derivado do diretório. O
+  nome do projeto Compose vem da pasta do arquivo, então mover renomearia o
+  projeto de `orixas-mapa-astral` para `docker` e **órfãos todos os volumes** —
+  inclusive o volume PostgreSQL histórico que a documentação manda preservar. É
+  também onde o Compose procura o `.env`. Sete arquivos na raiz são ruído menor
+  que perder volume de produção.
+- O repositório em si está enxuto: **407 arquivos rastreados, nenhum acima de
+  1,4 MB**. Os 7,7 GB de `scripts/` são a venv Python e o cache do modelo
+  bge-m3, corretamente ignorados desde 27 de agosto.
+- Defeito introduzido e corrigido: a reescrita de caminhos passou por
+  `research-config.ts` e apontou `localPath` para `docs/METHOD.md`, mas o schema
+  em `scorer.ts` validava com `/^docs\/[a-z0-9_./-]+\.md$/`, só minúsculas —
+  dez testes quebraram. A correção foi no regex, não no caminho: os documentos
+  canônicos seguem a convenção maiúscula que `BLUEPRINT.md` já usava.
+
+## Atualização 2026-08-28 — Task 17: horas planetárias em domínio neutro
+
+- `src/domain/astrology/planetary-hours/` passou a concentrar a sequência
+  caldaica, o intervalo solar observado e o proxy equinocial. O módulo **não
+  conhece Orixás**: recebe instante e lugar, devolve regente do dia, regente da
+  hora, número da hora, segmento e progresso no intervalo.
+- `src/domain/orixas/regency/temporal.ts` virou adaptador fino sobre ele,
+  mantendo todos os exports e o vocabulário de feature do scorer. **As seis
+  fixtures golden passaram sem alteração** — era o critério de aceite da task, e
+  é o que prova que o refactor não mudou resultado.
+- Por que separar: hora planetária é insumo das eleições cerimoniais da task 18.
+  Mantê-la dentro do módulo de regências obrigaria a arrastar o modelo de
+  regências para dentro de uma eleição do Heptameron, que nada tem a ver com ele.
+- O modo polar continua com dois comportamentos distintos e agora testados: o
+  estrito devolve `unavailable` com `limitation` em vez de inventar horário; o
+  proxy equinocial devolve leitura mas com `method:
+"equinoctial_local_solar_proxy"`, de modo que a incerteza viaja **no
+  resultado** e não numa nota que o chamador possa ignorar.
+- `resolvePlanetaryHourInInterval` valida a própria entrada. O lint apontou que o
+  schema só servia de tipo; em vez de apagá-lo, passei a usá-lo — a função é
+  chamada direto pelos perfis de eleição e não pode supor que alguém já conferiu
+  o intervalo.
+- Checkpoint: 551 testes (9 novos), typecheck, lint e formatação limpos.
+
+## Atualização 2026-08-28 — Task 18: perfis de eleição ligados à fonte
+
+- `src/domain/astrology/elections/` implementa o contrato, o avaliador e os
+  perfis. Um perfil é a regra que **uma obra específica** dá para escolher o
+  momento de um trabalho — não existe pontuação universal de bom momento, e o
+  Heptameron e o Arbatel discordarem é informação, não ruído a ser mediado.
+- **O tipo de saída não oferece campo de sucesso, score ou recomendação.** Há
+  teste que verifica a ausência dessas chaves. Os três estados são `matched`,
+  `conflicted` e `unavailable`; a decisão é de quem opera, e um número ali viraria
+  promessa de resultado.
+- Dado ausente vira condição `indeterminate` com motivo declarado
+  (`moment_unavailable`, `lunar_longitudes_missing`) e derruba o perfil para
+  `unavailable`. Horário inventado é pior que ausência de horário, porque parece
+  informação.
+- `evaluateElections` observa o mesmo instante sob vários perfis e devolve as
+  observações lado a lado. Nada concilia, ordena por preferência ou escolhe
+  vencedor.
+- **Só 2 dos 4 perfis que o roteiro pedia foram escritos.** A busca no corpus
+  condensado não devolveu a passagem que define o momento da operação no
+  Heptameron, em Agrippa nem na Ars Paulina — as três obras estão no acervo como
+  fonte, mas a regra não foi localizada. Escrever condição sem a passagem seria
+  inventar a fonte, que é o oposto do que este método faz.
+  - Os dois semeados têm passagem: **Arbatel** (o espírito olímpico governa os
+    assuntos do seu planeta, de `_texto_olimpicos`) e **Khan Secretum** (a Lua
+    depois da combustão, já visível, é boa para operações de todo tipo).
+  - As lacunas vivem em `electionProfileGaps`, exportado e coberto por teste, em
+    vez de num comentário que se perde. Quem for preencher: localize a passagem,
+    cite no `locator` e só então escreva as condições — o schema recusa perfil sem
+    locator.
+- Checkpoint: 563 testes (12 novos), typecheck, lint e formatação limpos.
+
+## Atualização 2026-08-28 — Task 19: contratos de entidade ligados à fonte
+
+- `src/domain/ceremonial/entity-records.ts`. Uma entidade só existe **dentro de
+  um sistema de origem**: nome, ofício, grau e correspondência pertencem a uma
+  obra e a uma edição, nunca ao ar. O identificador carrega o sistema
+  (`entity-record:<sistema>:<slug>`) e o schema recusa quando ele diverge do
+  campo — assim nenhuma consulta perde o discriminante pelo caminho.
+- Correspondência sem `locator` é recusada. É a posição citável que permite
+  reestudar o ponto quando a leitura se mostrar errada.
+- `crossSystemRelationSchema` é o **único** caminho pelo qual dois sistemas se
+  tocam. Exige tipo e locator, e o vocabulário **não inclui `same_entity`**: as
+  opções são `shares_name`, `analogous_position`, `derived_from` e `contradicts`.
+  Nenhuma fonte sustenta identidade entre entes, e afirmá-la derrubaria o método.
+- `findNameCollisions` relata homônimos entre sistemas **sem os fundir** — o
+  "Michael" do Heptameron e o de Agrippa aparecem lado a lado com seus sistemas,
+  e a decisão de relacioná-los fica humana e citada. É o caso que mais convida ao
+  erro de alias.
+- Construída **sobre** o grafo de funções, não em paralelo. O grafo afirma posição
+  análoga entre tradições; este módulo guarda o que cada tradição diz da sua
+  própria entidade. Um é a ponte, o outro é a margem, e a ponte não funde as
+  margens. Era o risco que a reconciliação do roteiro tinha apontado.
+- Checkpoint: 572 testes (9 novos), typecheck, lint e formatação limpos. Uma
+  execução intermediária acusou o flake de `ambient-sound-control`, já documentado.
+
+## Nota operacional recorrente — cache do webpack
+
+`npm run build` falha de forma intermitente com
+`TypeError: Cannot read properties of undefined (reading 'length')` em
+`WasmHash._updateWithBuffer`, e despeja bundle minificado no stdout, o que
+inutiliza qualquer `grep` na saída. **Não é regressão da aplicação.** Ocorreu em
+25 de agosto e duas vezes em 27–28 de agosto, sempre com o mesmo remédio: mover
+ou apagar `.next/cache` e repetir o build, que então passa integralmente.
+
+Para diagnosticar, redirecione a saída para arquivo antes de filtrar — o stdout
+do build contém megabytes de JavaScript minificado que casam com quase qualquer
+padrão de busca.
+
+## Atualização 2026-08-28 — Primeiro verbete derivado do corpus (P1.2)
+
+- `20260828010000_publish_iemanja_umbanda_sagrada` publica
+  `iemanja-teogonia-umbanda-sagrada`: 326 caracteres de resumo e 3.018 de corpo,
+  acima da constraint de 240/1.800. É o primeiro verbete derivado do corpus
+  condensado, e fixa o padrão para os próximos.
+- O texto parte de uma obra identificada — _Orixás — Teogonia de Umbanda_, de
+  Rubens Saraceni — e trata a origem do texto como parte do que o texto afirma.
+  Ensina explicitamente a distinção que esta sessão descobriu na prática:
+  **densidade de material não é amplitude de concordância**. Quatro das obras
+  mais presentes do acervo são do mesmo autor, e um sistema que contasse obras
+  leria como consenso o que é uma voz exposta quatro vezes.
+- **Publicado sem revisor.** `reviewer_id` e `reviewed_at` ficaram nulos porque
+  nenhuma revisão aconteceu. Desde `20260826150000` a revisão independente não é
+  pré-condição, e registrar um parecer inexistente seria gravar ficção no banco.
+  É o primeiro verbete a exercitar essa relaxação.
+- A fonte entrou como `community-primary` com `usage_status` `REFERENCE_ONLY` e
+  nota de licença explícita: citada por posição, nenhuma expressão da obra é
+  reproduzida — o texto publicado é síntese original.
+- **Verificado contra PostgreSQL 18 real**, em container isolado: as 26
+  migrations aplicaram sem erro e o verbete consta `PUBLISHED`, com a claim
+  ligada à fonte pelo locator. O corpus público passou de 4 para 5 verbetes.
+- Contradição corrigida na documentação durante o trabalho:
+  `docs/METHOD.md` afirmava que `REFERENCE_ONLY` e
+  `CLAIM_ELIGIBLE` não existiam mais. Existem — como vocabulário em
+  `src/lib/editorial/contracts.ts` e como coluna `cultural_sources.usage_status`.
+  O que foi removido foi o **portão** que exigia `CLAIM_ELIGIBLE` para a claim
+  valer. O texto foi corrigido para dizer isso com precisão.
+
+## Atualização 2026-08-27 — P1: fatores, correções versionadas e símbolos próprios
+
+### Tríade com fatores determinantes (P1.5)
+
+- A resposta pública da regência passou a trazer `determiningFactors` por papel:
+  os fatos astrológicos que mais sustentaram a escolha, em linguagem de leitura
+  ("Ascendente em Áries", "Marte angular", "Nascimento em dia de Marte").
+  `src/domain/orixas/regency/public-factors.ts` traduz a chave interna da
+  feature; a **ordem** é pública, o peso não, e identificador de regra,
+  coeficiente e fonte estrutural não atravessam.
+- Chave desconhecida devolve `null` em vez de rótulo genérico: exibir "fator
+  astrológico" sem dizer qual seria ruído com aparência de explicação.
+- Papel em aberto não lista fatores. Mostrar os do primeiro colocado sugeriria
+  uma conclusão que o método justamente não tomou.
+- O autorrelato entra como categoria ("Movimento simbólico que você reconheceu")
+  e nunca devolve a resposta dada — ele é cálculo-apenas e não é persistido.
+- A view da Tríade passou a exibir os fatores e a linkar `/metodologia`.
+
+### Registro de correções do método (P1.6)
+
+- `method-corrections.ts` guarda as correções que o método já sofreu, com área,
+  o que mudou, por quê e qual foi o efeito. A página de metodologia publica o
+  registro. Um princípio de correção sem registro é promessa; agora é conferível.
+- Duas entradas, ambas verificáveis nesta documentação: a de 26 de agosto, que
+  substituiu a proibição de agrupar tradições pela condensação por função; e a
+  de 27 de agosto, que passou a contar sustentação por linhagem e não por obra.
+  A segunda **reduz** a convergência que o produto mostra, e está publicada
+  justamente por isso.
+
+### Símbolos em SVG próprio (P1.4)
+
+- `src/components/site/celestial-glyph.tsx` desenha os 14 glifos planetários.
+  A interface usava os caracteres Unicode (☉ ☾ ☿ ♀ ♂), que dependem da fonte
+  instalada, caem em tofu em vários sistemas e não aceitam espessura nem tema
+  consistentes.
+- `src/components/site/ritual-seal.tsx` desenha cinco selos — Exu, Ogum,
+  Oxóssi, Xangô e Iemanjá. São composições autorais a partir dos elementos que
+  o acervo atribui a cada entidade, e cada selo registra sua fundamentação em
+  `grounding`: o tridente e a encruzilhada de _Quimbanda — O Culto da Chama
+  Vermelha e Preta_; a espada e a onda em ferradura de _Fundamentos
+  Doutrinários de Umbanda_; as flechas, o machado de duas faces e a estrela
+  sobre a onda dos pontos cantados. Entidade sem selo fundamentado não
+  renderiza nada — inventar traço para completar a grade seria o oposto do que
+  o método faz em toda parte.
+- **Correção de rumo registrada para quem vier depois:** numa primeira leitura
+  eu tinha concluído que o §10.3 proibia desenhar selos e pontos riscados e
+  limitei o trabalho aos glifos planetários. Estava errado. O §10.3 proíbe
+  **usar símbolo sagrado como ornamento**; o §5.0 manda redesenhá-los em vetor
+  próprio, e o responsável confirmou a instrução. As duas seções não se
+  contradizem: redesenhar é o que o projeto pede, usar como enfeite é o que ele
+  recusa.
+- Pendência de design: o glifo de Júpiter é o mais estilizado do conjunto — o
+  curl superior saiu angular em vez de curvo. Legível, mas merece um passe.
+
+## Atualização 2026-08-27 — `/metodologia` como model card
+
+- A página deixou de ser um resumo de cinco frases e passou a publicar as cinco
+  partes que `docs/BLUEPRINT.md` §5.0 exige: entradas declaradas, processo etapa
+  a etapa, condensação das tradições, versionamento, avaliação e limites
+  conhecidos. Fecha o item 3 do P1.
+- O conteúdo mora em `PUBLIC_REGENCY_METHOD_CARD`, no domínio, e não na página.
+  É contrato: muda com versão, é coberto por teste e mantém a página como
+  apresentação. A faixa `.method-chain` recebe um resumo curto por etapa — a
+  grade de cinco colunas estreitas não comporta parágrafo — e o detalhe longo
+  vive numa seção própria.
+- A página publica duas coisas que são o diferencial e não custam propriedade
+  intelectual: **a regra de linhagem** ("quatro livros do mesmo autor são quatro
+  obras e uma voz") e **o limite de posição análoga** ("ocupa a mesma função
+  estrutural", nunca identidade; uma entidade de guia não vira Orixá por ocupar
+  posição análoga a ele). A sustentação aparece em palavras — uma escola,
+  corroborada, convergente — e nunca em percentual.
+- Os critérios de promoção publicados são os reais, lidos de
+  `regencyPromotionPolicy`: mínimo de 30 rótulos de validação por papel
+  obrigatório, nenhuma queda de acerto em primeira posição ou entre as três
+  primeiras, e no máximo cinco pontos percentuais de aumento na abstenção.
+- Continua sem expor matriz, coeficientes, limiares, regras de desempate ou
+  identificadores internos de artefato. Há teste que varre o texto renderizado
+  contra `regency-matrix`, `regency-weights`, `regency-function-graph` e
+  `family:`.
+- O CSS reaproveita `.method-versions`, que existia estilizado no design system
+  e nunca tinha sido ligado a nada. Novas classes: `.method-detail-list`,
+  `.method-emphasis`, `.method-strengths` e `.method-criteria`, todas com
+  colapso para uma coluna no mesmo breakpoint das demais.
+- Verificado no navegador em 1440px e Pixel 7: nenhum overflow horizontal e
+  todas as grades colapsam para uma coluna no mobile.
+- O build falhou uma vez com `WasmHash._updateWithBuffer` — a mesma corrupção de
+  cache webpack já registrada em 25 de agosto. Mover `.next/cache` e repetir
+  resolveu; não era regressão da aplicação.
+- Checkpoint: 520 testes passando (6 novos na página), typecheck, lint,
+  formatação e build de produção limpos.
+
+## Atualização 2026-08-27 — Grafo de funções estruturais 0.1.0
+
+- Primeira implementação das três camadas de `docs/BLUEPRINT.md` §5.0.1, em
+  `src/domain/orixas/regency/`: `structural-functions.ts` (vocabulário),
+  `function-graph.ts` (atribuições e condensação) e `function-graph-data.ts`
+  (dados). Artefato de pesquisa versionado
+  `regency-function-graph-0.1.0-research`; **não** alimenta o scorer nem o
+  runtime público, e a Tríade continua saindo da matriz v2.
+- Cada função carrega a pergunta que responde. É o teste que autoriza comparar
+  tradições: sem ele, a aproximação vira sincretismo por semelhança de
+  vocabulário. As quatro funções da 0.1.0 são abertura de caminho e passagem,
+  ferro e ofício da guerra, vitalidade solar e evidência, expansão e sentença.
+- A condensação gradua a sustentação por **famílias de fonte independentes**,
+  nunca pela contagem de atribuições, e a saída é qualitativa —
+  `single_school`, `corroborated`, `convergent`. Não existe amostra que calibre
+  um coeficiente aqui, e um percentual seria lido como certeza.
+- Agrippa, Trithemius e o Heptameron ficaram na mesma família
+  (`family:renaissance-ceremonial`): Trithemius foi mestre de Agrippa e o
+  Heptameron circulou junto do quarto livro atribuído a ele. Contá-los como três
+  confirmações inflaria a convergência justamente onde o método precisa dela
+  honesta. O Arbatel, anônimo e de circulação própria, tem família separada.
+- A relação declarada é sempre `analogous_position`; o tipo não oferece outra.
+  As atribuições carregam `entityCategory` pelo vocabulário de
+  `docs/METHOD.md`, e é isso que impede a condensação de virar
+  fusão de panteões — o Exu da Quimbanda entra como `guide_entity`, nunca como
+  `orisa`, e segue distinto do Èṣù yorùbá mesmo ocupando posição análoga a
+  Ophiel e Raphael.
+- **As atribuições vieram do corpus, não da memória.** Cada uma foi localizada
+  por busca semântica em `conteudo/` e conferida no texto: Arbatel via
+  `_texto_olimpicos` (Aratron/Saturno, Bethor/Júpiter, Phaleg/Marte, Och/Sol,
+  Hagith/Vênus, Ophiel/Mercúrio, Phul/Lua), a linhagem angélica via
+  `_texto_magia_angelical_72` (Michael/domingo, Gabriel/segunda, Raphael/quarta,
+  Sachiel/quinta, Haniel/sexta, Cassiel/sábado), Exu via _Quimbanda — O Culto da
+  Chama Vermelha e Preta_ e Ogum via a apostila do Templo da Pena.
+- O corpus permanece insumo de autoria: nenhum código em `src/` lê `conteudo/`.
+  O que atravessa a fronteira é o achado versionado com proveniência, nunca o
+  texto-fonte — é o desenho do §5.0.
+- **Expansão com a bibliografia afro-brasileira.** O vocabulário passou a oito
+  funções, com Oxum, Iemanjá, Omolu e Obaluaiê entrando a partir das obras de
+  Saraceni e do Templo da Pena localizadas no corpus. A checagem de autoria
+  revelou o achado que mais afeta o método: _Teogonia de Umbanda_, _As Sete
+  Linhas_, _Os Arquétipos_ e _Fundamentos Doutrinários_ são **as quatro de
+  Rubens Saraceni** — uma família, não quatro. Como é a fonte mais presente do
+  corpus, contar obras em vez de linhagens quadruplicaria a convergência
+  justamente onde o acervo é mais denso, lendo como consenso de escolas o que é
+  a exposição de um autor. As linhagens umbandistas independentes hoje
+  disponíveis são quatro: Saraceni, Templo da Pena, Ramatís e Quimbanda.
+- Prandi, Verger, Juana Elbein, Abimbola, Bascom e o dossiê Ifá da UNESCO estão
+  catalogados em `docs/METHOD.md` como referências externas com URL,
+  mas **não estão no corpus local**. Nenhuma atribuição foi escrita em nome
+  deles: sem o texto à mão, a claim não tem como ser conferida.
+- Checkpoint: 514 testes passando (14 novos), typecheck, lint e formatação
+  limpos. O `.next` obsoleto de 26 de agosto foi removido pelo responsável e o
+  typecheck voltou a passar; o erro era cache de container, não código.
+
+## Atualização 2026-08-27 — Corpus do acervo E:\Ocultismo, condensado e higienizado
+
+- O corpus vetorizado está **pronto e consultável** em `conteudo/`, gerado por
+  `scripts/ocultismo-pipeline/` (venv Python própria). Desenho: extração
+  (PDF/DOCX/ODT/TXT/RTF/JSON + OCR de imagens e de PDFs escaneados) → higiene →
+  chunking → embeddings `BAAI/bge-m3` (1024d, normalizados) → FAISS de produto
+  interno + parquet/jsonl/manifest. Busca: `query.py` (texto/json/jsonl, filtro
+  por categoria).
+- **Estado final: 29.296 chunks, 434 documentos, 17 categorias.** Os cinco
+  artefatos — `manifest.json`, `chunks.parquet`, `embeddings.npy`, `index.faiss`
+  e `chunks.jsonl` — estão consistentes nesse número. A RTX 2060 de 6 GB pede
+  `--batch-size 8`; o default 64 estoura.
+- **Higiene do corpus, introduzida em 27 de agosto.** A auditoria do índice
+  recém-construído encontrou 12,6% de conteúdo que não deveria estar lá, e a
+  causa estava no pipeline, não no acervo. Duas falhas de raiz foram corrigidas
+  em vez de contornadas:
+  - o portão de lixo em `normalize.py` somava letras **e espaço em branco**
+    sobre o total, de modo que um PDF quebrado em caracteres isolados separados
+    por quebras de linha passava com folga. Agora `corpus_hygiene.py` mede
+    letras entre os caracteres não-brancos, comprimento médio das palavras e
+    presença de palavras funcionais em português e inglês — as três, e em
+    inglês também porque o acervo tem grimórios nessa língua;
+  - a deduplicação comparava o hash dos primeiros 5.000 caracteres, o que só
+    reconhece arquivos idênticos: quatro cópias de _Magia Prática_ do Bardon
+    estavam indexadas. Agora usa assinatura de n-gramas no pipeline e, sobre o
+    índice já construído, cobertura de chunk entre vetores. Os limiares foram
+    calibrados contra pares conhecidos do próprio acervo — cópias ficam entre
+    0,42 e 0,64 de cobertura, obras distintas não passam de 0,28, sendo o par
+    mais próximo o Grande Grimório e o Grimório do Papa Honório, textos
+    historicamente aparentados. Casos entre os dois limiares são relatados para
+    decisão humana, nunca descartados em silêncio.
+- Isso importa além do espaço em disco: `docs/BLUEPRINT.md` §5.0.1 estabelece
+  que a condensação pesa convergência entre escolas independentes e que cópia e
+  tradução da mesma linhagem não são duas confirmações. Bardon indexado quatro
+  vezes produziria quatro votos onde existe um.
+- `clean_corpus.py` aplica os portões retroativamente ao índice, selecionando
+  linhas em vez de reprocessar o acervo. Removeu 42 documentos e 4.222 chunks
+  numa primeira passada (cópias 2.874; fora do escopo 1.288 — inclusive um guia
+  de drogas, um catálogo de contatores elétricos e 17 livros de autoajuda;
+  extração ilegível 60) e mais 5 documentos e 216 chunks depois do OCR.
+- **PDFs escaneados.** `ingest_scanned_pdfs.py` passou a detectar não só a
+  ausência de camada de texto, mas a camada **degenerada** — foi assim que o
+  Curso Básico de Astrologia tinha entrado como 173 chunks de símbolos. A
+  execução de 27 de agosto achou 25 candidatos, processou os 9 pendentes em 40
+  min e gerou 596 chunks, recuperando o Curso Básico de Astrologia, o Curso de
+  Magia de J. R. R. Abrahão e a Apometria de Adilson Marques, antes ilegíveis.
+  O Quimbanda (ilide.info) segue escaneando mal e continua praticamente ilegível.
+- **Pontos cantados: 538 catalogados, 216 com letra confiável.** O número
+  anterior de 529 (98%) era falso: `refine_lyrics.py` mantinha a página inteira
+  quando a segmentação falhava, então artigo de blog, verbete de Wikipédia e
+  página com dezenas de pontos entraram como se fossem letra — 47% das entradas
+  passavam de 2.000 caracteres, quando um ponto real tem entre 90 e 430.
+  `validate_lyrics.py` inverteu a ordem: limpa a navegação, tenta recortar a
+  estrofe correspondente ao título e só então valida por estrutura de verso
+  (comprimento e contagem de palavras por linha, vocabulário funcional do
+  português). Resultado: 131 letras já válidas, 85 recuperadas por segmentação,
+  313 descartadas e 9 que nunca tiveram coleta. O catálogo passou a registrar
+  `lyrics_status` com o motivo. Campo vazio é resultado honesto; letra errada
+  contamina busca e método. A recuperação por recorte não é perfeita — na
+  amostragem, cerca de 1 em 12 ainda traz a estrofe do ponto vizinho.
+- `integrate_pontos.py` tornou-se idempotente: remove os chunks de pontos já
+  indexados antes de inserir os novos, porque o catálogo é reescrito a cada
+  validação. E o `chunks.jsonl` passou a ser regenerado a partir do parquet em
+  toda gravação — antes ficava atrás do índice, e chegou a ter 1.280 chunks a
+  menos que os demais artefatos.
+- Smoke test no corpus limpo: "correspondência entre planetas e anjos na cabala"
+  deixou de gastar duas das três vagas do topo com a mesma cópia duplicada do
+  Eliphas Levi; "curso básico de astrologia" retorna em primeiro o documento que
+  antes era ilegível. As letras dos pontos deixaram de trazer navegação de blog.
 - Retomada/reprocesso: `.venv/bin/python pipeline.py --output-dir conteudo
-  --device cuda --batch-size 8` → `integrate_pontos.py --device cuda` →
-  `query.py`. Logs em `scripts/ocultismo-pipeline/*_run.log` (gitignored).
-- PDFs escaneados sem camada de texto: `ingest_scanned_pdfs.py` detecta,
-  renderiza (dpi 150) e aplica OCR página a página, mesclando ao índice
-  existente (idempotente). Rodado em 2026-08-27: 20 candidatos, 16 geraram
-  751 chunks (corpus final **33.451 chunks**, `pdf_ocr` em file_types) —
-  incluindo A Bíblia do Tarot (216 mil chars), Árvore da Vida (284 mil) e o
-  Ritual com Ervas/Banhos do Adriano Camargo (342 mil). O Quimbanda
-  (ilide.info) escaneou mal: 52 páginas → ~0,9 mil chars, segue praticamente
-  ilegível; imagem solta sem texto e página escaneada ruim não viram chunk.
+--device cuda --batch-size 8` → `ingest_scanned_pdfs.py` → `validate_lyrics.py`
+  → `integrate_pontos.py --device cuda` → `clean_corpus.py` → `query.py`. Logs em
+  `scripts/ocultismo-pipeline/*.log` (gitignored).
+- O corpus ainda **não** está ligado ao produto: nenhum código em `src/`
+  referencia `conteudo/`. Fechar essa distância é o P1 de
+  `docs/IMPLEMENTATION_STATUS.md`.
 
 ## Atualização 2026-08-26 — Contradições retiradas da documentação
 
@@ -135,7 +750,7 @@ locator`, com `npm run ceremonial:import` (relata por padrão, grava só com `--
   Trivy 0.74.0 fixado reporta 201 achados bloqueantes (8 CRITICAL, 62 HIGH, 131 MEDIUM), quase
   todos pacotes Debian bookworm sem correção upstream. A política não foi afrouxada. Base trixie
   reduz Critical+High de 70 para 25, mas não a zero. A decisão está descrita no plano.
-- Runbook: `docs/ceremonial-ingest.md`. Próxima retomada: Task 14, importação de obras, edições,
+- Runbook: `docs/OPERATIONS.md`. Próxima retomada: Task 14, importação de obras, edições,
   artefatos e locators sem colapsar variantes.
 
 ## Atualização 2026-08-26 — Wave 2 dual-mode concluída (SUPERADA)
@@ -179,7 +794,7 @@ locator`, com `npm run ceremonial:import` (relata por padrão, grava só com `--
 
 ## Atualização 2026-08-26 — Wave 1 do roteiro cerimonial: Tríade v3 fechada
 
-- Concluída a Wave 1 (`.omo/plans/astroaxe-roadmap-ceremonial-laboratory.md`, tarefas 1-6):
+- Concluída a Wave 1 (`docs/IMPLEMENTATION_STATUS.md`, tarefas 1-6):
   baseline congelada, boundaries da Tríade endurecidas (mesma origem em POST/PUT/DELETE, leitor
   JSON limitado com 413/415, erro de cálculo sanitizado 503), consentimento do feedback vinculado
   a estado controlado (não é mais possível enviar sem marcar, mesmo contornando o botão),
@@ -209,7 +824,7 @@ locator`, com `npm run ceremonial:import` (relata por padrão, grava só com `--
 - Documentação reconciliada (`/privacidade`, `/metodologia`, `docs/IMPLEMENTATION_STATUS.md`) para
   declarar explicitamente: as sete respostas do questionário são cálculo-apenas e nunca
   persistidas; o feedback exige consentimento separado, é persistido versionado e pode ser
-  retirado individualmente. `docs/astrology-calculation-changelog.md` e o relatório de pesquisa já
+  retirado individualmente. `docs/METHOD.md` e o relatório de pesquisa já
   declaravam essa regra corretamente.
 - Checkpoint observado nesta sessão: `npm run typecheck` e `npm run lint` passaram; `npm test`
   (sem coverage) — 93 arquivos, 351 testes, todos passando; `npm run test:coverage` — mesma
@@ -328,7 +943,7 @@ locator`, com `npm run ceremonial:import` (relata por padrão, grava só com `--
 - Área Lua passou a explicar as oito fases, distingue fase natal de fase mensal e conecta a Lua à
   casa apenas quando há hora conhecida.
 - A camada narrativa pura usa `western-editorial-reports-1.0.0`; não altera efemérides nem inventa
-  dados ausentes. O benchmark de concorrência foi persistido em `competitor-profiles/raw/`.
+  dados ausentes. O benchmark de concorrência foi persistido em `docs/research/competitors/raw/`.
 
 ## Atualização 2026-08-24 — módulos comerciais e QA visual
 
@@ -343,7 +958,7 @@ locator`, com `npm run ceremonial:import` (relata por padrão, grava só com `--
 - Biorritmo usa `classical-primary-secondary-alerts-3.0.0`, com 61 dias, dias zero e
   compatibilidade; permanece explicitamente não científico.
 - QA autenticado passou em desktop e Pixel 7, navegando por todas as abas e capturando evidências em
-  `.planning/screenshots/comparison/`.
+  as capturas de `.planning/` (diretório removido em 28 de agosto de 2026).
 - Próximo marco: área Lua com progressões secundárias, Retorno Lunar, trânsitos lunares, fase natal,
   sinastria lunar e Lua fora de curso.
 
@@ -357,8 +972,8 @@ representa commit, CI, revisão externa ou deploy em produção.
 2. este documento: decisões vigentes, estado operacional e próximos passos;
 3. `docs/IMPLEMENTATION_STATUS.md`: inventário funcional detalhado;
 4. `docs/BLUEPRINT.md`: arquitetura e fases do produto;
-5. `docs/design-references.md`: contrato de experiência e motion;
-6. `docs/backup-restore.md`: operação e retorno do PostgreSQL.
+5. `docs/BLUEPRINT.md`: contrato de experiência e motion;
+6. `docs/OPERATIONS.md`: operação e retorno do PostgreSQL.
 
 Antes de editar, execute `git status --short` e preserve todas as mudanças existentes. O worktree
 estava com alterações ainda não commitadas neste handoff.
@@ -412,7 +1027,7 @@ estava com alterações ainda não commitadas neste handoff.
 - A apresentação dos signos agora deriva o nome em português da longitude e mostra o grau do
   Ascendente dentro do signo. A correção está em
   `src/domain/astrology/western/zodiac.ts`; o histórico e o impacto estão em
-  `docs/astrology-calculation-changelog.md`.
+  `docs/METHOD.md`.
 - Essa correção alterou a apresentação, não o núcleo astronômico. Uma divergência futura deve ser
   reproduzida com input auditável de data, hora, cidade/timezone e modo de hora conhecida antes de
   alterar engine ou configuração.
@@ -453,7 +1068,7 @@ estava com alterações ainda não commitadas neste handoff.
 - O Redis emitiu aviso do host sobre `vm.overcommit_memory`. Não bloqueou os testes, mas deve ser
   corrigido no host antes de tratar a operação como endurecida.
 
-O procedimento detalhado e o rollback estão em `docs/backup-restore.md`. O volume legado e o dump
+O procedimento detalhado e o rollback estão em `docs/OPERATIONS.md`. O volume legado e o dump
 não podem ser removidos sem backup, alvo explícito e nova autorização.
 
 ## Validação mais recente
@@ -536,7 +1151,7 @@ Em 22 de agosto de 2026 foi aprovada a migração da infraestrutura de produçã
 VPS Contabo, mantendo Compose para desenvolvimento/E2E. A arquitetura usa Cloudflare Tunnel e
 Traefik privados, app replicado, workers separados e SMTP relay gerenciado. A primeira fase adicionou
 suporte fail-closed a Docker secrets por `*_FILE` no app, worker e Prisma migrate; o runbook está em
-`docs/swarm-runbook.md`. Brevo SMTP é o candidato inicial de menor custo, sujeito à criação da conta,
+`docs/OPERATIONS.md`. Brevo SMTP é o candidato inicial de menor custo, sujeito à criação da conta,
 verificação do domínio e teste de SPF/DKIM/DMARC. Nenhum cluster, secret real ou integração externa
 foi criado nesta fase. A fundação stateless da Phase 2 está em `infra/swarm`: imagens exclusivamente
 por digest, socket proxy filtrado, Traefik privado, duas réplicas de Cloudflare Tunnel, app replicado,
@@ -556,7 +1171,7 @@ O email transacional agora usa a tabela `email_outbox`: o cadastro e a mensagem 
 atômicos, e o scheduler entrega por SMTP com lease, seis tentativas, backoff, estado `DEAD` e
 `Message-ID` determinístico. Homologação envia apenas ao Mailpit; produção lê a senha Brevo por
 Docker Secret e não entrega a credencial ao app web. O contrato e a preparação SPF/DKIM/DMARC estão
-em `docs/transactional-email.md`. A migration foi aplicada na homologação e
+em `docs/OPERATIONS.md`. A migration foi aplicada na homologação e
 `npm run homolog:email-smoke` validou cadastro sintético, outbox, worker e Mailpit com limpeza exata
 do usuário de teste. Ainda falta validar uma entrega com domínio e conta reais em staging; nenhum
 provedor externo foi configurado nesta sessão.
@@ -587,8 +1202,8 @@ expõe versões e declara que a pesquisa não substitui confirmação religiosa 
 não promove a matriz de pesquisa a regência religiosa validada. O áudio ambiente foi removido; há
 somente tons curtos de interação em botões e links, desligados por padrão e ativados por controle
 persistente na interface. A comparação visual direta com Astrarise, NFTmap, Astrolink/Orbia e
-Personare está em `.planning/research/reference-sites-visual-comparison.md`, com capturas em
-`.planning/screenshots/references` e `.planning/screenshots/comparison`. O fluxo autenticado passou
+Personare está em `.planning/research/reference-sites-visual-comparison.md` (removido em 28 de agosto de 2026; conclusões absorvidas em `docs/BLUEPRINT.md`), com capturas em
+as capturas de `.planning/` (diretório removido em 28 de agosto de 2026) e as capturas de `.planning/` (diretório removido em 28 de agosto de 2026). O fluxo autenticado passou
 em Playwright desktop e Pixel 7; o checkpoint registrou 268 testes, 87,2% de statements, build Next
 16 aprovado e Quality Gate SonarQube aprovado.
 
@@ -661,7 +1276,7 @@ de depender do timeout visual padrão durante a primeira compilação Turbopack.
 Na revisão visual seguinte da home, foram removidos os últimos círculos decorativos herdados de
 CSS no fundo do planetário e no painel do formulário. A cena WebGL não desenha trilhas orbitais: o
 único sistema de anéis visível pertence a Saturno e vem da imagem NASA. Capturas desktop e Pixel 7
-sem os círculos estão em `.planning/screenshots/comparison/astroaxe-home-no-decorative-rings-*`.
+sem os círculos estão em as capturas de `.planning/` (diretório removido em 28 de agosto de 2026).
 
 ## Borda pública configurada antes da VPS
 
@@ -693,7 +1308,7 @@ página de espera na borda, respondendo `503` com `noindex` para não ser indexa
 site real. O fonte está em `infra/cloudflare/holding-page/worker.js` e sai do ar apagando a rota,
 sem tocar em DNS.
 
-O runbook autoritativo é `docs/cloudflare-edge.md`; o desenho aprovado está em
+O runbook autoritativo é `docs/OPERATIONS.md`; o desenho aprovado está em
 `docs/superpowers/specs/2026-08-26-cloudflare-edge-design.md`.
 
 ## Integrações Codex, Citadel e Cloudflare

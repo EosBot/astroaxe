@@ -52,10 +52,42 @@ versões e o `package-lock.json`.
 - `src/domain/`: cálculo puro, determinístico e independente de framework;
 - `src/lib/`: boundaries, contratos, infraestrutura e serviços;
 - `prisma/`: schema e migrations versionadas;
+- `infra/`: infraestrutura como código — `swarm/`, `cloudflare/`, `prometheus/`, `security/`;
+- `tests/`: E2E Playwright em `e2e/` e apoio de runtime em `support/`. Teste unitário fica
+  ao lado do código que testa, nunca aqui;
 - `src/generated/`: artefatos gerados; nunca edite à mão;
-- `docs/`: operação, decisões e qualidade;
+- `docs/`: **cinco documentos canônicos, sem duplicata** (ver abaixo);
 - `compose.yml`: runtime; `compose.dev.yml`: desenvolvimento;
 - `compose.quality.yml`: SonarQube e banco dedicados.
+
+**Os arquivos Compose ficam na raiz, e isso é deliberado.** O Docker Compose deriva o nome do
+projeto do diretório do arquivo: movê-los para uma subpasta renomearia o projeto de
+`orixas-mapa-astral` para o nome dela e **órfãos todos os volumes existentes** — inclusive o
+volume PostgreSQL histórico que não pode ser perdido. Foi verificado empiricamente em 28 de
+agosto de 2026, com `docker compose config` reportando `name:` derivado da pasta. Também é o
+diretório onde o Compose procura o `.env`.
+
+### A documentação, em cinco documentos
+
+Consolidada em 28 de agosto de 2026. Antes existiam vinte arquivos em `docs/`, mais um
+roteiro paralelo em `.omo/` e artefatos de sessão em `.planning/`, com sobreposição e
+contradição entre eles. Hoje cada assunto tem exatamente um lugar:
+
+| Documento                       | O que responde                                                                    |
+| ------------------------------- | --------------------------------------------------------------------------------- |
+| `docs/BLUEPRINT.md`             | O que o produto é e por quê. Decisões, princípios, design, posicionamento.        |
+| `docs/IMPLEMENTATION_STATUS.md` | O que está feito, o que falta e em que ordem — incluindo o roteiro granular.      |
+| `docs/METHOD.md`                | O método de regências, as fontes, o protocolo de pesquisa e a operação editorial. |
+| `docs/OPERATIONS.md`            | Como rodar: borda, orquestração, deploy, backup, email, qualidade, ingestão.      |
+| `docs/PROJECT_MEMORY.md`        | O histórico datado, em ordem cronológica inversa.                                 |
+
+**Ordem de leitura para retomar:** este manual → `PROJECT_MEMORY.md` (o que mudou por
+último) → `IMPLEMENTATION_STATUS.md` (o que fazer agora) → `BLUEPRINT.md` ou `METHOD.md`
+conforme o assunto. Rode `git status --short` antes de editar e preserve mudanças alheias.
+
+Não crie um sexto documento em `docs/`. Se um assunto não couber em nenhum dos cinco, o
+problema é o recorte de um deles, e a correção é ajustá-lo — não abrir um arquivo novo, que
+foi exatamente como se chegou a vinte.
 
 Antes de assumir que o blueprint histórico ainda representa o projeto, confira
 `package.json`, Compose, Prisma e o código atual.
@@ -173,7 +205,7 @@ MCP, GitHub MCP ou qualquer conector por inferência. Para adicionar um MCP:
 4. documente transporte, comandos, permissões e telemetria;
 5. teste em dados não sensíveis e forneça procedimento de revogação.
 
-Detalhes de bootstrap estão em `docs/quality-tooling.md`.
+Detalhes de bootstrap estão em `docs/OPERATIONS.md`.
 
 ## 5. Setup do zero
 
@@ -428,7 +460,7 @@ URL, branch protection ou pipeline.
 | Migration falha               | leia SQL e logs do `migrate`                       | corrija migration nova; não apague volume           |
 | Teste pendura                 | localize handle/timer/conexão aberta               | shutdown explícito e fake timers quando cabível     |
 | Redis indisponível            | verifique health/logs e timeout                    | preserve fail-closed; não faça bypass silencioso    |
-| Sonar não inicia              | confirme memória/`vm.max_map_count`, health e logs | ajuste host conforme `docs/quality-tooling.md`      |
+| Sonar não inicia              | confirme memória/`vm.max_map_count`, health e logs | ajuste host conforme `docs/OPERATIONS.md`           |
 | Scanner sem cobertura         | confira `coverage/lcov.info`                       | rode `npm run test:coverage` antes do scan          |
 | Connected Mode não sincroniza | confira URL, token de usuário e project key        | refaça binding sem expor token                      |
 | Tailwind IntelliSense falha   | use workspace TS e configuração v4                 | recarregue editor; não instale LSP duplicado        |

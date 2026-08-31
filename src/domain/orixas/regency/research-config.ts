@@ -44,7 +44,7 @@ export const regencyResearchConfig: RegencyScoringConfig = regencyScoringConfigS
     {
       id: "source:astroaxe:role-lenses",
       title: "Hipóteses de lentes para frente, cabeça e costas",
-      localPath: "docs/knowledge/regency-method.md",
+      localPath: "docs/METHOD.md",
       locator: "Scorer de pesquisa 0.2.0",
       tradition: "product_hypothesis",
     },

@@ -26,7 +26,7 @@ import type { VerifiedSource } from "@/lib/ceremonial/extraction-source";
  * in-process adapters run for real, and every binary-backed path is exercised through the
  * tool's absence, which is exactly the failure the pipeline must classify instead of
  * crashing on. The success paths for those binaries are proven by running the ingest image
- * itself (see `.omo/evidence/.../T13/extraction-adversarial.txt`).
+ * itself (see `docs/IMPLEMENTATION_STATUS.md` (índice de evidências)).
  */
 
 const roots: string[] = [];

@@ -40,9 +40,12 @@ export const regencyScoringConfigSchema = z
             id: z.string().regex(/^source:[a-z0-9-:]+$/),
             title: z.string().trim().min(1).max(300),
             url: z.url().optional(),
+            // Aceita maiúsculas: os documentos canônicos consolidados em 28 de
+            // agosto de 2026 seguem a convenção que BLUEPRINT.md e
+            // PROJECT_MEMORY.md já usavam.
             localPath: z
               .string()
-              .regex(/^docs\/[a-z0-9_./-]+\.md$/)
+              .regex(/^docs\/[A-Za-z0-9_./-]+\.md$/)
               .optional(),
             locator: z.string().trim().min(1).max(200),
             tradition: z.enum([

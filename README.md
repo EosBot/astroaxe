@@ -33,7 +33,7 @@ antigo em `/var/lib/postgresql/data`.
 
 No ambiente local atual, o volume ativo é `astroaxe_postgres18_data`. O legado
 `astroaxe_postgres_data` contém PostgreSQL 16 e permanece preservado para retorno; nunca use
-`down -v` nem o monte na imagem 18. Consulte `docs/backup-restore.md`.
+`down -v` nem o monte na imagem 18. Consulte `docs/OPERATIONS.md`.
 
 ## Qualidade
 

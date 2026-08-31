@@ -9,7 +9,7 @@
 --     "ceremonial_editions", "ceremonial_works", "ceremonial_workspace_memberships",
 --     "ceremonial_source_systems" CASCADE;
 -- Roll-forward: re-run this file. Take a verified backup before either direction, per
--- docs/backup-restore.md; never drop a volume to "fix" a migration.
+-- docs/OPERATIONS.md; never drop a volume to "fix" a migration.
 
 CREATE TABLE "ceremonial_source_systems" (
     "id" UUID NOT NULL DEFAULT gen_random_uuid(),

@@ -26,7 +26,7 @@ services:
     cap_drop: [ALL]
     security_opt:
       # Docker's default seccomp allowlist stays in force — deliberately NOT disabled.
-      # docs/ceremonial-ingest.md records why no hand-authored profile ships in its place.
+      # docs/OPERATIONS.md records why no hand-authored profile ships in its place.
       - no-new-privileges:true
     # Bounded so a pathological page or a decompression bomb cannot take the host with it.
     # The pipeline's own ceilings (32 MiB of output, 180 s per source) sit inside these.
