@@ -1,5 +1,65 @@
 # Memória canônica do projeto
 
+## Atualização 2026-08-31 — Task 22: a tradição angélica entra na gramática comum
+
+- A task foi executada no enquadramento novo da Wave 5: o entregável não é um
+  workspace angélico isolado, é **a contribuição daquela tradição para o grafo de
+  funções**. Cinco atribuições novas, todas com passagem lida no texto, nenhuma
+  escrita de memória.
+- **Duas escolas, uma linhagem.** _Alta Magia Angelical_, de Frater Dalton R.F
+  (O.G.B), e _Mágica Planetária Prática_, de David Rankine e Sorita d'Este
+  (Avalonia, 2007), são escolas distintas — outros autores, outro país, outro
+  século de publicação — e ainda assim entraram na **mesma** `family:renaissance-ceremonial`.
+  Os próprios Rankine e d'Este se descrevem trabalhando "com base na pesquisa de
+  material de origem", "firmemente enraizado na tradição": transmitem a linhagem,
+  não a fundam. Somaram testemunho e não somaram convergência, que é exatamente
+  para isso que escola e família são campos separados.
+- **Defeito encontrado e corrigido: `school:trithemius` não era sustentado pela
+  obra.** A bibliografia declarada de _Alta Magia Angelical_ (p. 194) traz
+  Vacchiano, David Goddard, MacGregor Mathers, Vitor Sanches, Sistemagia e Ordem
+  Lótus Negro. Trithemius não aparece em lugar nenhum; Agrippa aparece uma única
+  vez, de passagem, numa lista de autores que tratam do círculo mágico — não como
+  fonte das correspondências. A escola passou a `school:dalton-alta-magia-angelical`,
+  pelo autor que a obra declara, e a correção está registrada em
+  `method-corrections.ts`, portanto publicada em `/metodologia`.
+- A **família continuou** `renaissance-ceremonial`, deliberadamente: as Clavículas
+  de Mathers colocam a obra a jusante do mesmo fluxo solomônico, e dar-lhe família
+  própria criaria uma segunda linhagem independente onde há transmissão da mesma.
+  Como era a única obra naquela família, a correção **não mexeu em nenhuma
+  contagem** — mudou só a verdade do rótulo.
+- **O primeiro conflito real do grafo.** Dalton põe `Anael` na tabela planetária e
+  `Haniel` na oração de sexta-feira, variantes de um mesmo nome. A tabela
+  sefirótica de Rankine e d'Este põe `Uriel` em Netzach. Haniel e Uriel não são
+  variantes um do outro: as fontes discordam sobre qual potência ocupa a atração e
+  a concórdia. Ficou registrado como conflito. Até aqui o campo `conflictsWith`
+  existia sem nenhum dado real o exercendo.
+- **O que ficou de fora, e por quê.** Cassiel/Saturno tem "obras de maldição e
+  morte" e tanatologia, sem nenhuma cura — que a mesma tabela dá ao Sol e a
+  Mercúrio. Phul e Aratron, em Rankine e d'Este, fazem o contrário: curam e
+  prolongam a vida sem impor limite. `function:affliction-and-cure` pede as duas
+  metades, e cada fonte sustenta uma. Nenhum entrou.
+- **A observação que isso produziu, e que importa mais que as atribuições:** o
+  material cerimonial **separa o que a função reúne**. Aflição e cura são uma
+  potência só em Omolu e moram em planetas distintos nas fontes angélicas. Isso é
+  sinal de que o vocabulário de funções pode estar recortado pela Umbanda. Revisá-lo
+  é decisão metodológica própria, a ser tomada por mérito — nunca um ajuste para
+  acomodar fonte.
+- Também ficaram de fora `function:generative-waters` (a Lua é de elemento água,
+  mas suas obras na tabela são divinatórias, e elemento não é função) e
+  `function:passage-between-planes` ("projeção astral" é o que o operador faz sob
+  aquele planeta, não afirmação de que a potência governa a passagem). E
+  `_texto_magia_angelical_simples`, material de apoio de videoaula sem fontes
+  declaradas: identificável não basta.
+- Grafo de `0.3.0-research` para `0.4.0-research`, de 27 para 32 atribuições, e
+  **nenhuma força de convergência mudou** — seguem seis `convergent`, uma
+  `corroborated` e duas `single_school`.
+- **O portão da task 21 funcionou na primeira vez em que foi exigido.** O
+  congelamento quebrou sozinho ao ver a versão e a contagem mudarem, e obrigou ao
+  registro ANTES/DEPOIS/MOTIVO/IMPACTO antes de aceitar o novo estado. Foi
+  construído na sessão anterior e cobrou na seguinte.
+- Checkpoint: **606 testes passando** e 5 ignorados; typecheck, lint e formatação
+  limpos.
+
 ## Atualização 2026-08-31 — Task 21: congelamento do domínio e comportamento diante de conflito
 
 - `src/domain/ceremonial/domain-freeze.ts` congela as cinco superfícies
@@ -271,7 +331,7 @@ de entrada e traz o índice e a ordem de leitura. Não crie um sexto documento.
 
 | Frente                     | Estado                                                                                                                                                                                                                                                                                                                                                                                |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P1.1 — condensar tradições | Grafo com **9 funções e 27 atribuições**. Adivinhação reúne UNESCO, Abimbola e o corpus localizado de Salakọ em Bascom; Prandi sustenta Exu Òrìṣà no limiar; Ogum/ferro possui via acadêmica. **Cobertura ainda fina:** Verger segue sem passagem primária acessível; Juana Elbein foi autenticada, mas os trechos recuperados não cabem nas funções atuais sem forçar o vocabulário. |
+| P1.1 — condensar tradições | Grafo com **9 funções e 32 atribuições**. Adivinhação reúne UNESCO, Abimbola e o corpus localizado de Salakọ em Bascom; Prandi sustenta Exu Òrìṣà no limiar; Ogum/ferro possui via acadêmica. **Cobertura ainda fina:** Verger segue sem passagem primária acessível; Juana Elbein foi autenticada, mas os trechos recuperados não cabem nas funções atuais sem forçar o vocabulário. |
 | P1.2 — escrever a síntese  | Primeiro verbete publicado e verificado em banco real. É trabalho contínuo, um verbete por vez.                                                                                                                                                                                                                                                                                       |
 | P1.3, P1.4, P1.5, P1.6     | Feitos. O glifo de Júpiter já foi refeito; permanece a ampliação gradual do conjunto de selos fundamentados.                                                                                                                                                                                                                                                                          |
 | Wave 4 do roteiro          | **Concluída.** T18 tem quatro perfis sustentados — Agrippa, Arbatel, Khan Secretum e Heptameron. Agrippa fica `unavailable` enquanto requisitos celestes não forem computáveis; Ars Paulina permanece fora por não conter regra de eleição. T21 congelou as cinco superfícies determinísticas e o comportamento diante de conflito.                                                   |

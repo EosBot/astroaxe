@@ -86,13 +86,25 @@ describe("congelamento do domínio cerimonial", () => {
    * Portão de versionamento. Alterar uma saída do domínio quebra aqui, e a
    * correção é registrar ANTES/DEPOIS/MOTIVO/IMPACTO e subir a versão do módulo
    * afetado — nunca reescrever o número esperado para o teste voltar ao verde.
+   *
+   * Já exerceu esse papel uma vez, na task 22:
+   *
+   * - ANTES: `regency-function-graph-0.3.0-research`, 27 atribuições.
+   * - DEPOIS: `0.4.0-research`, 32 atribuições.
+   * - MOTIVO: a tradição angélica entrou com cinco atribuições verificadas no
+   *   corpus, e o rótulo `school:trithemius` foi corrigido por não ser sustentado
+   *   pela bibliografia da própria obra.
+   * - IMPACTO: **nenhuma força de convergência mudou** — seguem seis
+   *   `convergent`, uma `corroborated` e duas `single_school`. As escolas novas
+   *   entraram na família que já existia, então somaram testemunho e não somaram
+   *   convergência. Surgiu o primeiro conflito real registrado no grafo.
    */
   it("congela as versões declaradas de cada módulo do domínio", () => {
     expect(frozenDomainVersions).toEqual({
       electionEngine: "election-engine-0.2.0-research",
       electionProfileSchema: "election-profiles-0.2.0-research",
       entityRecords: "ceremonial-entity-records-0.1.0-research",
-      functionGraph: "regency-function-graph-0.3.0-research",
+      functionGraph: "regency-function-graph-0.4.0-research",
       guidancePolicy: "ceremonial-guidance-policy-0.1.0",
       planetaryHours: "planetary-hours-0.1.0",
       structuralFunctions: "structural-functions-0.1.0-research",
@@ -162,7 +174,7 @@ describe("cobertura de fontes", () => {
     expect(report.consensus).toHaveLength(9);
     expect(
       report.consensus.reduce((total, { assignmentCount }) => total + assignmentCount, 0),
-    ).toBe(27);
+    ).toBe(32);
     expect(strengths.filter((strength) => strength === "convergent")).toHaveLength(6);
     expect(strengths.filter((strength) => strength === "corroborated")).toHaveLength(1);
     expect(strengths.filter((strength) => strength === "single_school")).toHaveLength(2);

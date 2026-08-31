@@ -14,7 +14,7 @@ import { structuralFunctionIds, findStructuralFunction } from "./structural-func
  * posição é evidência forte; a mesma obra em três edições é uma afirmação só.
  * Achatar isso destruiria exatamente o sinal que o método usa.
  */
-export const REGENCY_FUNCTION_GRAPH_VERSION = "regency-function-graph-0.3.0-research";
+export const REGENCY_FUNCTION_GRAPH_VERSION = "regency-function-graph-0.4.0-research";
 
 const assignmentSchema = z
   .object({

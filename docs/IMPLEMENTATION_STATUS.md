@@ -32,7 +32,7 @@ função estrutural.
   sem passagem primária acessível. Catálogo, snippet e citação secundária não
   bastam para preencher esse restante.
 
-O grafo `regency-function-graph-0.3.0-research` possui 9 funções e 27 atribuições:
+O grafo `regency-function-graph-0.4.0-research` possui 9 funções e 32 atribuições:
 seis `convergent`, uma `corroborated` e duas `single_school`. Esses números
 descrevem o artefato atual, não uma alegação de que toda a bibliografia
 prioritária foi exaurida. Checkpoint: 589 testes passando e 5 ignorados;
@@ -438,10 +438,10 @@ agosto de 2026 o índice passou por higiene: material fora do assunto, extraçã
 da mesma obra saíram, e as letras dos pontos foram validadas uma a uma. Os portões que decidem o
 que entra estão em `corpus_hygiene.py` e valem para execuções futuras, não só para esta limpeza.
 
-A ponte entre corpus e produto começou. `regency-function-graph-0.3.0-research` implementa as três
+A ponte entre corpus e produto começou. `regency-function-graph-0.4.0-research` implementa as três
 camadas do §5.0.1: vocabulário de funções estruturais, atribuições com escola/obra/família/locator
 e condensação que pesa **famílias independentes**, não contagem de atribuições. O grafo possui
-**nove funções e 27 atribuições** e reúne Umbanda, Quimbanda, Arbatel, a linhagem angélica
+**nove funções e 32 atribuições** e reúne Umbanda, Quimbanda, Arbatel, a linhagem angélica
 renascentista, Ifá e uma via acadêmica afro-brasileira. As atribuições do corpus foram localizadas
 por busca semântica e conferidas no texto; as externas possuem fonte aberta e locator explícito —
 nenhuma foi escrita de memória.
@@ -599,15 +599,15 @@ era a contradição existente até esta consolidação.
 
 ## Estado das waves
 
-| Wave                                | Tasks | Status                                             |
-| ----------------------------------- | ----- | -------------------------------------------------- |
-| 1 — Recuperação e Tríade v3         | 1-6   | Concluída                                          |
-| 2 — Esquema de proveniência         | 7-11  | Só o esquema (T8) vale; o resto foi superado       |
-| 3 — Ingestão do corpus              | 12-16 | 12-14 feitas; 15 cancelada; 16 a reescrever        |
-| 4 — Domínio cerimonial determinista | 17-21 | **Concluída** (T17–T21)                            |
-| 5 — Condensação das tradições       | 22-27 | Substrato feito; T27 feita; **22-26 é a retomada** |
-| 6 — Experiência de produto          | 28-33 | Aberta, **texto superado** (descreve o modo dual)  |
-| 7 — Operação e release              | 34-39 | Aberta                                             |
+| Wave                                | Tasks | Status                                            |
+| ----------------------------------- | ----- | ------------------------------------------------- |
+| 1 — Recuperação e Tríade v3         | 1-6   | Concluída                                         |
+| 2 — Esquema de proveniência         | 7-11  | Só o esquema (T8) vale; o resto foi superado      |
+| 3 — Ingestão do corpus              | 12-16 | 12-14 feitas; 15 cancelada; 16 a reescrever       |
+| 4 — Domínio cerimonial determinista | 17-21 | **Concluída** (T17–T21)                           |
+| 5 — Condensação das tradições       | 22-27 | T22 e T27 feitas; **23-26 é a retomada**          |
+| 6 — Experiência de produto          | 28-33 | Aberta, **texto superado** (descreve o modo dual) |
+| 7 — Operação e release              | 34-39 | Aberta                                            |
 
 #### Wave 4 — Build deterministic ceremonial domain contracts
 
@@ -659,7 +659,7 @@ era a contradição existente até esta consolidação.
 > §5.0.1. Os títulos abaixo permanecem como referência do material a cobrir; o entregável de
 > cada uma é a contribuição daquela tradição para a gramática comum, não um workspace próprio.
 
-- [ ] 22. Implement the Angelical adapters and catalog
+- [x] **22. Implement the Angelical adapters and catalog — FEITA em 31 de agosto de 2026, no enquadramento novo.** O entregável não é um workspace angélico isolado, e sim a contribuição da tradição angélica para a gramática comum de funções — é o que a nota de reenquadramento desta Wave determina. Cinco atribuições novas, todas com passagem conferida no texto: Gabriel/Lua e Raphael/Mercúrio em `function:divination-and-counsel`, Khamael/Marte em `function:iron-and-war-craft` por duas escolas, e Uriel/Vênus em `function:attraction-and-concord`. **Duas escolas, uma linhagem:** _Alta Magia Angelical_ (Frater Dalton R.F, O.G.B) e _Mágica Planetária Prática_ (Rankine e d'Este, Avalonia 2007) entram como `school:` distintos dentro de `family:renaissance-ceremonial`, porque ambos transmitem o mesmo fluxo solomônico-renascentista — somam testemunho, não somam convergência. **Defeito corrigido:** `school:trithemius` não era sustentado pela obra; a bibliografia declarada (p. 194) traz Vacchiano, Goddard, Mathers, Vitor Sanches, Sistemagia e Ordem Lótus Negro, e Trithemius não aparece. Virou `school:dalton-alta-magia-angelical`, com registro em `method-corrections.ts`. **Primeiro conflito real do grafo:** Dalton põe Haniel em Vênus, Rankine e d'Este põem Uriel; não são variantes do mesmo nome, e a discordância ficou registrada em vez de arbitrada. Grafo de 0.3.0 para 0.4.0-research, 27 para 32 atribuições, **sem que nenhuma força de convergência mudasse**. O que ficou de fora está justificado no docblock de `function-graph-data.ts`: Cassiel/Saturno e Phul/Aratron sustentam só metade de `affliction-and-cure`, a Lua é de elemento água mas de obras divinatórias, "projeção astral" é obra do operador e não regência da potência, e o material de videoaula não tem fontes declaradas.
   - **Implement:** create one distinct `sourceSystemId` and adapter for Heptameron, Ars Paulina, Dee/Enochian and every explicitly named Shem-derived modern school; group them only under `workspaceKind=ANGELICAL`. Model hierarchies, names, offices, seals and timing per edition without a universal angel hierarchy. Ingest only locator-backed records.
   - **References:** `/mnt/e/Ocultismo/Angelical e olimpicos`; `/mnt/e/Ocultismo/Magia Angelical e Olimpicos`; `docs/METHOD.md`; tasks 14, 18, 19.
   - **Acceptance:** UI/API can filter by system/edition; variants and conflicts remain visible; public projection follows rights policy.

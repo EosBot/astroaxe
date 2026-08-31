@@ -191,10 +191,15 @@ describe("grafo de funções estruturais", () => {
 
   it("preserva três linhagens localizadas de adivinhação sem universalizar Bascom", () => {
     const ifa = groupFor(regencyFunctionGraph, "function:divination-and-counsel");
-    expect(ifa?.assignmentCount).toBe(3);
-    expect(ifa?.independentFamilyCount).toBe(3);
+    // A tradição angélica entrou na versão 0.4.0 com Gabriel e Raphael, ambos da
+    // mesma obra: duas atribuições, uma linhagem. A quarta família é a angélica,
+    // não a segunda entrada dela.
+    expect(ifa?.assignmentCount).toBe(5);
+    expect(ifa?.independentFamilyCount).toBe(4);
     expect(ifa?.strength).toBe("convergent");
     expect(ifa?.members.map(({ entityId }) => entityId)).toEqual([
+      "entity:ceremonial:gabriel",
+      "entity:ceremonial:raphael",
       "entity:ifa:orunmila",
       "entity:yoruba:orishala",
     ]);
@@ -224,5 +229,37 @@ describe("grafo de funções estruturais", () => {
   it("reúne mais de uma tradição no grafo como um todo", () => {
     const traditions = new Set(regencyFunctionGraph.assignments.map((a) => a.traditionId));
     expect(traditions.size).toBeGreaterThanOrEqual(4);
+  });
+
+  it("registra a divergência sobre Vênus sem escolher um lado", () => {
+    const atracao = groupFor(regencyFunctionGraph, "function:attraction-and-concord");
+
+    // Dalton põe Haniel em Vênus; Rankine e d'Este põem Uriel. Não são variantes
+    // do mesmo nome, e o grafo guarda a discordância em vez de arbitrá-la.
+    expect(atracao?.conflicts).toEqual([
+      {
+        left: "assignment:haniel-attraction-angelical",
+        right: "assignment:uriel-attraction-rankine",
+      },
+    ]);
+    expect(atracao?.members.map(({ entityId }) => entityId)).toContain("entity:ceremonial:uriel");
+    expect(atracao?.members.map(({ entityId }) => entityId)).toContain("entity:ceremonial:haniel");
+  });
+
+  it("conta duas escolas angélicas como uma linhagem só", () => {
+    const ferro = groupFor(regencyFunctionGraph, "function:iron-and-war-craft");
+    const angelicais = regencyFunctionGraph.assignments.filter(
+      ({ functionId, sourceFamilyId }) =>
+        functionId === "function:iron-and-war-craft" &&
+        sourceFamilyId === "family:renaissance-ceremonial",
+    );
+
+    // Dalton e Rankine/d'Este são escolas distintas transmitindo a mesma
+    // linhagem: somam testemunho, não somam convergência.
+    expect(angelicais).toHaveLength(2);
+    expect(new Set(angelicais.map(({ claimSchoolId }) => claimSchoolId)).size).toBe(2);
+    expect(ferro?.assignmentCount).toBe(6);
+    expect(ferro?.independentFamilyCount).toBe(5);
+    expect(ferro?.schoolCount).toBe(6);
   });
 });

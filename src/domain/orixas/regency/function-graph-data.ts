@@ -32,9 +32,58 @@ import { regencyFunctionGraphSchema, type RegencyFunctionGraph } from "./functio
  * atribuído a ele. Contá-los como três confirmações inflaria a convergência
  * exatamente onde o método precisa dela honesta. O Arbatel, anônimo e de
  * circulação própria, tem família separada.
+ *
+ * Sobre `school:trithemius`, corrigido na versão 0.4.0: a obra angélica do corpus
+ * estava filiada à escola de Trithemius, e **a própria obra não sustenta isso**.
+ * `_texto_magia_angelical_72` é *Alta Magia Angelical*, de Frater Dalton R.F
+ * (O.G.B), e sua bibliografia (p. 194) declara Vacchiano, David Goddard,
+ * MacGregor Mathers, Vitor Sanches, Sistemagia e Ordem Lótus Negro. Trithemius
+ * não aparece; Agrippa aparece uma única vez, de passagem, numa lista de autores
+ * que tratam do círculo mágico — não como fonte das correspondências. A escola
+ * passou a ser `school:dalton-alta-magia-angelical`, pelo autor que a obra
+ * declara. **A família continua `renaissance-ceremonial`**, e isso é
+ * deliberadamente conservador: as Clavículas de Mathers colocam a obra a jusante
+ * do mesmo fluxo solomônico-renascentista, e dar-lhe família própria criaria uma
+ * segunda linhagem independente onde há transmissão da mesma.
+ *
+ * Sobre Rankine e d'Este: *Mágica Planetária Prática* (Avalonia, 2007) é escola
+ * distinta — outros autores, outro país, outro século de publicação — mas os
+ * próprios autores se descrevem trabalhando "com base na pesquisa de material de
+ * origem", "firmemente enraizado na tradição". Transmitem a mesma linhagem, e por
+ * isso entram como `school:rankine-deste` dentro de `family:renaissance-ceremonial`.
+ * Escola diferente não é linhagem diferente: eles somam testemunho, não somam
+ * convergência. É por isso que os dois campos existem separados.
+ *
+ * O nome do arcanjo de Vênus **diverge entre as duas escolas** e a divergência
+ * está registrada como conflito, não resolvida por escolha: Dalton diz `Anael` na
+ * tabela planetária e `Haniel` na oração de sexta-feira — variantes de um mesmo
+ * nome —, enquanto a tabela sefirótica de Rankine e d'Este põe `Uriel` em Netzach.
+ * Haniel e Uriel não são variantes um do outro; as fontes discordam sobre qual
+ * potência ocupa a posição, e tirar média disso apagaria o dado.
+ *
+ * O que ficou de fora da tradição angélica, de propósito:
+ *
+ * - **Cassiel/Saturno em `function:affliction-and-cure`.** A tabela de Dalton dá a
+ *   Saturno "obras de maldição e morte" e "tanatologia esotérica", e nenhuma cura
+ *   — que ela atribui ao Sol e a Mercúrio. A função pergunta pela potência que
+ *   impõe o limite do corpo **e nele opera a cura**; Saturno sustenta só a
+ *   primeira metade. O mesmo vale ao contrário para Phul e Aratron em Rankine e
+ *   d'Este, que curam e prolongam a vida sem impor o limite.
+ * - **A observação que isso produz:** o material cerimonial *separa* o que a
+ *   função reúne. Aflição e cura são uma potência só em Omolu, e nas fontes
+ *   angélicas moram em planetas distintos. Isso é sinal de que o vocabulário pode
+ *   estar recortado pela Umbanda; revisá-lo, se for o caso, é decisão
+ *   metodológica própria e nunca um ajuste para acomodar fonte.
+ * - **`function:generative-waters`.** A Lua é de elemento Água na tabela, mas suas
+ *   obras são divinatórias, não geradoras. Elemento não é função.
+ * - **`function:passage-between-planes`.** A tabela lista "projeção astral" entre
+ *   as obras da Lua. É o que o operador faz sob aquele planeta, não uma afirmação
+ *   de que a potência governa a passagem — a diferença decide, e ficou de fora.
+ * - **`_texto_magia_angelical_simples`** é material de apoio de uma videoaula, sem
+ *   fontes declaradas. Identificável não basta: nada dali entrou.
  */
 export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSchema.parse({
-  version: "regency-function-graph-0.3.0-research",
+  version: "regency-function-graph-0.4.0-research",
   status: "research",
   assignments: [
     // --- Abertura de caminho e passagem ---
@@ -56,7 +105,7 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
     }),
     assignment("raphael-path-angelical", "path-opening", "ceremonial", "raphael", "angel", {
       tradition: "angelical",
-      school: "trithemius",
+      school: "dalton-alta-magia-angelical",
       family: "renaissance-ceremonial",
       work: "magia-angelical-72",
       locator: "Corpus local, _texto_magia_angelical_72, oração ao príncipe Raphael (quarta-feira)",
@@ -64,6 +113,26 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
     }),
 
     // --- Ferro, forja e ofício da guerra ---
+    assignment("khamael-iron-dalton", "iron-and-war-craft", "ceremonial", "khamael", "angel", {
+      tradition: "angelical",
+      school: "dalton-alta-magia-angelical",
+      family: "renaissance-ceremonial",
+      work: "magia-angelical-72",
+      locator:
+        "Corpus local, _texto_magia_angelical_72, Correspondências Planetárias, MARTE (p. 25): “Metal: Ferro”, arcanjo Khamael, obras de “coragem, força e ímpeto”",
+      confidence: 0.85,
+      extractionMethod: "table_review",
+    }),
+    assignment("khamael-iron-rankine", "iron-and-war-craft", "ceremonial", "khamael", "angel", {
+      tradition: "angelical",
+      school: "rankine-deste",
+      family: "renaissance-ceremonial",
+      work: "rankine-deste-magia-planetaria-pratica",
+      locator:
+        "Corpus local, _texto_magia_pratica_planetaria, capítulo de Marte: “Ferramentas: Bigorna, martelo, chicote, lança, flagelo”, “Arcanjo Khamael”, e “seu metal, ferro, que pode ser usado para fazer arados ou bisturis […] ou espadas”",
+      confidence: 0.9,
+      extractionMethod: "table_review",
+    }),
     assignment("ogum-iron-pena", "iron-and-war-craft", "umbanda", "ogum", "orisa", {
       tradition: "umbanda",
       school: "templo-pena",
@@ -125,7 +194,7 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
     }),
     assignment("michael-solar-angelical", "solar-vitality", "ceremonial", "michael", "angel", {
       tradition: "angelical",
-      school: "trithemius",
+      school: "dalton-alta-magia-angelical",
       family: "renaissance-ceremonial",
       work: "magia-angelical-72",
       locator: "Corpus local, _texto_magia_angelical_72, oração ao príncipe Michael (domingo)",
@@ -172,7 +241,7 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
       "angel",
       {
         tradition: "angelical",
-        school: "trithemius",
+        school: "dalton-alta-magia-angelical",
         family: "renaissance-ceremonial",
         work: "magia-angelical-72",
         locator:
@@ -182,6 +251,24 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
     ),
 
     // --- Atração e concórdia ---
+    assignment(
+      "uriel-attraction-rankine",
+      "attraction-and-concord",
+      "ceremonial",
+      "uriel",
+      "angel",
+      {
+        tradition: "angelical",
+        school: "rankine-deste",
+        family: "renaissance-ceremonial",
+        work: "rankine-deste-magia-planetaria-pratica",
+        locator:
+          "Corpus local, _texto_magia_pratica_planetaria, tabela de atribuições sefiróticas: “3 Vênus Uriel Principados Hagiel Kedemel”",
+        confidence: 0.7,
+        extractionMethod: "table_review",
+        conflictsWith: ["assignment:haniel-attraction-angelical"],
+      },
+    ),
     assignment("oxum-attraction-saraceni", "attraction-and-concord", "umbanda", "oxum", "orisa", {
       tradition: "umbanda",
       school: "umbanda-sagrada-saraceni",
@@ -215,7 +302,7 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
       "angel",
       {
         tradition: "angelical",
-        school: "trithemius",
+        school: "dalton-alta-magia-angelical",
         family: "renaissance-ceremonial",
         work: "magia-angelical-72",
         locator: "Corpus local, _texto_magia_angelical_72, oração ao príncipe Haniel (sexta-feira)",
@@ -282,6 +369,40 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
     }),
 
     // --- Adivinhação e conselho ---
+    assignment(
+      "gabriel-divination-dalton",
+      "divination-and-counsel",
+      "ceremonial",
+      "gabriel",
+      "angel",
+      {
+        tradition: "angelical",
+        school: "dalton-alta-magia-angelical",
+        family: "renaissance-ceremonial",
+        work: "magia-angelical-72",
+        locator:
+          "Corpus local, _texto_magia_angelical_72, Correspondências Planetárias, LUA (p. 24): “Trabalhos de divinação, sonhos lúcidos, vidência […] adivinhação pelos sonhos”, arcanjo Gabriel",
+        confidence: 0.9,
+        extractionMethod: "table_review",
+      },
+    ),
+    assignment(
+      "raphael-divination-dalton",
+      "divination-and-counsel",
+      "ceremonial",
+      "raphael",
+      "angel",
+      {
+        tradition: "angelical",
+        school: "dalton-alta-magia-angelical",
+        family: "renaissance-ceremonial",
+        work: "magia-angelical-72",
+        locator:
+          "Corpus local, _texto_magia_angelical_72, Correspondências Planetárias, MERCÚRIO (pp. 25–26): “os poderes da cura, da profecia, da invisibilidade, da divinação, a clarividência mental”, arcanjo Raphael",
+        confidence: 0.7,
+        extractionMethod: "table_review",
+      },
+    ),
     assignment("orunmila-divination-unesco", "divination-and-counsel", "ifa", "orunmila", "orisa", {
       tradition: "ifa",
       school: "unesco-ich",

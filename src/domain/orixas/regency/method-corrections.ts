@@ -47,6 +47,16 @@ export const regencyMethodCorrections: readonly MethodCorrection[] = [
     consequence:
       "Funções antes sustentadas por várias obras passaram a aparecer como sustentadas por uma escola só. O método mostra menos convergência do que mostrava, e a que mostra é real.",
   },
+  {
+    id: "correction:angelical-school-not-trithemius",
+    recordedOn: "2026-08-31",
+    area: "proveniência",
+    whatChanged:
+      "A obra angélica do corpus deixou de ser atribuída à escola de Trithemius e passou a ser atribuída ao autor que ela própria declara, Frater Dalton R.F.",
+    why: "A filiação nunca esteve na obra. Sua bibliografia declara Vacchiano, Goddard, Mathers, Vitor Sanches, Sistemagia e Ordem Lótus Negro; Trithemius não aparece, e Agrippa surge uma vez só, de passagem, numa lista de autores que tratam do círculo mágico — não como fonte das correspondências.",
+    consequence:
+      "Nenhuma convergência mudou, porque a família de linhagem continua a mesma e a obra era a única nela. O que mudou é que a escola declarada passou a ser verificável na fonte, em vez de herdada de uma suposição.",
+  },
 ].map((item) => methodCorrectionSchema.parse(item));
 
 /**
