@@ -599,15 +599,15 @@ era a contradição existente até esta consolidação.
 
 ## Estado das waves
 
-| Wave                                | Tasks | Status                                            |
-| ----------------------------------- | ----- | ------------------------------------------------- |
-| 1 — Recuperação e Tríade v3         | 1-6   | Concluída                                         |
-| 2 — Esquema de proveniência         | 7-11  | Só o esquema (T8) vale; o resto foi superado      |
-| 3 — Ingestão do corpus              | 12-16 | 12-14 feitas; 15 cancelada; 16 a reescrever       |
-| 4 — Domínio cerimonial determinista | 17-21 | T17–20 concluídas; **T21 é o ponto de retomada**  |
-| 5 — Condensação das tradições       | 22-27 | Substrato feito; T27 feita; 22-26 abertas         |
-| 6 — Experiência de produto          | 28-33 | Aberta, **texto superado** (descreve o modo dual) |
-| 7 — Operação e release              | 34-39 | Aberta                                            |
+| Wave                                | Tasks | Status                                             |
+| ----------------------------------- | ----- | -------------------------------------------------- |
+| 1 — Recuperação e Tríade v3         | 1-6   | Concluída                                          |
+| 2 — Esquema de proveniência         | 7-11  | Só o esquema (T8) vale; o resto foi superado       |
+| 3 — Ingestão do corpus              | 12-16 | 12-14 feitas; 15 cancelada; 16 a reescrever        |
+| 4 — Domínio cerimonial determinista | 17-21 | **Concluída** (T17–T21)                            |
+| 5 — Condensação das tradições       | 22-27 | Substrato feito; T27 feita; **22-26 é a retomada** |
+| 6 — Experiência de produto          | 28-33 | Aberta, **texto superado** (descreve o modo dual)  |
+| 7 — Operação e release              | 34-39 | Aberta                                             |
 
 #### Wave 4 — Build deterministic ceremonial domain contracts
 
@@ -643,7 +643,7 @@ era a contradição existente até esta consolidação.
   - **QA failure:** adversarial harmful/coercive variants consistently refuse without echoing instructions (`.../T20/safety-redteam.txt`).
   - **Commit:** `feat(ceremonial): enforce safe planning policy`.
 
-- [ ] 21. Freeze domain versions, cross-source conflict behavior and coverage
+- [x] **21. Freeze domain versions, cross-source conflict behavior and coverage — FEITA em 31 de agosto de 2026.** `src/domain/ceremonial/domain-freeze.ts` congela as cinco superfícies determinísticas — eleições, política de orientação, hora planetária, variantes de fonte e discriminantes de sistema — com fingerprint por superfície além do global, de modo que uma quebra diga **onde** mudou. O fingerprint cobre o par entrada/saída: só a saída deixaria duas fixtures diferentes que coincidem no resultado indistinguíveis uma da outra. `frozenDomainVersions` reúne as sete versões declaradas pelos módulos e o teste as escreve literalmente — alterar qualquer saída quebra ali e obriga a `ANTES/DEPOIS/MOTIVO/IMPACTO` antes do bump. `createSourceCoverageReport` mede obra, edição, entidade, correspondência com locator e completude de timing, e expõe `collapsedWorkGroups`: as famílias que contribuíram com mais de uma atribuição para a mesma função, que somam material e não somam concordância. `createDomainConflictReport` não possui campo para vencedor, média ou resolução. **Dois desvios do texto original, ambos deliberados.** A task diz "all five system discriminants", mas `workspaceKindSchema` tem **seis** desde a task 19 — `AFRO_DIASPORIC` entrou depois de o roteiro ser escrito; o congelamento cobre os seis e o teste falha se um sétimo aparecer sem golden. E a evidência sanitizada não vira arquivo JSON: o diretório de evidências foi removido na consolidação de 28 de agosto, então o relatório é asserção de teste e entra no índice de evidências abaixo. **Achado que o congelamento produziu:** o grafo real já contém o colapso de linhagem que a task previa apenas como fixture — `function:passage-between-planes` tem duas atribuições e uma única família, ambas de Saraceni, e por isso permanece corretamente `single_school`. 15 testes; cobertura do código novo em 96,46% de statements e 94,54% de branches.
   - **Implement:** add golden datasets for planetary timing, elections, source variants, policy and all five system discriminants; create coverage reports showing source/edition/entity/correspondence/timing completeness without treating duplicate editions as independent consensus.
   - **References:** `src/domain/orixas/regency/dataset-freeze.test.ts`; `evidence-graph.test.ts`; `robustness.test.ts`; tasks 17-20.
   - **Acceptance:** same snapshots are deterministic; changing any output requires explicit version bump and `ANTES/DEPOIS/MOTIVO/IMPACTO`; new pure code maintains ≥80% coverage.
@@ -868,6 +868,7 @@ com o diretório. O que cada uma registrou:
 | `T13` | _(evidência JSON sanitizada: `fixture-matrix-sanitized.json`)_                                  |
 | `T14` | T14 — linhagem, conflitos e o que o corpus real revelou (2026-08-26)                            |
 | `T14` | _(evidência JSON sanitizada: `import-real-archive-sanitized.json`)_                             |
+| `T21` | T21 — congelamento das cinco superfícies e relatório de conflito não conciliado (2026-08-31)    |
 | `T27` | T27 — a condensação preserva a contagem de escolas independentes (2026-08-28)                   |
 
 O texto integral de cada evidência permanece recuperável pelo histórico do Git, no commit

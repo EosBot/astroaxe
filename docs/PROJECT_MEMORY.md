@@ -1,5 +1,74 @@
 # Memória canônica do projeto
 
+## Atualização 2026-08-31 — Task 21: congelamento do domínio e comportamento diante de conflito
+
+- `src/domain/ceremonial/domain-freeze.ts` congela as cinco superfícies
+  determinísticas do domínio cerimonial: eleições, política de orientação, hora
+  planetária, variantes de fonte e discriminantes de sistema. Cada superfície tem
+  fingerprint próprio além do global, porque um congelamento que só diz "mudou"
+  obriga a caçar a mudança; este diz **onde**.
+- O fingerprint cobre o **par entrada/saída**, não só a saída. Se apenas a saída
+  entrasse, duas fixtures diferentes que por acaso produzem o mesmo resultado
+  ficariam indistinguíveis, e trocar uma fixture passaria despercebido.
+- `frozenDomainVersions` reúne as sete versões que os módulos declaram, e o teste
+  as escreve literalmente. Alterar qualquer saída do domínio quebra nesse ponto, e
+  a correção é registrar `ANTES/DEPOIS/MOTIVO/IMPACTO` e subir a versão — nunca
+  reescrever o número esperado até o verde voltar.
+- `createSourceCoverageReport` mede obra, edição, entidade, correspondência com
+  locator e completude de timing, e expõe `collapsedWorkGroups`: as famílias que
+  contribuíram com mais de uma atribuição para a mesma função. É a repetição de
+  linhagem tornada visível — aquelas obras somam material, não somam concordância.
+- `createDomainConflictReport` **não tem campo para vencedor, média ou resolução**.
+  A ausência é o desenho: conciliar ali apagaria exatamente o dado que interessa.
+  Um perfil que proíbe e outro que permite o mesmo instante é informação sobre as
+  fontes, não ruído.
+- **O congelamento achou o que a task só previa como hipótese.** A repetição de
+  linhagem existe no grafo real, não apenas na fixture adversarial:
+  `function:passage-between-planes` reúne duas atribuições e **uma única família**,
+  ambas de Saraceni, e por isso permanece corretamente `single_school`. A regra de
+  contar por linhagem já estava impedindo uma convergência falsa sem que ninguém
+  tivesse verificado esse caso em particular.
+- **Dois desvios do texto da task, ambos deliberados.** Ela pede "all five system
+  discriminants", mas `workspaceKindSchema` tem **seis** desde a task 19 —
+  `AFRO_DIASPORIC` entrou depois de o roteiro ser escrito. O congelamento cobre os
+  seis, e o teste falha se um sétimo aparecer sem golden. E a evidência sanitizada
+  não virou arquivo JSON: o diretório de evidências foi removido na consolidação de
+  28 de agosto, então o relatório vive como asserção de teste e como linha no
+  índice de evidências.
+- Um defeito encontrado pelo próprio teste: a fixture chamada
+  `moment:sem-longitudes` fazia o scanner de vazamento acusar a palavra
+  "longitude" dentro do relatório publicável. Não era vazamento — era o nome da
+  fixture descrevendo o caso pela palavra errada. O scanner ficou; a fixture virou
+  `moment:lua-desconhecida`.
+- `canonicalize` estava duplicada: era função privada de `dataset-freeze.ts` e
+  seria copiada de novo aqui. Virou `src/domain/canonical-json.ts`, e
+  `dataset-freeze.ts` passou a importá-la. A implementação é idêntica, então os
+  fingerprints do dataset de calibração não mudaram.
+- Checkpoint: **604 testes passando** e 5 ignorados; cobertura do código novo em
+  96,46% de statements e 94,54% de branches; typecheck, lint e formatação limpos.
+  Com isso a Wave 4 fecha e o ponto de retomada passa a ser a Wave 5 (tasks 22-26).
+
+## Atualização 2026-08-31 — o trabalho de 27 e 28 de agosto entrou no Git
+
+- Cerca de 130 arquivos estavam há três dias fora do versionamento: a consolidação
+  documental inteira, a reestruturação de pastas, os módulos novos das tasks 17-20
+  e o primeiro verbete. Foram treze commits temáticos, na ordem em que o trabalho
+  aconteceu: reestruturação, corpus, T17, T18, T19, T20, grafo de funções, model
+  card, símbolos, correção do som ambiente, primeiro verbete, consolidação
+  documental e o artefato do `next dev`.
+- **A documentação foi commitada por último, de propósito**, porque descreve o
+  código que a precede nos commits anteriores.
+- A migration `20260826020000`, já aplicada, aparece com uma linha alterada. É só
+  um comentário — `docs/backup-restore.md` virou `docs/OPERATIONS.md`. Nenhum SQL
+  mudou, e isso está dito na mensagem do commit para que a auditoria F1 não
+  tropece no que parece ser edição de migration aplicada.
+- Duas derivas de documentação foram corrigidas junto: `compose.ingest.yml`
+  apontava para `docs/ceremonial-ingest.md`, que não existe mais, e o cabeçalho de
+  `IMPLEMENTATION_STATUS.md` dizia 26 de agosto com conteúdo de 28.
+- `.planning/` voltou a existir com 220 KB de telemetria e templates, regenerado
+  por hooks depois de a memória registrar sua remoção. Continua gitignored.
+- **Não houve push.** `develop` está quinze commits à frente de `origin/develop`.
+
 ## Atualização 2026-08-28 — auditoria de proveniência externa concluída
 
 - A afirmação anterior de que Agrippa, Abimbola e Prandi haviam simplesmente
@@ -185,14 +254,15 @@ tradicional: arco superior, haste à direita e barra inferior.
   `corroborated` e três `single_school`. A entrada posterior de Abimbola atualiza
   esse total conforme o bloco acima.
 
-## RETOMADA — estado em 28 de agosto de 2026
+## RETOMADA — estado em 31 de agosto de 2026
 
 Leia este bloco primeiro. As entradas abaixo dele são o histórico, da mais
 recente para a mais antiga.
 
-**Portões:** o checkpoint mais recente está no bloco acima: 589 testes passando,
-typecheck, lint, formatação e build de produção limpos. Working tree **não commitado** — cerca de cem arquivos alterados
-aguardando decisão de commit do responsável.
+**Portões:** 604 testes passando e 5 ignorados; typecheck, lint e formatação
+limpos. O trabalho de 27 e 28 de agosto foi commitado em 31 de agosto, em treze
+commits temáticos; `develop` está quinze commits à frente de `origin/develop` e
+**não foi feito push**.
 
 **Documentação:** cinco documentos em `docs/`, um plano só. `AGENTS.md` é a porta
 de entrada e traz o índice e a ordem de leitura. Não crie um sexto documento.
@@ -204,8 +274,8 @@ de entrada e traz o índice e a ordem de leitura. Não crie um sexto documento.
 | P1.1 — condensar tradições | Grafo com **9 funções e 27 atribuições**. Adivinhação reúne UNESCO, Abimbola e o corpus localizado de Salakọ em Bascom; Prandi sustenta Exu Òrìṣà no limiar; Ogum/ferro possui via acadêmica. **Cobertura ainda fina:** Verger segue sem passagem primária acessível; Juana Elbein foi autenticada, mas os trechos recuperados não cabem nas funções atuais sem forçar o vocabulário. |
 | P1.2 — escrever a síntese  | Primeiro verbete publicado e verificado em banco real. É trabalho contínuo, um verbete por vez.                                                                                                                                                                                                                                                                                       |
 | P1.3, P1.4, P1.5, P1.6     | Feitos. O glifo de Júpiter já foi refeito; permanece a ampliação gradual do conjunto de selos fundamentados.                                                                                                                                                                                                                                                                          |
-| Wave 4 do roteiro          | **T17, T18 e T19 feitas.** T18 tem quatro perfis sustentados — Agrippa, Arbatel, Khan Secretum e Heptameron. Agrippa fica `unavailable` enquanto requisitos celestes não forem computáveis; Ars Paulina permanece fora por não conter regra de eleição. T20 e T21 abertas.                                                                                                            |
-| Wave 5                     | Substrato e T27 feitos; 22-26 abertas, e dependem do acervo acima.                                                                                                                                                                                                                                                                                                                    |
+| Wave 4 do roteiro          | **Concluída.** T18 tem quatro perfis sustentados — Agrippa, Arbatel, Khan Secretum e Heptameron. Agrippa fica `unavailable` enquanto requisitos celestes não forem computáveis; Ars Paulina permanece fora por não conter regra de eleição. T21 congelou as cinco superfícies determinísticas e o comportamento diante de conflito.                                                   |
+| Wave 5                     | Substrato e T27 feitos; **22-26 é o ponto de retomada**, e dependem do acervo acima.                                                                                                                                                                                                                                                                                                  |
 | Wave 6                     | **Texto superado** — descreve o modo dual removido em 26 de agosto. Precisa ser reescrita antes de executar.                                                                                                                                                                                                                                                                          |
 
 **A regra que mais importa neste projeto:** sustentação se conta por linhagem, não
