@@ -11,6 +11,7 @@ import { logger } from "@/lib/logger";
 import { getPrisma } from "@/lib/prisma";
 import { isSameOrigin, resolveAccount } from "@/lib/security/account";
 import { apiJson } from "@/lib/security/headers";
+import { checkJsonRequest } from "@/lib/security/json-body";
 import type { RecordKeyring } from "@/lib/security/record-encryption";
 
 const PLAN_SELECT = {
@@ -58,8 +59,14 @@ export async function GET(request: NextRequest): Promise<Response> {
 }
 
 export async function POST(request: NextRequest): Promise<Response> {
-  if (!request.headers.get("content-type")?.startsWith("application/json"))
-    return apiJson({ error: "Envie o plano como JSON." }, { status: 415 });
+  // Guard compartilhado: recusa tipo errado e corpo grande demais **antes** de ler
+  // o corpo, em vez de descobrir o tamanho depois de já tê-lo em memória.
+  const body = checkJsonRequest(request);
+  if (!body.ok)
+    return apiJson(
+      { error: body.status === 415 ? "Envie o plano como JSON." : "Plano grande demais." },
+      { status: body.status },
+    );
   const guard = await authorize(request, { requireSameOrigin: true });
   if (guard instanceof Response) return guard;
 

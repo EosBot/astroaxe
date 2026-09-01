@@ -25,6 +25,16 @@ const redactedPaths = [
   "*.archiveRoot",
   "*.keyringFile",
   "*.sourceText",
+  // Registros privados de prática: intenção, notas, observações e desfechos são
+  // tão sensíveis quanto o diário, e podem revelar informação religiosa.
+  "intention",
+  "notes",
+  "observation",
+  "outcome",
+  "*.intention",
+  "*.notes",
+  "*.observation",
+  "*.outcome",
 ];
 
 function loggerOptions(): LoggerOptions {

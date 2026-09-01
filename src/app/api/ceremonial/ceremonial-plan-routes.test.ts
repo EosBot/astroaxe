@@ -150,4 +150,28 @@ describe("rotas de plano cerimonial", () => {
     // Distinguir os dois confirmaria a existência de um plano alheio.
     expect(response.status).toBe(404);
   });
+
+  it("recusa corpo grande demais antes de lê-lo", async () => {
+    const grande = new NextRequest("http://localhost/api/ceremonial/plans", {
+      method: "POST",
+      headers: { "content-type": "application/json", "content-length": "999999" },
+      body: JSON.stringify(PLANO_VALIDO),
+    });
+
+    // O guard olha o Content-Length declarado e recusa antes de trazer o corpo
+    // para a memória, que é o ponto de recusar cedo.
+    expect((await POST(grande)).status).toBe(413);
+    expect(mocks.planCreate).not.toHaveBeenCalled();
+  });
+
+  it("recusa tipo de conteúdo que não seja JSON", async () => {
+    const texto = new NextRequest("http://localhost/api/ceremonial/plans", {
+      method: "POST",
+      headers: { "content-type": "text/plain" },
+      body: "nao e json",
+    });
+
+    expect((await POST(texto)).status).toBe(415);
+    expect(mocks.planCreate).not.toHaveBeenCalled();
+  });
 });

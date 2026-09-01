@@ -9,6 +9,7 @@ import { parseServerEnv } from "@/lib/env";
 import { getPrisma } from "@/lib/prisma";
 import { isSameOrigin, resolveAccount } from "@/lib/security/account";
 import { apiJson } from "@/lib/security/headers";
+import { checkJsonRequest } from "@/lib/security/json-body";
 import type { RecordKeyring } from "@/lib/security/record-encryption";
 
 const paramsSchema = z.object({ planId: z.uuid() });
@@ -52,8 +53,14 @@ export async function POST(
   request: NextRequest,
   context: { params: Promise<{ planId: string }> },
 ): Promise<Response> {
-  if (!request.headers.get("content-type")?.startsWith("application/json"))
-    return apiJson({ error: "Envie a sessão como JSON." }, { status: 415 });
+  // Limite maior que o padrão porque uma sessão comporta notas de até 8.000
+  // caracteres, e em UTF-8 isso passa folgado dos 16 KB do padrão.
+  const body = checkJsonRequest(request, 32_768);
+  if (!body.ok)
+    return apiJson(
+      { error: body.status === 415 ? "Envie a sessão como JSON." : "Sessão grande demais." },
+      { status: body.status },
+    );
   const guard = await authorize(request, context, { requireSameOrigin: true });
   if (guard instanceof Response) return guard;
 
