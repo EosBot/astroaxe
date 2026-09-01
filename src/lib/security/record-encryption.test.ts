@@ -3,7 +3,6 @@ import { randomBytes } from "node:crypto";
 import { describe, expect, it } from "vitest";
 
 import {
-  envelopeCiphertextEquals,
   openRecordField,
   RecordCryptoError,
   recordKeyringSchema,
@@ -37,7 +36,7 @@ describe("cifragem de registros privados de prática", () => {
     // IV aleatório por chamada: repetir IV com a mesma chave em GCM quebra
     // confidencialidade e autenticidade de uma vez só.
     expect(primeiro.iv).not.toBe(segundo.iv);
-    expect(envelopeCiphertextEquals(primeiro, segundo)).toBe(false);
+    expect(primeiro.ciphertext).not.toBe(segundo.ciphertext);
   });
 
   it("não deixa o texto em claro aparecer no envelope", () => {

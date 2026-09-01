@@ -13,6 +13,7 @@ const links = [
   { href: "/conta#configuracoes", label: "Configurações" },
   { href: "/acervo-cultural", label: "Acervo" },
   { href: "/metodologia", label: "Método" },
+  { href: "/tempo-cerimonial", label: "Tempo" },
 ] as const;
 
 export function SiteHeader(): React.JSX.Element {

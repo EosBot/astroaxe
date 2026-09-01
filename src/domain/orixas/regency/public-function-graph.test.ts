@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { regencyFunctionGraph } from "./function-graph-data";
-import {
-  buildPublicFunctionGraph,
-  publicOccupantName,
-  PUBLIC_FUNCTION_GRAPH_VERSION,
-} from "./public-function-graph";
+import { buildPublicFunctionGraph, PUBLIC_FUNCTION_GRAPH_VERSION } from "./public-function-graph";
 
 describe("projeção pública do grafo de funções", () => {
   it("publica as nove funções com pergunta, ocupantes e limite da afirmação", () => {
@@ -68,12 +64,25 @@ describe("projeção pública do grafo de funções", () => {
     );
   });
 
-  it("tem nome de leitura para toda entidade do grafo", () => {
-    const semNome = [
-      ...new Set(regencyFunctionGraph.assignments.map(({ entityId }) => entityId)),
-    ].filter((entityId) => publicOccupantName(entityId) === undefined);
+  it("derruba a construção diante de entidade sem nome de leitura", () => {
+    // O grafo real passa inteiro; é o caso adversarial que precisa falhar.
+    expect(() => buildPublicFunctionGraph(regencyFunctionGraph)).not.toThrow();
 
-    // Entidade nova sem nome falha aqui em vez de aparecer como slug na tela.
-    expect(semNome).toEqual([]);
+    const comEntidadeNova = {
+      ...regencyFunctionGraph,
+      assignments: [
+        ...regencyFunctionGraph.assignments,
+        {
+          ...regencyFunctionGraph.assignments[0]!,
+          id: "assignment:entidade-sem-nome",
+          entityId: "entity:sintetica:sem-nome",
+          conflictsWith: [],
+        },
+      ],
+    };
+
+    // Omitir em silêncio faria a potência sumir da página e a função apareceria
+    // com um ocupante a menos, como se aquela tradição não a sustentasse.
+    expect(() => buildPublicFunctionGraph(comEntidadeNova)).toThrow(/sem nome público/);
   });
 });

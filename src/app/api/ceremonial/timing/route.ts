@@ -1,3 +1,5 @@
+import { createHmac } from "node:crypto";
+
 import { Temporal } from "@js-temporal/polyfill";
 import { julianDay } from "caelus";
 import { NextRequest } from "next/server";
@@ -7,6 +9,9 @@ import { evaluateElections } from "@/domain/astrology/elections";
 import { seededElectionProfiles } from "@/domain/astrology/elections/profiles";
 import { buildPublicTimingReading } from "@/domain/astrology/elections/public-observation";
 import { resolvePlanetaryHourAt } from "@/domain/astrology/planetary-hours";
+import { parseServerEnv } from "@/lib/env";
+import { logger } from "@/lib/logger";
+import { enforceRateLimit } from "@/lib/rate-limit";
 import { apiJson } from "@/lib/security/headers";
 
 /**
@@ -16,11 +21,15 @@ import { apiJson } from "@/lib/security/headers";
  * produzem a observação e não são gravados nem registrados em log. Não há dado
  * natal aqui — é um momento e um lugar quaisquer, escolhidos por quem pergunta.
  *
- * Dinâmica e sem cache: a resposta depende inteiramente dos parâmetros, e um
- * cache por rota devolveria a leitura de outro momento.
+ * A resposta depende inteiramente dos parâmetros da consulta, e é por lê-los que
+ * o Next já a trata como dinâmica — nenhuma outra rota do projeto declara
+ * `force-dynamic`, e esta não precisa ser a exceção.
+ *
+ * Rota pública sem conta, como o geocoding — e por isso com o mesmo limite por
+ * cliente. Cada chamada calcula efemérides, então sem limite ela é um convite a
+ * consumir CPU do servidor de graça. O cliente é identificado por HMAC do IP
+ * encaminhado, e nunca pelo IP em claro.
  */
-export const dynamic = "force-dynamic";
-
 const requestSchema = z
   .object({
     instant: z.iso.datetime({ offset: true }),
@@ -38,7 +47,25 @@ const requestSchema = z
   })
   .strict();
 
-export function GET(request: NextRequest): Response {
+export async function GET(request: NextRequest): Promise<Response> {
+  const env = parseServerEnv();
+  const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  const clientKey = createHmac("sha256", env.GUEST_SESSION_SECRET)
+    .update(forwarded)
+    .digest("hex")
+    .slice(0, 24);
+  try {
+    if (!(await enforceRateLimit(`v1:rate:timing:${clientKey}`, 30, 60)))
+      return apiJson({ error: "Muitas leituras. Aguarde um minuto." }, { status: 429 });
+  } catch (error) {
+    // Redis fora do ar não pode virar porta aberta: falha fechada.
+    logger.warn(
+      { errorType: error instanceof Error ? error.name : "UnknownError" },
+      "ceremonial timing rate limit unavailable",
+    );
+    return apiJson({ error: "A leitura está temporariamente indisponível." }, { status: 503 });
+  }
+
   const query = request.nextUrl.searchParams;
   const parsed = requestSchema.safeParse({
     instant: query.get("instant"),

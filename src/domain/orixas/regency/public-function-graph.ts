@@ -87,9 +87,12 @@ const categoryLabels: Readonly<Record<FunctionAssignment["entityCategory"], stri
  * Nomes de leitura das potências.
  *
  * Escrito à mão em vez de derivado do identificador: `espiritos-chefes` viraria
- * "Espiritos Chefes" e `esu` perderia a grafia que a tradição usa. Entidade sem
- * nome aqui **não é publicada**, e o teste falha — para que a ausência apareça na
- * revisão em vez de virar um slug na tela.
+ * "Espiritos Chefes" e `esu` perderia a grafia que a tradição usa.
+ *
+ * Entidade sem nome aqui **derruba a construção**. Omiti-la em silêncio seria pior:
+ * ela sumiria da página sem que ninguém notasse, e a função apareceria com um
+ * ocupante a menos como se aquela tradição não a sustentasse. Como a página é
+ * estática, a falha aparece no build — que é onde ela deve aparecer.
  */
 const occupantNames: Readonly<Record<string, string>> = {
   "entity:agrippa:hagiel": "Hagiel",
@@ -124,28 +127,23 @@ const occupantNames: Readonly<Record<string, string>> = {
   "entity:yoruba:orishala": "Òrìṣàlá",
 };
 
-export function publicOccupantName(entityId: string): string | undefined {
-  return occupantNames[entityId];
-}
-
 /**
  * Traduz o grafo condensado para o que a página publica.
  *
- * Entidade sem nome de leitura é omitida em vez de renderizada como slug, e uma
- * função que perdesse todos os ocupantes por isso é omitida também: publicar uma
- * função vazia sugeriria que ninguém a ocupa, o que seria falso.
+ * Falha alto diante de entidade sem nome de leitura, em vez de publicar a função
+ * com um ocupante a menos — o que sugeriria que aquela tradição não a sustenta.
  */
 export function buildPublicFunctionGraph(rawGraph: unknown): PublicFunctionGraph {
   const functions = condenseStructuralFunctions(rawGraph).flatMap((group) => {
     const structural = findStructuralFunction(group.functionId);
     if (structural === undefined) return [];
 
-    const occupants = group.members.flatMap((member) => {
+    const occupants = group.members.map((member) => {
       const name = occupantNames[member.entityId];
-      if (name === undefined) return [];
-      return [{ name, categoryLabel: categoryLabels[member.entityCategory] }];
+      if (name === undefined)
+        throw new Error(`entidade sem nome público na projeção: ${member.entityId}`);
+      return { name, categoryLabel: categoryLabels[member.entityCategory] };
     });
-    if (occupants.length === 0) return [];
 
     const estavel = group.divergences.find(({ functionRemainsStable }) => functionRemainsStable);
     const instavel = group.divergences.find(({ functionRemainsStable }) => !functionRemainsStable);

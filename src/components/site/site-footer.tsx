@@ -15,6 +15,7 @@ export function SiteFooter(): React.JSX.Element {
           <Link href="/">Calcular mapa</Link>
           <Link href="/conta">Minha central</Link>
           <Link href="/acervo-cultural">Acervo cultural</Link>
+          <Link href="/tempo-cerimonial">Tempo cerimonial</Link>
         </div>
         <div>
           <strong>Transparência</strong>

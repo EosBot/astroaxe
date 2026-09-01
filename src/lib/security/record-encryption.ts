@@ -1,4 +1,4 @@
-import { createCipheriv, createDecipheriv, randomBytes, timingSafeEqual } from "node:crypto";
+import { createCipheriv, createDecipheriv, randomBytes } from "node:crypto";
 
 import { z } from "zod";
 
@@ -223,16 +223,4 @@ export function retiredKeyIsReferenced(input: {
     const parsed = recordEnvelopeSchema.safeParse(envelope);
     return parsed.success && parsed.data.keyVersion === input.keyVersion;
   });
-}
-
-/**
- * Compara dois ciphertexts em tempo constante.
- *
- * Serve à verificação de rotação, onde comparar por igualdade de string vazaria,
- * pelo tempo, o quanto dois ciphertexts coincidem.
- */
-export function envelopeCiphertextEquals(left: RecordEnvelope, right: RecordEnvelope): boolean {
-  const a = Buffer.from(left.ciphertext, "base64");
-  const b = Buffer.from(right.ciphertext, "base64");
-  return a.byteLength === b.byteLength && timingSafeEqual(a, b);
 }
