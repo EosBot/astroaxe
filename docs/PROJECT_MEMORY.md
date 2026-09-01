@@ -1,5 +1,55 @@
 # Memória canônica do projeto
 
+## Atualização 2026-08-31 — Wave 6 reescrita: publicar o domínio como obra
+
+- A Wave 6 estava com **texto superado desde 26 de agosto** e era o único bloco do
+  roteiro que não podia ser executado como estava. Foi escrita para o modo
+  `disabled|public|local`, com bundle filtrado por direitos, rota que servia
+  artefato-fonte e proveniência exibida na interface — nada disso existe.
+- A reescrita partiu do `BLUEPRINT` §5.0: runtime único, e a separação real é entre
+  **insumo** e **obra**. O site publica a obra e nunca o insumo, e a proveniência por
+  claim sai da interface, permanecendo registrada internamente para permitir
+  corrigir o método quando uma fonte se mostrar errada.
+- **O que a Wave passou a ser:** dar superfície ao que as waves 4 e 5 construíram.
+  Hoje existem no domínio, verificados e sem nenhuma interface que os alcance,
+  horas planetárias, quatro perfis de eleição ligados à fonte, registros de
+  entidade, política de orientação segura, o congelamento com o relatório de
+  divergências e um grafo de nove funções com 43 atribuições. É código testado que
+  o produto não mostra.
+- **A regra que passou a governar a Wave inteira:** publica-se o que _nós_
+  afirmamos — função, posição análoga, força da sustentação, conflito registrado,
+  limite declarado. Não se publica escola, obra, edição nem locator por claim. A
+  regra de linhagem é pública e já está em `/metodologia`; as linhagens de cada
+  atribuição não são. A task 29 exige que isso seja garantido **por tipo**, e não
+  por disciplina de quem escreve o componente.
+- A task 30, tempo e eleições, é o maior valor não entregue: o domínio existe
+  inteiro desde as tasks 17 e 18 e nenhuma tela o alcança.
+- **Uma decisão de produto ficou explicitamente aberta na task 28**, em vez de eu a
+  tomar de passagem: se a superfície é seção nova de `/metodologia` ou rota
+  própria. O nome `laboratorio-cerimonial` vem do modelo descartado e descrevia
+  leitura de fonte; se a rota nascer, precisa de nome que descreva o que ela
+  entrega.
+- F2, F3 e F4 também carregavam o modelo antigo e foram reenquadradas. A mudança
+  que mais importa é a de F4: o adversário deixou de ser "o modo público alcança
+  dado local", que não existe mais, e passou a ser passagem literal de obra de
+  terceiro, caminho de acervo, locator ou escola de claim aparecendo em resposta
+  pública ou artefato de build.
+- **Uma lacuna apareceu ao verificar essa afirmação.** Eu ia declarar o roteiro
+  inteiro executável e fui conferir: a **task 16 não tinha bloco nenhum**. A
+  consolidação de 28 de agosto preservou as tasks abertas com seus critérios, e
+  essa ficou de fora — sobrevivia só como a palavra "a reescrever" numa célula de
+  tabela. O texto original foi recuperado do histórico do Git e reescrito.
+- Duas premissas dela tinham caído. A task pedia FTS5 do `node:sqlite` e dizia
+  "no embeddings/external model"; em 27 de agosto o acervo foi vetorizado com
+  `BAAI/bge-m3` e a busca semântica passou a viver em `query.py`. O modelo roda
+  offline, então a premissa que a task protegia — não vazar corpus para serviço de
+  terceiro — continua respeitada; foi a decisão posterior que prevaleceu, e as
+  tasks 22 a 27 já foram executadas em cima dela. O que resta da task 16 é o
+  **relatório de integridade**, e é só isso que o bloco novo pede.
+- Com isso **o roteiro inteiro fica executável**: não resta bloco com texto
+  superado nem task aberta sem critério. Waves 1 a 5 concluídas; 6 e 7 abertas e
+  escritas contra o que o projeto de fato é.
+
 ## Atualização 2026-08-31 — Tasks 24, 25 e 26: a Wave 5 fecha
 
 - **Task 24, Theurgia-Goetia.** O Livro II do Lemegeton está no acervo na edição de
@@ -465,7 +515,7 @@ de entrada e traz o índice e a ordem de leitura. Não crie um sexto documento.
 | P1.3, P1.4, P1.5, P1.6     | Feitos. O glifo de Júpiter já foi refeito; permanece a ampliação gradual do conjunto de selos fundamentados.                                                                                                                                                                                                                                                                          |
 | Wave 4 do roteiro          | **Concluída.** T18 tem quatro perfis sustentados — Agrippa, Arbatel, Khan Secretum e Heptameron. Agrippa fica `unavailable` enquanto requisitos celestes não forem computáveis; Ars Paulina permanece fora por não conter regra de eleição. T21 congelou as cinco superfícies determinísticas e o comportamento diante de conflito.                                                   |
 | Wave 5                     | **Concluída** (T22–T27). O ponto de retomada passa a ser a Wave 6, cujo texto precisa ser reescrito antes de executar.                                                                                                                                                                                                                                                                |
-| Wave 6                     | **Texto superado** — descreve o modo dual removido em 26 de agosto. Precisa ser reescrita antes de executar.                                                                                                                                                                                                                                                                          |
+| Wave 6                     | **Reescrita em 31 de agosto** contra a arquitetura atual. Deixou de ser \"entregar os dois modos\" e passou a ser dar superfície ao domínio das waves 4 e 5, que existe verificado e sem nenhuma interface. Aberta e executável.                                                                                                                                                      |
 
 **A regra que mais importa neste projeto:** sustentação se conta por linhagem, não
 por obra. Quatro livros do mesmo autor são uma voz. Foi assim que se descobriu

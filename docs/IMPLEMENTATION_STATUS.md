@@ -599,15 +599,30 @@ era a contradição existente até esta consolidação.
 
 ## Estado das waves
 
-| Wave                                | Tasks | Status                                            |
-| ----------------------------------- | ----- | ------------------------------------------------- |
-| 1 — Recuperação e Tríade v3         | 1-6   | Concluída                                         |
-| 2 — Esquema de proveniência         | 7-11  | Só o esquema (T8) vale; o resto foi superado      |
-| 3 — Ingestão do corpus              | 12-16 | 12-14 feitas; 15 cancelada; 16 a reescrever       |
-| 4 — Domínio cerimonial determinista | 17-21 | **Concluída** (T17–T21)                           |
-| 5 — Condensação das tradições       | 22-27 | T22 e T27 feitas; **23-26 é a retomada**          |
-| 6 — Experiência de produto          | 28-33 | Aberta, **texto superado** (descreve o modo dual) |
-| 7 — Operação e release              | 34-39 | Aberta                                            |
+| Wave                                | Tasks | Status                                       |
+| ----------------------------------- | ----- | -------------------------------------------- |
+| 1 — Recuperação e Tríade v3         | 1-6   | Concluída                                    |
+| 2 — Esquema de proveniência         | 7-11  | Só o esquema (T8) vale; o resto foi superado |
+| 3 — Ingestão do corpus              | 12-16 | 12-14 feitas; 15 cancelada; 16 reescrita     |
+| 4 — Domínio cerimonial determinista | 17-21 | **Concluída** (T17–T21)                      |
+| 5 — Condensação das tradições       | 22-27 | **Concluída** (T22–T27)                      |
+| 6 — Publicar o domínio como obra    | 28-33 | **Reescrita** em 31/08; aberta e executável  |
+| 7 — Operação e release              | 34-39 | Aberta                                       |
+
+#### Wave 3 — Ingestão do corpus (task 16, reescrita em 31 de agosto de 2026)
+
+> A task 16 sobreviveu à consolidação de 28 de agosto apenas como linha de tabela: as
+> abertas foram preservadas com seus critérios, e esta ficou sem bloco. O texto original foi
+> recuperado do histórico do Git e reescrito, porque duas de suas premissas caíram.
+
+- [ ] 16. Relatório de integridade do corpus
+  - **A metade da descoberta foi feita, e de outro jeito.** A task pedia FTS5 do `node:sqlite` e dizia explicitamente "no embeddings/external model". Em 27 de agosto o acervo foi extraído, chunkado e **vetorizado com `BAAI/bge-m3`**, e a busca semântica local vive em `scripts/ocultismo-pipeline/query.py`. O modelo roda offline, na máquina, sem chamada externa — a premissa que a task protegia era não vazar corpus para serviço de terceiro, e ela continua respeitada. Foi a decisão posterior que prevaleceu, e as tasks 22 a 27 foram executadas em cima dela.
+  - **Implement:** o que falta é o **relatório de integridade**. Totais por categoria e por obra, cópias da mesma obra, cobertura de extração, chunks ilegíveis, metadados não resolvidos e derivados desatualizados em relação ao inventário da task 12. Deve reconciliar com o inventário ou explicar cada quarentena. Sem classificação de direitos e sensibilidade: essas colunas saíram do banco na migration `20260826140000`.
+  - **References:** `conteudo/manifest.json`; `scripts/ocultismo-pipeline/corpus_hygiene.py`, que já guarda os portões que decidem o que entra; `query.py`; manifestos das tasks 12 e 13; `docs/OPERATIONS.md`.
+  - **Acceptance:** todo resultado de busca aponta obra e locator; os totais do relatório reconciliam com o inventário ou declaram a diferença; o relatório é reprodutível e não depende de estado de sessão.
+  - **QA happy:** frase-fixture conhecida retorna a obra e a passagem corretas, e o relatório fecha com o inventário.
+  - **QA failure:** **passagem literal de obra de terceiro nunca alcança resposta pública** — é a fronteira insumo/obra do `BLUEPRINT` §5.0, e o que trafega é o achado derivado, com proveniência interna, nunca o texto-fonte.
+  - **Commit:** `feat(corpus): add corpus integrity report`.
 
 #### Wave 4 — Build deterministic ceremonial domain contracts
 
@@ -709,64 +724,74 @@ era a contradição existente até esta consolidação.
   - **QA failure:** deliberate alias, missing locator and local-body leak each fail with precise reason (`.../T27/ontology-adversarial.txt`).
   - **Commit:** `test(ceremonial): enforce tradition separation`.
 
-#### Wave 6 — Deliver the dual-mode product experience
+#### Wave 6 — Publicar o domínio cerimonial como obra
 
-> **TEXTO SUPERADO — não executar como está.** Estas tasks foram escritas para o modelo
-> `disabled|public|local`, com bundle público filtrado por direitos e rota que servia
-> artefato-fonte. Nada disso existe desde 26 de agosto (`docs/BLUEPRINT.md` §5.0): runtime é
-> único, não há bundle nem projeção pública/local, e as colunas de direitos e sensibilidade
-> saíram do banco na migration `20260826140000`. As referências a "public mode", "local
-> mode", "rights/sensitivity" e "task-11 bundle" nas tasks 28-33 apontam para código que foi
-> removido. A Wave precisa ser reescrita antes de qualquer execução; os títulos servem só
-> como lembrete das superfícies que o produto ainda deve.
+> **Reescrita em 31 de agosto de 2026.** O texto anterior foi escrito para o modo
+> `disabled|public|local`, com bundle filtrado por direitos, rota que servia artefato-fonte e
+> proveniência exibida na interface. Nada disso existe desde 26 de agosto: `docs/BLUEPRINT.md`
+> §5.0 estabelece runtime único e a separação entre **insumo** e **obra** — o site publica a
+> obra e nunca o insumo, e a proveniência por claim **sai da interface**, permanecendo
+> registrada internamente para permitir corrigir o método.
+>
+> A Wave deixa de ser "entregar os dois modos" e passa a ser **dar superfície ao que as waves
+> 4 e 5 construíram**. Hoje existem no domínio, sem nenhuma interface que os alcance: horas
+> planetárias (T17), quatro perfis de eleição ligados à fonte (T18), registros de entidade
+> (T19), política de orientação segura (T20), o congelamento e o relatório de divergências
+> (T21) e um grafo de nove funções com 43 atribuições (T22–T27). É código verificado que o
+> produto ainda não mostra.
+>
+> **A regra que governa toda esta Wave:** publica-se o que **nós** afirmamos — função, posição
+> análoga, força da sustentação, conflito registrado, limite declarado. Não se publica escola,
+> obra, edição nem locator por claim. A regra de linhagem é pública (já está em
+> `/metodologia`); as linhagens de cada atribuição não são.
 
-- [ ] 28. Add a route-based Ceremonial Laboratory shell and module registry
-  - **Implement:** create a policy-filtered public `/laboratorio-cerimonial` library for bundle-eligible hybrid content plus authenticated `/conta/laboratorio-cerimonial` planner/local-reader routes and a typed server-side registry for the five workspaces; do not add branches to the 723-line `ProfileArchive`. In `disabled` mode return 404; public mode never exposes local reader/planner; local mode requires authenticated adult account and is excluded from youth/guest surfaces.
-  - **References:** `src/components/account/profile-archive.tsx`; `src/app/conta/page.tsx`; `src/app/sitemap.ts`; `src/app/robots.ts:5-13`; Next.js App Router docs in `node_modules/next/dist/docs/`.
-  - **Acceptance:** account/local routes are disallowed to crawlers and absent from sitemap; public library enters sitemap only in public mode with an eligible bundle; all routes are keyboard navigable and preserve existing account navigation.
-  - **QA happy:** route/component tests for local and public module registry (`.../T28/shell.txt`).
-  - **QA failure:** disabled/unauthenticated/local-only-public access returns 404/401 without metadata (`.../T28/shell-deny.txt`).
-  - **Commit:** `feat(ceremonial): add laboratory route shell`.
+- [ ] 28. Dar rota e registro tipado ao domínio cerimonial
+  - **Implement:** criar a superfície pública do domínio cerimonial com um registro tipado no servidor, e não ramificações dentro do `ProfileArchive` de 723 linhas. Uma decisão de produto continua aberta e precisa ser tomada antes de escrever a rota: se a superfície é uma seção nova de `/metodologia` — que já publica o model card — ou uma rota própria. O nome `laboratorio-cerimonial` vem do modelo descartado e descrevia leitura de fonte; se a rota nascer, precisa de nome que descreva o que ela de fato entrega.
+  - **References:** `src/app/metodologia/page.tsx`; `src/domain/orixas/regency/public-method.ts`; `src/app/sitemap.ts`; `src/app/robots.ts`.
+  - **Acceptance:** rota entra no sitemap; navegável por teclado; não altera a navegação de conta existente; nenhuma resposta carrega escola, obra, edição ou locator.
+  - **QA happy:** teste de rota e do registro de módulos.
+  - **QA failure:** módulo desconhecido devolve 404 sem vazar o registro.
+  - **Commit:** `feat(ceremonial): add ceremonial domain route`.
 
-- [ ] 29. Build catalog, source reader and provenance views
-  - **Implement:** add system-scoped catalog/search/detail/source-reader components; local mode may render full extracted source/media through task-10 route, public mode renders reviewed full or metadata-only projections. Always show system, work, edition, locator, rights/sensitivity and uncertainty.
-  - **References:** `src/components/cultural-content/cultural-archive.tsx:42-165`; `src/lib/cultural-content/public-entry.ts`; tasks 9-16, 22-27.
-  - **Acceptance:** no unsafe HTML; layout stable for missing media/metadata; source text cannot enter URL, logs or client cache persistence.
-  - **QA happy:** component tests cover local full/public full/public metadata cards (`.../T29/catalog.txt`).
-  - **QA failure:** protected fixture in public mode shows metadata only and media route denies (`.../T29/catalog-deny.txt`).
-  - **Commit:** `feat(ceremonial): add provenance-first catalog views`.
+- [ ] 29. Publicar o grafo de funções como síntese, não como catálogo de fontes
+  - **Implement:** exibir as nove funções estruturais, a pergunta que cada uma responde, as potências que ocupam posição análoga e a **força da sustentação** em rótulo qualitativo (`convergent`, `corroborated`, `single_school`), nunca em percentual. Mostrar as categorias distintas lado a lado — Orixá, entidade-guia, anjo, espírito olímpico, espírito goético, espírito aéreo, inteligência planetária — porque é a separação delas que impede a leitura sincrética. Divergência com `functionRemainsStable` vira nota de que as fontes discordam do nome e não da função; divergência que derrube a função **não pode** ser publicada como se fosse consenso.
+  - **References:** `src/domain/orixas/regency/function-graph.ts` (`condenseStructuralFunctions`, `AnalogousPositionGroup`, `divergences`); `structural-functions.ts`; `public-factors.ts` como precedente de tradução para linguagem de leitura.
+  - **Acceptance:** a projeção pública **não pode expressar** `claimSchoolId`, `workId`, `sourceFamilyId`, `locator` nem `extractionConfidence` — garantido por tipo, não por disciplina de quem escreve; a relação exibida é sempre "ocupa a mesma função", nunca identidade; teste prova que nenhum identificador interno atravessa.
+  - **QA happy:** fixture das nove funções renderiza com rótulo de força e categorias distintas.
+  - **QA failure:** tentativa de projetar locator ou escola falha no tipo e no teste.
+  - **Commit:** `feat(ceremonial): publish condensed function graph`.
 
-- [ ] 30. Build deterministic timing and election-planning views
-  - **Implement:** add location/time input with uncertainty, planetary day/hour timeline, lunar/transit context and side-by-side named election-profile observations; display unavailable/conflict states and source locators, never a universal success score.
-  - **References:** existing `LunarIntelligencePanel`; `src/domain/astrology/lunar.ts`; tasks 17-18; `AGENTS.md:UI/UX`.
-  - **Acceptance:** explicit timezone/coordinates/instant flow through validated API; polar fallback is visible; results include engine/profile versions.
-  - **QA happy:** deterministic fixed-location/instant UI fixture (`.../T30/election-view.png`).
-  - **QA failure:** unknown location/time and conflicting profiles render bounded explanations (`.../T30/election-unavailable.png`).
-  - **Commit:** `feat(ceremonial): add transparent timing workspace`.
+- [ ] 30. Entregar a vista de tempo e de eleições — **maior valor não entregue da Wave**
+  - **Implement:** entrada de lugar e instante com incerteza declarada, linha do tempo de regente do dia e da hora, contexto lunar e as observações dos perfis de eleição **lado a lado**, sem conciliar. Estados `matched`, `conflicted` e `unavailable` são visíveis e distintos; Agrippa continua `unavailable` enquanto dignidades e figura do céu não forem computáveis, e a interface precisa dizer isso em vez de escondê-lo. Nunca exibir nota de sucesso, ranking ou recomendação de melhor momento.
+  - **References:** `src/domain/astrology/elections/` (T18); `src/domain/astrology/planetary-hours/` (T17); `electionProfileGaps`; `LunarIntelligencePanel`; `AGENTS.md` sobre comunicar incerteza.
+  - **Acceptance:** timezone, coordenadas e instante atravessam API validada; o modo polar aparece na interface — o estrito diz que não há intervalo solar, o proxy diz que é aproximação; toda observação carrega versão de motor e de perfil.
+  - **QA happy:** fixture de lugar e instante fixos rende observação determinística por perfil.
+  - **QA failure:** lugar polar e longitudes lunares ausentes rendem explicação delimitada, nunca horário inventado.
+  - **Commit:** `feat(ceremonial): add timing and election views`.
 
-- [ ] 31. Add encrypted private plans and session journals
-  - **Implement:** use Node `crypto` AES-256-GCM with a versioned keyring file containing exactly one active 32-byte key plus retained retired keys needed for reads. Envelope `{schemaVersion,keyVersion,iv,tag,ciphertext}` uses unique 96-bit IVs and AAD binding `{userId,recordId,fieldName,schemaVersion,keyVersion}`. Encrypt intention, titles, entity selections, schedule/link metadata, checklist notes, observations and outcomes unless a field is explicitly documented non-sensitive. Implement resumable rotation to a new active key with transaction/checkpoint/rollback; retired-key removal is blocked until zero envelopes reference it.
-  - **References:** task-8 plan/session models; `src/app/api/profiles/[profileId]/journal/route.ts`; `src/lib/config/read-secret.ts`; account ownership patterns.
-  - **Acceptance:** strict keyring/key-length/version validation; DB/log/cache snapshots never contain plaintext practice metadata; public mode has no keyring; wrong/missing/retired keys fail typed without row corruption.
-  - **QA happy:** create/read/update/rotate deterministic fixture with random production IVs (`.../T31/encryption.txt`).
-  - **QA failure:** tampered tag, missing key and public mode deny safely (`.../T31/encryption-adversarial.txt`).
+- [ ] 31. Cifrar os registros privados de prática
+  - **Implement:** AES-256-GCM do `crypto` do Node com keyring versionado contendo exatamente uma chave ativa de 32 bytes mais as aposentadas necessárias à leitura. Envelope `{schemaVersion,keyVersion,iv,tag,ciphertext}` com IV de 96 bits único e AAD ligando `{userId,recordId,fieldName,schemaVersion,keyVersion}`. Cifrar intenção, títulos, seleção de entidades, metadados de agendamento, notas de checklist, observações e desfechos, salvo campo documentado como não sensível. Rotação retomável com transação, checkpoint e rollback; remover chave aposentada é bloqueado enquanto houver envelope que a referencie.
+  - **References:** `src/app/api/profiles/[profileId]/journal/route.ts`; `src/lib/config/read-secret.ts`; padrões de propriedade por dono já usados nas rotas de perfil.
+  - **Acceptance:** validação estrita de keyring, tamanho e versão de chave; nenhum snapshot de banco, log ou cache contém metadado de prática em claro; tag adulterada, chave ausente ou aposentada falham de forma tipada e sem corromper linha.
+  - **QA happy:** fixture determinística de criar, ler, atualizar e rotacionar, com IV aleatório em produção.
+  - **QA failure:** adulteração e chave ausente recusam com segurança.
   - **Commit:** `feat(ceremonial): encrypt private ritual records`.
 
-- [ ] 32. Complete owner-scoped APIs, local export and deletion lifecycle
-  - **Implement:** add Zod-bounded same-origin APIs for catalog/search/timing/plans/sessions; owner-scoped CRUD and idempotency for writes; mark local source, planner, RSC and export routes dynamic/no-store; local export includes decrypted user records only after explicit authenticated action and source references rather than protected binaries. Delete selectively/cascade, purge caches, and use cache keys containing mode+policy+versions; location/user-derived components are omitted or represented only by a scoped HMAC using an injected secret.
-  - **References:** profile/journal route patterns; `src/app/api/auth/export/route.ts`; `src/lib/security/headers.ts`; tasks 9-10, 20, 31.
-  - **Acceptance:** public DTO schemas cannot express local path/body; rate limits are fail-closed; cache keys contain mode+policy+versions; Redis corruption becomes observed miss.
-  - **QA happy:** API integration tests cover CRUD/export/delete for owner (`.../T32/api-happy.txt`).
-  - **QA failure:** non-owner, CSRF, oversized, replay, Redis failure and public corpus export all deny (`.../T32/api-adversarial.txt`).
+- [ ] 32. Completar o ciclo de vida próprio do dono
+  - **Implement:** APIs de mesma origem, delimitadas por Zod, para catálogo, tempo, planos e sessões; CRUD e idempotência por dono nas escritas; rotas dinâmicas e `no-store` onde houver dado próprio. Exportação inclui apenas registros decifrados do próprio usuário, após ação autenticada explícita, e **referências ao método**, nunca texto de fonte. Exclusão seletiva e em cascata, com purga de cache; chaves de cache contêm versões, e componente derivado de usuário ou de lugar entra só como HMAC delimitado por segredo injetado.
+  - **References:** rotas de perfil e de diário; `src/app/api/auth/export/route.ts`; `src/lib/security/headers.ts`; tasks 20 e 31.
+  - **Acceptance:** o DTO público **não consegue expressar** caminho de acervo nem corpo de fonte; limites de taxa falham fechados; corrupção do Redis vira miss observado, nunca resposta parcial silenciosa.
+  - **QA happy:** integração cobrindo CRUD, exportação e exclusão pelo dono.
+  - **QA failure:** não-dono, CSRF, corpo excessivo, replay e falha de Redis recusam.
   - **Commit:** `feat(ceremonial): add private lifecycle APIs`.
 
-- [ ] 33. Complete accessibility, responsive, reduced-motion and real-use QA
-  - **Implement:** add Playwright journeys for each workspace on mobile/desktop, keyboard-only, error/empty/unknown states, local source reading, public metadata restriction, timing, encrypted planner, export and delete. Use synthetic-only corpus/private fixtures; disable response-body capture or sanitize traces/screenshots, then sentinel-scan evidence. Keep premium “Observatório Ritual” hierarchy, one insight per moment and no generic effect catalog.
-  - **References:** `e2e/`; `src/components/account/product-modules.test.tsx`; `docs/BLUEPRINT.md`; `AGENTS.md:UI/UX`.
-  - **Acceptance:** WCAG 2.1 AA contrast/focus/semantics; no clipping at 320px/tablet/desktop; reduced motion honored; no console/network errors or layout shift from media states.
-  - **QA happy:** Playwright traces/screenshots for local and public journeys (`.../T33/happy/`).
-  - **QA failure:** denied content, corrupt media, offline API and unknown timing states remain usable (`.../T33/failure/`).
-  - **Commit:** `test(ceremonial): cover accessible dual-mode journeys`.
+- [ ] 33. Fechar acessibilidade, responsivo e QA de uso real
+  - **Implement:** jornadas Playwright para cada superfície nova em mobile e desktop, só por teclado, cobrindo estados de erro, vazio e desconhecido, a vista de tempo, o planejador cifrado, exportação e exclusão. Fixtures sintéticas apenas; capturar sem corpo de resposta ou sanitizar traces e capturas, e varrer as evidências por sentinela. Preservar a hierarquia do Observatório Ritual, um insight por momento, sem virar catálogo de efeitos.
+  - **References:** `tests/e2e/`; `src/components/account/product-modules.test.tsx`; `docs/BLUEPRINT.md` §10.3; `AGENTS.md` sobre UI.
+  - **Acceptance:** contraste, foco e semântica em WCAG 2.1 AA; sem corte em 320px, tablet e desktop; movimento reduzido respeitado; nenhum erro de console ou de rede e nenhum deslocamento de layout.
+  - **QA happy:** traces e capturas das jornadas.
+  - **QA failure:** estado desconhecido de tempo, API offline e conteúdo ausente permanecem utilizáveis.
+  - **Commit:** `test(ceremonial): cover accessible ceremonial journeys`.
 
 #### Wave 7 — Operations, isolation and release readiness
 
@@ -799,7 +824,7 @@ era a contradição existente até esta consolidação.
 - [ ] 37. ~~Add adversarial public-isolation and release-smoke gates~~ → **Gates de release e de não-vazamento de fonte**
   - **REENQUADRADA.** O adversário deixou de ser "o modo público alcança dado local". Passa a ser: uma passagem literal de obra de terceiro, um caminho do acervo ou PII aparecendo numa resposta ou num artefato de build
   - **Implement:** seed restricted sentinel `ASTROAXE_LOCAL_ONLY_7F3C91` and publishable sentinel `ASTROAXE_PUBLIC_OK_42A8D0` across work/text/media/path/plan/cache fixtures; run public APIs, pages, RSC/static responses, sitemap, robots, JSON-LD, search, exports, logs, source maps, `.next`, public directory and standalone image/layers; assert zero restricted occurrences and publishable occurrence only in its approved response. Prime local cache first, then switch to public fixture to prove mode-separated keys. Add this to `scripts/release-smoke.sh` and quality documentation without using real protected strings.
-  - **References:** `scripts/release-smoke.sh`; `src/app/sitemap.ts`; `src/app/robots.ts`; `src/app/api/auth/export/route.ts`; task-11 bundle; task-34 images.
+  - **References:** `scripts/release-smoke.sh`; `src/app/sitemap.ts`; `src/app/robots.ts`; `src/app/api/auth/export/route.ts`; imagens da task 34. _(O bundle da task 11 não existe desde 26 de agosto.)_
   - **Acceptance:** gate fails on any local canary or internal rule/weight marker; test proves the scanner itself detects an intentionally contaminated fixture.
   - **QA happy:** clean public build passes with report (`.../T37/release-leak-gate.txt`).
   - **QA failure:** contaminated bundle/build is rejected (`.../T37/contamination-proof.txt`).
@@ -812,7 +837,7 @@ era a contradição existente até esta consolidação.
   - **Acceptance:** public copy never implies local material is licensed; controller/legal/provider items remain explicit blockers until supplied; docs match actual routes/models/migrations/counts.
   - **QA happy:** link/content/release smoke and doc consistency checklist (`.../T38/docs.txt`).
   - **QA failure:** grep-based contradiction fixtures plus code-backed assertions catch “not persisted”/“publicly available” drift (`.../T38/docs-drift.txt`).
-  - **Commit:** `docs(ceremonial): document dual-mode governance`.
+  - **Commit:** `docs(ceremonial): reconcile privacy and operating docs`.
 
 - [ ] 39. Run the complete checkpoint and publish the remaining external-dependency roadmap
   - **Implement:** run migration deploy on isolated staging, tests, coverage, build, E2E, performance, observability, release smoke, restore and Sonar. Both public activation and the local sensitive planner/session feature remain blocked until structured, non-revoked approvals exist for sensitive-data governance, legal basis/30-day backup retention/37-day tombstones and adult-access enforcement; public activation additionally requires rights/legal review and exact bundle approval. Read-only local archival access may remain separate behind its own access/safety gate. Keep external SMTP/domain/TLS/secret-manager/analytics/Stripe and Orixá calibration explicitly unclaimed.
@@ -820,21 +845,21 @@ era a contradição existente até esta consolidação.
   - **Acceptance:** zero new bugs/vulnerabilities, hotspots reviewed, new-code coverage ≥80%, duplication ≤3%, all isolation checks pass; release command machine-validates approval type/scope/reviewer-role/date/coverage/review-or-expiry/revocation without pretending to validate legal correctness; any missing/revoked approval blocks activation.
   - **QA happy:** archive all sanitized gate receipts under `.../T39/` and update dated memory.
   - **QA failure:** deliberately failing isolation/restore test blocks completion and leaves rollback/roll-forward instructions (`.../T39/blocking-proof.txt`).
-  - **Commit:** `chore(release): verify AstroAxe dual-mode readiness`.
+  - **Commit:** `chore(release): verify AstroAxe release readiness`.
 
 ### Final verification wave
 
 - [ ] F1. Plan-compliance audit
   - Verify every task, dependency, Must-NOT-Have and evidence path against the executed diff; reject missing todos, changed scope, edited applied migrations or undocumented deviations. Evidence: `.../F1/compliance.md`.
 
-- [ ] F2. Code-quality, security and privacy review
-  - Independently review strict types, Zod boundaries, DB constraints, encryption, ownership, CSRF/body limits, logging/redaction, cache/versioning, rights policy and public/local isolation; run security/performance advisors and relevant static analysis. Evidence: `.../F2/review.md`.
+- [ ] F2. Revisão de qualidade, segurança e privacidade
+  - **Reenquadrada.** Não há política de direitos nem isolamento público/local a revisar. Revisar de forma independente tipos estritos, fronteiras Zod, restrições de banco, cifragem, propriedade por dono, CSRF e limites de corpo, log e redação, cache e versionamento, e a fronteira entre insumo e obra; rodar os conselheiros de segurança e desempenho e a análise estática. Evidência: registrada no índice deste documento.
 
-- [ ] F3. Real-use functional and visual QA
-  - Run the authenticated Tríade journey and all five ceremonial workspaces in local/public modes on mobile and desktop using synthetic-only corpus/private fixtures; capture sanitized/body-free screenshots/traces, keyboard/focus/reduced-motion checks, source-reader/media/timing/planner/export/delete behavior and failures. Evidence: `.../F3/`.
+- [ ] F3. QA funcional e visual de uso real
+  - **Reenquadrada.** Não existem cinco workspaces nem dois modos. Rodar a jornada autenticada da Tríade e as superfícies cerimoniais da Wave 6 — grafo de funções, tempo e eleições, planejador cifrado — em mobile e desktop, com fixtures sintéticas apenas; capturar traces e imagens sanitizadas e sem corpo de resposta, verificar teclado, foco e movimento reduzido, e cobrir exportação, exclusão e os estados de falha. Evidência: registrada no índice deste documento.
 
-- [ ] F4. Scope-fidelity and adversarial release audit
-  - Seed local-only canaries and prove no public response, export, cache, SEO file, bundle, `.next` artifact or image layer contains them; scan o índice de evidências deste documento em busca de sentinelas privadas/protegidas; verify traditions remain separate and harmful/coercive planner goals refuse. Evidence: `.../F4/adversarial.md`.
+- [ ] F4. Auditoria adversarial de fidelidade e de release
+  - **Reenquadrada.** O adversário não é mais "o modo público alcança dado local", porque não há dois modos. Passa a ser: **passagem literal de obra de terceiro, caminho do acervo, locator, escola de claim ou PII aparecendo numa resposta pública ou num artefato de build**. Semear sentinelas no corpus e nos registros privados e provar que nenhuma resposta, exportação, cache, arquivo de SEO, artefato `.next` ou camada de imagem as contém; provar que o scanner detecta uma fixture contaminada de propósito; verificar que as categorias de entidade permanecem distintas na projeção pública e que objetivo de planejador coercitivo continua recusado. Evidência: registrada no índice deste documento.
 
 ## Índice de evidências
 
