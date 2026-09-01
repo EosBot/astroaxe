@@ -86,4 +86,22 @@ describe("methodology page", () => {
     for (const marker of ["regency-matrix", "regency-weights", "regency-function-graph", "family:"])
       expect(text).not.toContain(marker);
   });
+
+  it("publica o grafo de funções sem deixar identificador interno atravessar", () => {
+    const { container } = render(<MethodologyPage />);
+
+    expect(
+      screen.getByRole("heading", { name: /As perguntas que as tradições respondem juntas/ }),
+    ).toBeTruthy();
+    // Marbas e Omolu na mesma função, com as categorias visíveis lado a lado.
+    // Omolu aparece duas vezes porque ocupa duas funções, e isso é correto.
+    expect(screen.getByText("Marbas")).toBeTruthy();
+    expect(screen.getAllByText("Omolu").length).toBe(2);
+    expect(screen.getAllByText("espírito goético").length).toBeGreaterThan(0);
+
+    // A proveniência por claim sai da interface: nada de escola, obra ou locator.
+    const texto = container.textContent ?? "";
+    for (const marcador of ["school:", "work:", "family:", "Corpus local", "assignment:"])
+      expect(texto).not.toContain(marcador);
+  });
 });

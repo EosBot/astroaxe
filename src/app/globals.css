@@ -6326,3 +6326,58 @@ button:disabled {
     height: auto;
   }
 }
+
+.method-function-list {
+  list-style: none;
+  margin: 1.75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1.5rem;
+}
+
+.method-function-list > li {
+  border-top: 1px solid color-mix(in srgb, var(--copper) 28%, transparent);
+  padding-top: 1.25rem;
+}
+
+.method-function-list h3 {
+  margin: 0 0 0.35rem;
+}
+
+.method-function-question {
+  margin: 0 0 0.85rem;
+  font-style: italic;
+  opacity: 0.85;
+}
+
+.method-function-occupants {
+  list-style: none;
+  margin: 0 0 0.85rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+}
+
+/* Nome e categoria juntos: é a categoria que impede a leitura sincrética. */
+.method-function-occupants > li {
+  display: flex;
+  flex-direction: column;
+  min-width: 8rem;
+}
+
+.method-function-occupants span {
+  font-size: 0.82rem;
+  opacity: 0.7;
+}
+
+.method-function-support {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.method-function-divergence {
+  margin: 0.45rem 0 0;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}

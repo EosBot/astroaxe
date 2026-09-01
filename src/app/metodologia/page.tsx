@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+
+import { buildPublicFunctionGraph } from "@/domain/orixas/regency/public-function-graph";
+import { regencyFunctionGraph } from "@/domain/orixas/regency/function-graph-data";
 import Link from "next/link";
 
 import { listMethodCorrections } from "@/domain/orixas/regency/method-corrections";
@@ -23,6 +26,7 @@ export const metadata: Metadata = {
 };
 
 const { chain, condensation, versioning, evaluation, limits } = PUBLIC_REGENCY_METHOD_CARD;
+const publicGraph = buildPublicFunctionGraph(regencyFunctionGraph);
 const corrections = listMethodCorrections();
 
 export default function MethodologyPage(): React.JSX.Element {
@@ -109,6 +113,42 @@ export default function MethodologyPage(): React.JSX.Element {
           </p>
 
           <p className="method-emphasis method-limit">{condensation.limit}</p>
+        </section>
+
+        <section className="methodology-section" aria-labelledby="method-functions">
+          <p className="eyebrow">O grafo de funções</p>
+          <h2 id="method-functions">As perguntas que as tradições respondem juntas.</h2>
+          <p>
+            Cada função abaixo é uma pergunta estrutural. Sob ela ficam as potências que diferentes
+            tradições apontam como resposta — e o que se afirma é que elas ocupam a mesma posição,
+            nunca que são a mesma coisa. As categorias aparecem lado a lado justamente para que essa
+            diferença não se perca.
+          </p>
+          <p>
+            A sustentação é contada por linhagem, não por obra: quatro livros de um mesmo autor são
+            uma voz só.
+          </p>
+
+          <ol className="method-function-list">
+            {publicGraph.functions.map((funcao) => (
+              <li key={funcao.functionId}>
+                <h3>{funcao.label}</h3>
+                <p className="method-function-question">{funcao.question}</p>
+                <ul className="method-function-occupants">
+                  {funcao.occupants.map(({ name, categoryLabel }) => (
+                    <li key={`${funcao.functionId}-${name}`}>
+                      <strong>{name}</strong>
+                      <span>{categoryLabel}</span>
+                    </li>
+                  ))}
+                </ul>
+                <p className="method-function-support">{funcao.supportLabel}</p>
+                {funcao.divergenceNote === null ? null : (
+                  <p className="method-function-divergence">{funcao.divergenceNote}</p>
+                )}
+              </li>
+            ))}
+          </ol>
         </section>
 
         <section className="methodology-section" aria-labelledby="method-versioning">
