@@ -6381,3 +6381,40 @@ button:disabled {
   font-size: 0.9rem;
   opacity: 0.8;
 }
+
+.timing-form {
+  display: grid;
+  gap: 0.5rem;
+  margin: 2rem 0;
+  max-width: 32rem;
+}
+
+.timing-form label {
+  font-size: 0.88rem;
+  opacity: 0.85;
+}
+
+.timing-form input {
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--copper) 40%, transparent);
+  background: transparent;
+  color: inherit;
+}
+
+.timing-form button {
+  justify-self: start;
+  margin-top: 0.5rem;
+  padding: 0.55rem 1.1rem;
+  border-radius: 0.4rem;
+  border: 1px solid var(--copper);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+/* O desfecho é qualitativo: a cor acompanha o rótulo, nunca o substitui. */
+.method-function-support[data-status="conflicted"],
+.method-function-support[data-status="unavailable"] {
+  opacity: 0.85;
+}

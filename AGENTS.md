@@ -458,6 +458,7 @@ URL, branch protection ou pipeline.
 | Serviço não fica healthy      | `docker compose ps` e logs do serviço              | corrija causa raiz/healthcheck                      |
 | Prisma Client desatualizado   | compare schema e generated client                  | rode `npm run prisma:generate` no ambiente correto  |
 | Migration falha               | leia SQL e logs do `migrate`                       | corrija migration nova; não apague volume           |
+| `next build` morre no webpack | `TypeError` em `WasmHash._updateWithBuffer`        | cache corrompido: limpe `.next` e reconstrua        |
 | Teste pendura                 | localize handle/timer/conexão aberta               | shutdown explícito e fake timers quando cabível     |
 | Redis indisponível            | verifique health/logs e timeout                    | preserve fail-closed; não faça bypass silencioso    |
 | Sonar não inicia              | confirme memória/`vm.max_map_count`, health e logs | ajuste host conforme `docs/OPERATIONS.md`           |
