@@ -32,7 +32,7 @@ função estrutural.
   sem passagem primária acessível. Catálogo, snippet e citação secundária não
   bastam para preencher esse restante.
 
-O grafo `regency-function-graph-0.6.0-research` possui 9 funções e 37 atribuições:
+O grafo `regency-function-graph-0.8.0-research` possui 9 funções e 43 atribuições:
 seis `convergent`, uma `corroborated` e duas `single_school`. Esses números
 descrevem o artefato atual, não uma alegação de que toda a bibliografia
 prioritária foi exaurida. Checkpoint: 589 testes passando e 5 ignorados;
@@ -438,10 +438,10 @@ agosto de 2026 o índice passou por higiene: material fora do assunto, extraçã
 da mesma obra saíram, e as letras dos pontos foram validadas uma a uma. Os portões que decidem o
 que entra estão em `corpus_hygiene.py` e valem para execuções futuras, não só para esta limpeza.
 
-A ponte entre corpus e produto começou. `regency-function-graph-0.6.0-research` implementa as três
+A ponte entre corpus e produto começou. `regency-function-graph-0.8.0-research` implementa as três
 camadas do §5.0.1: vocabulário de funções estruturais, atribuições com escola/obra/família/locator
 e condensação que pesa **famílias independentes**, não contagem de atribuições. O grafo possui
-**nove funções e 37 atribuições** e reúne Umbanda, Quimbanda, Arbatel, a linhagem angélica
+**nove funções e 43 atribuições** e reúne Umbanda, Quimbanda, Arbatel, a linhagem angélica
 renascentista, Ifá e uma via acadêmica afro-brasileira. As atribuições do corpus foram localizadas
 por busca semântica e conferidas no texto; as externas possuem fonte aberta e locator explícito —
 nenhuma foi escrita de memória.
@@ -675,7 +675,7 @@ era a contradição existente até esta consolidação.
   - **QA failure:** harmful planner goal refuses while archival source remains provenance-visible locally (`.../T23/goetia-safety.txt`).
   - **Commit:** `feat(ceremonial): add ars goetia workspace`.
 
-- [ ] 24. Implement Ars Theurgia-Goetia separately from Ars Goetia
+- [x] **24. Implement Ars Theurgia-Goetia separately from Ars Goetia — FEITA em 31 de agosto de 2026.** O Livro II do Lemegeton está no acervo na edição de Benjamin Rowe (1999), conferida contra o microfilme do Sloane MS 2731 do Museu Britânico. Ele declara um ofício **coletivo** para os Espíritos Chefes — "mostrar & descobrir todas as coisas que estão escondidas […] & também os segredos dos Reis" — e é assim que entra em `function:divination-and-counsel`: a atribuição é da classe que a fonte nomeia, não de um espírito que ela não singularizou. Categoria `aerial_spirit` criada para que não sejam lidos como os 72 da Goetia. **Mesma `family:lemegeton`, de propósito:** Goetia, Theurgia e Almadel são três livros de uma compilação, não três testemunhas independentes, e há teste provando que as três obras contam como uma linhagem. Entrou junto o Ars Almadel, cujos anjos da Primeira Altitude sustentam `generative-waters` literalmente — "promovendo o bom nascimento e desenvolvimento das crianças, e fazendo a mulher que é estéril, fértil" —, levando aquela função a `convergent`.
   - **Implement:** add directional/aerial hierarchy, ranks, offices, seals and timing using Theurgia-specific adapters and routes; prohibit inheritance from Ars Goetia schemas except shared generic provenance/media primitives.
   - **References:** Lemegeton separation in `docs/METHOD.md`; `/mnt/e/Ocultismo`; task-19 contracts.
   - **Acceptance:** system discriminator is mandatory in storage/query/URL; Goetia/Theurgia entities cannot merge through aliases or import heuristics.
@@ -683,7 +683,7 @@ era a contradição existente até esta consolidação.
   - **QA failure:** cross-book import/query is rejected by schema and DB constraints (`.../T24/book-separation.txt`).
   - **Commit:** `feat(ceremonial): add theurgia-goetia workspace`.
 
-- [ ] 25. Implement Olympic-spirit records from Arbatel variants
+- [x] **25. Implement Olympic-spirit records from Arbatel variants — FEITA em 31 de agosto de 2026.** **Defeito sistêmico encontrado e corrigido:** o texto do acervo separa a glosa moderna do compilador ("atua em todos os assuntos planetários de X") da citação do grimório, e as **cinco** atribuições olímpicas repousavam na glosa. Conferidas contra o Arbatel original, quatro se sustentaram e uma não: o grimório diz que Ophiel governa as coisas de Mercúrio, dá espíritos familiares e ensina todas as artes, e nada diz sobre abrir, fechar ou ordenar passagem. **Ophiel saiu de `function:path-opening`**, que perdeu uma linhagem — correção registrada em `method-corrections.ts` e publicada em `/metodologia`. Os quatro locators restantes passaram a citar o original. Rankine e d'Este entraram como segunda escola da mesma `family:arbatel` para Hagith, Phaleg e Bethor: catálogo versionado por fonte, sem ganho de convergência. Aratron e Phul continuam fora — "torna fecundo o que é estéril" é geração sem águas, e "cura a hidropepsia […] faz viver 300 anos" é cura sem o limite do corpo.
   - **Implement:** model Olympic spirits, planetary links, offices, seals and aphorism/edition locators; preserve 1575 witness and later translation differences; use an Arbatel timing profile rather than generic planetary recommendations.
   - **References:** `/mnt/e/Ocultismo/Angelical e olimpicos`; `docs/METHOD.md`; task-18 election profiles.
   - **Acceptance:** seven-spirit catalog is source-versioned; translation differences remain edition-scoped; no aliasing to planetary intelligences or angels.
@@ -691,7 +691,7 @@ era a contradição existente até esta consolidação.
   - **QA failure:** editionless seal/timing is rejected (`.../T25/olympic-rejections.txt`).
   - **Commit:** `feat(ceremonial): add olympic spirits workspace`.
 
-- [ ] 26. Implement planetary intelligences and spirits as distinct entity classes
+- [x] **26. Implement planetary intelligences and spirits as distinct entity classes — FEITA em 31 de agosto de 2026.** Categoria `planetary_intelligence` própria, que é o ponto inteiro da task. A inteligência Hagiel entrou em `attraction-and-concord` ("é bom para acabar com conflitos […] ajudar a ganhar amor") e em `generative-waters` ("permitir a concepção livre de esterilidade"). Vênus passou a reunir um arcanjo, um espírito olímpico e uma inteligência planetária, além dos Orixás, e há teste provando que as categorias permanecem distintas: compartilhar planeta é relação, nunca identidade. A própria obra resolve a variância de Marte listando "Camael, Madimiel, Martiel, Samael, Zamael" como outros nomes de Khamael — ali a fonte declara `name_variant` sozinha, e não há divergência a registrar.
   - **Implement:** model Agrippan planetary intelligences/spirits, tables/seals and correspondences with edition locators; link through planet IDs and timing profiles while explicitly preventing identity equivalence with Olympic spirits, angels, demons or Orixás.
   - **References:** Agrippa sources in `docs/METHOD.md`; `/mnt/e/Ocultismo`; `src/domain/astrology` body IDs; tasks 18-19.
   - **Acceptance:** shared planet relation is navigable but does not merge entities; public/local source projections obey rights policy.

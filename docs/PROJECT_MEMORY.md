@@ -1,5 +1,51 @@
 # Memória canônica do projeto
 
+## Atualização 2026-08-31 — Tasks 24, 25 e 26: a Wave 5 fecha
+
+- **Task 24, Theurgia-Goetia.** O Livro II do Lemegeton está no acervo na edição de
+  Benjamin Rowe (1999), conferida contra o microfilme do Sloane MS 2731 do Museu
+  Britânico. Ele declara um ofício **coletivo** para os Espíritos Chefes, e foi
+  assim que entrou: a atribuição é da classe que a fonte nomeia, não de um
+  espírito que ela não singularizou. Categoria `aerial_spirit` para que não sejam
+  lidos como os 72 da Goetia — e ainda assim **mesma `family:lemegeton`**, porque
+  Goetia, Theurgia e Almadel são três livros de uma compilação, não três
+  testemunhas. Entrou junto o Ars Almadel, cujos anjos da Primeira Altitude
+  sustentam a geração literalmente.
+- **Task 25, e o defeito sistêmico que ela revelou.** O texto olímpico do acervo
+  separa a glosa moderna do compilador — "atua em todos os assuntos planetários de
+  X" — da citação do grimório. **As cinco atribuições olímpicas repousavam na
+  glosa**, e o locator até dizia isso em voz alta, entre parênteses. Conferidas
+  contra o Arbatel original, quatro se sustentaram e uma não: o grimório diz que
+  Ophiel governa as coisas de Mercúrio, dá espíritos familiares e ensina todas as
+  artes, e nada diz sobre abrir, fechar ou ordenar passagem. **Ophiel saiu de
+  `path-opening`**, que perdeu uma linhagem. Correção registrada e publicada.
+- É o segundo defeito da mesma classe encontrado nesta sequência. O primeiro foi
+  `school:trithemius`, herdado de suposição; este foi a glosa de um compilador
+  citada como se fosse a fonte. Ambos passaram por muitas revisões sem serem
+  vistos, e os dois só apareceram quando alguém foi ler o texto que o locator
+  prometia.
+- **Task 26.** Categoria `planetary_intelligence`, que é o ponto inteiro da task.
+  Hagiel entrou em atração e em geração. Vênus passou a reunir um arcanjo, um
+  espírito olímpico e uma inteligência planetária, além dos Orixás, com teste
+  provando que as categorias não se fundem. E a mesma obra resolve sozinha a
+  variância de Marte, listando "Camael, Madimiel, Martiel, Samael, Zamael" como
+  outros nomes de Khamael: ali a fonte declara a variante ortográfica, e não há
+  divergência a registrar.
+- **O que `generative-waters` acabou revelando.** Entraram nela os anjos do Almadel
+  e a inteligência Hagiel, e **nenhum dos dois envolve água**. Saíram dela a Lua
+  (elemento água, obras divinatórias), Focalor e Vepar (águas que afogam) e Aratron
+  (fecunda sem águas). O rótulo "águas" é da Umbanda; a função que as fontes
+  sustentam é a geração e a sustentação da vida que nasce. **Renomeá-la é decisão
+  metodológica pendente** — a ser tomada por mérito e com correção registrada,
+  nunca de passagem. É a segunda vez que o vocabulário dá esse sinal, depois de
+  `affliction-and-cure` na task 22.
+- Grafo de `0.6.0-research` para `0.8.0-research`, de 37 para 43 atribuições. Sete
+  funções `convergent`, duas `corroborated`, nenhuma `single_school`. Uma mudança
+  subiu e outra desceu na mesma versão, que é o comportamento certo de um registro
+  que não torce para o próprio produto.
+- **Wave 5 concluída.** Checkpoint: **611 testes passando**; typecheck, lint e
+  formatação limpos.
+
 ## Atualização 2026-08-31 — Task 23: a Goetia entra, e as funções frágeis deixam de ser frágeis
 
 - Cinco atribuições do Lemegeton, todas com o ofício citado literalmente: Marbas
@@ -414,11 +460,11 @@ de entrada e traz o índice e a ordem de leitura. Não crie um sexto documento.
 
 | Frente                     | Estado                                                                                                                                                                                                                                                                                                                                                                                |
 | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| P1.1 — condensar tradições | Grafo com **9 funções e 37 atribuições**. Adivinhação reúne UNESCO, Abimbola e o corpus localizado de Salakọ em Bascom; Prandi sustenta Exu Òrìṣà no limiar; Ogum/ferro possui via acadêmica. **Cobertura ainda fina:** Verger segue sem passagem primária acessível; Juana Elbein foi autenticada, mas os trechos recuperados não cabem nas funções atuais sem forçar o vocabulário. |
+| P1.1 — condensar tradições | Grafo com **9 funções e 43 atribuições**. Adivinhação reúne UNESCO, Abimbola e o corpus localizado de Salakọ em Bascom; Prandi sustenta Exu Òrìṣà no limiar; Ogum/ferro possui via acadêmica. **Cobertura ainda fina:** Verger segue sem passagem primária acessível; Juana Elbein foi autenticada, mas os trechos recuperados não cabem nas funções atuais sem forçar o vocabulário. |
 | P1.2 — escrever a síntese  | Primeiro verbete publicado e verificado em banco real. É trabalho contínuo, um verbete por vez.                                                                                                                                                                                                                                                                                       |
 | P1.3, P1.4, P1.5, P1.6     | Feitos. O glifo de Júpiter já foi refeito; permanece a ampliação gradual do conjunto de selos fundamentados.                                                                                                                                                                                                                                                                          |
 | Wave 4 do roteiro          | **Concluída.** T18 tem quatro perfis sustentados — Agrippa, Arbatel, Khan Secretum e Heptameron. Agrippa fica `unavailable` enquanto requisitos celestes não forem computáveis; Ars Paulina permanece fora por não conter regra de eleição. T21 congelou as cinco superfícies determinísticas e o comportamento diante de conflito.                                                   |
-| Wave 5                     | Substrato e T27 feitos; **22-26 é o ponto de retomada**, e dependem do acervo acima.                                                                                                                                                                                                                                                                                                  |
+| Wave 5                     | **Concluída** (T22–T27). O ponto de retomada passa a ser a Wave 6, cujo texto precisa ser reescrito antes de executar.                                                                                                                                                                                                                                                                |
 | Wave 6                     | **Texto superado** — descreve o modo dual removido em 26 de agosto. Precisa ser reescrita antes de executar.                                                                                                                                                                                                                                                                          |
 
 **A regra que mais importa neste projeto:** sustentação se conta por linhagem, não

@@ -14,7 +14,7 @@ import { structuralFunctionIds, findStructuralFunction } from "./structural-func
  * posição é evidência forte; a mesma obra em três edições é uma afirmação só.
  * Achatar isso destruiria exatamente o sinal que o método usa.
  */
-export const REGENCY_FUNCTION_GRAPH_VERSION = "regency-function-graph-0.6.0-research";
+export const REGENCY_FUNCTION_GRAPH_VERSION = "regency-function-graph-0.8.0-research";
 
 const assignmentSchema = z
   .object({
@@ -28,7 +28,23 @@ const assignmentSchema = z
      * entidade-guia de Quimbanda podem ocupar posição análoga sem que um vire o
      * outro, e o leitor precisa enxergar que são categorias distintas.
      */
-    entityCategory: z.enum(["orisa", "guide_entity", "angel", "olympic_spirit", "goetic_spirit"]),
+    entityCategory: z.enum([
+      "orisa",
+      "guide_entity",
+      "angel",
+      "olympic_spirit",
+      "goetic_spirit",
+      /** Espíritos aéreos da Theurgia-Goetia. Não são os 72 da Goetia. */
+      "aerial_spirit",
+      /**
+       * Inteligências planetárias agrippanas.
+       *
+       * Classe própria de propósito: compartilhar planeta com um espírito
+       * olímpico, um arcanjo ou um Orixá é relação, não identidade, e sem
+       * categoria separada a condensação convidaria a fundi-los.
+       */
+      "planetary_intelligence",
+    ]),
     traditionId: z.string().regex(/^tradition:[a-z0-9-]+$/),
     workId: z.string().regex(/^work:[a-z0-9-:]+$/),
     sourceFamilyId: z.string().regex(/^family:[a-z0-9-:]+$/),

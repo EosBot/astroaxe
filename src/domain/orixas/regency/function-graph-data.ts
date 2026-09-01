@@ -113,9 +113,41 @@ import { regencyFunctionGraphSchema, type RegencyFunctionGraph } from "./functio
  *   função que aquele elemento sugere — vale aqui como valeu para a Lua.
  * - **Buer.** "Remedia os destemperos no homem" é cura sem o limite do corpo, a
  *   mesma metade solta que barrou Phul e Aratron.
+ *
+ * Sobre o Arbatel, corrigido na versão 0.7.0: o texto do acervo separa a glosa
+ * moderna do compilador — "atua em todos os assuntos planetários de X" — da
+ * citação do grimório, e as cinco atribuições olímpicas repousavam na glosa.
+ * Conferidas contra o original, quatro se sustentaram e **uma não**: o Arbatel diz
+ * que Ophiel governa as coisas de Mercúrio, dá espíritos familiares e ensina todas
+ * as artes, e não diz nada sobre abrir, fechar ou ordenar passagem. Ophiel saiu de
+ * `function:path-opening`, que perdeu uma linhagem. Aratron e Phul continuam fora:
+ * "torna fecundo o que é estéril" é geração sem águas, e "cura a hidropepsia […]
+ * faz viver 300 anos" é cura sem o limite do corpo.
+ *
+ * Sobre a Theurgia-Goetia (task 24): o Livro II do Lemegeton declara um ofício
+ * **coletivo** para os Espíritos Chefes, e é assim que ele entra — a atribuição é
+ * da classe que a fonte nomeia, não de um espírito que ela não singularizou.
+ * `aerial_spirit` existe para que eles não sejam lidos como os 72 da Goetia, ainda
+ * que os dois livros pertençam à mesma `family:lemegeton`: são dois livros de uma
+ * compilação, não duas testemunhas independentes.
+ *
+ * Sobre as inteligências planetárias (task 26): categoria `planetary_intelligence`
+ * própria. Hagiel divide Vênus com Anael, Uriel e Hagith, e compartilhar planeta é
+ * relação, nunca identidade — sem categoria separada a condensação convidaria a
+ * fundi-los. Note que a mesma obra resolve sozinha a variância de Marte, listando
+ * "Camael, Madimiel, Martiel, Samael, Zamael" como outros nomes de Khamael: ali a
+ * própria fonte declara `name_variant`, e não há divergência a registrar.
+ *
+ * O que `function:generative-waters` revelou ao longo destas tasks: entraram nela
+ * os anjos da Primeira Altitude do Almadel e a inteligência Hagiel, e **nenhum dos
+ * dois envolve água**. Saíram dela a Lua (elemento água, obras divinatórias),
+ * Focalor e Vepar (águas que afogam) e Aratron (fecunda sem águas). O rótulo
+ * "águas" é da Umbanda; a função que as fontes sustentam é a geração e a
+ * sustentação da vida que nasce. Renomeá-la é decisão metodológica pendente, a ser
+ * tomada por mérito e com correção registrada — nunca de passagem.
  */
 export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSchema.parse({
-  version: "regency-function-graph-0.6.0-research",
+  version: "regency-function-graph-0.8.0-research",
   status: "research",
   assignments: [
     // --- Abertura de caminho e passagem ---
@@ -127,14 +159,6 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
       locator: "Corpus local, Quimbanda — O Culto da Chama Vermelha e Preta, seção sobre Exu",
       confidence: 0.9,
     }),
-    assignment("ophiel-path-arbatel", "path-opening", "ceremonial", "ophiel", "olympic_spirit", {
-      tradition: "arbatel",
-      school: "arbatel",
-      family: "arbatel",
-      work: "ars-arbatel",
-      locator: "Corpus local, _texto_olimpicos, verbete Ophiel (assuntos planetários de Mercúrio)",
-      confidence: 0.6,
-    }),
     assignment("raphael-path-angelical", "path-opening", "ceremonial", "raphael", "angel", {
       tradition: "angelical",
       school: "dalton-alta-magia-angelical",
@@ -145,6 +169,23 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
     }),
 
     // --- Ferro, forja e ofício da guerra ---
+    assignment(
+      "phaleg-iron-rankine",
+      "iron-and-war-craft",
+      "ceremonial",
+      "phaleg",
+      "olympic_spirit",
+      {
+        tradition: "arbatel",
+        school: "rankine-deste",
+        family: "arbatel",
+        work: "rankine-deste-magia-planetaria-pratica",
+        locator:
+          "Corpus local, _texto_magia_pratica_planetaria, espíritos olímpicos: “Phaleg eleva uma pessoa a grande honra em assuntos de guerra”",
+        confidence: 0.8,
+        extractionMethod: "table_review",
+      },
+    ),
     assignment("leraie-iron-lemegeton", "iron-and-war-craft", "goetia", "leraie", "goetic_spirit", {
       tradition: "lemegeton",
       school: "lemegeton-chave-menor",
@@ -203,7 +244,8 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
         school: "arbatel",
         family: "arbatel",
         work: "ars-arbatel",
-        locator: "Corpus local, _texto_olimpicos, verbete Phaleg (assuntos planetários de Marte)",
+        locator:
+          "Corpus local, _texto_olimpicos, verbete Phaleg, descrição original do grimório de Arbatel: “A quem dá o seu caractere é elevado às mais altas dignidades na arte da guerra”",
         confidence: 0.9,
       },
     ),
@@ -231,7 +273,8 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
       school: "arbatel",
       family: "arbatel",
       work: "ars-arbatel",
-      locator: "Corpus local, _texto_olimpicos, verbete Och (assuntos planetários do Sol)",
+      locator:
+        "Corpus local, _texto_olimpicos, verbete Och, descrição original do grimório de Arbatel: “Och preside às coisas solares e dá 600 anos de vida com uma saúde robusta […] ensina a medicina”",
       confidence: 0.9,
     }),
     assignment("michael-solar-angelical", "solar-vitality", "ceremonial", "michael", "angel", {
@@ -244,6 +287,23 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
     }),
 
     // --- Expansão e sentença ---
+    assignment(
+      "bethor-expansion-rankine",
+      "expansion-and-judgment",
+      "ceremonial",
+      "bethor",
+      "olympic_spirit",
+      {
+        tradition: "arbatel",
+        school: "rankine-deste",
+        family: "arbatel",
+        work: "rankine-deste-magia-planetaria-pratica",
+        locator:
+          "Corpus local, _texto_magia_pratica_planetaria, espíritos olímpicos: “Bethor eleva uma pessoa a grandes dignidades, ou seja, ele deve ser chamado quando tentar ganhar promoção ou melhorar sua vida”",
+        confidence: 0.8,
+        extractionMethod: "table_review",
+      },
+    ),
     assignment("xango-expansion-pena", "expansion-and-judgment", "umbanda", "xango", "orisa", {
       tradition: "umbanda",
       school: "templo-pena",
@@ -271,7 +331,8 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
         school: "arbatel",
         family: "arbatel",
         work: "ars-arbatel",
-        locator: "Corpus local, _texto_olimpicos, verbete Bethor (assuntos planetários de Júpiter)",
+        locator:
+          "Corpus local, _texto_olimpicos, verbete Bethor, descrição original do grimório de Arbatel: “Quem é digno de traçar seu caractere será por ele elevado às mais elevadas dignidades e posto em posse dos seus tesouros”",
         confidence: 0.9,
       },
     ),
@@ -293,6 +354,40 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
     ),
 
     // --- Atração e concórdia ---
+    assignment(
+      "hagiel-attraction-rankine",
+      "attraction-and-concord",
+      "agrippa",
+      "hagiel",
+      "planetary_intelligence",
+      {
+        tradition: "planetary-intelligences",
+        school: "rankine-deste",
+        family: "renaissance-ceremonial",
+        work: "rankine-deste-magia-planetaria-pratica",
+        locator:
+          "Corpus local, _texto_magia_pratica_planetaria, Inteligência Planetária de Vênus (p. 92): “Hagiel é bom para acabar com conflitos. Ele também é chamado para ajudar a ganhar amor”",
+        confidence: 0.85,
+        extractionMethod: "manual_review",
+      },
+    ),
+    assignment(
+      "hagith-attraction-rankine",
+      "attraction-and-concord",
+      "ceremonial",
+      "hagith",
+      "olympic_spirit",
+      {
+        tradition: "arbatel",
+        school: "rankine-deste",
+        family: "arbatel",
+        work: "rankine-deste-magia-planetaria-pratica",
+        locator:
+          "Corpus local, _texto_magia_pratica_planetaria, espíritos olímpicos: “Hagith aumenta a beleza e a atratividade pessoal”",
+        confidence: 0.75,
+        extractionMethod: "table_review",
+      },
+    ),
     assignment(
       "beleth-attraction-lemegeton",
       "attraction-and-concord",
@@ -370,6 +465,40 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
     ),
 
     // --- Águas geradoras ---
+    assignment(
+      "hagiel-generative-rankine",
+      "generative-waters",
+      "agrippa",
+      "hagiel",
+      "planetary_intelligence",
+      {
+        tradition: "planetary-intelligences",
+        school: "rankine-deste",
+        family: "renaissance-ceremonial",
+        work: "rankine-deste-magia-planetaria-pratica",
+        locator:
+          "Corpus local, _texto_magia_pratica_planetaria, Inteligência Planetária de Vênus (p. 92): “permitir a concepção livre de esterilidade”",
+        confidence: 0.8,
+        extractionMethod: "manual_review",
+      },
+    ),
+    assignment(
+      "almadel-chora-orientis-generative",
+      "generative-waters",
+      "almadel",
+      "anjos-primeira-altitude",
+      "angel",
+      {
+        tradition: "lemegeton-almadel",
+        school: "lemegeton-rowe-sloane-2731",
+        family: "lemegeton",
+        work: "lemegeton-ars-almadel",
+        locator:
+          "Corpus local, lemegeton, Ars Almadel, Primeira Altitude (Chora Orientis): “fazer todas as coisas fecundas, produtivas e férteis […] promovendo o bom nascimento e desenvolvimento das crianças, e fazendo a mulher que é estéril, fértil”",
+        confidence: 0.9,
+        extractionMethod: "manual_review",
+      },
+    ),
     assignment("iemanja-generative-saraceni", "generative-waters", "umbanda", "iemanja", "orisa", {
       tradition: "umbanda",
       school: "umbanda-sagrada-saraceni",
@@ -462,6 +591,23 @@ export const regencyFunctionGraph: RegencyFunctionGraph = regencyFunctionGraphSc
     }),
 
     // --- Adivinhação e conselho ---
+    assignment(
+      "theurgia-divination-lemegeton",
+      "divination-and-counsel",
+      "theurgia",
+      "espiritos-chefes",
+      "aerial_spirit",
+      {
+        tradition: "lemegeton-theurgia",
+        school: "lemegeton-rowe-sloane-2731",
+        family: "lemegeton",
+        work: "lemegeton-ars-theurgia",
+        locator:
+          "Corpus local, lemegeton, Livro II — Theurgia Goetia, ofício dos Espíritos Chefes: “mostrar & descobrir todas as coisas que estão escondidas […] & também os segredos dos Reis ou quaisquer outras pessoas”",
+        confidence: 0.85,
+        extractionMethod: "manual_review",
+      },
+    ),
     assignment(
       "gusion-divination-lemegeton",
       "divination-and-counsel",
@@ -607,7 +753,14 @@ function assignment(
   functionSlug: string,
   entityGroup: string,
   entitySlug: string,
-  entityCategory: "orisa" | "guide_entity" | "angel" | "olympic_spirit" | "goetic_spirit",
+  entityCategory:
+    | "orisa"
+    | "guide_entity"
+    | "angel"
+    | "olympic_spirit"
+    | "goetic_spirit"
+    | "aerial_spirit"
+    | "planetary_intelligence",
   evidence: {
     tradition: string;
     school: string;

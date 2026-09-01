@@ -124,13 +124,38 @@ describe("congelamento do domínio cerimonial", () => {
    *   para duas linhagens independentes. É a primeira vez que o congelamento
    *   registra **aumento** de convergência, e ele é real: um grimório solomônico
    *   do século XVII e a Umbanda do século XX não se copiaram.
+   *
+   * E uma quarta vez, nas tasks 24 e 25:
+   *
+   * - ANTES: `0.6.0-research`, 37 atribuições, seis funções `convergent`.
+   * - DEPOIS: `0.7.0-research`, 41 atribuições, sete `convergent`.
+   * - MOTIVO: entraram o ofício coletivo da Theurgia-Goetia, os anjos da
+   *   Primeira Altitude do Ars Almadel e três testemunhos de Rankine e d'Este
+   *   sobre os olímpicos. **Saiu** Ophiel de `path-opening`: o Arbatel original
+   *   não sustenta abertura de caminho, e a atribuição repousava na glosa do
+   *   compilador.
+   * - IMPACTO: `generative-waters` foi a `convergent` com o Almadel, que gera e
+   *   sustenta a vida que nasce sem envolver água nenhuma. `path-opening` perdeu
+   *   uma linhagem e continua `convergent`. Uma mudança sobe e outra desce na
+   *   mesma versão, o que é o comportamento certo de um registro que não torce
+   *   para o próprio produto.
+   *
+   * E uma quinta vez, na task 26:
+   *
+   * - ANTES: `0.7.0-research`, 41 atribuições.
+   * - DEPOIS: `0.8.0-research`, 43 atribuições.
+   * - MOTIVO: a inteligência planetária Hagiel entrou em atração e em geração,
+   *   com a categoria própria `planetary_intelligence`.
+   * - IMPACTO: nenhuma força mudou. A categoria separada é o ponto: Hagiel
+   *   divide Vênus com Anael, Uriel e Hagith, e compartilhar planeta é relação,
+   *   nunca identidade.
    */
   it("congela as versões declaradas de cada módulo do domínio", () => {
     expect(frozenDomainVersions).toEqual({
       electionEngine: "election-engine-0.2.0-research",
       electionProfileSchema: "election-profiles-0.2.0-research",
       entityRecords: "ceremonial-entity-records-0.1.0-research",
-      functionGraph: "regency-function-graph-0.6.0-research",
+      functionGraph: "regency-function-graph-0.8.0-research",
       guidancePolicy: "ceremonial-guidance-policy-0.1.0",
       planetaryHours: "planetary-hours-0.1.0",
       structuralFunctions: "structural-functions-0.1.0-research",
@@ -200,9 +225,9 @@ describe("cobertura de fontes", () => {
     expect(report.consensus).toHaveLength(9);
     expect(
       report.consensus.reduce((total, { assignmentCount }) => total + assignmentCount, 0),
-    ).toBe(37);
-    expect(strengths.filter((strength) => strength === "convergent")).toHaveLength(6);
-    expect(strengths.filter((strength) => strength === "corroborated")).toHaveLength(3);
+    ).toBe(43);
+    expect(strengths.filter((strength) => strength === "convergent")).toHaveLength(7);
+    expect(strengths.filter((strength) => strength === "corroborated")).toHaveLength(2);
     // Nenhuma função continua sustentada por uma escola só desde a task 23.
     expect(strengths.filter((strength) => strength === "single_school")).toHaveLength(0);
 

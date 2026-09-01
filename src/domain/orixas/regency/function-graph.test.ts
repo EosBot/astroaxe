@@ -234,7 +234,9 @@ describe("grafo de funções estruturais", () => {
     // A tradição angélica entrou na versão 0.4.0 com Gabriel e Raphael, ambos da
     // mesma obra: duas atribuições, uma linhagem. A quarta família é a angélica,
     // não a segunda entrada dela.
-    expect(ifa?.assignmentCount).toBe(6);
+    // Gusion (Livro I) e os Espíritos Chefes (Livro II) são dois livros do mesmo
+    // Lemegeton: sete atribuições, cinco linhagens.
+    expect(ifa?.assignmentCount).toBe(7);
     expect(ifa?.independentFamilyCount).toBe(5);
     expect(ifa?.strength).toBe("convergent");
     expect(ifa?.members.map(({ entityId }) => entityId)).toEqual([
@@ -242,6 +244,7 @@ describe("grafo de funções estruturais", () => {
       "entity:ceremonial:raphael",
       "entity:goetia:gusion",
       "entity:ifa:orunmila",
+      "entity:theurgia:espiritos-chefes",
       "entity:yoruba:orishala",
     ]);
     expect(
@@ -299,7 +302,7 @@ describe("grafo de funções estruturais", () => {
     // linhagem: somam testemunho, não somam convergência.
     expect(angelicais).toHaveLength(2);
     expect(new Set(angelicais.map(({ claimSchoolId }) => claimSchoolId)).size).toBe(2);
-    expect(ferro?.assignmentCount).toBe(7);
+    expect(ferro?.assignmentCount).toBe(8);
     expect(ferro?.independentFamilyCount).toBe(6);
     expect(ferro?.schoolCount).toBe(7);
   });
@@ -345,5 +348,36 @@ describe("grafo de funções estruturais", () => {
     expect(new Set(aflicao?.members.flatMap(({ familyIds }) => familyIds))).toEqual(
       new Set(["family:lemegeton", "family:saraceni"]),
     );
+  });
+
+  it("mantém separadas as classes que compartilham o mesmo planeta", () => {
+    const atracao = groupFor(regencyFunctionGraph, "function:attraction-and-concord");
+    const categorias = new Map(
+      atracao?.members.map(({ entityId, entityCategory }) => [entityId, entityCategory]),
+    );
+
+    // Vênus reúne um arcanjo, um espírito olímpico e uma inteligência planetária,
+    // além dos Orixás. Compartilhar planeta é relação, nunca identidade — e sem
+    // categorias distintas a condensação convidaria a fundi-los.
+    expect(categorias.get("entity:ceremonial:haniel")).toBe("angel");
+    expect(categorias.get("entity:ceremonial:hagith")).toBe("olympic_spirit");
+    expect(categorias.get("entity:agrippa:hagiel")).toBe("planetary_intelligence");
+    expect(atracao?.relation).toBe("analogous_position");
+  });
+
+  it("separa os dois livros do Lemegeton sem os contar como duas linhagens", () => {
+    const lemegeton = regencyFunctionGraph.assignments.filter(
+      ({ sourceFamilyId }) => sourceFamilyId === "family:lemegeton",
+    );
+
+    // Goetia, Theurgia e Almadel são três livros de uma compilação: obras
+    // distintas, categorias distintas, uma linhagem só.
+    expect(new Set(lemegeton.map(({ workId }) => workId)).size).toBe(3);
+    expect(new Set(lemegeton.map(({ entityCategory }) => entityCategory))).toEqual(
+      new Set(["goetic_spirit", "aerial_spirit", "angel"]),
+    );
+    const adivinhacao = groupFor(regencyFunctionGraph, "function:divination-and-counsel");
+    expect(adivinhacao?.independentFamilyCount).toBe(5);
+    expect(adivinhacao?.assignmentCount).toBe(7);
   });
 });
