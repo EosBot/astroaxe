@@ -9,6 +9,7 @@ const SECRET_ENVIRONMENT_VARIABLES = [
   "AUTH_SESSION_SECRET",
   "FINGERPRINT_SECRET",
   "SMTP_PASSWORD",
+  "CEREMONIAL_RECORD_KEYRING",
 ] as const;
 
 const serverEnvSchema = z.object({
@@ -19,6 +20,14 @@ const serverEnvSchema = z.object({
   FINGERPRINT_SECRET: z.string().min(32),
   NOMINATIM_USER_AGENT: z.string().min(10),
   SITE_URL: z.url(),
+  /**
+   * Keyring dos registros privados de prática, em JSON.
+   *
+   * Opcional de propósito: exigi-lo derrubaria toda instalação que ainda não usa
+   * a funcionalidade. Quando ausente, as rotas de plano e sessão respondem que o
+   * recurso não está configurado — falham fechadas em vez de gravar em claro.
+   */
+  CEREMONIAL_RECORD_KEYRING: z.string().min(1).optional(),
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
 });
 
