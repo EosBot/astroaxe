@@ -1,5 +1,35 @@
 # Memória canônica do projeto
 
+## Atualização 2026-09-01 — Wave 6 concluída e o executável da Wave 7 entregue
+
+- **Wave 6 fechada (T28–T33).** O grafo de funções entrou em `/metodologia`, a
+  ferramenta de tempo ganhou rota própria `/tempo-cerimonial`, os registros de
+  prática ganharam cifra e ciclo de vida por dono, e doze jornadas Playwright
+  passam em desktop e mobile contra servidor de produção real.
+- **Wave 7, o que dava para fazer:** T34 (endurecer o runtime), T37 (gate de
+  não-vazamento) e T38 (reconciliar a documentação). **T35, T36 e T39 continuam
+  bloqueadas** e não por falta de código: precisam, respectivamente, de ambiente
+  de destino, contrato de fornecedor de alertas e aprovações estruturadas do
+  responsável. Marcá-las como feitas seria mentira.
+- **F1, F2 e F4 rodadas como auditoria.** A F2 achou três lacunas reais nas
+  minhas próprias rotas: a rota pública de tempo sem limite de taxa, as rotas de
+  plano e sessão lendo corpo sem limite de tamanho apesar de o guard já existir, e
+  a redação do logger sem cobrir intenção, notas, observação e desfecho. Todas
+  corrigidas.
+- **O padrão que atravessou a sequência inteira:** rodar contra dado real derrubou
+  suposição minha cinco vezes. O `reconciled: true` do relatório de corpus, os
+  scanners que acusavam meu próprio texto de negação, o marcador `family:` que
+  casava com `font-family:` do CSS, o contexto de build de 8,1 GB, e a
+  justificativa do Compose no `AGENTS.md` que era falsa para este projeto. Nenhuma
+  delas apareceria em revisão de código: todas exigiram executar.
+- **Um erro de processo que me custou confiança e vale registrar:** encadeei build
+  e commit num comando só e commitei sem conferir o resultado. A mensagem afirmava
+  build limpo quando o build tinha falhado — por corrupção de cache do webpack, não
+  pelo código. A afirmação acabou verdadeira, mas eu não tinha como saber. Portão
+  se confere antes de afirmar.
+- Estado: **33 commits** à frente de `origin/develop`, sem push. 665 testes
+  passando e 5 ignorados; typecheck, lint, formatação e build de produção limpos.
+
 ## Atualização 2026-09-01 — o motivo de manter o Compose na raiz estava errado
 
 - A auditoria da task 34 esbarrou numa afirmação do `AGENTS.md` apresentada como

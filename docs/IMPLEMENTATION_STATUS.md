@@ -599,15 +599,15 @@ era a contradição existente até esta consolidação.
 
 ## Estado das waves
 
-| Wave                                | Tasks | Status                                       |
-| ----------------------------------- | ----- | -------------------------------------------- |
-| 1 — Recuperação e Tríade v3         | 1-6   | Concluída                                    |
-| 2 — Esquema de proveniência         | 7-11  | Só o esquema (T8) vale; o resto foi superado |
-| 3 — Ingestão do corpus              | 12-16 | 12-14 e 16 feitas; 15 cancelada              |
-| 4 — Domínio cerimonial determinista | 17-21 | **Concluída** (T17–T21)                      |
-| 5 — Condensação das tradições       | 22-27 | **Concluída** (T22–T27)                      |
-| 6 — Publicar o domínio como obra    | 28-33 | **Reescrita** em 31/08; aberta e executável  |
-| 7 — Operação e release              | 34-39 | Aberta                                       |
+| Wave                                | Tasks | Status                                        |
+| ----------------------------------- | ----- | --------------------------------------------- |
+| 1 — Recuperação e Tríade v3         | 1-6   | Concluída                                     |
+| 2 — Esquema de proveniência         | 7-11  | Só o esquema (T8) vale; o resto foi superado  |
+| 3 — Ingestão do corpus              | 12-16 | 12-14 e 16 feitas; 15 cancelada               |
+| 4 — Domínio cerimonial determinista | 17-21 | **Concluída** (T17–T21)                       |
+| 5 — Condensação das tradições       | 22-27 | **Concluída** (T22–T27)                       |
+| 6 — Publicar o domínio como obra    | 28-33 | **Concluída** (T28–T33)                       |
+| 7 — Operação e release              | 34-39 | T34, T37 e T38 feitas; 35, 36 e 39 bloqueadas |
 
 #### Wave 3 — Ingestão do corpus (task 16, reescrita em 31 de agosto de 2026)
 
