@@ -1,5 +1,42 @@
 # Memória canônica do projeto
 
+## Atualização 2026-08-31 — Task 16: o relatório de integridade, e o que ele achou
+
+- `src/domain/ceremonial/corpus-integrity.ts` reconcilia o corpus derivado com o
+  inventário do acervo. Função pura: mesmas entradas, mesmo relatório, sem
+  relógio, sem disco e sem estado de sessão — é o que permite compará-lo entre
+  execuções sem que a diferença seja do ambiente. A agregação do JSONL vive na
+  fronteira, em `scripts/corpus-integrity-report.ts`.
+- **Executado contra o corpus real: 429 documentos, 29.296 chunks, 16 categorias.**
+- **Achado 1 — o corpus não sabe de onde veio.** Os 429 documentos estão **sem
+  `sourcePath` e sem `contentHash`**: a derivação de 27 de agosto não preservou o
+  vínculo com o arquivo do acervo. A consequência prática é séria e não era
+  visível antes: **o relatório não consegue detectar cópia da mesma obra**, porque
+  detectar exige hash. Nós _sabemos_ que há três cópias do Lemegeton — foi assim
+  que a task 23 as tratou como uma linhagem —, mas isso foi conferido à mão, e não
+  há hoje verificação automática que pegue a próxima duplicata.
+- **Achado 2 — cinco documentos colidem de título.** O `manifest.json` do corpus
+  declara 434 documentos e o relatório agrupa 429 títulos distintos. Título é a
+  única identidade que o JSONL carrega, então cinco documentos estão sendo somados
+  a outros. Enquanto o hash não existir, a identidade do corpus é o nome do arquivo
+  — e nome não é identidade.
+- **Achado 3, e este é um defeito meu.** A primeira execução devolveu
+  `reconciled: true`. Era falso: não havia inventário e nenhum documento carregava
+  caminho de origem, ou seja, **não havia o que reconciliar**. Um booleano é
+  incapaz de distinguir "conferi e bate" de "não tive como conferir", e o valor
+  cômodo era justamente o que parecia sucesso. Trocado por
+  `status: "reconciled" | "gaps_found" | "not_reconcilable"`. Contra o corpus real
+  ele responde `not_reconcilable`, que é a verdade.
+- O relatório **não** classifica direitos nem sensibilidade. Essas colunas saíram
+  do banco em `20260826140000` e o modelo que as exigia foi descartado; recriá-las
+  aqui reintroduziria pela porta dos fundos um aparato que o produto decidiu não
+  ter.
+- **O que fica em aberto, e não tentei resolver de passagem:** repropagar
+  `sourcePath` e `contentHash` para os 29.296 chunks exige re-derivar o corpus, e
+  isso é decisão do responsável, não efeito colateral de uma task de relatório. O
+  relatório existe justamente para que a lacuna seja medida antes de alguém decidir.
+- Checkpoint: **621 testes passando**; typecheck, lint e formatação limpos.
+
 ## Atualização 2026-08-31 — Wave 6 reescrita: publicar o domínio como obra
 
 - A Wave 6 estava com **texto superado desde 26 de agosto** e era o único bloco do

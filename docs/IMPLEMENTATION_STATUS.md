@@ -603,7 +603,7 @@ era a contradição existente até esta consolidação.
 | ----------------------------------- | ----- | -------------------------------------------- |
 | 1 — Recuperação e Tríade v3         | 1-6   | Concluída                                    |
 | 2 — Esquema de proveniência         | 7-11  | Só o esquema (T8) vale; o resto foi superado |
-| 3 — Ingestão do corpus              | 12-16 | 12-14 feitas; 15 cancelada; 16 reescrita     |
+| 3 — Ingestão do corpus              | 12-16 | 12-14 e 16 feitas; 15 cancelada              |
 | 4 — Domínio cerimonial determinista | 17-21 | **Concluída** (T17–T21)                      |
 | 5 — Condensação das tradições       | 22-27 | **Concluída** (T22–T27)                      |
 | 6 — Publicar o domínio como obra    | 28-33 | **Reescrita** em 31/08; aberta e executável  |
@@ -615,7 +615,7 @@ era a contradição existente até esta consolidação.
 > abertas foram preservadas com seus critérios, e esta ficou sem bloco. O texto original foi
 > recuperado do histórico do Git e reescrito, porque duas de suas premissas caíram.
 
-- [ ] 16. Relatório de integridade do corpus
+- [x] **16. Relatório de integridade do corpus — FEITA em 31 de agosto de 2026.** `src/domain/ceremonial/corpus-integrity.ts` é função pura: mesmas entradas, mesmo relatório, sem relógio, disco ou estado de sessão. Soma totais por categoria e por obra, agrupa cópias por hash, conta extração ilegível em vez de descartá-la em silêncio, lista metadado por resolver, aponta derivado anterior à última modificação do arquivo e reconcilia contra o inventário da task 12 nomeando o motivo de cada ausência. `scripts/corpus-integrity-report.ts` é a fronteira que agrega o JSONL em documentos; o manifesto do inventário é argumento opcional porque não é versionado — contém caminhos do acervo. **Executado contra o corpus real: 429 documentos, 29.296 chunks, 16 categorias.** Ver a entrada de 31 de agosto em `docs/PROJECT_MEMORY.md` para o que a execução revelou e para o defeito que ela expôs no próprio relatório.
   - **A metade da descoberta foi feita, e de outro jeito.** A task pedia FTS5 do `node:sqlite` e dizia explicitamente "no embeddings/external model". Em 27 de agosto o acervo foi extraído, chunkado e **vetorizado com `BAAI/bge-m3`**, e a busca semântica local vive em `scripts/ocultismo-pipeline/query.py`. O modelo roda offline, na máquina, sem chamada externa — a premissa que a task protegia era não vazar corpus para serviço de terceiro, e ela continua respeitada. Foi a decisão posterior que prevaleceu, e as tasks 22 a 27 foram executadas em cima dela.
   - **Implement:** o que falta é o **relatório de integridade**. Totais por categoria e por obra, cópias da mesma obra, cobertura de extração, chunks ilegíveis, metadados não resolvidos e derivados desatualizados em relação ao inventário da task 12. Deve reconciliar com o inventário ou explicar cada quarentena. Sem classificação de direitos e sensibilidade: essas colunas saíram do banco na migration `20260826140000`.
   - **References:** `conteudo/manifest.json`; `scripts/ocultismo-pipeline/corpus_hygiene.py`, que já guarda os portões que decidem o que entra; `query.py`; manifestos das tasks 12 e 13; `docs/OPERATIONS.md`.

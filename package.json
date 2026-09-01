@@ -31,6 +31,7 @@
     "regency:prepare-case": "node --import tsx scripts/prepare-regency-case.ts",
     "regency:correspondence-report": "node --import tsx scripts/report-generated-correspondences.ts",
     "ceremonial:inventory": "node --conditions=react-server --import tsx scripts/inventory-ceremonial-archive.ts",
+    "ceremonial:corpus-report": "node --conditions=react-server --import tsx scripts/corpus-integrity-report.ts",
     "ceremonial:extract": "node --conditions=react-server --import tsx scripts/extract-ceremonial-archive.ts",
     "ceremonial:import": "node --conditions=react-server --import tsx scripts/import-ceremonial-corpus.ts",
     "ceremonial:scan": "sh scripts/scan-ceremonial-ingest.sh",
