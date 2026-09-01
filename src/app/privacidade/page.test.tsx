@@ -17,4 +17,17 @@ describe("PrivacyPage", () => {
     expect(screen.getByRole("link", { name: "Abrir controles da conta" })).toBeTruthy();
     expect(metadata.alternates).toEqual({ canonical: "/privacidade" });
   });
+
+  it("declara os planos e sessões cerimoniais como categoria de dado", () => {
+    render(<PrivacyPage />);
+
+    // Criar rotas que guardam intenção, notas e desfechos sem declará-los aqui
+    // seria coletar dado sensível em silêncio.
+    expect(screen.getByText("Planos e sessões cerimoniais")).toBeTruthy();
+    expect(screen.getByText(/AES-256-GCM/)).toBeTruthy();
+    // Duas categorias declaram sensibilidade religiosa: o feedback da Tríade e os
+    // registros de prática. Ambas são corretas.
+    expect(screen.getAllByText(/informação religiosa sensível/).length).toBe(2);
+    expect(screen.getByText(/Apagar um plano apaga as sessões dele junto/)).toBeTruthy();
+  });
 });

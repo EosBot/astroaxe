@@ -36,6 +36,10 @@ const dataGroups = [
     "Feedback de Regências",
     "As sete respostas do questionário que antecede a Tríade são cálculo-apenas: usadas somente na requisição que gera o resultado e nunca guardadas por si só. Com consentimento explícito e separado, respostas dirigidas, tríade calculada, correções conhecidas e origem da confirmação são guardadas para calibrar o método e podem ser retiradas individualmente sem apagar o mapa. Podem revelar informação religiosa sensível.",
   ],
+  [
+    "Planos e sessões cerimoniais",
+    "Título, intenção, entidades escolhidas, horário planejado, notas, observações e desfechos. São gravados cifrados com AES-256-GCM, e a cifra é amarrada ao seu usuário, ao registro e ao campo — um envelope movido para outro lugar não abre. Podem revelar informação religiosa sensível. Apagar um plano apaga as sessões dele junto. Enquanto a chave não estiver configurada no servidor, o recurso responde que está indisponível em vez de gravar em claro.",
+  ],
 ] as const;
 
 export default function PrivacyPage(): React.JSX.Element {
