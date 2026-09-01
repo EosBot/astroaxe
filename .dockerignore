@@ -14,3 +14,24 @@ backups
 docs
 compose*.yml
 Dockerfile*
+
+# O acervo vetorizado e o ambiente Python do pipeline de condensação.
+# Nenhum código em src/ lê conteudo/ — o corpus é insumo de autoria, e o que
+# atravessa a fronteira é o achado versionado, nunca o texto-fonte. Sem estas
+# linhas o contexto de build sai de alguns megabytes para 8 GB, e o estágio
+# worker, que faz COPY . ., levaria o corpus para dentro da imagem.
+conteudo
+scripts/ocultismo-pipeline/.venv
+**/__pycache__
+scripts/**/*.log
+
+# Diretórios de ferramentas locais que não pertencem a imagem nenhuma.
+.planning
+.citadel
+.codex
+.qwen
+.a5c
+.tmp
+.scannerwork
+.scannerwork-user
+.codegraph

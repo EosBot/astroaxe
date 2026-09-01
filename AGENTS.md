@@ -60,12 +60,17 @@ versões e o `package-lock.json`.
 - `compose.yml`: runtime; `compose.dev.yml`: desenvolvimento;
 - `compose.quality.yml`: SonarQube e banco dedicados.
 
-**Os arquivos Compose ficam na raiz, e isso é deliberado.** O Docker Compose deriva o nome do
-projeto do diretório do arquivo: movê-los para uma subpasta renomearia o projeto de
-`orixas-mapa-astral` para o nome dela e **órfãos todos os volumes existentes** — inclusive o
-volume PostgreSQL histórico que não pode ser perdido. Foi verificado empiricamente em 28 de
-agosto de 2026, com `docker compose config` reportando `name:` derivado da pasta. Também é o
-diretório onde o Compose procura o `.env`.
+**Os arquivos Compose ficam na raiz, e o motivo é o `.env`.** O Compose procura o `.env` no
+diretório do projeto, que por padrão é o do arquivo; movê-los exigiria reapontar isso em todo
+comando.
+
+A justificativa anterior estava errada e foi corrigida em 1º de setembro de 2026. Ela dizia que
+mover os arquivos renomearia o projeto e órfãos os volumes. **Não renomeia:** `compose.yml`
+declara `name: astroaxe` na primeira linha, e os volumes declaram nome próprio
+(`astroaxe_postgres18_data`). Verificado copiando o compose real para uma subpasta `docker/` e
+rodando `docker compose config`: o nome e o volume permaneceram idênticos. O teste de 28 de
+agosto que sustentou a afirmação antiga rodou sobre um arquivo sem a linha `name:`, e por isso
+o nome derivou da pasta — a conclusão não valia para este projeto.
 
 ### A documentação, em cinco documentos
 

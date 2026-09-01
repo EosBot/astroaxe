@@ -1,5 +1,27 @@
 # Memória canônica do projeto
 
+## Atualização 2026-09-01 — o motivo de manter o Compose na raiz estava errado
+
+- A auditoria da task 34 esbarrou numa afirmação do `AGENTS.md` apresentada como
+  verificada: mover os arquivos Compose para uma subpasta renomearia o projeto de
+  `orixas-mapa-astral` para o nome da pasta e **órfãos todos os volumes**,
+  inclusive o PostgreSQL histórico.
+- **É falso para este projeto.** `compose.yml` declara `name: astroaxe` na
+  primeira linha, e os volumes declaram nome próprio — `astroaxe_postgres18_data`.
+  O nome do projeto nunca foi `orixas-mapa-astral`.
+- Repeti o teste que a documentação dizia ter feito, agora com o compose **real**:
+  copiado para uma subpasta `docker/`, `docker compose config` seguiu reportando
+  `name: astroaxe` e `astroaxe_postgres18_data`. Nada seria órfão.
+- O teste original de 28 de agosto deve ter rodado sobre um arquivo sem a linha
+  `name:` — daí o nome ter derivado da pasta. A observação estava certa; a
+  **generalização para este projeto** é que não estava.
+- A decisão de manter os arquivos na raiz continua de pé, mas por um motivo mais
+  modesto e verdadeiro: é onde o Compose procura o `.env`. Registrar o motivo
+  errado é pior do que registrar um motivo pequeno, porque a próxima pessoa
+  decide com base nele.
+- A entrada histórica de 28 de agosto não foi reescrita. O registro é cronológico
+  e o que aconteceu naquele dia aconteceu; esta entrada é a correção.
+
 ## Atualização 2026-08-31 — Task 16: o relatório de integridade, e o que ele achou
 
 - `src/domain/ceremonial/corpus-integrity.ts` reconcilia o corpus derivado com o

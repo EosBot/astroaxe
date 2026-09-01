@@ -41,9 +41,11 @@ CMD ["node", "server.js"]
 FROM dependencies AS migrate-runner
 WORKDIR /app
 ENV NODE_ENV=production
-COPY prisma ./prisma
-COPY prisma.config.ts ./prisma.config.ts
-COPY src/lib/config/read-secret.ts ./src/lib/config/read-secret.ts
+COPY --chown=node:node prisma ./prisma
+COPY --chown=node:node prisma.config.ts ./prisma.config.ts
+COPY --chown=node:node src/lib/config/read-secret.ts ./src/lib/config/read-secret.ts
+# Migrar não exige root, e os outros estágios já rodam sem ele.
+USER node
 CMD ["npx", "prisma", "migrate", "deploy"]
 
 FROM dependencies AS worker-runner
