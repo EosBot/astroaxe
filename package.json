@@ -36,6 +36,7 @@
     "ceremonial:import": "node --conditions=react-server --import tsx scripts/import-ceremonial-corpus.ts",
     "ceremonial:scan": "sh scripts/scan-ceremonial-ingest.sh",
     "ceremonial:scan-gate": "node --import tsx scripts/check-vulnerability-policy.ts",
+    "release:leak-gate": "node --conditions=react-server --import tsx scripts/check-public-leakage.ts",
     "backup:postgres": "sh scripts/backup-postgres.sh",
     "backup:verify": "sh scripts/verify-postgres-restore.sh",
     "format:check": "prettier --check .",
