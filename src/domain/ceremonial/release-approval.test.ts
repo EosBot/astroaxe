@@ -37,18 +37,18 @@ describe("aprovações de release", () => {
     expect(resultado.missing).toEqual([]);
   });
 
-  it("mantém a prontidão de release bloqueada pelos controles que não existem", () => {
+  it("libera a prontidão de release quando os cinco controles existem", () => {
     const resultado = evaluateReleaseApprovals({
       approvals: declaredReleaseApprovals,
       required: RELEASE_REQUIRED_APPROVALS,
       on: HOJE,
     });
 
-    // Aprovar controle inexistente é aprovação vazia. Retenção de backup,
-    // tombstones e verificação de idade não estão no código, então não foram
-    // aprovados — e a prontidão continua bloqueada por eles.
-    expect(resultado.status).toBe("blocked");
-    expect([...resultado.missing].sort()).toEqual(["backup_retention", "deletion_tombstones"]);
+    // Cada aprovação foi emitida depois que o controle passou a existir. Com os
+    // cinco no código, a prontidão de release deixa de estar bloqueada por
+    // aprovação — o que resta é o checkpoint em ambiente real.
+    expect(resultado.status).toBe("cleared");
+    expect(resultado.missing).toEqual([]);
   });
 
   it("registra a base legal declarada junto com a ressalva do momento", () => {

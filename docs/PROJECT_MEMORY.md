@@ -1,5 +1,36 @@
 # Memória canônica do projeto
 
+## Atualização 2026-09-02 — retenção, tombstones e as cinco aprovações emitidas
+
+- **Retenção de backup.** `backup-postgres.sh` remove backups além de 30 dias com
+  o checksum junto. O filtro é estreito de propósito — só os arquivos que o script
+  nomeia, no diretório informado. Uma varredura ampla apagaria o que não devia num
+  diretório apontado por engano.
+- **Registro de exclusão.** Guarda **que** algo foi apagado e nunca **o que** era:
+  tombstone com conteúdo seria guardar o dado que a pessoa pediu para remover, num
+  lugar que a exclusão não alcança. A janela de 37 dias é **derivada**, não
+  recebida — deixá-la a cargo do chamador permitiria gravar tombstone que expira
+  antes do backup correspondente, e aí uma restauração ressuscitaria o registro sem
+  que nada apontasse.
+- A exclusão de plano grava o tombstone **na mesma transação**. Apagar sem
+  registrar deixaria a restauração ressuscitar; registrar sem apagar guardaria
+  marca de exclusão que não houve. As sessões em cascata ganham marca própria,
+  porque a restauração traz linhas e não o plano como unidade.
+- A tabela **não tem cascata** com plano ou sessão, deliberadamente: o tombstone
+  precisa sobreviver ao registro que descreve, e uma chave estrangeira em cascata
+  apagaria a prova junto com o dado.
+- **As cinco aprovações da task 39 estão emitidas.** Cada uma saiu **depois** que o
+  controle correspondente passou a existir — foi por isso que três ficaram de fora
+  até o código chegar. Aprovar controle inexistente é aprovação vazia, e o registro
+  guarda essa cronologia.
+- **O que ainda bloqueia a prontidão de release não é mais aprovação**: é o
+  checkpoint em ambiente real — migration em staging isolado, ensaio de restauração,
+  Sonar e cópia externa criptografada. Nenhum deles é escrevível daqui.
+- As migrations `20260902010000` e `20260902020000` **não foram aplicadas**.
+  Aplicar é decisão de quem opera o banco.
+- Checkpoint: **688 testes passando** e 5 ignorados; typecheck, lint, formatação,
+  build de produção e gate de vazamento limpos.
+
 ## Atualização 2026-09-02 — portão de idade: atestação, porque verificação não tem via gratuita
 
 - O responsável condicionou implementar à existência de forma 100% gratuita. A

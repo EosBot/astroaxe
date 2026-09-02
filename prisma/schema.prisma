@@ -594,3 +594,23 @@ model CeremonialSession {
   @@index([planId, occurredAt])
   @@map("ceremonial_sessions")
 }
+
+/// Registro de exclusão, append-only.
+///
+/// Guarda que algo foi apagado e nunca o que era: um tombstone com conteúdo
+/// seria guardar o dado que a pessoa pediu para remover, num lugar que a
+/// exclusão não alcança. Sobrevive ao registro apagado de propósito, e por isso
+/// não tem relação em cascata com ele.
+model DeletionTombstone {
+  id         String   @id @default(uuid()) @db.Uuid
+  recordKind String   @map("record_kind") @db.VarChar(40)
+  recordId   String   @map("record_id") @db.Uuid
+  userId     String   @map("user_id") @db.Uuid
+  deletedAt  DateTime @default(now()) @map("deleted_at") @db.Timestamptz(6)
+  expiresAt  DateTime @map("expires_at") @db.Timestamptz(6)
+
+  @@unique([recordKind, recordId])
+  @@index([expiresAt])
+  @@index([userId, deletedAt])
+  @@map("deletion_tombstones")
+}

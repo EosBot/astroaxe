@@ -7,10 +7,10 @@ import { releaseApprovalSchema, type ReleaseApproval } from "./release-approval"
  * teve. Papel, e nunca nome: o projeto não inventa nomes, cargos religiosos nem
  * credenciais individuais, e um registro de aprovação não é o lugar para começar.
  *
- * As duas aprovações que a task 39 ainda exige — retenção de backup e tombstones
- * de exclusão — **não estão aqui, de propósito**. Os controles que elas cobririam
- * não existem no código, e aprovar controle inexistente é aprovação vazia. A
- * prontidão de release fica bloqueada por elas, e é assim que deve ficar.
+ * As cinco aprovações que a task 39 exige estão declaradas. Cada uma foi emitida
+ * **depois** que o controle correspondente passou a existir: aprovar controle
+ * inexistente é aprovação vazia, e foi por isso que três delas ficaram de fora até
+ * o código chegar.
  */
 export const declaredReleaseApprovals: readonly ReleaseApproval[] = [
   {
@@ -50,5 +50,31 @@ export const declaredReleaseApprovals: readonly ReleaseApproval[] = [
     legalBasis: null,
     caveat:
       "Ressalva registrada no momento da decisão: isto é atestação, não verificação. Não existe caminho gratuito para verificar idade — documento, estimativa facial e gov.br por convênio custam por consulta —, e o responsável optou pela declaração registrada em vez de nenhum controle. O que ela faz é criar registro e deslocar responsabilidade; o que ela não faz é provar. Adotar verificação real é emitir uma aprovação nova deste mesmo tipo.",
+  },
+  {
+    id: "approval:backup-retention-2026-09-02",
+    type: "backup_retention",
+    scope:
+      "Reter cópias de segurança do PostgreSQL por 30 dias, com remoção automática das expiradas e do respectivo checksum. Cobre a janela e a remoção; não cobre cópia externa criptografada nem ensaio de restauração em infraestrutura hospedada.",
+    reviewerRole: "product_owner",
+    declaredOn: "2026-09-02",
+    expiresOn: null,
+    revokedOn: null,
+    legalBasis: null,
+    caveat:
+      "Ressalva registrada no momento da decisão: a retenção é executada pelo script de backup local. Não existe cópia externa criptografada nem ensaio de restauração em infraestrutura hospedada, e ambos continuam pendentes de ambiente de destino.",
+  },
+  {
+    id: "approval:deletion-tombstones-2026-09-02",
+    type: "deletion_tombstones",
+    scope:
+      "Registrar exclusão de planos e sessões cerimoniais num registro append-only retido por 37 dias, e conferir toda restauração contra ele antes de liberar o app. O registro guarda que algo foi apagado e nunca o que era.",
+    reviewerRole: "product_owner",
+    declaredOn: "2026-09-02",
+    expiresOn: null,
+    revokedOn: null,
+    legalBasis: null,
+    caveat:
+      "Ressalva registrada no momento da decisão: a conferência de restauração existe como função pura e testada, e ainda não está ligada a um procedimento de restauração real — que depende de ambiente de destino.",
   },
 ].map((approval) => releaseApprovalSchema.parse(approval));

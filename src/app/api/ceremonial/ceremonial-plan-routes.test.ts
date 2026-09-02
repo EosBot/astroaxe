@@ -14,6 +14,9 @@ const mocks = vi.hoisted(() => ({
   planFindFirst: vi.fn(),
   planDeleteMany: vi.fn(),
   userFindUnique: vi.fn(),
+  transaction: vi.fn(),
+  sessionFindMany: vi.fn(),
+  tombstoneCreateMany: vi.fn(),
   keyring: { value: "" as string | undefined },
 }));
 
@@ -59,6 +62,18 @@ describe("rotas de plano cerimonial", () => {
     mocks.resolveAccount.mockResolvedValue({ id: OWNER });
     mocks.planFindMany.mockResolvedValue([]);
     mocks.planDeleteMany.mockResolvedValue({ count: 1 });
+    mocks.sessionFindMany.mockResolvedValue([]);
+    mocks.tombstoneCreateMany.mockResolvedValue({ count: 1 });
+    // A exclusão roda em transação: apagar e sepultar precisam acontecer juntos.
+    mocks.transaction.mockImplementation((fn: (tx: unknown) => unknown) =>
+      Promise.resolve(
+        fn({
+          ceremonialPlan: { deleteMany: mocks.planDeleteMany },
+          ceremonialSession: { findMany: mocks.sessionFindMany },
+          deletionTombstone: { createMany: mocks.tombstoneCreateMany },
+        }),
+      ),
+    );
     // Titular adulto declarado: o portão da task 39 é atestação, e sem ela as
     // rotas respondem 403.
     mocks.userFindUnique.mockResolvedValue({
@@ -68,6 +83,9 @@ describe("rotas de plano cerimonial", () => {
     });
     mocks.getPrisma.mockReturnValue({
       user: { findUnique: mocks.userFindUnique },
+      $transaction: mocks.transaction,
+      ceremonialSession: { findMany: mocks.sessionFindMany },
+      deletionTombstone: { createMany: mocks.tombstoneCreateMany },
       ceremonialPlan: {
         create: mocks.planCreate,
         findMany: mocks.planFindMany,
@@ -201,5 +219,26 @@ describe("rotas de plano cerimonial", () => {
 
     // Declaração é o que se exige; provar não é possível sem serviço pago.
     expect(mocks.planCreate).not.toHaveBeenCalled();
+  });
+
+  it("sepulta o que apagou, na mesma transação", async () => {
+    mocks.sessionFindMany.mockResolvedValue([{ id: "66666666-6666-4666-8666-666666666666" }]);
+
+    await DELETE(
+      new NextRequest("http://localhost/api/ceremonial/plans/" + PLAN_ID, { method: "DELETE" }),
+      { params: Promise.resolve({ planId: PLAN_ID }) },
+    );
+
+    // Apagar sem registrar deixaria uma restauração ressuscitar o plano sem que
+    // nada apontasse o erro. As sessões em cascata ganham marca própria.
+    const gravados = mocks.tombstoneCreateMany.mock.calls[0]?.[0] as {
+      data: { recordKind: string; recordId: string }[];
+    };
+    expect(gravados.data.map(({ recordKind }) => recordKind).sort()).toEqual([
+      "ceremonial_plan",
+      "ceremonial_session",
+    ]);
+    // O tombstone guarda identificador e nada do conteúdo apagado.
+    expect(JSON.stringify(gravados.data)).not.toContain("Heptameron");
   });
 });

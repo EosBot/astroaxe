@@ -1,7 +1,10 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
 
+import { randomUUID } from "node:crypto";
+
 import { evaluateAdultAccess } from "@/domain/ceremonial/adult-access";
+import { buildDeletionTombstone } from "@/domain/ceremonial/deletion-ledger";
 import {
   evaluateReleaseApprovals,
   PLANNER_REQUIRED_APPROVALS,
@@ -56,8 +59,52 @@ export async function DELETE(
   const guard = await authorize(request, context, { requireSameOrigin: true });
   if (guard instanceof Response) return guard;
 
-  const { count } = await getPrisma().ceremonialPlan.deleteMany({
-    where: { id: guard.planId, userId: guard.userId },
+  // Exclusão e tombstone na mesma transação. Apagar sem registrar deixaria uma
+  // restauração ressuscitar o plano sem que nada apontasse o erro; registrar sem
+  // apagar guardaria marca de exclusão que não houve.
+  const { count } = await getPrisma().$transaction(async (tx) => {
+    const removidas = await tx.ceremonialSession.findMany({
+      where: { planId: guard.planId, plan: { userId: guard.userId } },
+      select: { id: true },
+    });
+    const resultado = await tx.ceremonialPlan.deleteMany({
+      where: { id: guard.planId, userId: guard.userId },
+    });
+    if (resultado.count === 0) return resultado;
+
+    const agora = new Date();
+    const tombstones = [
+      buildDeletionTombstone({
+        id: randomUUID(),
+        recordKind: "ceremonial_plan",
+        recordId: guard.planId,
+        userId: guard.userId,
+        deletedAt: agora,
+      }),
+      // As sessões caem em cascata, e cada uma precisa da própria marca: a
+      // restauração traz linhas, e não o plano como unidade.
+      ...removidas.map((sessao) =>
+        buildDeletionTombstone({
+          id: randomUUID(),
+          recordKind: "ceremonial_session",
+          recordId: sessao.id,
+          userId: guard.userId,
+          deletedAt: agora,
+        }),
+      ),
+    ];
+    await tx.deletionTombstone.createMany({
+      data: tombstones.map((tombstone) => ({
+        id: tombstone.id,
+        recordKind: tombstone.recordKind,
+        recordId: tombstone.recordId,
+        userId: tombstone.userId,
+        deletedAt: new Date(tombstone.deletedAt),
+        expiresAt: new Date(tombstone.expiresAt),
+      })),
+      skipDuplicates: true,
+    });
+    return resultado;
   });
   // Idempotente: apagar de novo devolve o mesmo 204. Um 404 na segunda chamada
   // faria um cliente que repetiu a requisição pensar que falhou.
