@@ -199,46 +199,55 @@ function BiorhythmChart({
   );
 }
 
+/**
+ * O que cada ciclo diz, na fase em que está.
+ *
+ * Escrito para quem chegou aqui com uma pergunta, e não com vocabulário técnico.
+ * Cada leitura abre com uma imagem, diz o que está acontecendo e termina com algo
+ * que cabe num dia comum — sem prometer resultado e sem transformar um gráfico em
+ * destino.
+ */
 function cycleMeaning(id: string, phase: "alta" | "transição" | "baixa"): string {
   const meanings = {
     physical: {
-      alta: "A vitalidade tende a buscar movimento, iniciativa e presença corporal. É uma fase favorável para agir, respeitando os limites reais do corpo.",
+      alta: "O corpo está com a maré cheia. Há disposição de sobra, e ela costuma pedir uso — movimento, iniciativa, presença. Este é um bom momento para começar o que exige fôlego, desde que você lembre que maré alta também baixa. Aproveitar não é forçar: é ir junto com a corrente enquanto ela está a favor.",
       transição:
-        "O impulso físico muda de direção. Observe sono, tensão e disposição antes de exigir desempenho constante.",
+        "O corpo está virando de lado, como quem troca de posição no sono. Sono irregular, tensão que aparece do nada, disposição que oscila no mesmo dia — nada disso é sinal de que algo deu errado. É a virada acontecendo. Repare no que o corpo pede antes de cobrar dele um desempenho constante.",
       baixa:
-        "A energia corporal pede conservação e recuperação. Simplificar o ritmo pode devolver consistência para o próximo ciclo.",
+        "A maré baixou, e o que fica exposto é o que estava submerso: cansaço acumulado, necessidade de silêncio, vontade de fazer menos. Baixa não é fraqueza — é a parte do ciclo em que o corpo repõe o que gastou. Simplificar agora costuma devolver consistência quando a maré subir de novo.",
     },
     emotional: {
-      alta: "Afetos e percepções ficam mais disponíveis para troca, criação e proximidade. Expresse o que sente sem transformar intensidade em certeza absoluta.",
+      alta: "O coração está aberto e alcança longe. Afeto, criação e proximidade ficam mais fáceis, e o que você sente encontra caminho para fora com menos esforço. Aproveite para dizer o que costuma ficar preso. Só cuidado com uma coisa: sentir muito não é o mesmo que ter certeza. A intensidade convence, e nem sempre acerta.",
       transição:
-        "A sensibilidade atravessa uma virada. Dê nome às emoções antes de reagir e permita que o humor encontre um novo equilíbrio.",
+        "A sensibilidade está atravessando uma virada, e viradas confundem. O humor muda sem motivo aparente, e algo que ontem não incomodava hoje pesa. Dar nome à emoção antes de reagir é quase tudo o que se pode fazer — e é bastante. O equilíbrio novo chega, mas chega no tempo dele.",
       baixa:
-        "O mundo emocional tende ao recolhimento e à elaboração. Procure intimidade segura, descanso sensorial e conversas sem cobrança.",
+        "O mundo emocional se recolheu para dentro, e isso tem função: é onde o que foi vivido vira compreensão. Você pode se sentir menos disponível, e está tudo certo. Procure intimidade que não cobre, descanso dos estímulos, conversa sem urgência. Não é hora de resolver relações — é hora de sentir com calma o que elas andam sendo.",
     },
     intellectual: {
-      alta: "A mente tende a organizar, associar e comunicar com mais fluidez. Aproveite para estudar, planejar e tornar ideias compreensíveis.",
+      alta: "A mente está afiada e conecta o que antes parecia solto. Estudar rende, planejar rende, explicar para alguém rende ainda mais. Este é o momento de colocar no papel aquela ideia que você vem carregando de cabeça — enquanto ela está clara, e antes que a clareza vire outra coisa.",
       transição:
-        "O foco muda de frequência. Revise decisões importantes, reduza a pressa e dê espaço para uma compreensão amadurecer.",
+        "O pensamento mudou de frequência e ainda não sintonizou. Decisões importantes ganham se esperarem um ou dois dias; o que hoje parece óbvio pode não parecer amanhã, e o contrário também. Reduza a pressa e deixe a compreensão amadurecer sozinha, que ela amadurece.",
       baixa:
-        "A atividade mental pede integração, não excesso de estímulo. Tarefas simples, pausas e revisão podem render mais que insistência.",
+        "A mente pede integração, e não mais entrada. Cada estímulo novo agora custa mais do que rende. Tarefas simples, pausas de verdade e revisão do que já existe costumam produzir mais do que insistir em algo grande. Baixa intelectual não é burrice: é a fase em que o que você aprendeu se acomoda.",
     },
   } as const;
   if (id === "physical" || id === "emotional" || id === "intellectual") return meanings[id][phase];
-  return "Este ciclo atravessa uma fase que pede observação consciente.";
+  return "Este ciclo atravessa uma fase que pede observação tranquila, sem pressa de concluir.";
 }
 
 function secondaryMeaning(id: string, phase: "alta" | "transição" | "baixa"): string {
   const areas: Readonly<Record<string, string>> = {
-    mastery: "coordenação entre ação e estratégia",
-    passion: "integração entre vitalidade e sentimento",
-    wisdom: "diálogo entre sensibilidade e compreensão",
+    mastery: "a conversa entre o que você quer fazer e o que você consegue sustentar",
+    passion: "o encontro entre o corpo disposto e o coração aberto",
+    wisdom: "o diálogo entre o que você sente e o que você entende",
   };
   const movements = {
-    alta: "está disponível e pode ser expressa com naturalidade",
-    baixa: "pede recolhimento, revisão e menos cobrança",
-    transição: "atravessa uma virada; decisões ganham clareza quando não são apressadas",
+    alta: "está fluindo, e pode ser usada sem que você precise forçar nada",
+    baixa: "pede recolhimento e menos cobrança — vai voltar, sempre volta",
+    transição:
+      "está mudando de lugar. Decisões tomadas com pressa aqui costumam ser refeitas depois",
   } as const;
   const area = areas[id] ?? areas.wisdom;
   const movement = movements[phase];
-  return `A ${area} ${movement}.`;
+  return `Neste ciclo, ${area} ${movement}.`;
 }

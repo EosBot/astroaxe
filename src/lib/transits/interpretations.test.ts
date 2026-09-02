@@ -44,12 +44,42 @@ describe("transit interpretation selection", () => {
     ).resolves.toEqual([
       expect.objectContaining({
         content: expect.objectContaining({
-          version: "built-in-transits-2.0.2",
+          version: "built-in-transits-3.0.0",
           technicalWhy:
             "Saturno em trânsito forma uma quadratura com Sol natal. O orbe é de 1.00°, e o aspecto está a 80% do pico geométrico.",
         }),
       }),
     ]);
+  });
+
+  it("entrega leitura com corpo, e não um parágrafo solto", async () => {
+    const findFirst = vi.fn().mockResolvedValue(null);
+    const [leitura] = await selectPublishedTransitInterpretations(
+      { transitInterpretationTemplate: { findFirst } } as unknown as PrismaClient,
+      snapshot(),
+      "pt-BR",
+      new Date(),
+    );
+
+    // Um parágrafo solto devolve ao leitor o trabalho que era nosso: dizer o que
+    // aquilo significa na vida dele.
+    expect(leitura?.content.deepening.split("\n\n").length).toBeGreaterThanOrEqual(5);
+    expect(leitura?.content.deepening.length).toBeGreaterThan(900);
+    expect(leitura?.content.opening.length).toBeGreaterThan(200);
+  });
+
+  it("fecha a leitura devolvendo autoridade a quem lê", async () => {
+    const findFirst = vi.fn().mockResolvedValue(null);
+    const [leitura] = await selectPublishedTransitInterpretations(
+      { transitInterpretationTemplate: { findFirst } } as unknown as PrismaClient,
+      snapshot(),
+      "pt-BR",
+      new Date(),
+    );
+
+    // O produto não emite veredito sobre a vida de ninguém, e diz isso.
+    expect(leitura?.content.deepening).toContain("não um veredito sobre você");
+    expect(leitura?.content.deepening).toContain("Quem conhece a própria vida é você");
   });
 });
 

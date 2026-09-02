@@ -28,7 +28,7 @@ describe("account product modules", () => {
       target: { value: "2000-01-24" },
     });
     expect(screen.getByLabelText("Físico: 0 por cento")).toBeTruthy();
-    expect(screen.getByText(/O impulso físico muda de direção/)).toBeTruthy();
+    expect(screen.getByText(/O corpo está virando de lado/)).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Como ler este movimento" })).toBeTruthy();
     expect(screen.getByText(/sem comprovação científica/)).toBeTruthy();
   });
