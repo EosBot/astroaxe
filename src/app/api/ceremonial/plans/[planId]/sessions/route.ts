@@ -4,6 +4,11 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 import { ceremonialSessionInputSchema } from "@/lib/ceremonial/plan-contracts";
+import {
+  evaluateReleaseApprovals,
+  PLANNER_REQUIRED_APPROVALS,
+} from "@/domain/ceremonial/release-approval";
+import { declaredReleaseApprovals } from "@/domain/ceremonial/release-approval-data";
 import { loadRecordKeyring, openSession, sealSession } from "@/lib/ceremonial/plan-store";
 import { parseServerEnv } from "@/lib/env";
 import { getPrisma } from "@/lib/prisma";
@@ -110,6 +115,20 @@ async function authorize(
 
   const params = paramsSchema.safeParse(await context.params);
   if (!params.success) return apiJson({ error: "Plano inválido." }, { status: 400 });
+
+  // A aprovação de tratamento é condição de funcionamento, e não formalidade:
+  // ausente, revogada ou vencida, o recurso não opera. É o que a task 39 pede ao
+  // dizer que aprovação faltante bloqueia ativação.
+  const approvals = evaluateReleaseApprovals({
+    approvals: declaredReleaseApprovals,
+    required: PLANNER_REQUIRED_APPROVALS,
+    on: new Date().toISOString().slice(0, 10),
+  });
+  if (approvals.status === "blocked")
+    return apiJson(
+      { error: "Os registros privados não estão liberados para uso." },
+      { status: 503 },
+    );
 
   const keyring = loadRecordKeyring(env.CEREMONIAL_RECORD_KEYRING);
   if (keyring === null)

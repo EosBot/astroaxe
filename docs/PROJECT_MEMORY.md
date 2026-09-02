@@ -1,5 +1,37 @@
 # Memória canônica do projeto
 
+## Atualização 2026-09-01 — aprovações de release: duas emitidas, três recusadas por vazias
+
+- O responsável pediu a lista das aprovações que a task 39 exige, para emiti-las.
+  Levantar a lista mudou a resposta: **a maior parte não era aprovável**, porque o
+  que seria aprovado não existe.
+- **Emitidas.** Governança de dado sensível — guardar planos e sessões cifrados —
+  e base legal, declarada como **consentimento colhido no cadastro**.
+- **A ressalva vive dentro do registro.** A LGPD trata convicção religiosa como
+  dado sensível (art. 11) e para essa categoria o consentimento em regra precisa
+  ser específico e destacado, não o aceite geral do cadastro. O responsável foi
+  informado e escolheu o consentimento de cadastro. A escolha é dele; o registro
+  guarda a ressalva para que revisá-la seja emitir uma versão nova, e não refazer
+  a arqueologia da decisão.
+- **Não emitidas, de propósito:** retenção de backup, tombstones de exclusão e
+  verificação de idade adulta. Busca precisa no código retorna **zero ocorrências**
+  de `tombstone` e nenhum portão de idade; `backup-postgres.sh` não tem retenção
+  configurada. Aprovar controle inexistente é aprovação vazia, e a prontidão de
+  release continua bloqueada pelos três.
+- **Lacuna encontrada ao responder:** nenhuma task do roteiro constrói a
+  verificação de idade adulta, embora a task 39 a pressuponha resolvida. Está
+  registrada como lacuna em vez de descoberta no dia do release.
+- **Item riscado da task 39:** "revisão de direitos e aprovação do bundle exato"
+  não é aprovável porque não existe bundle desde 26 de agosto e as colunas de
+  direitos saíram na migration `20260826140000`. Sobreviveu à reescrita da Wave 6
+  porque reenquadrei a Wave 7 apenas parcialmente — corrigido agora.
+- O mecanismo é o que a task pedia: valida forma — tipo, escopo, papel, data,
+  expiração, revogação — e **não finge validar correção jurídica**. Ausência,
+  revogação e vencimento bloqueiam com o mesmo peso, porque tratar "venceu" como
+  menos grave que "nunca houve" transformaria prazo em sugestão. As rotas conferem
+  a cada requisição, então a aprovação bloqueia ativação de fato.
+- Checkpoint: **671 testes passando**; typecheck, lint e formatação limpos.
+
 ## Atualização 2026-09-01 — Wave 6 concluída e o executável da Wave 7 entregue
 
 - **Wave 6 fechada (T28–T33).** O grafo de funções entrou em `/metodologia`, a
