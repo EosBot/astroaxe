@@ -63,7 +63,7 @@ export function OrisaResultView({
               </ol>
               {roleResult.selectedId === null ? (
                 <p className="orisa-unresolved">
-                  Resultado não fechado: {explainReason(roleResult.unresolvedReason)}
+                  Este papel fica em aberto: {explainReason(roleResult.unresolvedReason)}
                 </p>
               ) : null}
             </article>

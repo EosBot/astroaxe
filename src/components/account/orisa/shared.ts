@@ -20,9 +20,10 @@ export const stabilityLabels = {
 
 export function explainReason(reason: string | undefined): string {
   if (reason === "tradition_confirmation_required")
-    return "há um empate que pede confirmação no contexto tradicional";
-  if (reason === "insufficient_evidence_breadth") return "faltam fontes independentes suficientes";
+    return "dois nomes chegaram aqui com a mesma força, e desempatar não cabe a um cálculo. Esse tipo de confirmação acontece no contexto religioso, com quem tem autoridade para dizê-lo — nunca numa tela.";
+  if (reason === "insufficient_evidence_breadth")
+    return "o que sustenta este papel ainda vem de poucos caminhos independentes. Preferimos deixar em aberto a fechar em cima de eco: uma resposta bonita e mal apoiada seria pior que o silêncio.";
   if (reason === "distinct_candidate_unavailable")
-    return "não há candidato distinto para este papel";
-  return "a convergência ainda é insuficiente";
+    return "os nomes que apareceriam aqui já ocupam outro papel no seu mapa. Repeti-los daria aparência de resposta sem acrescentar nada — e este papel merece um lugar próprio, ou nenhum.";
+  return "os sinais deste papel ainda não se encontram num nome só. O mapa não fica menos seu por isso; fica apenas honesto sobre onde ainda não enxerga.";
 }
