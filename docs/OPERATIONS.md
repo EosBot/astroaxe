@@ -1361,6 +1361,41 @@ Não exporte corpo de requisição, query string, cabeçalhos, cookies ou identi
 Antes de ligar um coletor externo, documente fornecedor, retenção, região, acesso, base legal e
 revogação. A ausência desse contrato impede observabilidade externa, mas não o diagnóstico local.
 
+### SLOs iniciais de beta
+
+Declarados em 2 de setembro de 2026 como **alvo de beta**, e não como promessa
+contratual. São ponto de partida para haver o que medir; revisá-los é registrar a
+mudança, e não editá-los em silêncio.
+
+| Indicador                          | Alvo          |
+| ---------------------------------- | ------------- |
+| Disponibilidade das rotas públicas | 99,5% ao mês  |
+| Latência p95 das APIs              | abaixo de 2 s |
+| Taxa de 5xx                        | abaixo de 1%  |
+
+A latência exclui a ingestão do acervo, que é trabalho em lote e não caminho de
+requisição. As três medidas vêm das métricas do Traefik; **não há instrumentação
+no aplicativo**, e é honesto dizer isso em vez de sugerir observabilidade mais
+profunda do que existe.
+
+### Destino dos alertas
+
+`infra/prometheus/alertmanager.yml` configura um receptor **neutro de fornecedor**:
+o destino é um webhook definido por `ASTROAXE_ALERT_WEBHOOK_URL`. Trocar de
+provedor é trocar a variável, e não reescrever a observabilidade.
+
+O que trafega é **categoria** — nome do alerta, serviço e severidade. Nenhum rótulo
+carrega identificador de usuário, coordenada, data de nascimento, texto de diário
+ou nota de prática: alerta é sinal operacional, e um alerta com dado pessoal
+vazaria por um canal que ninguém trata como banco.
+
+Uma regra de inibição impede que um backend fora do ar dispare também os alertas
+de erro e latência que ele mesmo causa.
+
+**Continua pendente do responsável:** escolher o fornecedor, os destinatários, a
+retenção e o procedimento de revogação. Sem isso o Alertmanager sobe e entrega no
+laço local — falha visível é melhor que entrega silenciosa para o destino errado.
+
 ### Prometheus local em containers
 
 A sobreposição `compose.observability.yml` adiciona Prometheus `3.13.1` LTS e mantém sua coleta em

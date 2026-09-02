@@ -607,7 +607,7 @@ era a contradição existente até esta consolidação.
 | 4 — Domínio cerimonial determinista | 17-21 | **Concluída** (T17–T21)                       |
 | 5 — Condensação das tradições       | 22-27 | **Concluída** (T22–T27)                       |
 | 6 — Publicar o domínio como obra    | 28-33 | **Concluída** (T28–T33)                       |
-| 7 — Operação e release              | 34-39 | T34, T37 e T38 feitas; 35, 36 e 39 bloqueadas |
+| 7 — Operação e release              | 34-39 | 34-38 feitas; **39 depende de ambiente real** |
 
 #### Wave 3 — Ingestão do corpus (task 16, reescrita em 31 de agosto de 2026)
 
@@ -812,8 +812,7 @@ era a contradição existente até esta consolidação.
   - **QA failure:** wrong key or changed archive produces explicit degraded state, not data loss (`.../T35/restore-mismatch.txt`).
   - **Commit:** `ops(ceremonial): add private-data restore procedure`.
 
-- [ ] 36. Add privacy-safe observability and SLOs
-  - **REENQUADRADA.** "Both modes" não existe mais; é um runtime só
+- [x] **36. Observabilidade e SLOs sem dado pessoal — FEITA em 2 de setembro de 2026, no que não depende de fornecedor.** SLOs iniciais de beta declarados em `docs/OPERATIONS.md` — 99,5% de disponibilidade mensal nas rotas públicas, p95 abaixo de 2 s excluindo ingestão, e menos de 1% de 5xx — com a ressalva honesta de que vêm das métricas do Traefik e **não há instrumentação no aplicativo**. `infra/prometheus/alertmanager.yml` é receptor **neutro de fornecedor**: o destino é webhook por variável, e trocar de provedor é trocar a variável. O que trafega é categoria — nome, serviço e severidade —, sem identificador de usuário, coordenada, data de nascimento ou texto de prática. Regra de inibição impede que um backend fora do ar dispare também os alertas que ele mesmo causa. A redação do Pino ganhou teste cobrindo intenção, notas, observação e desfecho: uma linha de log com qualquer um deles anularia a cifragem do banco. **Continua pendente do responsável:** fornecedor, destinatários, retenção e revogação.
   - **Implement:** instrument counts/durations/status categories only for ingest, policy denies, extraction failures, timing and APIs; update Pino redaction tests for archive paths, source text, ritual notes and encrypted envelopes. Define initial beta SLOs (99.5% monthly availability for public routes, p95 API <2s excluding ingestion, <1% 5xx) and provider-neutral Alertmanager webhook configuration.
   - **References:** `docs/OPERATIONS.md`; `compose.quality.yml`; `compose.yml:111-146`; central logger/redaction tests; `docs/IMPLEMENTATION_STATUS.md:264-269`.
   - **Acceptance:** no sensitive label/high-cardinality IDs; alert payloads contain service/route category only; local ingestion alerts remain local unless explicitly configured.

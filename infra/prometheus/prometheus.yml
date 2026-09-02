@@ -13,3 +13,10 @@ scrape_configs:
     metrics_path: /metrics
     static_configs:
       - targets: ["traefik:8082"]
+
+# Destino dos alertas. O Alertmanager é interno à rede de observabilidade; quem
+# decide o provedor externo é o responsável, trocando a variável do webhook.
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]

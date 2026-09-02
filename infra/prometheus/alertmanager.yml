@@ -1,0 +1,48 @@
+# Alertmanager neutro de fornecedor.
+#
+# O destino é um webhook parametrizado, e não um provedor específico. A escolha do
+# fornecedor, os destinatários, a retenção e a revogação continuam sendo decisão do
+# responsável — este arquivo existe para que a decisão seja trocar uma variável, e
+# não reescrever a observabilidade.
+#
+# O que sai daqui é **categoria**, nunca conteúdo. Nenhum rótulo carrega
+# identificador de usuário, coordenada, data de nascimento, texto de diário ou nota
+# de prática: alerta é sinal operacional, e um alerta com dado pessoal vazaria por
+# um canal que ninguém trata como banco.
+
+global:
+  resolve_timeout: 5m
+
+route:
+  # Agrupar por serviço e categoria mantém o alerta legível sem precisar de
+  # identificador de requisição, que é justamente o que não pode sair.
+  group_by: ["alertname", "service", "severity"]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  receiver: default-webhook
+
+  routes:
+    - matchers:
+        - severity = "critical"
+      receiver: default-webhook
+      repeat_interval: 1h
+
+receivers:
+  - name: default-webhook
+    webhook_configs:
+      # Definido por ASTROAXE_ALERT_WEBHOOK_URL na composição. Sem a variável, o
+      # Alertmanager sobe e entrega no laço local — falha visível é melhor que
+      # entrega silenciosa para um destino errado.
+      - url: "${ASTROAXE_ALERT_WEBHOOK_URL:-http://127.0.0.1:9099/alerts}"
+        send_resolved: true
+        max_alerts: 20
+
+inhibit_rules:
+  # Um backend fora do ar produz erro e latência em cascata. Sem esta inibição, a
+  # primeira página de plantão chegaria com três alertas dizendo a mesma coisa.
+  - source_matchers:
+      - alertname = "AstroAxeBackendDown"
+    target_matchers:
+      - alertname =~ "AstroAxeHttp.*"
+    equal: ["service"]

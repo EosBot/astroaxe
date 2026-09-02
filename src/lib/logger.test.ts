@@ -101,4 +101,33 @@ describe("createLogger", () => {
     expect(serialized).not.toContain("synthetic-keyring.json");
     expect(serialized).not.toContain("acervo privado");
   });
+
+  it("redige intenção, notas, observação e desfecho dos registros de prática", () => {
+    const { destination, records } = capturingDestination();
+    const subject = createLogger(destination);
+
+    subject.info({
+      intention: "intenção sintética de prática",
+      notes: "notas sintéticas da sessão",
+      observation: "observação sintética",
+      outcome: "desfecho sintético",
+      plan: {
+        intention: "intenção sintética de prática",
+        notes: "notas sintéticas da sessão",
+      },
+      operation: "ceremonial-plan",
+    });
+
+    // São tão sensíveis quanto o diário e podem revelar convicção religiosa.
+    // Uma linha de log com qualquer um deles anula a cifragem do banco.
+    expect(records[0]).toMatchObject({
+      intention: "[REDACTED]",
+      notes: "[REDACTED]",
+      observation: "[REDACTED]",
+      outcome: "[REDACTED]",
+      plan: { intention: "[REDACTED]", notes: "[REDACTED]" },
+      operation: "ceremonial-plan",
+    });
+    expect(JSON.stringify(records[0])).not.toContain("sintética");
+  });
 });

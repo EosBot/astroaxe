@@ -31,7 +31,27 @@ services:
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
 
+  # Alertmanager neutro de fornecedor: o destino é um webhook parametrizado, e
+  # trocar de provedor é trocar a variável. Sem rede pública por padrão.
+  alertmanager:
+    image: prom/alertmanager:v0.28.1
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    environment:
+      ASTROAXE_ALERT_WEBHOOK_URL: ${ASTROAXE_ALERT_WEBHOOK_URL:-http://127.0.0.1:9099/alerts}
+    volumes:
+      - ./infra/prometheus/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - alertmanager_data:/alertmanager
+    ports:
+      - "${ALERTMANAGER_BIND:-127.0.0.1}:${ALERTMANAGER_PORT:-9093}:9093"
+    security_opt: [no-new-privileges:true]
+    networks:
+      - observability
+
 volumes:
+  alertmanager_data:
   prometheus_data:
 
 networks:
