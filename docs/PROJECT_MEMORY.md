@@ -1,5 +1,23 @@
 # Memória canônica do projeto
 
+## Atualização 2026-09-02 — três asserções E2E defasadas, encontradas ao rodar tudo
+
+- Rodar a suíte E2E inteira contra servidor de produção real expôs **três
+  asserções defasadas em `methodology.spec.ts`**, nenhuma delas causada pelas
+  mudanças desta sequência.
+- A lista de etapas esperava "Interpretar"; o model card diz **"Extrair"** desde o
+  commit `8a36b24`, anterior a tudo que fiz. O texto de acurácia esperava uma
+  frase que a página não usa. E a versão do método passou a aparecer em dois
+  lugares, o que violava o modo estrito do Playwright.
+- **Passaram despercebidas porque E2E exige servidor de pé**, e a suíte não roda
+  nos portões rápidos. É uma classe de defeito que só aparece quando alguém
+  executa — a mesma lição que já se repetiu cinco vezes nesta sequência.
+- As quatro falhas restantes — `authenticated-mvp` e `cultural-archive` — dependem
+  de banco com dados publicados e login, e não são executáveis sem a stack. Não
+  foram tocadas nem mascaradas.
+- Estado E2E: **20 de 20 passando** entre as jornadas que não dependem de stack —
+  metodologia, superfícies cerimoniais e mandala natal, em desktop e mobile.
+
 ## Atualização 2026-09-02 — retenção, tombstones e as cinco aprovações emitidas
 
 - **Retenção de backup.** `backup-postgres.sh` remove backups além de 30 dias com
