@@ -5,10 +5,9 @@ import { calculateAnnualSkyCalendar } from "@/domain/astrology/annual-calendar";
 import { calculateLunarReturn, calculateSolarReturn } from "@/domain/astrology/returns";
 import { houseSystemSchema } from "@/domain/astrology/western/contracts";
 import { createMapResponseSchema } from "@/lib/maps/contracts";
-import { parseServerEnv } from "@/lib/env";
 import { getPrisma } from "@/lib/prisma";
 import { planetaryReturnResponseSchema } from "@/lib/returns/contracts";
-import { resolveAccount } from "@/lib/security/account";
+import { authorizeFeature } from "@/lib/access/guard";
 import { apiJson } from "@/lib/security/headers";
 
 const requestSchema = z.discriminatedUnion("kind", [
@@ -28,10 +27,11 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ profileId: string }> },
 ): Promise<Response> {
-  const env = parseServerEnv();
-  const account = await resolveAccount(request, env.AUTH_SESSION_SECRET);
-  if (account === null)
-    return apiJson({ error: "Entre para calcular seus retornos." }, { status: 401 });
+  // O nível de acesso decide, e não a mera presença de sessão: assim o dia
+  // do paywall muda o catálogo, e não esta rota.
+  const grant = await authorizeFeature(request, "returns", { requireSameOrigin: false });
+  if (grant instanceof Response) return grant;
+  const account = { id: grant.userId as string };
   const profileId = profileIdSchema.safeParse((await context.params).profileId);
   const query = requestSchema.safeParse({
     kind: request.nextUrl.searchParams.get("kind"),

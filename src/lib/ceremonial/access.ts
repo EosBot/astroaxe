@@ -8,6 +8,7 @@ import {
   PLANNER_REQUIRED_APPROVALS,
 } from "@/domain/ceremonial/release-approval";
 import { declaredReleaseApprovals } from "@/domain/ceremonial/release-approval-data";
+import { hasPaidPlan } from "@/lib/access/features";
 import { parseServerEnv } from "@/lib/env";
 import { getPrisma } from "@/lib/prisma";
 import { isSameOrigin, resolveAccount } from "@/lib/security/account";
@@ -28,22 +29,16 @@ import { apiJson } from "@/lib/security/headers";
  */
 
 /**
- * Direito de acesso ao que é pago.
+ * Direito de acesso ao que é pago, para as ferramentas cerimoniais.
  *
- * **Este é o ponto do paywall.** O AstroAxe é freemium e as ferramentas
- * cerimoniais são pagas, mas a cobrança ainda não existe: o produto está em
- * fase de teste, e nesta fase qualquer conta autenticada tem acesso.
- *
- * Quando a cobrança entrar, muda-se esta função e mais nada. Foi para isso que
- * ela existe separada, em vez de virar um `if` dentro do guarda: uma condicional
- * espalhada por quatro rotas vira quatro comportamentos diferentes no dia em que
- * a primeira assinatura vencer.
+ * O ponto do paywall mudou de lugar: agora é `hasPaidPlan`, em
+ * `src/lib/access/features.ts`, que vale para o produto inteiro. Esta função
+ * continua existindo porque as rotas cerimoniais a chamam pelo nome, e apontar
+ * as duas para a mesma verdade é o que impede o cerimonial de ter uma regra de
+ * assinatura própria — que era exatamente o risco.
  */
 export async function hasCeremonialEntitlement(userId: string): Promise<boolean> {
-  // Fase de teste: estar autenticado basta. A função já nasce assíncrona e
-  // recebendo o titular para que ligar a cobrança não obrigue a mexer em quem
-  // chama.
-  return await Promise.resolve(userId.length > 0);
+  return await hasPaidPlan(userId);
 }
 
 export interface CeremonialAccessGrant {

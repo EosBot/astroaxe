@@ -10,7 +10,7 @@ import { parseServerEnv } from "@/lib/env";
 import { lunarModuleResponseSchema } from "@/lib/lunar/contracts";
 import { createMapResponseSchema } from "@/lib/maps/contracts";
 import { getPrisma } from "@/lib/prisma";
-import { resolveAccount } from "@/lib/security/account";
+import { authorizeFeature } from "@/lib/access/guard";
 import { apiJson } from "@/lib/security/headers";
 
 const requestSchema = z.object({
@@ -27,9 +27,11 @@ export async function GET(
   context: { params: Promise<{ profileId: string }> },
 ): Promise<Response> {
   const env = parseServerEnv();
-  const account = await resolveAccount(request, env.AUTH_SESSION_SECRET);
-  if (account === null)
-    return apiJson({ error: "Entre para abrir sua área lunar." }, { status: 401 });
+  // O nível de acesso decide, e não a mera presença de sessão: assim o dia
+  // do paywall muda o catálogo, e não esta rota.
+  const grant = await authorizeFeature(request, "lunar", { requireSameOrigin: false });
+  if (grant instanceof Response) return grant;
+  const account = { id: grant.userId as string };
   const parsed = requestSchema.safeParse({
     profileId: (await context.params).profileId,
     instant: request.nextUrl.searchParams.get("instant"),
