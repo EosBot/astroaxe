@@ -40,7 +40,7 @@ describe("versioned editorial astrology reports", () => {
       context: "Na intimidade.",
     });
     expect(reading.title).toBe("Lua em Câncer");
-    expect(reading.dailyLife).toContain("Sem hora natal confiável");
+    expect(reading.dailyLife).toContain("sua hora de nascimento não está confirmada");
   });
 
   it("keeps all twelve house and sign lenses addressable", () => {

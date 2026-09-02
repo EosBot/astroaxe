@@ -70,7 +70,7 @@ describe("account product modules", () => {
     expect(screen.getByRole("heading", { name: "Lilith média" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Nodo Norte" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Nodo Sul" })).toBeTruthy();
-    expect(screen.getByText(/Quíron revela uma vulnerabilidade/)).toBeTruthy();
+    expect(screen.getByText(/Todo mundo carrega um ponto que não sara por esforço/)).toBeTruthy();
     expect(screen.getByText(/Sua força indomada se manifesta/)).toBeTruthy();
     expect(screen.getByText(/Seu caminho de crescimento se abre/)).toBeTruthy();
     expect(screen.getByText(/Seu repertório conhecido e já praticado/)).toBeTruthy();

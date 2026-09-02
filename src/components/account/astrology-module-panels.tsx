@@ -1218,26 +1218,32 @@ function expression(sign: string): string {
   return values[sign] ?? "pelas qualidades desse signo";
 }
 
+/**
+ * O que cada fase da Lua pede.
+ *
+ * Quatro momentos de um mesmo ciclo, escritos como quem explica para alguém
+ * querido — imagem primeiro, gesto depois, e nenhuma promessa de resultado.
+ */
 function lunarPhaseMeaning(index: number): string {
   return (
     [
-      "Plante uma intenção simples e honesta. A escuridão fértil favorece escuta antes da exposição.",
-      "Escolha ações que alimentem o que começou. Crescer também exige ajuste, repetição e coragem para corrigir a rota.",
-      "Observe o que ficou visível. A culminação ilumina resultados, excessos e sentimentos que já não aceitam permanecer implícitos.",
-      "Finalize, edite e devolva espaço. A fase minguante transforma experiência em aprendizado e prepara o próximo começo.",
+      "Lua nova é o escuro fértil, aquele instante antes de qualquer coisa nascer. Nada está visível ainda, e é exatamente por isso que dá para plantar sem plateia. Escolha uma intenção simples e honesta — uma só. Não anuncie, não peça opinião, não transforme em meta. Deixe no escuro pelos próximos dias, do jeito que semente fica embaixo da terra sem que ninguém fique cavando para conferir.",
+      "A Lua está crescendo, e o que você plantou começa a pedir. Crescer dá trabalho: exige repetição nos dias em que não apetece, ajuste quando a rota sai torta e coragem para corrigir sem desistir. Escolha ações que alimentem o que começou, mesmo as pequenas. É aqui que a maioria das intenções morre — não por falta de força, por falta de constância.",
+      "Lua cheia ilumina tudo, inclusive o que você preferia não ver. Resultados aparecem, mas excessos também, e sentimentos que vinham sendo adiados escolhem justamente esta noite para pedir passagem. Não é hora de decidir sob o efeito da luz forte. É hora de olhar com honestidade e reconhecer o que ficou visível — inclusive o que deu certo, que a gente costuma esquecer de celebrar.",
+      "A Lua mingua, e minguar é uma forma de generosidade: abrir espaço. Finalize o que dá para finalizar, edite o que ficou grande demais, devolva o que não era seu para carregar. Esta fase transforma experiência em aprendizado, e faz isso devagar. Se você sentir vontade de fazer menos, não é preguiça — é o ciclo trabalhando a seu favor, preparando o próximo começo.",
     ][index] ?? ""
   );
 }
 
 function shadowMeaning(body: string, sign: string): string {
   const patterns: Readonly<Record<string, string>> = {
-    sun: "Quando sua identidade se sente ameaçada, a vontade de ser reconhecido pode virar rigidez, orgulho ou necessidade de controlar a narrativa.",
-    moon: "Quando não se sente seguro, seu campo emocional pode repetir antigas estratégias de proteção antes mesmo de verificar o que está acontecendo agora.",
+    sun: "Todo mundo tem um jeito de se defender quando sente que não está sendo visto. O seu costuma passar por endurecer: virar orgulho, virar controle da narrativa, virar aquela rigidez que parece firmeza mas é medo bem vestido. Não é defeito de caráter — é a identidade se protegendo do jeito que aprendeu.",
+    moon: "Quando a segurança falta, o coração não espera para conferir se o perigo é real: ele já aciona a proteção que aprendeu na infância. Você pode se ver reagindo hoje a algo que terminou há muito tempo. Reconhecer isso não faz a reação sumir, mas abre um espaço entre o gatilho e a resposta — e é nesse espaço que a escolha mora.",
     mercury:
-      "Sob pressão, a mente pode usar explicações, silêncio, ironia ou excesso de argumentos para evitar uma verdade emocional mais simples.",
+      "Sob pressão, a mente é hábil demais para o próprio bem. Ela produz explicação, ironia, silêncio calculado, mais um argumento — tudo para não chegar numa verdade emocional que seria mais simples e mais difícil de dizer. A saída raramente é pensar melhor. Costuma ser falar mais direto.",
     venus:
-      "O desejo de reciprocidade pode levar a agradar, idealizar ou medir o próprio valor pela resposta alheia, criando ressentimento onde faltou pedido claro.",
-    mars: "A força de agir pode se tornar confronto, impaciência ou desejo reprimido. A tarefa é reconhecer raiva e vontade antes que elas escolham por você.",
+      "A vontade de ser querido pode desviar para agradar, idealizar ou medir o próprio valor pela resposta do outro. O ressentimento que vem depois quase sempre nasce no mesmo lugar: um pedido que nunca foi feito em voz alta, e que a gente esperava que o outro adivinhasse.",
+    mars: "A força que faz agir também sabe machucar. Ela vira confronto quando não encontra direção, impaciência quando é apressada, e desejo engolido quando é reprimida. Raiva e vontade não são problemas: viram problema quando escolhem por você antes de você reparar que estavam ali.",
   };
-  return `${patterns[body] ?? "Um padrão inconsciente procura ser reconhecido."} Em ${sign}, esse mecanismo tende a operar ${expression(sign)}; a mesma qualidade, quando consciente, devolve escolha e potência.`;
+  return `${patterns[body] ?? "Há um padrão antigo aqui, e ele só quer ser reconhecido."} Em ${sign}, esse mecanismo costuma operar ${expression(sign)}. E aqui está a parte boa: é a mesma qualidade. Quando você a enxerga, ela deixa de agir sozinha e volta a ser sua.`;
 }

@@ -478,28 +478,50 @@ function LunarElection({ reading }: Readonly<{ reading: LunarModuleResponse }>):
           <span>●</span>
           <h3>Lua Nova</h3>
           <p>
-            Tradição favorável a intenção, planejamento e começo discreto. Não garante resultado.
+            O céu escuro é o único lugar onde dá para plantar sem plateia. A tradição associa esta
+            fase ao começo discreto: uma intenção simples, guardada, sem anúncio. Você não vê a
+            semente trabalhando — e é justamente por isso que ela trabalha. Vale escolher uma coisa
+            só, e deixar em paz alguns dias.
+          </p>
+          <p className="lunar-phase-note">
+            É leitura simbólica de uma tradição, e não promessa de resultado.
           </p>
         </article>
         <article>
           <span>◐</span>
           <h3>Crescente</h3>
-          <p>Momento simbólico de sustentar, testar e corrigir o que começou.</p>
+          <p>
+            A luz aumenta, e o que começou passa a pedir. É a fase de sustentar nos dias em que não
+            apetece, testar o que parecia óbvio e corrigir a rota sem tratar o desvio como fracasso.
+            Aqui é onde a maioria das intenções se perde — raramente por falta de força, quase
+            sempre por falta de constância.
+          </p>
         </article>
         <article>
           <span>○</span>
           <h3>Lua Cheia</h3>
           <p>
-            Visibilidade e culminação simbólicas; não é critério para cirurgia, diagnóstico ou risco
-            de sangramento.
+            Tudo fica visível, inclusive o que era mais confortável não ver. A tradição fala em
+            culminação: resultados aparecem, excessos também, e sentimentos adiados escolhem esta
+            noite para pedir passagem. Bom momento para olhar com honestidade — inclusive para o que
+            deu certo, que a gente costuma esquecer de reconhecer.
+          </p>
+          <p className="lunar-phase-note">
+            Leitura simbólica. Não serve de critério para cirurgia, diagnóstico ou qualquer decisão
+            de saúde.
           </p>
         </article>
         <article>
           <span>◑</span>
           <h3>Minguante</h3>
           <p>
-            Revisão, poda e encerramento. Calendários de beleza e plantio são tradições culturais,
-            não garantias causais.
+            Minguar é uma forma de generosidade: abrir espaço. A tradição associa esta fase a
+            revisar, podar e encerrar o que já cumpriu o que tinha para cumprir. Se der vontade de
+            fazer menos, não é desânimo — é o ciclo preparando o próximo começo.
+          </p>
+          <p className="lunar-phase-note">
+            Calendários de beleza e de plantio são tradições culturais, e não relações de causa e
+            efeito.
           </p>
         </article>
       </div>

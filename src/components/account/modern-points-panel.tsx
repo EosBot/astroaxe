@@ -8,7 +8,7 @@ const points = [
     label: "Quíron",
     theme: "Ferida que se torna sabedoria",
     meaning:
-      "Quíron revela uma vulnerabilidade que não desaparece por força de vontade, mas amadurece quando é acolhida. Nesse território, sua experiência pode se transformar em compreensão, cuidado e capacidade de orientar outras pessoas.",
+      "Todo mundo carrega um ponto que não sara por esforço. Quíron marca o seu. A tradição chama de ferida, mas talvez seja melhor chamar de lugar sensível — aquele assunto em que você sente mais fundo que os outros, e que já tentou resolver na força de vontade sem sucesso. A virada não vem de curar: vem de acolher. É por isso que quem atravessa esse território costuma acabar cuidando de gente que passa pelo mesmo. Você entende de dentro. Isso não se aprende em lugar nenhum.",
   },
   {
     id: "mean_lilith",
@@ -16,7 +16,7 @@ const points = [
     label: "Lilith média",
     theme: "Desejo soberano e sombra",
     meaning:
-      "Lilith média mostra onde sua natureza se recusa a ser domesticada para caber na expectativa alheia. Ela fala de autonomia, desejo, raiva legítima e da potência recuperada quando você deixa de exilar partes intensas de si.",
+      "Existe uma parte de você que nunca aceitou ser domesticada para caber na expectativa dos outros. Lilith aponta onde ela mora. Fala de autonomia, de desejo sem pedido de licença, de raiva que tem razão de existir. Costuma ter sido exilada cedo — porque incomodava, porque era demais, porque alguém não soube o que fazer com ela. A potência volta quando você para de mandar essa parte para longe e começa a negociar com ela como quem negocia com alguém de casa.",
   },
   {
     id: "true_node",
@@ -24,7 +24,7 @@ const points = [
     label: "Nodo Norte",
     theme: "Direção de desenvolvimento",
     meaning:
-      "O Nodo Norte aponta experiências que expandem sua trajetória justamente porque ainda não são automáticas. Ele não promete um destino pronto: indica qualidades que a vida insiste em convidar você a praticar e incorporar.",
+      "O Nodo Norte aponta para onde a vida insiste em te convidar — e o convite costuma ser desconfortável, porque ainda não é automático. Não é destino pronto nem missão escrita: é a direção em que você cresce quando aceita fazer o que ainda não domina. Repare nas situações que se repetem e que sempre pedem de você exatamente aquilo que você acha que não sabe fazer. Não é coincidência, e não é castigo. É o caminho.",
   },
 ] as const;
 
@@ -60,7 +60,7 @@ export function ModernPointsPanel({
     label: "Nodo Sul",
     theme: "Memória, recursos e padrões conhecidos",
     meaning:
-      "O Nodo Sul reúne habilidades, hábitos e estratégias que parecem familiares desde cedo. É uma fonte real de repertório, mas pode virar repetição confortável; seu equilíbrio nasce quando esses recursos sustentam, sem substituir, o caminho do Nodo Norte.",
+      "O Nodo Sul guarda o que você já sabe fazer — talvez desde sempre, sem lembrar de ter aprendido. É repertório de verdade, e não se deve jogar fora. O risco é outro: é confortável demais. Quando aperta, é para cá que a gente corre, e correr para o conhecido pode virar uma vida inteira andando em círculo. O equilíbrio aparece quando esses recursos sustentam a travessia em vez de substituí-la.",
     ...(node === undefined ? {} : { placement: zodiacPlacement((node.longitude + 180) % 360) }),
   });
   const missingCount = visiblePoints.filter((point) => point.placement === undefined).length;

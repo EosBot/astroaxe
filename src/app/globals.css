@@ -6418,3 +6418,11 @@ button:disabled {
 .method-function-support[data-status="unavailable"] {
   opacity: 0.85;
 }
+
+/* A ressalva acompanha a leitura sem competir com ela: menor e mais discreta,
+   porque limitar não é o assunto principal do cartão. */
+.lunar-phase-note {
+  margin-top: 0.6rem;
+  font-size: 0.82rem;
+  opacity: 0.72;
+}

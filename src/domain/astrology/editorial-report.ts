@@ -225,14 +225,14 @@ export function interpretPlacement(input: {
   return {
     version: EDITORIAL_REPORT_VERSION,
     title: `${body.name} em ${input.sign}${houseTitle}`,
-    lead: `${body.name} simboliza ${body.function}. Em ${input.sign}, signo de ${sign.element} e modalidade ${sign.modality}, essa função tende a ${sign.instinct}. O grau ${input.degree.toFixed(2)}° localiza com precisão o posicionamento usado nesta leitura.`,
-    mechanics: `${input.context} A força disponível aparece como ${sign.strength}. Isso não descreve uma personalidade inteira nem age isoladamente: o restante do mapa mostra onde essa qualidade encontra apoio, tensão e oportunidade de amadurecimento.`,
+    lead: `${body.name} é, no seu mapa, ${body.function}. Ele nasceu em ${input.sign} — signo de ${sign.element}, modalidade ${sign.modality} —, e é por isso que essa parte de você costuma ${sign.instinct}. O grau exato, ${input.degree.toFixed(2)}°, é o que garante que esta leitura seja sobre o seu céu, e não sobre um céu parecido com o seu.`,
+    mechanics: `${input.context} A força que mora aqui aparece como ${sign.strength}. Isso não é a sua personalidade inteira, e nem age sozinho: o resto do mapa mostra onde essa qualidade encontra apoio, onde encontra atrito e onde tem chance de amadurecer. Um mapa é uma conversa entre partes, não uma sentença.`,
     dailyLife:
       houseTheme === undefined
-        ? `Na vida cotidiana, observe onde você espontaneamente tenta ${sign.instinct}. Sem hora natal confiável, não atribuímos essa energia a uma casa específica; a interpretação por signo continua válida.`
-        : `Na Casa ${input.house}, o tema encontra palco em ${houseTheme}. É nesse campo que situações concretas costumam pedir a linguagem de ${input.sign}, tornando o símbolo reconhecível em escolhas, vínculos e hábitos.`,
-    tension: `Quando opera sem consciência, o mesmo recurso pode aparecer como ${sign.excess}. O desafio não é eliminar ${input.sign}, mas perceber quando uma estratégia útil passou a responder a toda situação do mesmo modo.`,
-    integration: `A expressão madura pede ${sign.integration}. Uma prática útil é separar impulso, necessidade e ação: primeiro nomeie o que surgiu, depois verifique o contexto e só então escolha como responder.`,
+        ? `No dia a dia, repare onde você tenta ${sign.instinct} sem nem pensar. É ali que esse símbolo vive. Como sua hora de nascimento não está confirmada, não vamos chutar em que área da vida isso se concentra — a leitura por signo continua inteira, e preferimos dizer o que sabemos a inventar o que falta.`
+        : `Na Casa ${input.house}, esse tema ganha palco em ${houseTheme}. É nesse território que a vida costuma pedir a linguagem de ${input.sign} — nas escolhas, nos vínculos, nos hábitos pequenos. Quando você reconhece o símbolo acontecendo ali, ele deixa de ser abstração e vira algo com que dá para trabalhar.`,
+    tension: `Quando age no automático, esse mesmo recurso aparece como ${sign.excess}. E aqui vale dizer com carinho: o objetivo não é se livrar de ${input.sign}. É perceber quando uma estratégia que funcionou muito bem passou a responder a todas as situações do mesmo jeito, inclusive às que pediam outra coisa.`,
+    integration: `A versão madura disso pede ${sign.integration}. Uma prática simples ajuda: separe o impulso, a necessidade e a ação. Primeiro dê nome ao que surgiu, depois olhe o que a situação de fato é, e só então escolha a resposta. São três segundos, e mudam bastante.`,
     reflection: body.question,
   };
 }
@@ -248,12 +248,12 @@ export function interpretHouse(input: {
   return {
     version: EDITORIAL_REPORT_VERSION,
     title: `Casa ${input.house} em ${input.sign}`,
-    lead: `A Casa ${input.house} organiza experiências ligadas a ${theme}. Sua cúspide a ${input.degree.toFixed(2)}° de ${input.sign} indica que esse campo começa pela linguagem de ${input.sign}, um signo de ${lens.element} e modalidade ${lens.modality}.`,
-    mechanics: `${input.context} A casa mostra onde a experiência acontece; o signo descreve como você tende a entrar nesse território. Planetas dentro da casa e aspectos à cúspide acrescentam camadas, sem apagar esta porta de entrada.`,
-    dailyLife: `Você reconhece essa combinação quando temas de ${theme} pedem que você possa ${lens.instinct}. O símbolo se torna útil quando é ligado a decisões, conversas e hábitos observáveis, em vez de ser tratado como um rótulo abstrato.`,
-    tension: `A potência está em ${lens.strength}. Sob pressão, pode surgir ${lens.excess}; isso não condena o campo da Casa ${input.house}, apenas mostra a estratégia que merece mais escolha e menos automatismo.`,
-    integration: `A integração pede ${lens.integration}. Observe quem participa desse campo, qual necessidade está em jogo e que ação concreta respeita tanto sua verdade quanto a realidade da situação.`,
-    reflection: `Em ${theme}, o que você pode fazer de modo mais consciente nesta fase da vida?`,
+    lead: `A Casa ${input.house} é o território de ${theme}. A porta dela abre a ${input.degree.toFixed(2)}° de ${input.sign}, e isso quer dizer que você entra nessa área da vida falando a língua de ${input.sign} — signo de ${lens.element}, modalidade ${lens.modality}. É a primeira coisa que acontece quando o assunto surge, antes mesmo de você decidir alguma coisa.`,
+    mechanics: `${input.context} A casa diz onde a experiência acontece; o signo diz como você chega nela. Planetas que morem dentro dessa casa e aspectos à cúspide acrescentam camadas por cima — mas não apagam esta porta de entrada, que continua sendo por onde você passa.`,
+    dailyLife: `Você reconhece isso quando assuntos de ${theme} pedem que você consiga ${lens.instinct}. Vale procurar o símbolo em coisas concretas: uma decisão recente, uma conversa que se repete, um hábito que você tem sem saber por quê. Rótulo abstrato não ajuda ninguém; exemplo da sua própria vida, sim.`,
+    tension: `A potência daqui está em ${lens.strength}. Quando aperta, pode virar ${lens.excess} — e isso não condena esta área da sua vida. Só mostra qual estratégia anda no automático e merece voltar a ser escolha.`,
+    integration: `A integração pede ${lens.integration}. Repare em quem mais participa desse território, qual necessidade está realmente em jogo, e que atitude concreta respeita ao mesmo tempo a sua verdade e o que a situação de fato é. Os dois cabem, quase sempre.`,
+    reflection: `Em ${theme}, o que dá para fazer com mais consciência nesta fase da sua vida?`,
   };
 }
 
