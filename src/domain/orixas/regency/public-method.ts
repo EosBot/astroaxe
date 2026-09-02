@@ -116,6 +116,43 @@ export const PUBLIC_REGENCY_METHOD_CARD = {
     decisionStates:
       "A decisão técnica tem três estados: evidência insuficiente, não elegível e elegível para revisão cultural. O último não publica nem promove nada — apenas abre a etapa de revisão humana e análise dos erros. Nenhuma aprovação cultural é automatizada.",
   },
+  /**
+   * Como o acervo de pesquisa é tratado.
+   *
+   * Descreve o processo e as classes de material, e nunca os títulos. É o mesmo
+   * padrão dos cartões de modelo publicados por laboratórios de IA: explica-se a
+   * metodologia inteira, as avaliações e os limites, sem enumerar a bibliografia.
+   * Aqui isso é dobrado em necessidade — enumerar entregaria o acervo que dá
+   * vantagem ao método e exporia obra de terceiro que apenas serviu de insumo.
+   */
+  corpus: {
+    summary:
+      "O método é derivado de um acervo de pesquisa privado, lido por inteiro e nunca publicado. O que o site entrega é obra original nossa: a função estrutural, a condensação e o texto de leitura. Texto-fonte de terceiro não circula em nenhuma resposta.",
+    classes: [
+      {
+        title: "Escolas praticantes",
+        detail:
+          "Compêndios doutrinários e apostilas de formação de casas específicas, que declaram a própria linhagem. É o material mais denso do acervo, e por isso o que mais exige cuidado: densidade não é concordância.",
+      },
+      {
+        title: "Tradições cerimoniais escritas",
+        detail:
+          "Compilações históricas de correspondência e de regra de momento, em edições distintas da mesma linhagem. Edições diferentes de um mesmo texto contam como uma testemunha, não como várias.",
+      },
+      {
+        title: "Registro institucional e acadêmico",
+        detail:
+          "Inventários de patrimônio, dossiês de organismos internacionais e artigos revisados por pares. Entram como via independente das escolas praticantes, e é essa independência que dá peso ao encontro.",
+      },
+    ],
+    controls: [
+      "Nenhuma afirmação entra sem a passagem que a sustenta lida no texto. Localizar um arquivo não fecha uma lacuna.",
+      "A sustentação é contada por linhagem, e não por obra: quatro livros de um mesmo autor são uma voz só, e cópia ou tradução da mesma linhagem não é segunda confirmação.",
+      "Divergência entre tradições é registrada com a natureza declarada — grafia variante, disputa de posto entre esquemas coerentes, ou erro provável da própria fonte. Chamar erro de tradição emprestaria autoridade a um engano.",
+      "O que a fonte não autoriza generalizar fica de fora, mesmo quando caberia bem. Meia correspondência não vira correspondência inteira.",
+      "Verificação automatizada impede que caminho de acervo, referência interna ou passagem literal de terceiro atravesse para qualquer resposta pública ou artefato de build.",
+    ],
+  },
   limits: [
     {
       title: "Sem hora natal, a leitura encolhe",
@@ -131,6 +168,11 @@ export const PUBLIC_REGENCY_METHOD_CARD = {
       title: "Não é confirmação religiosa",
       detail:
         "O resultado é interpretação do mapa pelo método autoral AstroAxe. Não atribui identidade religiosa, não substitui jogo de búzios, iniciação ou a palavra de um sacerdote, e não deve ser lido como diagnóstico de nada.",
+    },
+    {
+      title: "O acervo não é publicado, e isso é decisão",
+      detail:
+        "A lista de obras que alimenta o método permanece interna. Publicá-la não tornaria o resultado mais verificável — o que se pode conferir é o processo, e ele está inteiro nesta página — e transformaria trabalho de curadoria em bem público sem que ninguém ganhasse com isso.",
     },
     {
       title: "Ainda não há acurácia publicada",

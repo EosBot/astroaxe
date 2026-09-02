@@ -8,7 +8,18 @@ const MOMENTO = "instant=2026-06-21T12%3A00%3A00%2B00%3A00&latitude=-23.55&longi
  * Os mesmos que `src/lib/security/leak-scanner.ts` procura nos artefatos de build.
  * Aqui a verificação é sobre o texto renderizado, que é o que a pessoa recebe.
  */
-const MARCADORES_DE_ACERVO = ["Corpus local", "_texto_", "/mnt/e/Ocultismo", "source-system:"];
+const MARCADORES_DE_ACERVO = [
+  "Corpus local",
+  "_texto_",
+  "/mnt/e/Ocultismo",
+  "source-system:",
+  // Nomes de obra e autor são o acervo de pesquisa, e não saem para a tela.
+  "Heptameron",
+  "Agrippa",
+  "Arbatel",
+  "Lemegeton",
+  "Saraceni",
+];
 
 test("publica o grafo de funções sem expor a proveniência por claim", async ({ page }) => {
   await page.goto("/metodologia");
@@ -48,16 +59,17 @@ test("mostra as obras lado a lado, com desfechos distintos e sem vencedor", asyn
   await page.goto(`/tempo-cerimonial?${MOMENTO}&sunLongitude=90&moonLongitude=90`);
 
   await expect(page.getByRole("heading", { name: "As regras, lado a lado." })).toBeVisible();
-  for (const obra of ["Heptameron", "Arbatel", "Agrippa", "Kabbala Teúrgica"])
-    await expect(page.getByRole("heading", { name: obra })).toBeVisible();
+  // Identificadas pelo que pedem, nunca pela obra de onde vieram.
+  for (const regra of ["Lua crescente, leitura ampla", "Dia planetário do assunto"])
+    await expect(page.getByRole("heading", { name: regra })).toBeVisible();
 
   // Lua nova contraria umas e é incomputável para Agrippa: os dois estados
   // convivem na tela, e nada os concilia.
-  await expect(page.getByText("O momento contraria o que esta obra pede.").first()).toBeVisible();
-  await expect(page.getByText("Não há dado suficiente para julgar por esta obra.")).toBeVisible();
+  await expect(page.getByText("O momento contraria o que esta regra pede.").first()).toBeVisible();
+  await expect(page.getByText("Não há dado suficiente para julgar por esta regra.")).toBeVisible();
 
   const texto = await page.locator("body").innerText();
-  expect(texto).toContain("não recomendação de momento nem promessa de resultado");
+  expect(texto).toContain("não uma recomendação de momento nem promessa de resultado");
   for (const marcador of MARCADORES_DE_ACERVO) expect(texto).not.toContain(marcador);
 });
 

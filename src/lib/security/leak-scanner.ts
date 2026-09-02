@@ -33,6 +33,24 @@ export const PUBLIC_LEAK_MARKERS: readonly (string | RegExp)[] = [
   "extractionConfidence",
   "claimSchoolId",
   "sourceFamilyId",
+  /**
+   * Nomes de obra e de autor do acervo de pesquisa.
+   *
+   * Diferente dos demais marcadores, estes não são identificadores internos: são
+   * o próprio acervo. Publicá-los entregaria a curadoria que dá vantagem ao
+   * método e exporia obra de terceiro que apenas serviu de insumo.
+   *
+   * Entraram depois de um vazamento real: o registro público de correções citava
+   * duas escolas pelo nome, e só apareceu quando uma jornada varreu o texto
+   * renderizado. Nome de entidade — Michael, Hagiel, Omolu — continua publicável;
+   * o que não sai é de qual obra ele veio.
+   */
+  /(?<![\w-])Trithemius(?![\w-])/,
+  /(?<![\w-])Agrippa(?![\w-])/,
+  /(?<![\w-])Arbatel(?![\w-])/,
+  /(?<![\w-])Heptameron(?![\w-])/,
+  /(?<![\w-])Lemegeton(?![\w-])/,
+  /(?<![\w-])Saraceni(?![\w-])/,
 ];
 
 export interface LeakFinding {

@@ -32,10 +32,10 @@ describe("projeção pública da leitura de tempo", () => {
     expect(publico.observations).toHaveLength(seededElectionProfiles.length);
     // Lua nova: Heptameron e Kabbala contrariam, Agrippa não é computável. Os três
     // desfechos convivem na mesma resposta, que é o ponto.
-    const porObra = new Map(publico.observations.map((o) => [o.sourceName, o.status]));
-    expect(porObra.get("Heptameron")).toBe("conflicted");
-    expect(porObra.get("Kabbala Teúrgica")).toBe("conflicted");
-    expect(porObra.get("Agrippa")).toBe("unavailable");
+    const porRegra = new Map(publico.observations.map((o) => [o.ruleLabel, o.status]));
+    expect(porRegra.get("Lua crescente, leitura ampla")).toBe("conflicted");
+    expect(porRegra.get("Lua crescente, leitura estrita")).toBe("conflicted");
+    expect(porRegra.get("Planeta da operação")).toBe("unavailable");
   });
 
   it("não tem onde escrever locator, escola ou nota de sucesso", () => {
@@ -43,9 +43,12 @@ describe("projeção pública da leitura de tempo", () => {
       leitura({ ...SAO_PAULO, sunLongitude: 90, moonLongitude: 150 }),
     );
 
-    // Nomear a obra é a informação; apontar para o nosso corpus não é.
+    // A regra é publicada pelo que pede, e nunca pela obra de onde veio: nomear o
+    // grimório entregaria o acervo de pesquisa e exporia obra de terceiro.
     expect(serializado).not.toContain("Corpus local");
     expect(serializado).not.toMatch(/locator|sourceSystemId|school:|work:/i);
+    for (const obra of ["Heptameron", "Agrippa", "Arbatel", "Kabbala", "Lemegeton", "Saraceni"])
+      expect(serializado).not.toContain(obra);
     // Eleger é decisão de quem opera: não existe *campo* de nota, ranking ou
     // recomendação. A varredura é por chave, e não por prosa — o próprio aviso da
     // resposta usa a palavra "recomendação" para dizer que não faz nenhuma.
@@ -79,7 +82,9 @@ describe("projeção pública da leitura de tempo", () => {
 
   it("diz que a Lua não foi informada em vez de supor posição", () => {
     const semLua = leitura(SAO_PAULO);
-    const heptameron = semLua.observations.find(({ sourceName }) => sourceName === "Heptameron");
+    const heptameron = semLua.observations.find(
+      ({ ruleId }) => ruleId === "rule:waxing-moon-broad",
+    );
 
     expect(heptameron?.status).toBe("unavailable");
     expect(heptameron?.limitations).toContain("A posição da Lua não foi informada.");

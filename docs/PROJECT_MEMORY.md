@@ -1,5 +1,40 @@
 # Memória canônica do projeto
 
+## Atualização 2026-09-02 — o acervo sai da interface, e a página de tempo ganha o invólucro certo
+
+- **Defeito de layout, meu.** A página de tempo usava `methodology-main` e
+  `methodology-header`, classes que **não existem** — zero definições no CSS. O
+  invólucro correto é `observatory-shell methodology-shell` com
+  `article.methodology-document` e `header.methodology-hero`, como nas demais.
+  Copiei o padrão de memória em vez de conferir, e a página saiu sem estilo algum.
+- **O acervo saía na interface, e não deveria.** A página de tempo nomeava
+  Heptameron, Agrippa, Arbatel e Khan Secretum; o acervo cultural abria título,
+  URL e locator por afirmação; e o registro público de correções citava duas
+  escolas pelo nome. O `BLUEPRINT` §5.0 já dizia que a proveniência por claim sai
+  da interface — o que estava publicado é que contrariava a decisão.
+- **A regra passou a ser publicada pelo que pede.** "Lua crescente, leitura ampla"
+  entrega a informação inteira; dizer de qual grimório ela saiu entrega a curadoria
+  e expõe obra de terceiro. O tipo público não tem mais campo para nome de obra.
+- **No acervo cultural a troca foi por classe de evidência**, e não por remoção. A
+  afirmação declara se se apoia em fonte primária de comunidade, inventário
+  institucional, etnografia ou análise acadêmica. Isso preserva o sinal de
+  confiança — e a atribuição a instituição pública protege contra leitura de
+  apropriação — sem publicar a bibliografia.
+- **O model card ganhou a seção que faltava**, no padrão de cartão de modelo de
+  laboratório de IA: descreve as classes de material do acervo e os controles que
+  impedem afirmação frouxa, sem enumerar títulos. Explica o processo inteiro e não
+  a lista de leitura.
+- **Dois achados de processo, ambos meus.** Um servidor `next start` de onze horas
+  antes continuou preso à porta 3100 depois de um `kill` que falhou, e todas as
+  verificações recentes bateram nele em vez do build novo — foi o que fez o
+  vazamento parecer não corrigido. E o vazamento das correções só apareceu porque
+  uma jornada varre o **texto renderizado**; nenhum teste unitário o pegaria.
+- Por isso os nomes de obra e autor entraram no scanner de vazamento. Nome de
+  potência — Michael, Hagiel, Omolu — continua publicável; de qual obra ele veio,
+  não. O gate roda contra o build e aprova 165 artefatos.
+- Checkpoint: **691 testes passando**; typecheck, lint, formatação, build e gate de
+  vazamento limpos; **20 de 20 jornadas E2E** sem stack, em desktop e mobile.
+
 ## Atualização 2026-09-02 — três asserções E2E defasadas, encontradas ao rodar tudo
 
 - Rodar a suíte E2E inteira contra servidor de produção real expôs **três

@@ -29,13 +29,14 @@ describe("gate de não-vazamento do insumo", () => {
     expect(findings.some(({ marker }) => marker.includes("school:"))).toBe(true);
   });
 
-  it("não acusa a obra por nomear o que ela legitimamente nomeia", () => {
-    // Procurar por "Exu" ou "Heptameron" acusaria a própria obra. Os marcadores
-    // são estruturais: caminho, locator e identificador interno.
+  it("não acusa a obra por nomear a potência e descrever a regra", () => {
+    // Nome de potência e descrição de critério são a obra derivada, e circulam.
+    // O que não circula é de qual livro o critério saiu.
     const findings = scanForPublicLeaks([
       {
         source: "pagina.html",
-        content: "Exu ocupa a mesma função estrutural. O Heptameron pede Lua crescente.",
+        content:
+          "Exu ocupa a mesma função estrutural. Uma regra pede Lua crescente e não combusta.",
       },
     ]);
 
@@ -68,6 +69,26 @@ describe("gate de não-vazamento do insumo", () => {
     // que sempre falha é um gate em que ninguém confia.
     const findings = scanForPublicLeaks([
       { source: "estilo.css", content: ":root{--default-font-family:var(--font-sans)}" },
+    ]);
+
+    expect(findings).toEqual([]);
+  });
+
+  it("acusa nome de obra ou autor do acervo numa página", () => {
+    // Entrou depois de um vazamento real: o registro público de correções citava
+    // duas escolas pelo nome, e só apareceu quando uma jornada varreu o texto
+    // renderizado.
+    const findings = scanForPublicLeaks([
+      { source: "metodologia.html", content: "<p>a escola de Trithemius e Agrippa</p>" },
+    ]);
+
+    expect(findings.length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("não confunde nome de entidade com nome de obra", () => {
+    // Michael, Hagiel e Omolu são potências, e a obra os nomeia legitimamente.
+    const findings = scanForPublicLeaks([
+      { source: "metodologia.html", content: "Michael, Hagiel e Omolu ocupam funções distintas." },
     ]);
 
     expect(findings).toEqual([]);

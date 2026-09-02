@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   },
 };
 
-const { chain, condensation, versioning, evaluation, limits } = PUBLIC_REGENCY_METHOD_CARD;
+const { chain, condensation, corpus, versioning, evaluation, limits } = PUBLIC_REGENCY_METHOD_CARD;
 const publicGraph = buildPublicFunctionGraph(regencyFunctionGraph);
 const corrections = listMethodCorrections();
 
@@ -113,6 +113,28 @@ export default function MethodologyPage(): React.JSX.Element {
           </p>
 
           <p className="method-emphasis method-limit">{condensation.limit}</p>
+        </section>
+
+        <section className="methodology-section" aria-labelledby="method-corpus">
+          <p className="eyebrow">O acervo de pesquisa</p>
+          <h2 id="method-corpus">De onde o método vem, sem entregar de onde.</h2>
+          <p>{corpus.summary}</p>
+
+          <dl className="method-detail-list">
+            {corpus.classes.map(({ title, detail }) => (
+              <div key={title}>
+                <dt>{title}</dt>
+                <dd>{detail}</dd>
+              </div>
+            ))}
+          </dl>
+
+          <p className="method-emphasis">O que impede o acervo de virar afirmação frouxa:</p>
+          <ul className="method-criteria">
+            {corpus.controls.map((control) => (
+              <li key={control}>{control}</li>
+            ))}
+          </ul>
         </section>
 
         <section className="methodology-section" aria-labelledby="method-functions">

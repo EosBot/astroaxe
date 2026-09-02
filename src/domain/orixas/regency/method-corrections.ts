@@ -48,24 +48,24 @@ export const regencyMethodCorrections: readonly MethodCorrection[] = [
       "Funções antes sustentadas por várias obras passaram a aparecer como sustentadas por uma escola só. O método mostra menos convergência do que mostrava, e a que mostra é real.",
   },
   {
-    id: "correction:angelical-school-not-trithemius",
+    id: "correction:lineage-attributed-to-declared-author",
     recordedOn: "2026-08-31",
     area: "proveniência",
     whatChanged:
-      "A obra angélica do corpus deixou de ser atribuída à escola de Trithemius e passou a ser atribuída ao autor que ela própria declara, Frater Dalton R.F.",
-    why: "A filiação nunca esteve na obra. Sua bibliografia declara Vacchiano, Goddard, Mathers, Vitor Sanches, Sistemagia e Ordem Lótus Negro; Trithemius não aparece, e Agrippa surge uma vez só, de passagem, numa lista de autores que tratam do círculo mágico — não como fonte das correspondências.",
+      "Uma obra do acervo estava filiada a uma escola histórica por suposição, e passou a ser atribuída ao autor que ela própria declara.",
+    why: "A filiação nunca esteve na obra. A bibliografia que ela declara é inteiramente de compiladores do século XX em diante, e a escola histórica a que fora atribuída não aparece em lugar nenhum. A conferência foi feita no texto, e não pelo que se supunha sobre ele.",
     consequence:
       "Nenhuma convergência mudou, porque a família de linhagem continua a mesma e a obra era a única nela. O que mudou é que a escola declarada passou a ser verificável na fonte, em vez de herdada de uma suposição.",
   },
   {
-    id: "correction:arbatel-gloss-not-source",
+    id: "correction:gloss-is-not-source",
     recordedOn: "2026-08-31",
     area: "proveniência",
     whatChanged:
-      "As cinco atribuições dos espíritos olímpicos passaram a citar a descrição original do grimório de Arbatel, e não a glosa do compilador. Ophiel saiu da função de abertura de caminho.",
-    why: "O texto do acervo separa a glosa moderna (“atua em todos os assuntos planetários de X”) da citação do grimório, e as cinco atribuições repousavam na glosa. Conferidas contra o original, quatro se sustentaram e uma não: o Arbatel diz que Ophiel governa as coisas de Mercúrio, dá espíritos familiares e ensina todas as artes, e não diz nada sobre abrir, fechar ou ordenar passagem.",
+      "Cinco atribuições de uma tradição cerimonial passaram a citar a descrição original da obra, e não a glosa de quem a compilou. Uma delas saiu do método por não se sustentar.",
+    why: "O material do acervo separa a glosa moderna do compilador da citação da obra original, e as cinco atribuições repousavam na glosa. Conferidas contra o original, quatro se sustentaram e uma não: a fonte descrevia um domínio geral, e não a função estrutural que lhe fora atribuída.",
     consequence:
-      "A função de abertura de caminho perdeu uma linhagem e continua sustentada por três. O método mostra uma convergência a menos ali, e as que mostra estão ancoradas na fonte e não no comentário de quem a compilou.",
+      "Uma das funções perdeu uma linhagem de sustentação. O método mostra uma convergência a menos ali, e as que mostra estão ancoradas na fonte e não no comentário de quem a compilou.",
   },
 ].map((item) => methodCorrectionSchema.parse(item));
 

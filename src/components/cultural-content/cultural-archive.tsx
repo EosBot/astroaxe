@@ -9,6 +9,24 @@ import {
 
 type ArchiveStatus = "loading" | "ready" | "error";
 
+/**
+ * Classe de evidência em linguagem de leitura.
+ *
+ * É o que substitui a lista de títulos e links. Dizer que uma afirmação se apoia
+ * num inventário institucional informa o leitor sobre a solidez dela; dizer qual
+ * inventário entrega o acervo de pesquisa sem que o leitor ganhe nada com isso.
+ */
+function evidenceKindLabel(kind: string): string {
+  const labels: Readonly<Record<string, string>> = {
+    "community-primary": "Apoiada em fonte primária de comunidade de terreiro.",
+    "institutional-inventory": "Apoiada em inventário de patrimônio de instituição pública.",
+    ethnography: "Apoiada em registro etnográfico.",
+    "scholarly-analysis": "Apoiada em análise acadêmica revisada.",
+    "product-editorial": "Leitura editorial do AstroAxe, sem pretensão de registro histórico.",
+  };
+  return labels[kind] ?? "Classe de evidência registrada internamente.";
+}
+
 export function CulturalArchive(): React.JSX.Element {
   const [entries, setEntries] = useState<PublicCulturalEntry[]>([]);
   const [status, setStatus] = useState<ArchiveStatus>("loading");
@@ -139,21 +157,21 @@ export function CulturalArchive(): React.JSX.Element {
                 )}
               </p>
               <details>
-                <summary>Ver afirmações e fontes</summary>
+                <summary>Ver afirmações e classe de evidência</summary>
                 <ul>
                   {entry.claims.map((claim) => (
                     <li key={claim.claimKey}>
                       <p>{claim.objectSummary}</p>
-                      <a href={claim.source.url} target="_blank" rel="noreferrer">
-                        {claim.source.title}
-                      </a>
-                      <small>
-                        {claim.sourceLocator} · acesso em{" "}
-                        {formatAccessDate(claim.source.accessedAt)}
-                      </small>
+                      <small>{evidenceKindLabel(claim.source.evidenceKind)}</small>
                     </li>
                   ))}
                 </ul>
+                <p className="cultural-evidence-note">
+                  Cada afirmação declara em que classe de evidência se apoia. O acervo de pesquisa
+                  que sustenta o método não é publicado: o que o site entrega é a síntese escrita
+                  por nós, e a proveniência de cada peça fica registrada internamente para permitir
+                  corrigir o método quando uma fonte se mostrar errada.
+                </p>
               </details>
             </aside>
             <p className="cultural-disclaimer">{entry.disclaimer}</p>
@@ -177,9 +195,4 @@ function formatTradition(traditionId: string): string {
     YorubaFolkloreOgumefu1929: "Narrativa iorubá · registro escrito de 1929",
   };
   return labels[traditionId] ?? "Contexto cultural situado";
-}
-
-function formatAccessDate(date: string): string {
-  const [year, month, day] = date.split("-").map(Number);
-  return new Intl.DateTimeFormat("pt-BR").format(new Date(year ?? 0, (month ?? 1) - 1, day ?? 1));
 }

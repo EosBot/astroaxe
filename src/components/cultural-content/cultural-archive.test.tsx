@@ -12,7 +12,7 @@ describe("CulturalArchive", () => {
     vi.unstubAllGlobals();
   });
 
-  it("renders the full approved text with attribution and source", async () => {
+  it("renders the full approved text with attribution and evidence class", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue(new Response(JSON.stringify({ entries: [entry()] }))),
@@ -25,10 +25,14 @@ describe("CulturalArchive", () => {
     expect(await screen.findByRole("heading", { name: "Xangô em contexto" })).toBeTruthy();
     expect(screen.getByText("Segundo parágrafo profundo.")).toBeTruthy();
     expect(screen.getByText(/Conselho cultural AstroAxe/)).toBeTruthy();
-    fireEvent.click(screen.getByText("Ver afirmações e fontes"));
-    expect(screen.getByRole("link", { name: "Fonte pública" }).getAttribute("href")).toBe(
-      "https://example.test/fonte",
-    );
+    fireEvent.click(screen.getByText("Ver afirmações e classe de evidência"));
+    // A afirmação declara em que classe de evidência se apoia, e não qual obra
+    // sustenta o método: o acervo de pesquisa não é publicado.
+    expect(
+      screen.getByText("Apoiada em inventário de patrimônio de instituição pública."),
+    ).toBeTruthy();
+    expect(screen.queryByRole("link", { name: "Fonte pública" })).toBeNull();
+    expect(screen.queryByText("Seção documental")).toBeNull();
   });
 
   it("offers retry without replacing the approved corpus with improvised copy", async () => {
