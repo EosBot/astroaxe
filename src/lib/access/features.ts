@@ -30,10 +30,31 @@ const TIER_RANK: Readonly<Record<AccessTier, number>> = {
  * em `requiredTierFor` em vez de virar caminho permissivo.
  */
 export const FEATURE_CATALOG = {
-  /* Gratuitos. Os três saem do mesmo cálculo natal. */
-  "natal-chart": "anonymous",
-  horoscope: "anonymous",
-  "shadow-horoscope": "anonymous",
+  /**
+   * Gratuitos, mas com conta.
+   *
+   * Os três saem do mesmo cálculo natal e não custam nada — só exigem cadastro.
+   * A razão não é comercial e sim material: os três dependem de data, hora e
+   * lugar de nascimento, que são dado pessoal sensível. Guardar isso para
+   * alguém que não tem conta significa guardar dado de quem não pode pedir
+   * exclusão nem exportação depois.
+   */
+  "natal-chart": "free",
+  horoscope: "free",
+  "shadow-horoscope": "free",
+
+  /**
+   * Vitrine aberta.
+   *
+   * Estas duas já estavam no ar, públicas e indexadas, quando a fronteira do
+   * freemium foi desenhada, e o dono decidiu mantê-las assim. São as únicas que
+   * seguem abertas a quem não tem conta — e podem, porque não tocam em dado
+   * pessoal: mostram o método funcionando sobre um instante que a pessoa
+   * digita, sem guardar nada dela. Quem quiser *descobrir* instantes usa o
+   * buscador de janelas, que é pago.
+   */
+  "ceremonial-timing": "anonymous",
+  "cultural-archive": "anonymous",
 
   /**
    * Exportar os próprios dados é direito, e não produto.
@@ -54,8 +75,6 @@ export const FEATURE_CATALOG = {
   "thematic-maps": "paid",
   "orisa-triad": "paid",
   journal: "paid",
-  "cultural-archive": "paid",
-  "ceremonial-timing": "paid",
   "ceremonial-windows": "paid",
   "ceremonial-planner": "paid",
   "ceremonial-correspondences": "paid",

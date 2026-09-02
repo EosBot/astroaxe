@@ -9,16 +9,16 @@ import {
 } from "./features";
 
 describe("fronteira do freemium", () => {
-  it("mantém gratuitos exatamente o mapa natal, o horóscopo e o sombrio", () => {
+  it("mantém aberto exatamente o que o dono decidiu deixar aberto", () => {
     const abertos = Object.entries(FEATURE_CATALOG)
       .filter(([, tier]) => tier === "anonymous")
       .map(([feature]) => feature)
       .sort();
 
-    // A lista é curta de propósito, e é decisão comercial do produto. Se algo
-    // entrar aqui sem o dono ter pedido, este teste avisa antes de o recurso
-    // virar gratuito em produção.
-    expect(abertos).toEqual(["horoscope", "natal-chart", "shadow-horoscope"]);
+    // Só as duas páginas de vitrine ficam abertas a quem não tem conta, e elas
+    // podem porque não guardam nada de ninguém. Tudo que envolve dado de
+    // nascimento exige cadastro, inclusive o que é gratuito.
+    expect(abertos).toEqual(["ceremonial-timing", "cultural-archive"]);
   });
 
   it("nunca cobra por exportar os próprios dados", () => {
@@ -27,20 +27,27 @@ describe("fronteira do freemium", () => {
     expect(requiredTierFor("data-export")).not.toBe("paid");
   });
 
-  it("fecha as ferramentas cerimoniais", () => {
-    const cerimoniais = Object.keys(FEATURE_CATALOG).filter((feature) =>
-      feature.startsWith("ceremonial-"),
-    ) as FeatureId[];
-
-    expect(cerimoniais.length).toBeGreaterThan(0);
-    for (const feature of cerimoniais) expect(requiredTierFor(feature)).toBe("paid");
+  it("fecha as ferramentas cerimoniais que descobrem, e não as que só conferem", () => {
+    // A distinção é o produto: conferir um instante que a pessoa traz é vitrine;
+    // descobrir instantes, catalogar correspondências e guardar registro é o que
+    // a assinatura paga.
+    expect(requiredTierFor("ceremonial-timing")).toBe("anonymous");
+    for (const feature of [
+      "ceremonial-windows",
+      "ceremonial-planner",
+      "ceremonial-correspondences",
+    ] as FeatureId[])
+      expect(requiredTierFor(feature)).toBe("paid");
   });
 
-  it("deixa quem não entrou ver só o que é aberto", async () => {
+  it("exige conta até para o que é gratuito", async () => {
     const tier = await resolveAccessTier(null);
 
     expect(tier).toBe("anonymous");
-    expect(tierAllows(tier, "natal-chart")).toBe(true);
+    // Gratuito não quer dizer anônimo: o mapa natal guarda data, hora e lugar
+    // de nascimento, e dado pessoal sem titular é dado que ninguém pode apagar.
+    expect(tierAllows(tier, "natal-chart")).toBe(false);
+    expect(tierAllows(tier, "ceremonial-timing")).toBe(true);
     expect(tierAllows(tier, "transits")).toBe(false);
     expect(tierAllows(tier, "ceremonial-windows")).toBe(false);
   });
@@ -50,6 +57,7 @@ describe("fronteira do freemium", () => {
     // hierarquia precisa existir mesmo assim: é ela que permite ligar a
     // cobrança mudando uma função, e não trinta rotas.
     expect(tierAllows("free", "natal-chart")).toBe(true);
+    expect(tierAllows("anonymous", "natal-chart")).toBe(false);
     expect(tierAllows("free", "transits")).toBe(false);
     expect(tierAllows("paid", "transits")).toBe(true);
   });

@@ -10,8 +10,7 @@ import { parseServerEnv } from "@/lib/env";
 import { getPrisma } from "@/lib/prisma";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { logger } from "@/lib/logger";
-import { resolveAccount } from "@/lib/security/account";
-import { guestCookie, resolveGuestSession } from "@/lib/security/guest-session";
+import { authorizeFeature } from "@/lib/access/guard";
 import { apiJson } from "@/lib/security/headers";
 
 const createMapSchema = birthDataSchema.extend({
@@ -29,11 +28,12 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   try {
     const env = parseServerEnv();
-    const account = await resolveAccount(request, env.AUTH_SESSION_SECRET);
-    const guest =
-      account === null ? await resolveGuestSession(request, env.GUEST_SESSION_SECRET) : null;
-    const ownerId = account?.id ?? guest?.id;
-    if (ownerId === undefined) throw new TypeError("Map owner could not be resolved.");
+    // O mapa natal é gratuito, mas exige conta: ele guarda data, hora e lugar de
+    // nascimento, e dado pessoal sem titular é dado que ninguém pode pedir para
+    // apagar nem exportar depois. A sessão de convidado deixou de criar mapa.
+    const grant = await authorizeFeature(request, "natal-chart", { requireSameOrigin: false });
+    if (grant instanceof Response) return grant;
+    const ownerId = grant.userId as string;
     const allowed = await enforceRateLimit(`v1:rate:maps:${ownerId}`, 5, 60);
     if (!allowed)
       return apiJson({ error: "Muitas tentativas. Aguarde um minuto." }, { status: 429 });
@@ -52,8 +52,8 @@ export async function POST(request: NextRequest): Promise<Response> {
 
     const stored = await prisma.birthProfile.create({
       data: {
-        guestSessionId: guest?.id ?? null,
-        userId: account?.id ?? null,
+        guestSessionId: null,
+        userId: ownerId,
         displayName,
         birthDate: new Date(`${birthData.date}T00:00:00.000Z`),
         birthTime: birthData.time ?? null,
@@ -75,13 +75,9 @@ export async function POST(request: NextRequest): Promise<Response> {
       select: { id: true, chart: { select: { id: true } } },
     });
 
-    const response = apiJson(
-      { profileId: stored.id, chartId: stored.chart?.id, chart },
-      { status: 201 },
-    );
-    if (guest?.newToken !== undefined)
-      response.headers.append("Set-Cookie", guestCookie(guest.newToken));
-    return response;
+    // Sem cookie de convidado: o mapa nasce com dono, e não com um portador
+    // anônimo que precisaria ser reivindicado depois.
+    return apiJson({ profileId: stored.id, chartId: stored.chart?.id, chart }, { status: 201 });
   } catch (error) {
     return mapCreationError(error);
   }

@@ -96,9 +96,8 @@ describe("map route boundary", () => {
     expect(mocks.resolveGuest).not.toHaveBeenCalled();
   });
 
-  it("persists a guest-owned map and returns its opaque cookie", async () => {
+  it("recusa criar mapa para quem não tem conta", async () => {
     mocks.resolveAccount.mockResolvedValue(null);
-    mocks.resolveGuest.mockResolvedValue({ id: "guest-id", newToken: "opaque" });
     const { POST } = await import("./route");
     const response = await POST(
       new NextRequest("http://localhost/api/maps", {
@@ -116,13 +115,12 @@ describe("map route boundary", () => {
         }),
       }),
     );
-    expect(response.status).toBe(201);
-    expect(mocks.create).toHaveBeenCalledWith(
-      expect.objectContaining({
-        data: expect.objectContaining({ guestSessionId: "guest-id", userId: null }),
-      }),
-    );
-    expect(response.headers.get("set-cookie")).toContain("astroaxe_guest=opaque");
+
+    // O mapa é gratuito, mas guarda data, hora e lugar de nascimento. Guardar
+    // isso sob uma sessão anônima cria dado pessoal sem titular — ninguém para
+    // pedir exclusão nem exportação depois.
+    expect(response.status).toBe(401);
+    expect(mocks.create).not.toHaveBeenCalled();
   });
 
   it("returns a bounded validation error for invalid birth data", async () => {
