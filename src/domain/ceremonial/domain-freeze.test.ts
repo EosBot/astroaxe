@@ -156,7 +156,7 @@ describe("congelamento do domínio cerimonial", () => {
       electionProfileSchema: "election-profiles-0.2.0-research",
       entityRecords: "ceremonial-entity-records-0.1.0-research",
       functionGraph: "regency-function-graph-0.8.0-research",
-      guidancePolicy: "ceremonial-guidance-policy-0.1.0",
+      guidancePolicy: "ceremonial-guidance-policy-0.2.0-tool-only",
       planetaryHours: "planetary-hours-0.1.0",
       structuralFunctions: "structural-functions-0.1.0-research",
     });

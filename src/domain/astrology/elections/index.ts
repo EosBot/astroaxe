@@ -3,6 +3,7 @@ import {
   resolvePlanetaryHourAt,
   type ClassicalPlanet,
   type PlanetaryHourReading,
+  type PlanetaryHourResolution,
 } from "@/domain/astrology/planetary-hours";
 
 import {
@@ -42,18 +43,29 @@ export interface ElectionMoment {
 export function evaluateElection(input: {
   profile: ElectionProfile;
   moment: ElectionMoment;
+  /**
+   * Hora planetária já resolvida, quando quem chama a possui.
+   *
+   * Descobrir onde o Sol nasce e se põe é a parte cara desta função, e avaliar
+   * quatro critérios no mesmo instante repetia esse trabalho quatro vezes. Quem
+   * varre um período longo já calculou a hora uma vez e a passa adiante; quem
+   * julga um instante avulso continua omitindo o campo e nada muda.
+   */
+  resolution?: PlanetaryHourResolution;
 }): ElectionObservation {
   const profile = electionProfileSchema.parse(input.profile);
   const limitations: string[] = [];
 
-  const resolution = resolvePlanetaryHourAt({
-    jdUt: input.moment.jdUt,
-    latitude: input.moment.latitude,
-    longitude: input.moment.longitude,
-    ...(input.moment.polarFallback === undefined
-      ? {}
-      : { polarFallback: input.moment.polarFallback }),
-  });
+  const resolution =
+    input.resolution ??
+    resolvePlanetaryHourAt({
+      jdUt: input.moment.jdUt,
+      latitude: input.moment.latitude,
+      longitude: input.moment.longitude,
+      ...(input.moment.polarFallback === undefined
+        ? {}
+        : { polarFallback: input.moment.polarFallback }),
+    });
   if (resolution.limitation !== undefined) limitations.push(resolution.limitation);
   if (resolution.method === "equinoctial_local_solar_proxy")
     limitations.push("planetary_hour_is_equinoctial_proxy");
@@ -107,9 +119,21 @@ export function evaluateElection(input: {
 export function evaluateElections(input: {
   profiles: ElectionProfile[];
   moment: ElectionMoment;
+  /** Resolvida uma vez e reaproveitada por todos os critérios do instante. */
+  resolution?: PlanetaryHourResolution;
 }): ElectionObservation[] {
+  const resolution =
+    input.resolution ??
+    resolvePlanetaryHourAt({
+      jdUt: input.moment.jdUt,
+      latitude: input.moment.latitude,
+      longitude: input.moment.longitude,
+      ...(input.moment.polarFallback === undefined
+        ? {}
+        : { polarFallback: input.moment.polarFallback }),
+    });
   return input.profiles
-    .map((profile) => evaluateElection({ profile, moment: input.moment }))
+    .map((profile) => evaluateElection({ profile, moment: input.moment, resolution }))
     .sort((left, right) => left.profileId.localeCompare(right.profileId));
 }
 

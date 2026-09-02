@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const CEREMONIAL_GUIDANCE_POLICY_VERSION = "ceremonial-guidance-policy-0.1.0";
+export const CEREMONIAL_GUIDANCE_POLICY_VERSION = "ceremonial-guidance-policy-0.2.0-tool-only";
 
 const safeGoalCategorySchema = z.enum(["study", "reflection", "remembrance", "personal_routine"]);
 
@@ -29,21 +29,21 @@ export const guidancePolicyInputSchema = z
 
 export type GuidancePolicyInput = z.infer<typeof guidancePolicyInputSchema>;
 
-const checklistItemSchema = z
+/**
+ * O produto aceita guardar o registro — e não diz o que fazer com ele.
+ *
+ * A versão anterior devolvia um roteiro de etapas ("preparar", "registrar",
+ * "encerrar"). Virou decisão de produto não orientar prática: as ferramentas
+ * calculam e catalogam, e o que se faz com isso é de quem opera. Sobra a
+ * aceitação e os limites do que o produto afirma — que não são instrução, e sim
+ * o contrário dela.
+ */
+export const acceptedRecordSchema = z
   .object({
-    id: z.string().regex(/^step:[a-z0-9-]+$/),
-    kind: z.enum(["preparation", "reflection", "documentation", "closing"]),
-    label: z.string().trim().min(1).max(160),
-  })
-  .strict();
-
-export const allowedGuidanceSchema = z
-  .object({
-    kind: z.literal("allowed_guidance"),
+    kind: z.literal("accepted_record"),
     policyVersion: z.literal(CEREMONIAL_GUIDANCE_POLICY_VERSION),
     goalCategory: safeGoalCategorySchema,
     limitations: z.array(z.string().trim().min(1).max(200)).min(1).max(6),
-    checklist: z.array(checklistItemSchema).min(1).max(8),
   })
   .strict();
 
@@ -75,14 +75,19 @@ export const refusedGuidanceSchema = z
   .strict();
 
 export const guidancePolicyDecisionSchema = z.discriminatedUnion("kind", [
-  allowedGuidanceSchema,
+  acceptedRecordSchema,
   refusedGuidanceSchema,
 ]);
 
 export type GuidancePolicyDecision = z.infer<typeof guidancePolicyDecisionSchema>;
 
 /**
- * Decide sobre orientação acionável usando apenas categorias estruturadas.
+ * Decide se o produto aceita guardar um registro, usando só categorias.
+ *
+ * Recusar não é orientar: o produto não diz o que fazer, mas continua se
+ * negando a servir de instrumento para coerção, violência, autolesão,
+ * sacrifício, ilegalidade ou promessa médica e financeira. Declinar é a única
+ * fala do produto sobre a prática de quem usa.
  *
  * Texto livre não entra na decisão nem é repetido na recusa. A boundary que
  * recebe uma intenção precisa classificá-la antes de chamar esta função; uma
@@ -103,15 +108,14 @@ export function evaluateGuidancePolicy(input: unknown): GuidancePolicyDecision {
   if (refused.success) return refusalForGoal(refused.data);
   const safeGoal = safeGoalCategorySchema.parse(parsed.goalCategory);
 
-  return allowedGuidanceSchema.parse({
-    kind: "allowed_guidance",
+  return acceptedRecordSchema.parse({
+    kind: "accepted_record",
     policyVersion: CEREMONIAL_GUIDANCE_POLICY_VERSION,
     goalCategory: safeGoal,
     limitations: [
-      "Prática simbólica e opcional; não promete resultado material, médico ou financeiro.",
-      "Interrompa se houver desconforto e preserve consentimento, segurança e legalidade.",
+      "O AstroAxe calcula e cataloga; o que fazer com isso é decisão de quem opera.",
+      "Nada aqui promete resultado material, médico ou financeiro.",
     ],
-    checklist: checklistFor(safeGoal),
   });
 }
 
@@ -194,26 +198,4 @@ function refusal(
     helpCategory,
     publicMessage,
   });
-}
-
-function checklistFor(goal: z.infer<typeof safeGoalCategorySchema>) {
-  const focus = {
-    study: "Definir a pergunta e registrar as fontes consultadas",
-    reflection: "Nomear a questão sem tratá-la como previsão ou sentença",
-    remembrance: "Escolher uma lembrança que possa ser acolhida com segurança",
-    personal_routine: "Escolher uma prática pessoal pequena e reversível",
-  }[goal];
-  return [
-    { id: "step:prepare", kind: "preparation", label: focus },
-    {
-      id: "step:record",
-      kind: "documentation",
-      label: "Registrar observações sem alegar causalidade",
-    },
-    {
-      id: "step:close",
-      kind: "closing",
-      label: "Encerrar e revisar limites, consentimento e bem-estar",
-    },
-  ];
 }

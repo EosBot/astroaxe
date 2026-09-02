@@ -17,11 +17,14 @@ describe("política de orientação cerimonial", () => {
         target: "self",
       });
 
-      expect(decision.kind).toBe("allowed_guidance");
+      expect(decision.kind).toBe("accepted_record");
       expect(decision.policyVersion).toBe(CEREMONIAL_GUIDANCE_POLICY_VERSION);
-      if (decision.kind === "allowed_guidance") {
-        expect(decision.checklist).toHaveLength(3);
-        expect(decision.limitations.join(" ")).toContain("não promete");
+      if (decision.kind === "accepted_record") {
+        // O produto aceita guardar e declara o que não afirma. Não devolve
+        // roteiro: orientar prática deixou de ser função dele.
+        expect(decision).not.toHaveProperty("checklist");
+        expect(decision.limitations.join(" ")).toContain("promete resultado");
+        expect(decision.limitations.join(" ")).toContain("decisão de quem opera");
       }
       expect(guidancePolicyDecisionSchema.parse(decision)).toEqual(decision);
     },
@@ -49,7 +52,7 @@ describe("política de orientação cerimonial", () => {
     });
   });
 
-  it("recusa alvo não consentinte antes de gerar checklist", () => {
+  it("recusa alvo não consentinte antes de aceitar o registro", () => {
     const decision = evaluateGuidancePolicy({
       operation: "update",
       goalCategory: "personal_routine",

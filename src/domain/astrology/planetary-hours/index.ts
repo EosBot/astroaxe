@@ -122,6 +122,35 @@ export function resolvePlanetaryHourAt(input: PlanetaryHourLocation): PlanetaryH
   };
 }
 
+/** Hora planetária com as próprias fronteiras, em dia juliano. */
+export interface PlanetaryHourWindow extends PlanetaryHourReading {
+  startJdUt: number;
+  endJdUt: number;
+}
+
+/**
+ * A hora planetária vigente, com começo e fim.
+ *
+ * `resolvePlanetaryHourAt` devolve a posição dentro do intervalo e descarta as
+ * bordas, o que basta para julgar um instante. Varrer um período precisa das
+ * bordas: é como se caminha de uma hora à seguinte sem amostrar às cegas e sem
+ * arriscar pular uma hora curta de inverno.
+ */
+export function planetaryHourWindowAt(input: PlanetaryHourLocation): PlanetaryHourWindow | null {
+  const parsed = locationSchema.parse(input);
+  const hour = planetaryHour(engine, parsed.jdUt, parsed.latitude, parsed.longitude);
+  if (hour === null) return null;
+  return {
+    dayRuler: hour.dayRuler as ClassicalPlanet,
+    hourRuler: hour.ruler as ClassicalPlanet,
+    hourNumber: hour.hour > 12 ? hour.hour - 12 : hour.hour,
+    segment: hour.kind as SolarSegment,
+    intervalProgress: (parsed.jdUt - hour.start) / (hour.end - hour.start),
+    startJdUt: hour.start,
+    endJdUt: hour.end,
+  };
+}
+
 const intervalSchema = z
   .object({
     instant: z.iso.datetime({ offset: true }),
