@@ -67,7 +67,7 @@ export type PublicTimingReading = z.infer<typeof publicTimingReadingSchema>;
  * operação" sabe exatamente o que está sendo verificado; saber de qual obra ela
  * veio não a ajudaria a decidir, e nos custaria o acervo.
  */
-const ruleLabels: Readonly<
+export const ruleLabels: Readonly<
   Record<string, { ruleId: string; ruleLabel: string; ruleSummary: string }>
 > = {
   "profile:agrippa-operation-planet": {
@@ -95,6 +95,20 @@ const ruleLabels: Readonly<
       "Aceita a Lua em qualquer ponto do crescimento, até quase cheia, desde que já tenha se afastado do brilho do Sol. Lua nova e Lua minguando ficam de fora.",
   },
 };
+
+/**
+ * Rótulo público de uma regra, ou `undefined` se ela não tiver um.
+ *
+ * Quem publica janelas de um período precisa do mesmo mapeamento que a leitura
+ * de um instante usa. Expor a busca, e não a tabela crua, mantém um único lugar
+ * decidindo o que pode sair — e a ausência de rótulo continua significando
+ * "não publique", em vez de virar identificador interno na tela.
+ */
+export function publicRuleLabel(
+  profileId: string,
+): { ruleId: string; ruleLabel: string; ruleSummary: string } | undefined {
+  return ruleLabels[profileId];
+}
 
 const statusLabels: Readonly<Record<ElectionObservation["status"], string>> = {
   matched: "Este momento tem o que ela pede.",

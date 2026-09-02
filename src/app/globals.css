@@ -556,6 +556,42 @@ a.celestial-module:hover {
   opacity: 0.45;
   cursor: not-allowed;
 }
+/* Janelas agrupadas por critério. A lista é longa por natureza — um mês pode
+   render dezenas de horas — então cada linha precisa ser varrível de relance. */
+.window-group {
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--line);
+}
+.window-group h3 {
+  margin: 0 0 0.35rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.15rem;
+}
+.window-list {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.55rem;
+}
+.window-list li {
+  padding: 0.6rem 0.85rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  align-items: baseline;
+  justify-content: space-between;
+  border-left: 2px solid var(--copper);
+  background: rgb(5 10 15 / 55%);
+}
+.window-list strong {
+  font-variant-numeric: tabular-nums;
+}
+.window-list span {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
 .likert-scale {
   display: flex;
   flex-wrap: wrap;

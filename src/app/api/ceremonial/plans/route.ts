@@ -5,17 +5,11 @@ import { z } from "zod";
 
 import { evaluateGuidancePolicy } from "@/domain/ceremonial/guidance-policy";
 import { ceremonialPlanInputSchema } from "@/lib/ceremonial/plan-contracts";
-import { evaluateAdultAccess } from "@/domain/ceremonial/adult-access";
-import {
-  evaluateReleaseApprovals,
-  PLANNER_REQUIRED_APPROVALS,
-} from "@/domain/ceremonial/release-approval";
-import { declaredReleaseApprovals } from "@/domain/ceremonial/release-approval-data";
 import { loadRecordKeyring, openPlan, sealPlan } from "@/lib/ceremonial/plan-store";
 import { parseServerEnv } from "@/lib/env";
 import { logger } from "@/lib/logger";
 import { getPrisma } from "@/lib/prisma";
-import { isSameOrigin, resolveAccount } from "@/lib/security/account";
+import { authorizeCeremonialAccess } from "@/lib/ceremonial/access";
 import { apiJson } from "@/lib/security/headers";
 import { checkJsonRequest } from "@/lib/security/json-body";
 import type { RecordKeyring } from "@/lib/security/record-encryption";
@@ -113,54 +107,25 @@ export async function POST(request: NextRequest): Promise<Response> {
   );
 }
 
+/**
+ * Guarda desta rota.
+ *
+ * A decisão de acesso — origem, conta, maioridade, direito de assinatura e
+ * aprovações — vive em `authorizeCeremonialAccess`, junto com a das outras
+ * ferramentas cerimoniais. Aqui sobra só o que é específico de guardar registro
+ * cifrado: sem keyring, a rota responde 503 e **não grava**. Guardar em claro
+ * "só até configurarem" é como esses dados vazam.
+ */
 async function authorize(
   request: NextRequest,
   options: { requireSameOrigin: boolean },
 ): Promise<Response | { userId: string; keyring: RecordKeyring }> {
-  const env = parseServerEnv();
-  if (options.requireSameOrigin && !isSameOrigin(request, env.SITE_URL))
-    return apiJson({ error: "Origem inválida." }, { status: 403 });
+  const grant = await authorizeCeremonialAccess(request, options);
+  if (grant instanceof Response) return grant;
 
-  const account = await resolveAccount(request, env.AUTH_SESSION_SECRET);
-  if (account === null) return apiJson({ error: "Entre para usar seus planos." }, { status: 401 });
-
-  // Declaração de maioridade, e não verificação: não existe caminho gratuito para
-  // verificar idade. O que se exige aqui é a declaração registrada, e ela barra
-  // quem não declarou, quem é menor pela própria data e quem declarou sob um
-  // texto que não é mais o vigente.
-  const titular = await getPrisma().user.findUnique({
-    where: { id: account.id },
-    select: { birthDate: true, adultAttestedAt: true, adultAttestationVersion: true },
-  });
-  const adulto = evaluateAdultAccess({
-    birthDate: titular?.birthDate?.toISOString().slice(0, 10) ?? null,
-    attestedAt: titular?.adultAttestedAt?.toISOString() ?? null,
-    attestationVersion: titular?.adultAttestationVersion ?? null,
-    on: new Date().toISOString().slice(0, 10),
-  });
-  if (adulto.status !== "cleared")
-    return apiJson(
-      { error: "Este recurso é restrito a maiores de 18 anos.", access: adulto },
-      { status: 403 },
-    );
-
-  // A aprovação de tratamento é condição de funcionamento, e não formalidade:
-  // ausente, revogada ou vencida, o recurso não opera. É o que a task 39 pede ao
-  // dizer que aprovação faltante bloqueia ativação.
-  const approvals = evaluateReleaseApprovals({
-    approvals: declaredReleaseApprovals,
-    required: PLANNER_REQUIRED_APPROVALS,
-    on: new Date().toISOString().slice(0, 10),
-  });
-  if (approvals.status === "blocked")
-    return apiJson(
-      { error: "Os registros privados não estão liberados para uso." },
-      { status: 503 },
-    );
-
-  const keyring = loadRecordKeyring(env.CEREMONIAL_RECORD_KEYRING);
+  const keyring = loadRecordKeyring(parseServerEnv().CEREMONIAL_RECORD_KEYRING);
   if (keyring === null)
     return apiJson({ error: "Os registros privados não estão configurados." }, { status: 503 });
 
-  return { userId: account.id, keyring };
+  return { userId: grant.userId, keyring };
 }
