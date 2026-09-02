@@ -21,9 +21,11 @@ describe("página de tempo cerimonial", () => {
   it("pede instante e lugar antes de responder qualquer coisa", async () => {
     await renderPage();
 
-    expect(screen.getByRole("heading", { name: /Informe um instante e um lugar/ })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: /Comece dizendo quando, e onde/ })).toBeTruthy();
     // Sem fuso não há como saber que hora do dia é ali, e supor um seria pior.
-    expect(screen.queryByRole("heading", { name: /As regras, lado a lado/ })).toBeNull();
+    expect(
+      screen.queryByRole("heading", { name: /O que cada tradição pede deste momento/ }),
+    ).toBeNull();
   });
 
   it("mostra as obras lado a lado, cada uma com o próprio desfecho", async () => {
@@ -31,15 +33,19 @@ describe("página de tempo cerimonial", () => {
 
     // As regras são identificadas pelo que pedem, e nunca pela obra de onde
     // vieram: nomear o grimório entregaria o acervo de pesquisa.
-    expect(screen.getByRole("heading", { name: "Lua crescente, leitura ampla" })).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Dia planetário do assunto" })).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Planeta da operação" })).toBeTruthy();
+    expect(
+      screen.getByRole("heading", { name: "Lua crescendo, do jeito mais generoso" }),
+    ).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "O dia certo da semana" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "O planeta do seu assunto" })).toBeTruthy();
     // Lua nova contraria o Heptameron, e Agrippa não é computável. Os dois estados
     // convivem na tela sem que nada os concilie.
+    expect(screen.getAllByText("Este momento vai contra o que ela pede.").length).toBeGreaterThan(
+      0,
+    );
     expect(
-      screen.getAllByText("O momento contraria o que esta regra pede.").length,
-    ).toBeGreaterThan(0);
-    expect(screen.getByText("Não há dado suficiente para julgar por esta regra.")).toBeTruthy();
+      screen.getByText("Falta dado para responder por aqui, e chutar seria pior que o silêncio."),
+    ).toBeTruthy();
   });
 
   it("nunca apresenta nota de sucesso nem recomendação de momento", async () => {
@@ -49,9 +55,9 @@ describe("página de tempo cerimonial", () => {
     // A página nega explicitamente, e a negação usa as palavras que ela nega —
     // por isso a verificação afirma a negação em vez de varrer a prosa atrás
     // delas. Que não existe *campo* de nota é provado na projeção pública.
-    expect(texto).toContain("não uma recomendação de momento nem promessa de resultado");
-    expect(texto).toContain("Não existe nota universal de bom momento");
-    expect(texto).toContain("A escolha continua sua");
+    expect(texto).toContain("não é conselho de hora marcada nem promessa de resultado");
+    expect(texto).toContain("Ninguém aqui vai dizer se a hora é boa");
+    expect(texto).toContain("a escolha continua sua");
     expect(texto).not.toContain("%");
   });
 
@@ -73,14 +79,14 @@ describe("página de tempo cerimonial", () => {
   it("diz que a Lua não foi informada em vez de supor uma fase", async () => {
     await renderPage(SAO_PAULO);
 
-    expect(screen.getAllByText("A posição da Lua não foi informada.").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("A posição da Lua não veio junto.").length).toBeGreaterThan(0);
   });
 
   it("explica por que nem todo critério vira regra de momento", async () => {
     const { container } = await renderPage();
 
     expect(
-      screen.getByRole("heading", { name: /Nem toda instrução é um critério de momento/ }),
+      screen.getByRole("heading", { name: /O que a gente escolheu não transformar em regra/ }),
     ).toBeTruthy();
     expect(container.textContent ?? "").toContain("depois que a hora já foi escolhida");
   });

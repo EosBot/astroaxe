@@ -59,20 +59,22 @@ export default async function CeremonialTimingPage({
         <header className="methodology-hero">
           <div>
             <p className="eyebrow">Instrumento</p>
-            <h1>O mesmo instante, lido por critérios que discordam.</h1>
+            <h1>Que horas são, no relógio antigo?</h1>
           </div>
           <p>
-            Não existe nota universal de bom momento. Tradições independentes pedem coisas
-            diferentes de um horário, e quando elas divergem a divergência é o dado — não um empate
-            a ser desfeito. Aqui você vê o que cada critério exige e se este instante atende. A
-            escolha continua sua. O método por trás está em{" "}
-            <Link href="/metodologia">Como este método funciona</Link>.
+            O relógio do celular conta as horas todas do mesmo tamanho. As tradições antigas faziam
+            diferente: dividiam a luz e o escuro em pedaços, e davam a cada pedaço um planeta
+            regente. Diga um instante e um lugar, e mostramos em que hora ele caiu — e o que
+            tradições que nunca se falaram pedem de um momento como esse. Quando elas discordam, a
+            discordância fica à vista, porque ela também é resposta. Ninguém aqui vai dizer se a
+            hora é boa: isso depende do que você pretende, e disso só você sabe. Se quiser ver como
+            tudo isso é apurado, está em <Link href="/metodologia">Como este método funciona</Link>.
           </p>
         </header>
 
         <form className="timing-form" method="get" action="/tempo-cerimonial">
           <p className="eyebrow">Momento e lugar</p>
-          <label htmlFor="instant">Instante, com fuso — ex.: 2026-06-21T15:00:00-03:00</label>
+          <label htmlFor="instant">O instante, com fuso — ex.: 2026-06-21T15:00:00-03:00</label>
           <input id="instant" name="instant" defaultValue={single("instant") ?? ""} required />
           <label htmlFor="latitude">Latitude</label>
           <input id="latitude" name="latitude" defaultValue={single("latitude") ?? ""} required />
@@ -88,18 +90,19 @@ export default async function CeremonialTimingPage({
 
         {reading === null ? (
           <section className="methodology-section" aria-labelledby="timing-empty">
-            <h2 id="timing-empty">Informe um instante e um lugar.</h2>
+            <h2 id="timing-empty">Comece dizendo quando, e onde.</h2>
             <p>
-              A leitura depende de três coisas: o instante com fuso declarado, a latitude e a
-              longitude. O fuso não é detalhe — sem ele não dá para saber que hora do dia é naquele
-              lugar, e um horário chutado seria pior que resposta nenhuma.
+              Precisamos de três coisas: o instante com o fuso junto, e a latitude e a longitude do
+              lugar. O fuso parece burocracia, mas é o que amarra o horário à luz do dia naquele
+              ponto do mundo — sem ele, a mesma hora cairia em pedaços diferentes do céu conforme o
+              lugar, e a leitura viraria sorte. Preferimos pedir do que adivinhar.
             </p>
           </section>
         ) : (
           <>
             <section className="methodology-section" aria-labelledby="timing-moment">
               <p className="eyebrow">Regência</p>
-              <h2 id="timing-moment">A hora em que este instante cai.</h2>
+              <h2 id="timing-moment">Onde o seu instante caiu.</h2>
               {reading.moment === null ? (
                 <p>{reading.methodLabel}</p>
               ) : (
@@ -126,8 +129,8 @@ export default async function CeremonialTimingPage({
             </section>
 
             <section className="methodology-section" aria-labelledby="timing-sources">
-              <p className="eyebrow">Critérios</p>
-              <h2 id="timing-sources">As regras, lado a lado.</h2>
+              <p className="eyebrow">Lado a lado</p>
+              <h2 id="timing-sources">O que cada tradição pede deste momento.</h2>
               <ol className="method-function-list">
                 {reading.observations.map((observation) => (
                   <li key={observation.ruleId}>
@@ -155,12 +158,14 @@ export default async function CeremonialTimingPage({
 
         <section className="methodology-section" aria-labelledby="timing-gaps">
           <p className="eyebrow">O que ficou de fora</p>
-          <h2 id="timing-gaps">Nem toda instrução é um critério de momento.</h2>
+          <h2 id="timing-gaps">O que a gente escolheu não transformar em regra.</h2>
           <p>
-            Parte do material lido ensina como conduzir um trabalho depois que a hora já foi
-            escolhida — não como escolhê-la. Transformar isso em critério de momento faria a fonte
-            dizer o que ela não diz. Fica de fora, e o motivo fica registrado, para que a decisão
-            possa ser revista depois.
+            Boa parte do que se aprende sobre esses assuntos ensina como conduzir um trabalho depois
+            que a hora já foi escolhida — e não como escolher a hora. São coisas diferentes.
+            Espremer uma na outra faria a tradição dizer o que ela não disse, e é o tipo de erro que
+            passa despercebido justamente porque soa convincente. Então fica de fora, com o motivo
+            anotado, para que a decisão possa ser revista quando alguém souber mais do que sabemos
+            hoje.
           </p>
         </section>
       </article>

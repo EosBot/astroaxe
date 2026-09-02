@@ -72,46 +72,49 @@ const ruleLabels: Readonly<
 > = {
   "profile:agrippa-operation-planet": {
     ruleId: "rule:operation-planet",
-    ruleLabel: "Planeta da operação",
+    ruleLabel: "O planeta do seu assunto",
     ruleSummary:
-      "Pede que o planeta correspondente ao trabalho reja o dia e a hora, e esteja dignificado e poderoso na figura do céu. As duas últimas condições o motor ainda não calcula.",
+      "Quer que o planeta ligado ao que você pretende fazer governe tanto o dia quanto a hora. Pede ainda que ele esteja bem acomodado no céu — e isso aqui a gente ainda não sabe medir, então preferimos dizer a fingir que sabe.",
   },
   "profile:arbatel-planetary-governance": {
     ruleId: "rule:planetary-day",
-    ruleLabel: "Dia planetário do assunto",
+    ruleLabel: "O dia certo da semana",
     ruleSummary:
-      "Pede o dia do planeta que governa o assunto, e prefere que também seja a hora dele.",
+      "Quer que o dia da semana pertença ao planeta do seu assunto. Se a hora também for dele, melhor ainda — mas o dia já basta.",
   },
   "profile:kabbala-teurgica-lua-visivel": {
     ruleId: "rule:waxing-moon-strict",
-    ruleLabel: "Lua crescente, leitura estrita",
+    ruleLabel: "Lua crescendo, do jeito mais rigoroso",
     ruleSummary:
-      "Pede Lua entre a crescente inicial e o quarto crescente, e recusa Lua nova ou balsâmica.",
+      "Só aceita a Lua no comecinho do crescimento: do primeiro fio de luz até a metade iluminada. Lua nova e Lua minguando ficam de fora.",
   },
   "profile:heptameron-lua-crescente-nao-combusta": {
     ruleId: "rule:waxing-moon-broad",
-    ruleLabel: "Lua crescente, leitura ampla",
-    ruleSummary: "Pede Lua crescente e não combusta, até a gibosa, e recusa Lua nova ou balsâmica.",
+    ruleLabel: "Lua crescendo, do jeito mais generoso",
+    ruleSummary:
+      "Aceita a Lua em qualquer ponto do crescimento, até quase cheia, desde que já tenha se afastado do brilho do Sol. Lua nova e Lua minguando ficam de fora.",
   },
 };
 
 const statusLabels: Readonly<Record<ElectionObservation["status"], string>> = {
-  matched: "O momento atende ao que esta regra pede.",
-  conflicted: "O momento contraria o que esta regra pede.",
-  unavailable: "Não há dado suficiente para julgar por esta regra.",
+  matched: "Este momento tem o que ela pede.",
+  conflicted: "Este momento vai contra o que ela pede.",
+  unavailable: "Falta dado para responder por aqui, e chutar seria pior que o silêncio.",
 };
 
 const limitationLabels: Readonly<Record<string, string>> = {
   solar_interval_unavailable: "O Sol não nasce nem se põe neste lugar e data.",
-  planetary_hour_is_equinoctial_proxy: "A hora planetária é aproximação, não observação.",
-  lunar_longitudes_not_provided: "A posição da Lua não foi informada.",
+  planetary_hour_is_equinoctial_proxy:
+    "A hora aqui é estimada, não observada — leia como aproximação.",
+  lunar_longitudes_not_provided: "A posição da Lua não veio junto.",
 };
 
 const methodLabels: Readonly<Record<PlanetaryHourResolution["method"], string>> = {
-  observed_solar: "Hora planetária calculada pelo nascer e pôr do sol observados.",
+  observed_solar: "A contagem das horas seguiu o nascer e o pôr do sol reais deste lugar.",
   equinoctial_local_solar_proxy:
-    "Hora planetária por aproximação equinocial, porque o intervalo solar não existe aqui. É estimativa, não observação.",
-  unavailable: "Não há intervalo solar neste lugar e data, então não há hora planetária.",
+    "Neste lugar e data o dia não começa nem termina do jeito de sempre, então as horas foram divididas por aproximação. É estimativa, não observação.",
+  unavailable:
+    "Aqui o Sol não nasce nem se põe nesta data — sem esse compasso, não há hora planetária para contar.",
 };
 
 /**
@@ -159,6 +162,6 @@ export function buildPublicTimingReading(input: {
       ];
     }),
     disclaimer:
-      "Estas regras vêm de tradições independentes e discordam entre si. O que você vê é a observação do que cada uma pede, não uma recomendação de momento nem promessa de resultado. Escolher é de quem opera.",
+      "Estas tradições nunca se falaram, e discordam mesmo. O que está aqui é só o que cada uma pede deste instante — não é conselho de hora marcada nem promessa de resultado. Quem conhece a sua intenção é você, e a escolha continua sua.",
   });
 }

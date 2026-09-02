@@ -50,7 +50,9 @@ test("pede instante e lugar antes de responder qualquer coisa", async ({ page })
   await expect(
     page.getByRole("heading", { name: "Informe um instante e um lugar." }),
   ).toBeVisible();
-  await expect(page.getByRole("heading", { name: "As regras, lado a lado." })).toHaveCount(0);
+  await expect(
+    page.getByRole("heading", { name: "O que cada tradição pede deste momento." }),
+  ).toHaveCount(0);
   // Formulário funciona sem JavaScript: é GET com campos nomeados.
   await expect(page.locator("form.timing-form")).toHaveAttribute("method", "get");
 });
@@ -60,16 +62,18 @@ test("mostra as obras lado a lado, com desfechos distintos e sem vencedor", asyn
 
   await expect(page.getByRole("heading", { name: "As regras, lado a lado." })).toBeVisible();
   // Identificadas pelo que pedem, nunca pela obra de onde vieram.
-  for (const regra of ["Lua crescente, leitura ampla", "Dia planetário do assunto"])
+  for (const regra of ["Lua crescendo, do jeito mais generoso", "O dia certo da semana"])
     await expect(page.getByRole("heading", { name: regra })).toBeVisible();
 
   // Lua nova contraria umas e é incomputável para Agrippa: os dois estados
   // convivem na tela, e nada os concilia.
-  await expect(page.getByText("O momento contraria o que esta regra pede.").first()).toBeVisible();
-  await expect(page.getByText("Não há dado suficiente para julgar por esta regra.")).toBeVisible();
+  await expect(page.getByText("Este momento vai contra o que ela pede.").first()).toBeVisible();
+  await expect(
+    page.getByText("Falta dado para responder por aqui, e chutar seria pior que o silêncio."),
+  ).toBeVisible();
 
   const texto = await page.locator("body").innerText();
-  expect(texto).toContain("não uma recomendação de momento nem promessa de resultado");
+  expect(texto).toContain("não é conselho de hora marcada nem promessa de resultado");
   for (const marcador of MARCADORES_DE_ACERVO) expect(texto).not.toContain(marcador);
 });
 

@@ -33,9 +33,9 @@ describe("projeção pública da leitura de tempo", () => {
     // Lua nova: Heptameron e Kabbala contrariam, Agrippa não é computável. Os três
     // desfechos convivem na mesma resposta, que é o ponto.
     const porRegra = new Map(publico.observations.map((o) => [o.ruleLabel, o.status]));
-    expect(porRegra.get("Lua crescente, leitura ampla")).toBe("conflicted");
-    expect(porRegra.get("Lua crescente, leitura estrita")).toBe("conflicted");
-    expect(porRegra.get("Planeta da operação")).toBe("unavailable");
+    expect(porRegra.get("Lua crescendo, do jeito mais generoso")).toBe("conflicted");
+    expect(porRegra.get("Lua crescendo, do jeito mais rigoroso")).toBe("conflicted");
+    expect(porRegra.get("O planeta do seu assunto")).toBe("unavailable");
   });
 
   it("não tem onde escrever locator, escola ou nota de sucesso", () => {
@@ -69,7 +69,7 @@ describe("projeção pública da leitura de tempo", () => {
     expect(proxy.moment).not.toBeNull();
     // A incerteza viaja no resultado, não numa nota que o chamador possa ignorar.
     expect(proxy.observations.flatMap(({ limitations }) => limitations)).toContain(
-      "A hora planetária é aproximação, não observação.",
+      "A hora aqui é estimada, não observada — leia como aproximação.",
     );
   });
 
@@ -87,6 +87,6 @@ describe("projeção pública da leitura de tempo", () => {
     );
 
     expect(heptameron?.status).toBe("unavailable");
-    expect(heptameron?.limitations).toContain("A posição da Lua não foi informada.");
+    expect(heptameron?.limitations).toContain("A posição da Lua não veio junto.");
   });
 });
