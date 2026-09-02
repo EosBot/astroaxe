@@ -24,6 +24,14 @@ model User {
   passwordHash        String               @map("password_hash") @db.VarChar(255)
   createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
   emailVerifiedAt     DateTime?            @map("email_verified_at") @db.Timestamptz(6)
+  /// Data de nascimento declarada pelo titular da conta, colhida apenas quando
+  /// ele vai usar o planejador. Não confundir com a data do BirthProfile, que é
+  /// do sujeito do mapa e pode ser outra pessoa.
+  birthDate           DateTime?            @map("birth_date") @db.Date
+  adultAttestedAt     DateTime?            @map("adult_attested_at") @db.Timestamptz(6)
+  /// Versão do texto de declaração que a pessoa de fato viu. O texto vive em
+  /// código e é versionado; guardar a versão permite saber o que foi mostrado.
+  adultAttestationVersion String?          @map("adult_attestation_version") @db.VarChar(60)
   sessions            AccountSession[]
   profiles            BirthProfile[]
   culturalContributor CulturalContributor?

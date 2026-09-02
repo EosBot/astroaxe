@@ -30,4 +30,14 @@ describe("PrivacyPage", () => {
     expect(screen.getAllByText(/informação religiosa sensível/).length).toBe(2);
     expect(screen.getByText(/Apagar um plano apaga as sessões dele junto/)).toBeTruthy();
   });
+
+  it("declara a data de nascimento do titular e diz que não é verificação", () => {
+    render(<PrivacyPage />);
+
+    expect(screen.getByText("Declaração de maioridade")).toBeTruthy();
+    // Chamar declaração de verificação emprestaria ao registro autoridade que
+    // ele não tem, e a página precisa dizer isso a quem declara.
+    expect(screen.getByText(/não verificamos documentos/)).toBeTruthy();
+    expect(screen.getByText(/quem não o usa nunca é perguntado/)).toBeTruthy();
+  });
 });

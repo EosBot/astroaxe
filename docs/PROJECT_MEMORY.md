@@ -1,5 +1,39 @@
 # Memória canônica do projeto
 
+## Atualização 2026-09-02 — portão de idade: atestação, porque verificação não tem via gratuita
+
+- O responsável condicionou implementar à existência de forma 100% gratuita. A
+  investigação separou duas coisas que a palavra "verificação" junta.
+- **Verificar de fato não tem caminho gratuito.** Documento e selfie, estimativa
+  facial de idade e gov.br por convênio custam por consulta; cartão de crédito
+  custa e exclui quem não tem. Nenhuma opção livre existe.
+- **Declarar e barrar é gratuito**, e foi o que se implementou. Custa zero porque
+  é campo, coluna e checagem.
+- **O produto não tinha de onde derivar a idade.** `User` guarda só email, senha e
+  timestamps; a `birthDate` que existia é de `BirthProfile`, que é o **sujeito do
+  mapa** e pode ser outra pessoa — inclusive uma criança para quem o titular
+  calcula o mapa. Confundir as duas teria criado um portão que barra a pessoa
+  errada.
+- A declaração é colhida **quando o titular vai usar o planejador**, e não no
+  cadastro. Pedir data de nascimento a quem só quer calcular um mapa coletaria
+  dado sem finalidade; quem nunca abrir o planejador nunca é perguntado.
+- O texto exibido vive em código e é **versionado**, e o registro guarda a versão.
+  Declaração feita sob texto antigo não vale: se o texto mudou, a pessoa concordou
+  com outra coisa.
+- A idade é contada por componentes de data, não por divisão de milissegundos por
+  365,25 — que erra em bissexto e na véspera do aniversário, e aqui um dia decide
+  se alguém entra.
+- A migration recusa declaração incompleta por CHECK: ou os três campos estão
+  preenchidos, ou os três estão nulos. Data sem saber que texto a pessoa viu não
+  sustenta nada.
+- **Aprovação `adult_access` emitida**, com a ressalva no próprio registro de que
+  é atestação e não verificação, e de que adotar verificação real é emitir
+  aprovação nova. A prontidão de release continua bloqueada por retenção de backup
+  e tombstones, que seguem inexistentes.
+- Checkpoint: **681 testes passando**; typecheck, lint, formatação e build de
+  produção limpos. A migration `20260902010000` **não foi aplicada** — aplicar é
+  decisão de quem opera o banco.
+
 ## Atualização 2026-09-01 — aprovações de release: duas emitidas, três recusadas por vazias
 
 - O responsável pediu a lista das aprovações que a task 39 exige, para emiti-las.

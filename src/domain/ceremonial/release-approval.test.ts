@@ -48,11 +48,7 @@ describe("aprovações de release", () => {
     // tombstones e verificação de idade não estão no código, então não foram
     // aprovados — e a prontidão continua bloqueada por eles.
     expect(resultado.status).toBe("blocked");
-    expect([...resultado.missing].sort()).toEqual([
-      "adult_access",
-      "backup_retention",
-      "deletion_tombstones",
-    ]);
+    expect([...resultado.missing].sort()).toEqual(["backup_retention", "deletion_tombstones"]);
   });
 
   it("registra a base legal declarada junto com a ressalva do momento", () => {
@@ -111,5 +107,15 @@ describe("aprovações de release", () => {
       );
       expect(Object.keys(approval)).not.toContain("reviewerName");
     }
+  });
+
+  it("registra que o acesso adulto é atestação, e não verificação", () => {
+    const adulto = declaredReleaseApprovals.find(({ type }) => type === "adult_access");
+
+    expect(adulto?.caveat).toContain("atestação, não verificação");
+    expect(adulto?.caveat).toContain("Não existe caminho gratuito");
+    // O escopo diz o que cobre e o que não cobre, para que ninguém leia mais do
+    // que foi aprovado.
+    expect(adulto?.scope).toContain("não cobre verificação de identidade");
   });
 });

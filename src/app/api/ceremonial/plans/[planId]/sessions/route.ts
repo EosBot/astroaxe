@@ -4,6 +4,7 @@ import { NextRequest } from "next/server";
 import { z } from "zod";
 
 import { ceremonialSessionInputSchema } from "@/lib/ceremonial/plan-contracts";
+import { evaluateAdultAccess } from "@/domain/ceremonial/adult-access";
 import {
   evaluateReleaseApprovals,
   PLANNER_REQUIRED_APPROVALS,
@@ -112,6 +113,26 @@ async function authorize(
 
   const account = await resolveAccount(request, env.AUTH_SESSION_SECRET);
   if (account === null) return apiJson({ error: "Entre para usar seus planos." }, { status: 401 });
+
+  // Declaração de maioridade, e não verificação: não existe caminho gratuito para
+  // verificar idade. O que se exige aqui é a declaração registrada, e ela barra
+  // quem não declarou, quem é menor pela própria data e quem declarou sob um
+  // texto que não é mais o vigente.
+  const titular = await getPrisma().user.findUnique({
+    where: { id: account.id },
+    select: { birthDate: true, adultAttestedAt: true, adultAttestationVersion: true },
+  });
+  const adulto = evaluateAdultAccess({
+    birthDate: titular?.birthDate?.toISOString().slice(0, 10) ?? null,
+    attestedAt: titular?.adultAttestedAt?.toISOString() ?? null,
+    attestationVersion: titular?.adultAttestationVersion ?? null,
+    on: new Date().toISOString().slice(0, 10),
+  });
+  if (adulto.status !== "cleared")
+    return apiJson(
+      { error: "Este recurso é restrito a maiores de 18 anos.", access: adulto },
+      { status: 403 },
+    );
 
   const params = paramsSchema.safeParse(await context.params);
   if (!params.success) return apiJson({ error: "Plano inválido." }, { status: 400 });

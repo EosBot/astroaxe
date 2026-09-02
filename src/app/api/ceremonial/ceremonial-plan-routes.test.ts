@@ -13,6 +13,7 @@ const mocks = vi.hoisted(() => ({
   planFindMany: vi.fn(),
   planFindFirst: vi.fn(),
   planDeleteMany: vi.fn(),
+  userFindUnique: vi.fn(),
   keyring: { value: "" as string | undefined },
 }));
 
@@ -58,7 +59,15 @@ describe("rotas de plano cerimonial", () => {
     mocks.resolveAccount.mockResolvedValue({ id: OWNER });
     mocks.planFindMany.mockResolvedValue([]);
     mocks.planDeleteMany.mockResolvedValue({ count: 1 });
+    // Titular adulto declarado: o portão da task 39 é atestação, e sem ela as
+    // rotas respondem 403.
+    mocks.userFindUnique.mockResolvedValue({
+      birthDate: new Date("1990-01-01T00:00:00.000Z"),
+      adultAttestedAt: new Date("2026-09-02T00:00:00.000Z"),
+      adultAttestationVersion: "adult-attestation-1.0.0",
+    });
     mocks.getPrisma.mockReturnValue({
+      user: { findUnique: mocks.userFindUnique },
       ceremonialPlan: {
         create: mocks.planCreate,
         findMany: mocks.planFindMany,
@@ -172,6 +181,25 @@ describe("rotas de plano cerimonial", () => {
     });
 
     expect((await POST(texto)).status).toBe(415);
+    expect(mocks.planCreate).not.toHaveBeenCalled();
+  });
+
+  it("barra quem não declarou maioridade, e quem declarou sendo menor", async () => {
+    mocks.userFindUnique.mockResolvedValue({
+      birthDate: null,
+      adultAttestedAt: null,
+      adultAttestationVersion: null,
+    });
+    expect((await POST(jsonRequest(PLANO_VALIDO))).status).toBe(403);
+
+    mocks.userFindUnique.mockResolvedValue({
+      birthDate: new Date("2015-01-01T00:00:00.000Z"),
+      adultAttestedAt: new Date("2026-09-02T00:00:00.000Z"),
+      adultAttestationVersion: "adult-attestation-1.0.0",
+    });
+    expect((await POST(jsonRequest(PLANO_VALIDO))).status).toBe(403);
+
+    // Declaração é o que se exige; provar não é possível sem serviço pago.
     expect(mocks.planCreate).not.toHaveBeenCalled();
   });
 });

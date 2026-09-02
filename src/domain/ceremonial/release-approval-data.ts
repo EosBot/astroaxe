@@ -7,11 +7,10 @@ import { releaseApprovalSchema, type ReleaseApproval } from "./release-approval"
  * teve. Papel, e nunca nome: o projeto não inventa nomes, cargos religiosos nem
  * credenciais individuais, e um registro de aprovação não é o lugar para começar.
  *
- * As três aprovações que a task 39 ainda exige — retenção de backup, tombstones de
- * exclusão e verificação de idade adulta — **não estão aqui, de propósito**. Os
- * controles que elas cobririam não existem no código, e aprovar controle
- * inexistente é aprovação vazia. A prontidão de release fica bloqueada por elas, e
- * é assim que deve ficar.
+ * As duas aprovações que a task 39 ainda exige — retenção de backup e tombstones
+ * de exclusão — **não estão aqui, de propósito**. Os controles que elas cobririam
+ * não existem no código, e aprovar controle inexistente é aprovação vazia. A
+ * prontidão de release fica bloqueada por elas, e é assim que deve ficar.
  */
 export const declaredReleaseApprovals: readonly ReleaseApproval[] = [
   {
@@ -38,5 +37,18 @@ export const declaredReleaseApprovals: readonly ReleaseApproval[] = [
     legalBasis: "signup_consent",
     caveat:
       "Ressalva registrada no momento da decisão: a LGPD trata convicção religiosa como dado pessoal sensível (art. 11), e para essa categoria o consentimento em regra precisa ser específico e destacado, não o aceite geral do cadastro. O responsável foi informado disso e optou pelo consentimento de cadastro. Revisar esta base é emitir uma aprovação nova deste mesmo tipo, e não editar esta.",
+  },
+  {
+    id: "approval:adult-access-2026-09-02",
+    type: "adult_access",
+    scope:
+      "Restringir o planejador cerimonial a maiores de 18 anos por declaração do titular da conta, com data de nascimento declarada, data da declaração e versão do texto exibido. Cobre a atestação registrada; não cobre verificação de identidade nem de idade.",
+    reviewerRole: "product_owner",
+    declaredOn: "2026-09-02",
+    expiresOn: null,
+    revokedOn: null,
+    legalBasis: null,
+    caveat:
+      "Ressalva registrada no momento da decisão: isto é atestação, não verificação. Não existe caminho gratuito para verificar idade — documento, estimativa facial e gov.br por convênio custam por consulta —, e o responsável optou pela declaração registrada em vez de nenhum controle. O que ela faz é criar registro e deslocar responsabilidade; o que ela não faz é provar. Adotar verificação real é emitir uma aprovação nova deste mesmo tipo.",
   },
 ].map((approval) => releaseApprovalSchema.parse(approval));
