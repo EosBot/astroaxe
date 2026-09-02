@@ -362,7 +362,7 @@ export function CompleteNatalMapView({
           Seu Sol em {placement(natal, "sun").sign} descreve o centro que procura se tornar
           consciente.{" "}
           {ascendantPlacement === undefined
-            ? "Como a hora não foi informada, o Ascendente e as casas permanecem indisponíveis; inventá-los tornaria a leitura imprecisa."
+            ? "Sem a hora do seu nascimento, o Ascendente e as casas ficam de fora — e preferimos assim. Dá para chutar, mas um chute aqui muda a leitura inteira, e você não teria como saber. O que vem por signo continua verdadeiro e inteiro. Se um dia você descobrir a hora, é só voltar: o mapa cresce na hora."
             : `Seu Ascendente em ${ascendantPlacement.sign} mostra a postura espontânea com que você inicia experiências. A combinação pede que essência e presença aprendam a cooperar, sem reduzir você a um único signo.`}
         </p>
       </section>
@@ -480,21 +480,21 @@ export function SexualMapView({
       "Casa 1: como você se mostra",
       timed
         ? `A Casa 1 começa em ${houseSign(natal, 1)} e descreve sua presença na aproximação, o impacto inicial e aquilo com que você espontaneamente se identifica.`
-        : "Sem hora conhecida, Ascendente e Casa 1 não podem ser calculados com segurança.",
+        : "O Ascendente depende da hora exata, e ela não está no seu perfil. Fica para quando você tiver — e é comum aparecer em certidão de nascimento ou registro de maternidade, se quiser procurar.",
     ],
     [
       "VII",
       "Casa 7: o que busca no outro",
       timed
         ? `A Casa 7 começa em ${houseSign(natal, 7)} e revela qualidades projetadas na parceria e o tipo de encontro que convida reciprocidade e negociação.`
-        : "Sem hora conhecida, a Casa 7 permanece indisponível; o produto não inventa um perfil de parceria.",
+        : "A Casa 7, que fala de parceria, precisa da hora do nascimento. Sem ela, não vamos desenhar um perfil de relacionamento que talvez não seja o seu — Vênus, Marte e Lua já contam bastante sobre como você ama.",
     ],
     [
       "VIII",
       "Casa 8: entrega, prazer e fantasia",
       timed
         ? `A Casa 8 começa em ${houseSign(natal, 8)} e descreve como confiança, vulnerabilidade, poder compartilhado e fantasia ganham profundidade na intimidade.`
-        : "Sem hora conhecida, a Casa 8 permanece indisponível; Vênus, Marte, Lua, Sol e Lilith ainda oferecem leitura confiável por signo.",
+        : "A Casa 8, do que é íntimo e compartilhado, precisa da hora exata. Sem ela ficamos com Vênus, Marte, Lua, Sol e Lilith — que já dizem muito sobre desejo, entrega e o que você guarda para pouca gente.",
     ],
   ] as const;
   const readings = [
@@ -543,7 +543,7 @@ export function ProfessionalMapView({
       "Vocação e direção pública",
       timed
         ? `Seu Meio do Céu em ${zodiacPlacement(natal.houses?.midheaven ?? 0).sign} orienta a construção de reputação. Sol em ${sun.sign} busca autoria ${expression(sun.sign)}; Lua em ${moon.sign} mostra o ambiente emocional necessário para sustentar essa trajetória.`
-        : "Sem hora conhecida, Meio do Céu e casas profissionais não podem ser calculados. A leitura preserva os potenciais planetários confiáveis.",
+        : "O Meio do Céu e as casas de trabalho pedem a hora do nascimento. Sem ela, seguimos com o que os planetas mostram por signo — vocação não está só no topo do mapa, e a leitura continua útil.",
     ],
     [
       "II",
@@ -564,7 +564,7 @@ export function ProfessionalMapView({
       "Carreira e reconhecimento",
       timed
         ? `A Casa 10 começa em ${houseSign(natal, 10)} e revela a forma de assumir responsabilidade e visibilidade ao longo do tempo.`
-        : "A Casa 10 e o Meio do Céu permanecem indisponíveis sem hora conhecida.",
+        : "A Casa 10 e o Meio do Céu ficam para quando você souber a hora do nascimento.",
     ],
     [
       "☿",
