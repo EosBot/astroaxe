@@ -29,7 +29,7 @@ describe("regency research benchmark", () => {
     expect(result.baseline.matrixVersion).toBe("regency-matrix-0.1.0-research");
     expect(result.candidate).toMatchObject({
       matrixVersion: "regency-matrix-0.5.0-v3-questionnaire-research",
-      configVersion: "regency-weights-0.2.0-v3-questionnaire-research",
+      configVersion: "regency-weights-0.3.0-astrology-primary",
     });
     expect(result.candidate.validation.sampleSize).toBe(result.baseline.validation.sampleSize);
     expect(result.dataset).toMatchObject({

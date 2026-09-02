@@ -7,7 +7,7 @@ import type { RegencyNumerologicalFeature } from "./numerology";
 import type { RegencyQuestionnaireFeature } from "./questionnaire";
 import { regencyDecisionPolicySchema } from "./decision-policy";
 
-export const REGENCY_SCORER_VERSION = "regency-scorer-0.6.0-research";
+export const REGENCY_SCORER_VERSION = "regency-scorer-0.7.0-astrology-primary";
 
 const roleSchema = z.enum(["front", "head", "back"]);
 const featureCategorySchema = z.enum([
@@ -178,10 +178,20 @@ export interface RegencyContribution {
 export interface RegencyCandidateScore {
   orisaId: string;
   displayName: string;
+  /** Placar do céu. O autorrelato não entra aqui, em hipótese nenhuma. */
   rawScore: number;
   normalizedScore: number;
   evidenceBreadth: number;
   contributions: RegencyContribution[];
+  /**
+   * Placar do autorrelato, usado só para ordenar empates.
+   *
+   * Fica separado de `rawScore` de propósito: somado, o questionário viraria
+   * mais uma evidência e poderia ultrapassar o céu por acúmulo. Isolado, ele só
+   * consegue escolher entre candidatos que a astrologia já deixou empatados.
+   */
+  tiebreakScore: number;
+  tiebreakContributions: RegencyContribution[];
 }
 
 export interface RegencyScoringResult {
@@ -208,12 +218,21 @@ export function scoreRegencies(input: {
 }): RegencyScoringResult {
   const matrix = regencyMatrixSchema.parse(input.matrix);
   const config = regencyScoringConfigSchema.parse(input.config);
-  const features: ScorableFeature[] = [
+  /**
+   * A tríade nasce do céu.
+   *
+   * Tudo que deriva do nascimento — signo, dignidade, angularidade, dia e hora
+   * planetários, número do nascimento — compõe o placar. O que a pessoa
+   * respondeu sobre si fica de fora dele e só reaparece para desempatar, porque
+   * autorrelato responde a quem alguém acredita ser, e o mapa não muda conforme
+   * o humor de quem o lê.
+   */
+  const celestialFeatures: ScorableFeature[] = [
     ...input.astrologicalFeatures,
     ...(input.temporalFeatures ?? []),
     ...(input.numerologicalFeatures ?? []),
-    ...(input.questionnaireFeatures ?? []),
   ];
+  const selfReportFeatures: ScorableFeature[] = [...(input.questionnaireFeatures ?? [])];
   const candidates = matrix.entities.filter((entity) => entity.eligibleForRegency);
   if (candidates.length < 3)
     throw new RangeError("A tríade exige pelo menos três Orixás elegíveis.");
@@ -221,7 +240,7 @@ export function scoreRegencies(input: {
   const rankingsByRole = Object.fromEntries(
     roleSchema.options.map((role) => [
       role,
-      rankCandidates(role, candidates, matrix, config, features),
+      rankCandidates(role, candidates, matrix, config, celestialFeatures, selfReportFeatures),
     ]),
   ) as Record<RegencyRole, RegencyCandidateScore[]>;
 
@@ -241,9 +260,12 @@ function rankCandidates(
   candidates: RegencyMatrix["entities"],
   matrix: RegencyMatrix,
   config: RegencyScoringConfig,
-  features: ScorableFeature[],
+  celestialFeatures: ScorableFeature[],
+  selfReportFeatures: ScorableFeature[],
 ): RegencyCandidateScore[] {
-  const scores = candidates.map((entity) => scoreCandidate(role, entity, matrix, config, features));
+  const scores = candidates.map((entity) =>
+    scoreCandidate(role, entity, matrix, config, celestialFeatures, selfReportFeatures),
+  );
   const maximum = Math.max(...scores.map(({ rawScore }) => rawScore), 0);
   return scores
     .map((score) => ({
@@ -258,19 +280,27 @@ function scoreCandidate(
   entity: RegencyMatrix["entities"][number],
   matrix: RegencyMatrix,
   config: RegencyScoringConfig,
-  features: ScorableFeature[],
+  celestialFeatures: ScorableFeature[],
+  selfReportFeatures: ScorableFeature[],
 ): RegencyCandidateScore {
-  const contributions = matrix.claims
-    .filter((claim) => claim.targetId === entity.id)
-    .flatMap((claim) => contributionsForClaim(role, claim, config, features))
+  const claims = matrix.claims.filter((claim) => claim.targetId === entity.id);
+  const contributions = claims
+    .flatMap((claim) => contributionsForClaim(role, claim, config, celestialFeatures))
+    .sort(compareContributions);
+  const tiebreakContributions = claims
+    .flatMap((claim) => contributionsForClaim(role, claim, config, selfReportFeatures))
     .sort(compareContributions);
   return {
     orisaId: entity.id,
     displayName: entity.canonicalName,
     rawScore: contributions.reduce((total, item) => total + item.amount, 0),
     normalizedScore: 0,
+    // A amplitude também é do céu: uma resposta de formulário não é uma escola
+    // independente concordando, e contá-la assim inflaria a confiança.
     evidenceBreadth: new Set(contributions.map(({ schoolId }) => schoolId)).size,
     contributions,
+    tiebreakScore: tiebreakContributions.reduce((total, item) => total + item.amount, 0),
+    tiebreakContributions,
   };
 }
 
@@ -349,6 +379,8 @@ function compareCandidates(left: RegencyCandidateScore, right: RegencyCandidateS
     right.rawScore - left.rawScore ||
     right.evidenceBreadth - left.evidenceBreadth ||
     strongest(right) - strongest(left) ||
+    // Só aqui o formulário fala: depois que o céu não separou mais nada.
+    right.tiebreakScore - left.tiebreakScore ||
     left.orisaId.localeCompare(right.orisaId)
   );
 }
@@ -472,7 +504,10 @@ function hasSubstantiveTie(candidates: RegencyCandidateScore[]): boolean {
   return (
     first.rawScore === second.rawScore &&
     first.evidenceBreadth === second.evidenceBreadth &&
-    strongest(first) === strongest(second)
+    strongest(first) === strongest(second) &&
+    // Empate que o formulário desfez não é empate: só continua sem solução
+    // quando nem o céu nem a pessoa separaram os dois.
+    first.tiebreakScore === second.tiebreakScore
   );
 }
 

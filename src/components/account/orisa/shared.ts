@@ -20,7 +20,7 @@ export const stabilityLabels = {
 
 export function explainReason(reason: string | undefined): string {
   if (reason === "tradition_confirmation_required")
-    return "dois nomes chegaram aqui com a mesma força, e desempatar não cabe a um cálculo. Esse tipo de confirmação acontece no contexto religioso, com quem tem autoridade para dizê-lo — nunca numa tela.";
+    return "dois nomes chegaram aqui com a mesma força no seu mapa, e nem o que você respondeu os separou. Desempatar daqui em diante não cabe a um cálculo: esse tipo de confirmação acontece no contexto religioso, com quem tem autoridade para dizê-lo — nunca numa tela.";
   if (reason === "insufficient_evidence_breadth")
     return "o que sustenta este papel ainda vem de poucos caminhos independentes. Preferimos deixar em aberto a fechar em cima de eco: uma resposta bonita e mal apoiada seria pior que o silêncio.";
   if (reason === "distinct_candidate_unavailable")

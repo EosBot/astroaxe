@@ -22,8 +22,8 @@ export function QuestionnaireStep({
           O que vem agora são {regencyQuestionnaire.length} frases sobre o dia a dia. Leia cada uma
           e diga o quanto ela combina com você — sem pensar demais, a primeira impressão costuma ser
           a mais honesta. Não existe resposta certa, nem resposta que deixe o resultado mais bonito:
-          o que muda o resultado é você responder como de fato é. Se alguma frase não fizer sentido,
-          pode pular. Leva uns quatro minutos.
+          responder como você de fato é só ajuda nos casos em que o mapa empata. Se alguma frase não
+          fizer sentido, pode pular. Leva uns quatro minutos.
         </p>
       </header>
       <form
@@ -42,9 +42,10 @@ export function QuestionnaireStep({
           />
         ))}
         <p>
-          Suas respostas entram como um sinal entre outros, ao lado do que o céu do seu nascimento
-          mostra. Elas ajudam a desempatar, não decidem sozinhas — e nada aqui substitui confirmação
-          dentro do contexto religioso.
+          Quem define a sua tríade é o céu do seu nascimento. Estas respostas não entram nessa
+          conta: elas ficam guardadas para o caso de dois nomes chegarem empatados, e aí sim
+          desempatam. Se o mapa já for claro, o que você marcou aqui não muda nada — e nada disso
+          substitui confirmação dentro do contexto religioso.
         </p>
         <button className="quiet-button" type="submit">
           Cruzar respostas e revelar tríade

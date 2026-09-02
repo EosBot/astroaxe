@@ -3,7 +3,7 @@ import "server-only";
 import { experimentalRegencyConfig } from "./experimental-config";
 import { regencyScoringConfigSchema, type RegencyScoringConfig } from "./scorer";
 
-export const REGENCY_V2_CONFIG_VERSION = "regency-weights-0.2.0-v3-questionnaire-research";
+export const REGENCY_V2_CONFIG_VERSION = "regency-weights-0.3.0-astrology-primary";
 
 const structuralSourceIds = ["source:astroaxe:role-lenses"];
 
