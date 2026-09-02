@@ -25,7 +25,7 @@ test("publica o grafo de funções sem expor a proveniência por claim", async (
   await page.goto("/metodologia");
 
   await expect(
-    page.getByRole("heading", { name: "As perguntas que as tradições respondem juntas." }),
+    page.getByRole("heading", { name: "Nove perguntas que as tradições respondem juntas." }),
   ).toBeVisible();
 
   // Marbas e Omolu ocupam a mesma função com as categorias visíveis lado a lado —

@@ -50,8 +50,8 @@ describe("página de tempo cerimonial", () => {
     // por isso a verificação afirma a negação em vez de varrer a prosa atrás
     // delas. Que não existe *campo* de nota é provado na projeção pública.
     expect(texto).toContain("não uma recomendação de momento nem promessa de resultado");
-    expect(texto).toContain("Não existe pontuação universal de bom momento");
-    expect(texto).toContain("Escolher continua sendo de quem opera");
+    expect(texto).toContain("Não existe nota universal de bom momento");
+    expect(texto).toContain("A escolha continua sua");
     expect(texto).not.toContain("%");
   });
 
@@ -80,8 +80,8 @@ describe("página de tempo cerimonial", () => {
     const { container } = await renderPage();
 
     expect(
-      screen.getByRole("heading", { name: /Nem todo critério consultado vira regra de momento/ }),
+      screen.getByRole("heading", { name: /Nem toda instrução é um critério de momento/ }),
     ).toBeTruthy();
-    expect(container.textContent ?? "").toContain("depois que o momento já foi escolhido");
+    expect(container.textContent ?? "").toContain("depois que a hora já foi escolhida");
   });
 });

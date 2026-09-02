@@ -18,13 +18,13 @@ type ArchiveStatus = "loading" | "ready" | "error";
  */
 function evidenceKindLabel(kind: string): string {
   const labels: Readonly<Record<string, string>> = {
-    "community-primary": "Apoiada em fonte primária de comunidade de terreiro.",
-    "institutional-inventory": "Apoiada em inventário de patrimônio de instituição pública.",
-    ethnography: "Apoiada em registro etnográfico.",
-    "scholarly-analysis": "Apoiada em análise acadêmica revisada.",
-    "product-editorial": "Leitura editorial do AstroAxe, sem pretensão de registro histórico.",
+    "community-primary": "Vem de comunidade de terreiro, em fonte primária.",
+    "institutional-inventory": "Vem de inventário de patrimônio de instituição pública.",
+    ethnography: "Vem de registro etnográfico.",
+    "scholarly-analysis": "Vem de análise acadêmica revisada por pares.",
+    "product-editorial": "Leitura nossa. Não é registro histórico, e não se apresenta como tal.",
   };
-  return labels[kind] ?? "Classe de evidência registrada internamente.";
+  return labels[kind] ?? "Origem registrada internamente.";
 }
 
 export function CulturalArchive(): React.JSX.Element {
@@ -142,7 +142,10 @@ export function CulturalArchive(): React.JSX.Element {
                 <p key={paragraph}>{paragraph}</p>
               ))}
             </div>
-            <aside className="cultural-provenance" aria-label="Autoria, revisão e fontes">
+            <aside
+              className="cultural-provenance"
+              aria-label="Autoria, revisão e origem das afirmações"
+            >
               <p>
                 <strong>Autoria:</strong> {entry.author.displayName}. {entry.author.attributionLine}
               </p>
@@ -167,10 +170,9 @@ export function CulturalArchive(): React.JSX.Element {
                   ))}
                 </ul>
                 <p className="cultural-evidence-note">
-                  Cada afirmação declara em que classe de evidência se apoia. O acervo de pesquisa
-                  que sustenta o método não é publicado: o que o site entrega é a síntese escrita
-                  por nós, e a proveniência de cada peça fica registrada internamente para permitir
-                  corrigir o método quando uma fonte se mostrar errada.
+                  Cada afirmação diz de que tipo de material veio. Guardamos internamente qual
+                  material foi — é o que permite corrigir o texto quando uma fonte se mostra errada,
+                  e já aconteceu.
                 </p>
               </details>
             </aside>

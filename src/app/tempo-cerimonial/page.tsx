@@ -12,13 +12,13 @@ import { resolvePlanetaryHourAt } from "@/domain/astrology/planetary-hours";
 export const metadata: Metadata = {
   title: "Tempo cerimonial",
   description:
-    "Regente do dia e da hora, e o que critérios de tradições independentes pedem de um momento — lado a lado, sem conciliar.",
+    "Descubra em que hora planetária um instante cai e como critérios de tradições que discordam entre si julgam esse momento.",
   alternates: { canonical: "/tempo-cerimonial" },
   openGraph: {
     type: "website",
     title: "Tempo cerimonial — AstroAxe",
     description:
-      "Regente do dia e da hora, e o que critérios de tradições independentes pedem de um momento.",
+      "Em que hora planetária um instante cai, e como critérios que discordam entre si julgam esse momento.",
     url: "/tempo-cerimonial",
   },
 };
@@ -58,20 +58,21 @@ export default async function CeremonialTimingPage({
       <article className="methodology-document">
         <header className="methodology-hero">
           <div>
-            <p className="eyebrow">Instrumento · regência do momento</p>
-            <h1>O que as regras pedem de um momento.</h1>
+            <p className="eyebrow">Instrumento</p>
+            <h1>O mesmo instante, lido por critérios que discordam.</h1>
           </div>
           <p>
-            Não existe pontuação universal de bom momento. Tradições independentes definem critérios
-            diferentes, e quando discordam a discordância é o dado — por isso aparecem lado a lado,
-            sem média e sem vencedor. Escolher continua sendo de quem opera. O método que sustenta
-            estas leituras está em <Link href="/metodologia">Como este método funciona</Link>.
+            Não existe nota universal de bom momento. Tradições independentes pedem coisas
+            diferentes de um horário, e quando elas divergem a divergência é o dado — não um empate
+            a ser desfeito. Aqui você vê o que cada critério exige e se este instante atende. A
+            escolha continua sua. O método por trás está em{" "}
+            <Link href="/metodologia">Como este método funciona</Link>.
           </p>
         </header>
 
         <form className="timing-form" method="get" action="/tempo-cerimonial">
           <p className="eyebrow">Momento e lugar</p>
-          <label htmlFor="instant">Instante, com fuso (ex.: 2026-06-21T15:00:00-03:00)</label>
+          <label htmlFor="instant">Instante, com fuso — ex.: 2026-06-21T15:00:00-03:00</label>
           <input id="instant" name="instant" defaultValue={single("instant") ?? ""} required />
           <label htmlFor="latitude">Latitude</label>
           <input id="latitude" name="latitude" defaultValue={single("latitude") ?? ""} required />
@@ -82,23 +83,23 @@ export default async function CeremonialTimingPage({
             defaultValue={single("longitude") ?? ""}
             required
           />
-          <button type="submit">Ver a leitura</button>
+          <button type="submit">Ler este instante</button>
         </form>
 
         {reading === null ? (
           <section className="methodology-section" aria-labelledby="timing-empty">
             <h2 id="timing-empty">Informe um instante e um lugar.</h2>
             <p>
-              A leitura precisa dos três: instante com fuso declarado, latitude e longitude. Sem
-              fuso não há como saber que hora do dia é ali, e inventar um seria pior que não
-              responder.
+              A leitura depende de três coisas: o instante com fuso declarado, a latitude e a
+              longitude. O fuso não é detalhe — sem ele não dá para saber que hora do dia é naquele
+              lugar, e um horário chutado seria pior que resposta nenhuma.
             </p>
           </section>
         ) : (
           <>
             <section className="methodology-section" aria-labelledby="timing-moment">
-              <p className="eyebrow">Regência do momento</p>
-              <h2 id="timing-moment">A hora que este instante ocupa.</h2>
+              <p className="eyebrow">Regência</p>
+              <h2 id="timing-moment">A hora em que este instante cai.</h2>
               {reading.moment === null ? (
                 <p>{reading.methodLabel}</p>
               ) : (
@@ -125,7 +126,7 @@ export default async function CeremonialTimingPage({
             </section>
 
             <section className="methodology-section" aria-labelledby="timing-sources">
-              <p className="eyebrow">Critérios consultados</p>
+              <p className="eyebrow">Critérios</p>
               <h2 id="timing-sources">As regras, lado a lado.</h2>
               <ol className="method-function-list">
                 {reading.observations.map((observation) => (
@@ -153,13 +154,13 @@ export default async function CeremonialTimingPage({
         )}
 
         <section className="methodology-section" aria-labelledby="timing-gaps">
-          <p className="eyebrow">O que não vira regra</p>
-          <h2 id="timing-gaps">Nem todo critério consultado vira regra de momento.</h2>
+          <p className="eyebrow">O que ficou de fora</p>
+          <h2 id="timing-gaps">Nem toda instrução é um critério de momento.</h2>
           <p>
-            Parte do material consultado descreve como construir um trabalho depois que o momento já
-            foi escolhido, e não como escolhê-lo. Forçar esse tipo de instrução a virar critério de
-            eleição deturparia o que ela diz, então ela fica de fora — e o registro interno guarda o
-            motivo, para que a decisão possa ser revista.
+            Parte do material lido ensina como conduzir um trabalho depois que a hora já foi
+            escolhida — não como escolhê-la. Transformar isso em critério de momento faria a fonte
+            dizer o que ela não diz. Fica de fora, e o motivo fica registrado, para que a decisão
+            possa ser revista depois.
           </p>
         </section>
       </article>

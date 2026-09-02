@@ -24,11 +24,14 @@ describe("PrivacyPage", () => {
     // Criar rotas que guardam intenção, notas e desfechos sem declará-los aqui
     // seria coletar dado sensível em silêncio.
     expect(screen.getByText("Planos e sessões cerimoniais")).toBeTruthy();
-    expect(screen.getByText(/AES-256-GCM/)).toBeTruthy();
+    expect(screen.getByText(/Tudo cifrado/)).toBeTruthy();
     // Duas categorias declaram sensibilidade religiosa: o feedback da Tríade e os
     // registros de prática. Ambas são corretas.
-    expect(screen.getAllByText(/informação religiosa sensível/).length).toBe(2);
-    expect(screen.getByText(/Apagar um plano apaga as sessões dele junto/)).toBeTruthy();
+    // Duas categorias declaram sensibilidade religiosa: o feedback da Tríade e os
+    // registros de prática.
+    expect(screen.getByText(/informação religiosa sensível/)).toBeTruthy();
+    expect(screen.getByText(/Podem revelar convicção religiosa/)).toBeTruthy();
+    expect(screen.getByText(/Apagar um plano leva as sessões dele junto/)).toBeTruthy();
   });
 
   it("declara a data de nascimento do titular e diz que não é verificação", () => {

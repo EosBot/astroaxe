@@ -91,7 +91,7 @@ describe("methodology page", () => {
     const { container } = render(<MethodologyPage />);
 
     expect(
-      screen.getByRole("heading", { name: /As perguntas que as tradições respondem juntas/ }),
+      screen.getByRole("heading", { name: /Nove perguntas que as tradições respondem juntas/ }),
     ).toBeTruthy();
     // Marbas e Omolu na mesma função, com as categorias visíveis lado a lado.
     // Omolu aparece duas vezes porque ocupa duas funções, e isso é correto.

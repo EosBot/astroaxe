@@ -116,8 +116,8 @@ export default function MethodologyPage(): React.JSX.Element {
         </section>
 
         <section className="methodology-section" aria-labelledby="method-corpus">
-          <p className="eyebrow">O acervo de pesquisa</p>
-          <h2 id="method-corpus">De onde o método vem, sem entregar de onde.</h2>
+          <p className="eyebrow">Base de conhecimento</p>
+          <h2 id="method-corpus">Muita leitura para poucas afirmações.</h2>
           <p>{corpus.summary}</p>
 
           <dl className="method-detail-list">
@@ -129,7 +129,7 @@ export default function MethodologyPage(): React.JSX.Element {
             ))}
           </dl>
 
-          <p className="method-emphasis">O que impede o acervo de virar afirmação frouxa:</p>
+          <p className="method-emphasis">Cinco regras decidem o que sobrevive à leitura:</p>
           <ul className="method-criteria">
             {corpus.controls.map((control) => (
               <li key={control}>{control}</li>
@@ -138,17 +138,17 @@ export default function MethodologyPage(): React.JSX.Element {
         </section>
 
         <section className="methodology-section" aria-labelledby="method-functions">
-          <p className="eyebrow">O grafo de funções</p>
-          <h2 id="method-functions">As perguntas que as tradições respondem juntas.</h2>
+          <p className="eyebrow">Funções estruturais</p>
+          <h2 id="method-functions">Nove perguntas que as tradições respondem juntas.</h2>
           <p>
-            Cada função abaixo é uma pergunta estrutural. Sob ela ficam as potências que diferentes
-            tradições apontam como resposta — e o que se afirma é que elas ocupam a mesma posição,
-            nunca que são a mesma coisa. As categorias aparecem lado a lado justamente para que essa
-            diferença não se perca.
+            Cada função é uma pergunta. Embaixo dela ficam as potências que tradições diferentes
+            apontam como resposta — um Orixá, um anjo, um espírito olímpico. O que o método afirma é
+            que ocupam a mesma posição. Nunca que são a mesma coisa: a categoria aparece ao lado de
+            cada nome para que essa diferença não se perca no caminho.
           </p>
           <p>
-            A sustentação é contada por linhagem, não por obra: quatro livros de um mesmo autor são
-            uma voz só.
+            Ao lado de cada função está quantas linhagens independentes chegaram àquela resposta.
+            Três escolas que nunca se leram valem mais que trinta páginas de um autor só.
           </p>
 
           <ol className="method-function-list">

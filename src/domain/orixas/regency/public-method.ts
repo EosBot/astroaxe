@@ -127,30 +127,30 @@ export const PUBLIC_REGENCY_METHOD_CARD = {
    */
   corpus: {
     summary:
-      "O método é derivado de um acervo de pesquisa privado, lido por inteiro e nunca publicado. O que o site entrega é obra original nossa: a função estrutural, a condensação e o texto de leitura. Texto-fonte de terceiro não circula em nenhuma resposta.",
+      "Um acervo extenso de tradições escritas alimenta este método. O que chega até você não é o acervo: é o que restou depois de conferir cada afirmação contra a passagem que a sustenta, descartar o que não se sustentou e contar a evidência por linhagem em vez de por volume. A síntese é nossa, e é ela que o site publica.",
     classes: [
       {
         title: "Escolas praticantes",
         detail:
-          "Compêndios doutrinários e apostilas de formação de casas específicas, que declaram a própria linhagem. É o material mais denso do acervo, e por isso o que mais exige cuidado: densidade não é concordância.",
+          "Compêndios doutrinários e material de formação de casas que declaram a própria linhagem. É a parte mais volumosa do acervo — e a que mais engana. Quatro livros de um autor produzem muita página e uma voz só.",
       },
       {
         title: "Tradições cerimoniais escritas",
         detail:
-          "Compilações históricas de correspondência e de regra de momento, em edições distintas da mesma linhagem. Edições diferentes de um mesmo texto contam como uma testemunha, não como várias.",
+          "Compilações históricas de correspondências e de regras de momento, em edições que divergem entre si. Duas edições do mesmo texto são uma testemunha repetida, não duas testemunhas.",
       },
       {
         title: "Registro institucional e acadêmico",
         detail:
-          "Inventários de patrimônio, dossiês de organismos internacionais e artigos revisados por pares. Entram como via independente das escolas praticantes, e é essa independência que dá peso ao encontro.",
+          "Inventários de patrimônio, dossiês de organismos internacionais e artigos revisados por pares. Chegam por fora das escolas praticantes, e é essa distância que transforma coincidência em evidência.",
       },
     ],
     controls: [
-      "Nenhuma afirmação entra sem a passagem que a sustenta lida no texto. Localizar um arquivo não fecha uma lacuna.",
-      "A sustentação é contada por linhagem, e não por obra: quatro livros de um mesmo autor são uma voz só, e cópia ou tradução da mesma linhagem não é segunda confirmação.",
-      "Divergência entre tradições é registrada com a natureza declarada — grafia variante, disputa de posto entre esquemas coerentes, ou erro provável da própria fonte. Chamar erro de tradição emprestaria autoridade a um engano.",
-      "O que a fonte não autoriza generalizar fica de fora, mesmo quando caberia bem. Meia correspondência não vira correspondência inteira.",
-      "Verificação automatizada impede que caminho de acervo, referência interna ou passagem literal de terceiro atravesse para qualquer resposta pública ou artefato de build.",
+      "Achar o arquivo não fecha a lacuna. Nenhuma afirmação entra sem a passagem lida.",
+      "Cópia e tradução não confirmam nada. A conta é por linhagem, não por título.",
+      "Quando as fontes discordam, o método diz de que tipo é a briga: grafia, posto ou engano de quem escreveu. Erro de autor não vira tradição.",
+      "Meia correspondência fica de fora, mesmo quando cairia bem. É o descarte que dá valor ao que sobra.",
+      "Verificação automática impede que qualquer referência ao acervo atravesse para uma resposta pública.",
     ],
   },
   limits: [
@@ -170,9 +170,9 @@ export const PUBLIC_REGENCY_METHOD_CARD = {
         "O resultado é interpretação do mapa pelo método autoral AstroAxe. Não atribui identidade religiosa, não substitui jogo de búzios, iniciação ou a palavra de um sacerdote, e não deve ser lido como diagnóstico de nada.",
     },
     {
-      title: "O acervo não é publicado, e isso é decisão",
+      title: "A lista de leitura não é o método",
       detail:
-        "A lista de obras que alimenta o método permanece interna. Publicá-la não tornaria o resultado mais verificável — o que se pode conferir é o processo, e ele está inteiro nesta página — e transformaria trabalho de curadoria em bem público sem que ninguém ganhasse com isso.",
+        "O que se confere aqui é o processo, e ele está inteiro nesta página: como a evidência é contada, o que derruba uma afirmação, o que o método se recusa a dizer. Uma bibliografia não responderia nenhuma dessas perguntas.",
     },
     {
       title: "Ainda não há acurácia publicada",

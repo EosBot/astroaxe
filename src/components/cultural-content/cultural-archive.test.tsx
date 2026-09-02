@@ -29,7 +29,7 @@ describe("CulturalArchive", () => {
     // A afirmação declara em que classe de evidência se apoia, e não qual obra
     // sustenta o método: o acervo de pesquisa não é publicado.
     expect(
-      screen.getByText("Apoiada em inventário de patrimônio de instituição pública."),
+      screen.getByText("Vem de inventário de patrimônio de instituição pública."),
     ).toBeTruthy();
     expect(screen.queryByRole("link", { name: "Fonte pública" })).toBeNull();
     expect(screen.queryByText("Seção documental")).toBeNull();

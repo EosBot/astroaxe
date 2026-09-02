@@ -7,7 +7,7 @@ export function SiteFooter(): React.JSX.Element {
     <footer className="site-footer">
       <div className="site-footer-brand">
         <AstroAxeLogo />
-        <p>Seu céu calculado, explicado com clareza e aberto à sua interpretação.</p>
+        <p>Seu céu calculado com precisão, explicado sem mistificação, e seu para interpretar.</p>
       </div>
       <nav aria-label="Rodapé">
         <div>
