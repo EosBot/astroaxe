@@ -545,6 +545,17 @@ a.celestial-module:hover {
 /* Escala de concordância: linha única quando cabe, empilhada quando não cabe.
    Vinte e oito itens com seis opções empilhadas viram uma página que ninguém
    termina, e questionário que cansa é questionário respondido no automático. */
+.timing-form-message,
+.timing-form-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.timing-form button[type="submit"]:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
 .likert-scale {
   display: flex;
   flex-wrap: wrap;

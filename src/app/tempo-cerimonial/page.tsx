@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { z } from "zod";
 
+import { CeremonialMomentForm } from "@/components/site/ceremonial-moment-form";
 import { evaluateElections } from "@/domain/astrology/elections";
 import { seededElectionProfiles } from "@/domain/astrology/elections/profiles";
 import { buildPublicTimingReading } from "@/domain/astrology/elections/public-observation";
@@ -52,6 +53,8 @@ export default async function CeremonialTimingPage({
   });
 
   const reading = parsed.success ? readingFor(parsed.data) : null;
+  // Hoje, em ISO, só para o formulário abrir num dia plausível em vez de vazio.
+  const defaultDate = Temporal.Now.plainDateISO().toString();
 
   return (
     <main id="conteudo-principal" className="observatory-shell methodology-shell">
@@ -72,30 +75,16 @@ export default async function CeremonialTimingPage({
           </p>
         </header>
 
-        <form className="timing-form" method="get" action="/tempo-cerimonial">
-          <p className="eyebrow">Momento e lugar</p>
-          <label htmlFor="instant">O instante, com fuso — ex.: 2026-06-21T15:00:00-03:00</label>
-          <input id="instant" name="instant" defaultValue={single("instant") ?? ""} required />
-          <label htmlFor="latitude">Latitude</label>
-          <input id="latitude" name="latitude" defaultValue={single("latitude") ?? ""} required />
-          <label htmlFor="longitude">Longitude</label>
-          <input
-            id="longitude"
-            name="longitude"
-            defaultValue={single("longitude") ?? ""}
-            required
-          />
-          <button type="submit">Ler este instante</button>
-        </form>
+        <CeremonialMomentForm defaultDate={defaultDate} defaultTime="12:00" />
 
         {reading === null ? (
           <section className="methodology-section" aria-labelledby="timing-empty">
             <h2 id="timing-empty">Comece dizendo quando, e onde.</h2>
             <p>
-              Precisamos de três coisas: o instante com o fuso junto, e a latitude e a longitude do
-              lugar. O fuso parece burocracia, mas é o que amarra o horário à luz do dia naquele
-              ponto do mundo — sem ele, a mesma hora cairia em pedaços diferentes do céu conforme o
-              lugar, e a leitura viraria sorte. Preferimos pedir do que adivinhar.
+              Escolha a cidade, o dia e a hora — a hora do relógio de lá mesmo, sem conta nenhuma. O
+              lugar pesa mais do que parece: o mesmo horário cai em pedaços diferentes do céu
+              conforme onde você está, porque as horas antigas nascem do nascer e do pôr do sol
+              daquele ponto do mundo. Por isso perguntamos onde, em vez de adivinhar.
             </p>
           </section>
         ) : (

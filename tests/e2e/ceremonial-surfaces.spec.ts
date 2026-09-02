@@ -47,9 +47,7 @@ test("publica o grafo de funções sem expor a proveniência por claim", async (
 test("pede instante e lugar antes de responder qualquer coisa", async ({ page }) => {
   await page.goto("/tempo-cerimonial");
 
-  await expect(
-    page.getByRole("heading", { name: "Informe um instante e um lugar." }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Comece dizendo quando, e onde." })).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "O que cada tradição pede deste momento." }),
   ).toHaveCount(0);
@@ -60,7 +58,9 @@ test("pede instante e lugar antes de responder qualquer coisa", async ({ page })
 test("mostra as obras lado a lado, com desfechos distintos e sem vencedor", async ({ page }) => {
   await page.goto(`/tempo-cerimonial?${MOMENTO}&sunLongitude=90&moonLongitude=90`);
 
-  await expect(page.getByRole("heading", { name: "As regras, lado a lado." })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "O que cada tradição pede deste momento." }),
+  ).toBeVisible();
   // Identificadas pelo que pedem, nunca pela obra de onde vieram.
   for (const regra of ["Lua crescendo, do jeito mais generoso", "O dia certo da semana"])
     await expect(page.getByRole("heading", { name: regra })).toBeVisible();
