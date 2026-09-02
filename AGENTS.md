@@ -457,21 +457,21 @@ URL, branch protection ou pipeline.
 
 ## 13. Troubleshooting
 
-| Sintoma                       | Diagnóstico seguro                                 | Ação preferida                                      |
-| ----------------------------- | -------------------------------------------------- | --------------------------------------------------- |
-| Compose rejeita variáveis     | `docker compose config`                            | complete `.env`; não use defaults fracos            |
-| Serviço não fica healthy      | `docker compose ps` e logs do serviço              | corrija causa raiz/healthcheck                      |
-| Prisma Client desatualizado   | compare schema e generated client                  | rode `npm run prisma:generate` no ambiente correto  |
-| Migration falha               | leia SQL e logs do `migrate`                       | corrija migration nova; não apague volume           |
-| `next build` morre no webpack | `TypeError` em `WasmHash._updateWithBuffer`        | cache corrompido: limpe `.next` e reconstrua        |
-| Teste pendura                 | localize handle/timer/conexão aberta               | shutdown explícito e fake timers quando cabível     |
-| Redis indisponível            | verifique health/logs e timeout                    | preserve fail-closed; não faça bypass silencioso    |
-| Sonar não inicia              | confirme memória/`vm.max_map_count`, health e logs | ajuste host conforme `docs/OPERATIONS.md`           |
-| Scanner sem cobertura         | confira `coverage/lcov.info`                       | rode `npm run test:coverage` antes do scan          |
-| Connected Mode não sincroniza | confira URL, token de usuário e project key        | refaça binding sem expor token                      |
-| Tailwind IntelliSense falha   | use workspace TS e configuração v4                 | recarregue editor; não instale LSP duplicado        |
-| Build difere do dev           | reproduza no target Docker/webpack                 | corrija import, env ou boundary server/client       |
-| Skill instalada não aparece   | confira catálogo da sessão                         | abra nova conversa/reinicie; use fallback declarado |
+| Sintoma                        | Diagnóstico seguro                                 | Ação preferida                                      |
+| ------------------------------ | -------------------------------------------------- | --------------------------------------------------- |
+| Compose rejeita variáveis      | `docker compose config`                            | complete `.env`; não use defaults fracos            |
+| Serviço não fica healthy       | `docker compose ps` e logs do serviço              | corrija causa raiz/healthcheck                      |
+| Prisma Client desatualizado    | compare schema e generated client                  | rode `npm run prisma:generate` no ambiente correto  |
+| Migration falha                | leia SQL e logs do `migrate`                       | corrija migration nova; não apague volume           |
+| Build parcial sem erro visível | contagem do gate de vazamento cai de repente       | build falhou antes do fim: confira o exit code      |
+| Teste pendura                  | localize handle/timer/conexão aberta               | shutdown explícito e fake timers quando cabível     |
+| Redis indisponível             | verifique health/logs e timeout                    | preserve fail-closed; não faça bypass silencioso    |
+| Sonar não inicia               | confirme memória/`vm.max_map_count`, health e logs | ajuste host conforme `docs/OPERATIONS.md`           |
+| Scanner sem cobertura          | confira `coverage/lcov.info`                       | rode `npm run test:coverage` antes do scan          |
+| Connected Mode não sincroniza  | confira URL, token de usuário e project key        | refaça binding sem expor token                      |
+| Tailwind IntelliSense falha    | use workspace TS e configuração v4                 | recarregue editor; não instale LSP duplicado        |
+| Build difere do dev            | reproduza no target Docker de produção             | corrija import, env ou boundary server/client       |
+| Skill instalada não aparece    | confira catálogo da sessão                         | abra nova conversa/reinicie; use fallback declarado |
 
 Se uma verificação essencial falhar por infraestrutura, reporte comando,
 mensagem e impacto. Não marque a tarefa como concluída com gate essencial

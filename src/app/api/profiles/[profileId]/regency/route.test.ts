@@ -1,5 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
+import {
+  regencyQuestionnaire,
+  REGENCY_QUESTIONNAIRE_VERSION,
+} from "@/domain/orixas/regency/questionnaire";
 
 const mocks = vi.hoisted(() => ({
   resolveAccount: vi.fn(),
@@ -69,7 +73,7 @@ describe("protected regency result", () => {
     const oversized = new NextRequest(`http://localhost/api/profiles/${profileId}/regency`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Content-Length": "16385" },
-      body: JSON.stringify({ version: "regency-questionnaire-1.0.0", answers: [] }),
+      body: JSON.stringify({ version: REGENCY_QUESTIONNAIRE_VERSION, answers: [] }),
     });
     const response = await POST(oversized, { params: Promise.resolve({ profileId }) });
     expect(response.status).toBe(413);
@@ -102,7 +106,7 @@ describe("protected regency result", () => {
         birthProfileId: profileId,
         birthProfile: { userId: "owner-id" },
         methodVersion: "AstroAxe Regências 3.0 — pesquisa aplicada",
-        questionnaireVersion: "regency-questionnaire-1.0.0",
+        questionnaireVersion: REGENCY_QUESTIONNAIRE_VERSION,
       },
     });
   });
@@ -175,10 +179,8 @@ function request(profileId: string) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      version: "regency-questionnaire-1.0.0",
-      answers: ["faith", "love", "knowledge", "justice", "law", "evolution", "generation"].map(
-        (questionId) => ({ questionId, value: "both" }),
-      ),
+      version: REGENCY_QUESTIONNAIRE_VERSION,
+      answers: regencyQuestionnaire.map(({ id: questionId }) => ({ questionId, value: "3" })),
     }),
   });
 }
@@ -186,7 +188,7 @@ function request(profileId: string) {
 function deleteRequest(profileId: string) {
   const query = new URLSearchParams({
     methodVersion: "AstroAxe Regências 3.0 — pesquisa aplicada",
-    questionnaireVersion: "regency-questionnaire-1.0.0",
+    questionnaireVersion: REGENCY_QUESTIONNAIRE_VERSION,
   });
   return new NextRequest(`http://localhost/api/profiles/${profileId}/regency?${query}`, {
     method: "DELETE",
@@ -213,10 +215,8 @@ function feedbackRequest(profileId: string) {
 
 function questionnaireBody() {
   return {
-    version: "regency-questionnaire-1.0.0",
-    answers: ["faith", "love", "knowledge", "justice", "law", "evolution", "generation"].map(
-      (questionId) => ({ questionId, value: "both" }),
-    ),
+    version: REGENCY_QUESTIONNAIRE_VERSION,
+    answers: regencyQuestionnaire.map(({ id: questionId }) => ({ questionId, value: "3" })),
   };
 }
 

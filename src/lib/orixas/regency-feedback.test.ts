@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { regencyQuestionnaire } from "@/domain/orixas/regency/questionnaire";
+import {
+  regencyQuestionnaire,
+  REGENCY_QUESTIONNAIRE_VERSION,
+} from "@/domain/orixas/regency/questionnaire";
 import { regencyFeedbackInputSchema } from "./regency-feedback";
 
 describe("regency feedback contract", () => {
@@ -51,8 +54,8 @@ function validFeedback() {
   return {
     methodVersion: "AstroAxe Regências 3.0 — pesquisa aplicada",
     questionnaire: {
-      version: "regency-questionnaire-1.0.0",
-      answers: regencyQuestionnaire.map(({ id: questionId }) => ({ questionId, value: "both" })),
+      version: REGENCY_QUESTIONNAIRE_VERSION,
+      answers: regencyQuestionnaire.map(({ id: questionId }) => ({ questionId, value: "3" })),
     },
     verdict: "close",
     knowsOrisas: false,

@@ -542,6 +542,32 @@ a.celestial-module:hover {
   margin-right: 0.45rem;
   accent-color: var(--copper);
 }
+/* Escala de concordância: linha única quando cabe, empilhada quando não cabe.
+   Vinte e oito itens com seis opções empilhadas viram uma página que ninguém
+   termina, e questionário que cansa é questionário respondido no automático. */
+.likert-scale {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+}
+.likert-scale label {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.86rem;
+}
+.likert-scale label[data-skip="true"] {
+  margin-left: auto;
+  color: rgb(140 150 158 / 75%);
+  font-size: 0.78rem;
+}
+@media (width <= 40rem) {
+  .likert-scale {
+    flex-direction: column;
+  }
+  .likert-scale label[data-skip="true"] {
+    margin-left: 0;
+  }
+}
 .orisa-role-grid article {
   padding: 2rem;
   background: var(--obsidian);

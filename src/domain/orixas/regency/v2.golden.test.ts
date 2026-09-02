@@ -3,7 +3,11 @@ import { describe, expect, it } from "vitest";
 import { extractRegencyNumerologicalFeatures } from "./numerology";
 import { assessRegencyRobustness } from "./robustness";
 import { scoreRegencies } from "./scorer";
-import { extractRegencyQuestionnaireFeatures, regencyQuestionnaire } from "./questionnaire";
+import {
+  extractRegencyQuestionnaireFeatures,
+  regencyQuestionnaire,
+  REGENCY_QUESTIONNAIRE_VERSION,
+} from "./questionnaire";
 import { regencyV2Config } from "./v2-config";
 import { regencyV2Matrix, REGENCY_V2_MATRIX_VERSION } from "./v2-matrix";
 
@@ -24,11 +28,19 @@ describe("regency v2 research golden case", () => {
   });
 
   it("uses the directed law answer to distinguish Iansã from Ogum", () => {
+    // Concorda com os dois itens do polo de Iansã e discorda dos dois de Ogum,
+    // deixando o resto em branco: a inclinação vem do contraste dentro da
+    // lente, e não de uma única resposta solta.
     const questionnaireFeatures = extractRegencyQuestionnaireFeatures({
-      version: "regency-questionnaire-1.0.0",
-      answers: regencyQuestionnaire.map(({ id: questionId }) => ({
+      version: REGENCY_QUESTIONNAIRE_VERSION,
+      answers: regencyQuestionnaire.map(({ id: questionId, lensId, pole }) => ({
         questionId,
-        value: questionId === "law" ? ("second_pole" as const) : ("prefer_not_to_answer" as const),
+        value:
+          lensId !== "law"
+            ? ("prefer_not_to_answer" as const)
+            : pole === "second_pole"
+              ? ("5" as const)
+              : ("1" as const),
       })),
     });
     const result = scoreRegencies({

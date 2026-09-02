@@ -203,7 +203,9 @@ function response(body: unknown, status = 200): Response {
 }
 
 function answerRegencyQuestionnaire() {
-  for (const radio of screen.getAllByRole("radio", { name: /Os dois movimentos/ }))
+  // Marca o ponto central da escala em todos os itens: preenche o formulário
+  // sem simular inclinação nenhuma, que é o que estes testes precisam.
+  for (const radio of screen.getAllByRole("radio", { name: "Mais ou menos" }))
     fireEvent.click(radio);
   fireEvent.click(screen.getByRole("button", { name: "Cruzar respostas e revelar tríade" }));
 }

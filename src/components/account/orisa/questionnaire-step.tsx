@@ -19,8 +19,11 @@ export function QuestionnaireStep({
           <h1 id="orisa-lab-title">Antes da sua Tríade</h1>
         </div>
         <p>
-          Estas sete perguntas ajudam a distinguir movimentos simbólicos que podem parecer próximos
-          no mapa. Não há resposta certa; você pode marcar ambos ou não responder.
+          O que vem agora são {regencyQuestionnaire.length} frases sobre o dia a dia. Leia cada uma
+          e diga o quanto ela combina com você — sem pensar demais, a primeira impressão costuma ser
+          a mais honesta. Não existe resposta certa, nem resposta que deixe o resultado mais bonito:
+          o que muda o resultado é você responder como de fato é. Se alguma frase não fizer sentido,
+          pode pular. Leva uns quatro minutos.
         </p>
       </header>
       <form
@@ -39,8 +42,9 @@ export function QuestionnaireStep({
           />
         ))}
         <p>
-          As respostas são usadas nesta solicitação como sinal auxiliar do método e não substituem
-          confirmação religiosa.
+          Suas respostas entram como um sinal entre outros, ao lado do que o céu do seu nascimento
+          mostra. Elas ajudam a desempatar, não decidem sozinhas — e nada aqui substitui confirmação
+          dentro do contexto religioso.
         </p>
         <button className="quiet-button" type="submit">
           Cruzar respostas e revelar tríade
@@ -66,19 +70,21 @@ function QuestionField({
       <legend>
         {index + 1}. {question.prompt}
       </legend>
-      {question.options.map((option) => (
-        <label key={option.value}>
-          <input
-            required
-            type="radio"
-            name={question.id}
-            value={option.value}
-            checked={answer === option.value}
-            onChange={() => onAnswer(option.value)}
-          />{" "}
-          {option.label}
-        </label>
-      ))}
+      <div className="likert-scale">
+        {question.options.map((option) => (
+          <label key={option.value} data-skip={option.value === "prefer_not_to_answer"}>
+            <input
+              required
+              type="radio"
+              name={question.id}
+              value={option.value}
+              checked={answer === option.value}
+              onChange={() => onAnswer(option.value)}
+            />{" "}
+            {option.label}
+          </label>
+        ))}
+      </div>
     </fieldset>
   );
 }
