@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { tradicoes } from "@/domain/tradicoes/catalogo";
+
 export const metadata: Metadata = {
   title: "Magia Cerimonial",
   alternates: { canonical: "/magia-cerimonial" },
@@ -96,6 +98,41 @@ export default function CeremonialMagicPage(): React.JSX.Element {
             <code>docs/RITUAL_GUIDANCE.md</code>. Os instrumentos abaixo já funcionam e alimentam
             esse caminho.
           </p>
+        </section>
+
+        <section className="methodology-section" aria-labelledby="traditions-title">
+          <p className="eyebrow">O que o guia cobre</p>
+          <h2 id="traditions-title">{tradicoes.length} tradições, e o que cada uma sustenta.</h2>
+          <p>
+            O acervo não cobre tudo com a mesma profundidade, e fingir que cobre seria o pior
+            serviço possível. Cada tradição abaixo diz o quanto há de fundamento por trás dela: onde
+            dá para orientar procedimento, onde dá para explicar fundamento, e onde dá apenas para
+            situar. A lacuna declarada vale mais que a página cheia.
+          </p>
+          <ol className="method-function-list">
+            {tradicoes.map((tradicao) => (
+              <li key={tradicao.id}>
+                <h3>{tradicao.name}</h3>
+                <p className="method-function-question">{tradicao.summary}</p>
+                <p className="method-function-support" data-depth={tradicao.depth}>
+                  {tradicao.depth === "orientacao"
+                    ? "Orienta procedimento"
+                    : tradicao.depth === "fundamento"
+                      ? "Explica fundamento"
+                      : "Apresenta e situa"}
+                </p>
+                {tradicao.entities.length === 0 ? null : (
+                  <ul className="method-function-occupants">
+                    {tradicao.entities.map((entidade) => (
+                      <li key={entidade}>
+                        <span>{entidade}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            ))}
+          </ol>
         </section>
 
         <section className="methodology-section" aria-labelledby="instruments-title">

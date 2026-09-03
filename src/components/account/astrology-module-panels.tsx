@@ -116,13 +116,21 @@ export function ShadowHoroscopeView({
     areaHint?: string,
   ): string => {
     if (!pos) return "Dados astrológicos indisponíveis para este ponto.";
-    const { sign, degree, house, retrograde } = pos;
-    const retroTxt = retrograde ? " (retrogrado)" : "";
-    let base = `${profile.socialVersion}
-
-${profile.problem}
-
-Posição astral: ${sign} ${degree.toFixed(2)}°`;
+    const { degree, house, retrograde } = pos;
+    const retroTxt = retrograde ? " (retrógrado)" : "";
+    // Use degree to pick variations (deterministic)
+    const idx = Math.floor(Math.abs(degree) * 10) % 3;
+    const openings = [
+      `${profile.socialVersion}`,
+      `Você se manifesta como ${profile.socialVersion.toLowerCase()}, mas há mais por trás dessa aparência.`,
+      `A cara que você mostra ao mundo: ${profile.socialVersion}. Não conte toda a história.`,
+    ];
+    const problems = [
+      `${profile.problem}`,
+      `O cerne da questão: ${profile.problem.toLowerCase()}.`,
+      `Quando olhamos por baixo do panos, vemos que ${profile.problem.toLowerCase()}.`,
+    ];
+    let houseNote = "";
     if (house) {
       const houseThemes = [
         "identidade, aparência e começos",
@@ -139,20 +147,37 @@ Posição astral: ${sign} ${degree.toFixed(2)}°`;
         "recolhimento, inconsciente e espiritualidade",
       ];
       const theme = houseThemes[house - 1] || `Casa ${house}`;
-      base += `\n\nNa ${theme} (Casa ${house}), essa energia se manifesta com ênfase em ${profile.problem
-        .toLowerCase()
-        .replace(/^o problema é que /, "")}.`;
+      const houseNotes = [
+        `Na ${theme} (Casa ${house}), essa energia se expressa através de ${profile.problem.toLowerCase().replace(/^o problema é que /, "")}.`,
+        `No setor do ${theme} (Casa ${house}), o padrão se manifesta como ${profile.problem.toLowerCase().replace(/^o problema é que /, "")}.`,
+        `Quando ativada no ${theme} (Casa ${house}), essa tendência leva a ${profile.problem.toLowerCase().replace(/^o problema é que /, "")}.`,
+      ];
+      houseNote = `
+
+${houseNotes[idx]}`;
     }
+    const virtueVariations = [
+      `${profile.virtueShadow}`,
+      `Essa qualidade tem seu lado sombrio: ${profile.virtueShadow.toLowerCase()}.`,
+      `O reverso da medalha: ${profile.virtueShadow.toLowerCase()}.`,
+    ];
+    let base = `${openings[idx]}
+
+${problems[idx]}${houseNote}
+
+${virtueVariations[idx]}`;
     if (areaHint) {
-      base += `\n\nDica de integração: ${areaHint}.`;
+      base += `
+
+Dica de integração: ${areaHint}.`;
     }
-    base += `\n\n${profile.virtueShadow}`;
     if (retroTxt) {
-      base += `\n\n${retroTxt.trim()} indica que a lição desta posição precisa ser revisitada com mais consciência.`;
+      base += `
+
+${retroTxt.trim()} sugere que rever essa lição com mais atenção pode trazer insights valiosos.`;
     }
     return base;
   };
-
   // Áreas de sombra (quatro blocos principais)
   const shadowAreas = [
     {

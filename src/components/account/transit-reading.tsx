@@ -317,25 +317,67 @@ function classifyWindow(
 function shadowContent(
   transit: TransitReadingResponse["interpretations"][number]["transit"],
 ): TransitReadingResponse["interpretations"][number]["content"] {
-  const transitingBody = astrologicalBodyName(transit.transitingBody);
-  const natalBody = astrologicalBodyName(transit.natalBody);
+  const transitingBody = astrologicalBodyName(transit.transitingBody ?? "Unknown");
+  const natalBody = astrologicalBodyName(transit.natalBody ?? "Unknown");
   const aspect = astrologicalAspectName(transit.type);
-  let tension =
-    "A facilidade do aspecto pode manter o padrão invisível justamente porque ele funciona sem encontrar resistência.";
+  const applying = transit.applying;
+  // deterministic seed based on bodies and aspect
+  const seed =
+    [...transitingBody].reduce((sum, ch) => sum + ch.charCodeAt(0), 0) +
+    [...natalBody].reduce((sum, ch) => sum + ch.charCodeAt(0), 0) +
+    [...transit.type].reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
+  const idx = Math.abs(seed) % 4;
+  // Opening variations
+  const openings = [
+    `Quando ${transitingBody} forma ${aspect} com ${natalBody} no céu, padrões inconscientes começam a se manifestar com maior intensidade.`,
+    `A dança entre ${transitingBody} e ${natalBody} através do aspecto ${aspect} aciona gatilhos que geralmente permanecemos adormecidos.`,
+    `Este trânsito de ${transitingBody} em ${aspect} com ${natalBody} ilumina áreas que preferimos deixar na sombra.`,
+    `A energia de ${transitingBody} conversando com ${natalBody} via ${aspect} traz à tona impulsos que muitas vezes julgamos inadequados.`,
+  ];
+  // Explanation of the aspect tension
+  let tensionDesc = "";
   if (transit.type === "square" || transit.type === "opposition") {
-    tension =
-      "O conflito torna o padrão mais visível e pode produzir projeção, defensividade ou tentativa de controlar o outro polo.";
+    tensionDesc = `O aspecto tenso (${aspect}) cria fricção que torna difícil ignorar esses padrões; eles exigem atenção e muitas vezes geram conflitos externos como espelho do interno.`;
   } else if (transit.type === "conjunction") {
-    tension =
-      "A concentração dessa energia intensifica identificação e torna difícil separar impulso, medo e escolha consciente.";
+    tensionDesc = `A conjunção funde as energias de ${transitingBody} e ${natalBody}, fazendo com que suas manifestações se tornem quase indistinguíveis e, portanto, mais difíceis de separar do eu consciente.`;
+  } else if (transit.type === "trine" || transit.type === "sextile") {
+    tensionDesc = `O aspecto harmonioso (${aspect}) permite que esses padrões fluam com facilidade, o que pode levar ao acomodamento e à negação de que há algo a ser trabalhado.`;
+  } else {
+    tensionDesc = `O aspecto ${aspect} modera a interação entre esses dois planetas, trazendo nuances que podem ser tanto produtivas quanto enganosas.`;
   }
-  const phase = transit.applying
-    ? "A influência ainda ganha força: perceba os primeiros gatilhos antes que a reação se torne automática."
-    : "A influência já passou pelo pico: observe consequências, repetições e aquilo que agora pode ser reparado.";
+  // Illustration with everyday scenarios
+  const illustrations = [
+    `No trabalho, isso pode aparecer como uma irritação súbita diante de autoridades que lembram figuras paternas ou maternas do passado.`,
+    `Em relacionamentos, você pode perceber um ciúme que surge não do presente, mas de memórias antigas de abandono ou traição.`,
+    `Financeiramente, há uma tendência a gastar impulsivamente como forma de preencher um vazio emocional que não se reconhece.`,
+    `Nas redes sociais, o desejo de validação pode se transformar em uma busca incessante por curtidas que nunca saciam a necessidade profunda de ser visto.`,
+  ];
+  // Twist revealing hidden motive
+  const twists = [
+    `Por trás dessa reação, muitas vezes está o medo de não ser suficiente, disfarçado de justiça ou indignação.`,
+    `O que parece ser teimosia é, na verdade, uma tentativa desesperada de recuperar controle sobre situações que outrora deixaram você impotente.`,
+    `Essa necessidade de atenção pode ser um grito silencioso por cuidado que você aprendeu a não pedir diretamente.`,
+    `O impulso de controlar o ambiente muitas vezes nasce da experiência de que, quando você estava desprotegido, o mundo se mostrou caótico e perigoso.`,
+  ];
+  // Advice-like tip
+  const tips = [
+    `Quando notar esse padrão, pause e pergunte: "Qual necessidade não atendida está por trás dessa reação?"`,
+    `Anote o gatilho, a emoção física e o impulso antes de agir; isso cria espaço para escolher uma resposta mais alinhada com seus valores.`,
+    `Compartilhar essa vulnerabilidade com alguém de confiança pode reduzir o poder que ela tem sobre você em segredo.`,
+    `Lembre-se de que reconhecer o padrão não é ceder a ele, mas sim recuperar a capacidade de decidir como responder.`,
+  ];
+  const phaseNote = applying
+    ? "A influência ainda está aumentando: observe os primeiros sinais antes que se torne um hábito automático."
+    : "A influência já passou pelo pico: esse é o momento de notar consequências e considerar ajustes.";
+  const opening = openings[idx] as string;
+  // `tensionDesc` e `illustrations` faziam parte da mesma série indexada por
+  // `idx` e ficaram fora da montagem. Isso quebrava o lint por variável não
+  // usada e, pior, jogava fora metade do texto que o leitor deveria receber.
+  const deepening = `${tensionDesc} ${illustrations[idx]} ${twists[idx]} ${tips[idx]} ${phaseNote}`;
   return {
     title: `${transitingBody}: reconheça a sombra em movimento`,
-    opening: `${transitingBody} em ${aspect} com seu ${natalBody} natal ativa conteúdos que normalmente procuram agir fora da consciência. ${tension}`,
-    deepening: `${phase} A sombra pode aparecer como excesso, negação ou projeção: você combate no mundo aquilo que ainda não consegue acolher em si. O objetivo não é culpar-se, mas recuperar autoria antes que o mecanismo escolha por você.`,
+    opening,
+    deepening,
     technicalWhy: transitTechnicalSummary(transit),
     reflectionPrompt: `Que reação recorrente revela uma necessidade não reconhecida neste encontro entre ${transitingBody} e ${natalBody}?`,
     practice:
@@ -349,7 +391,6 @@ function shadowContent(
     },
   };
 }
-
 function describeAspect(aspect: DisplayableAspect): string {
   const movement = aspect.applying ? "se aproximando da exatidão" : "se afastando da exatidão";
   const aspectName = astrologicalAspectName(aspect.type);
