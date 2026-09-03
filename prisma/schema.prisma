@@ -19,25 +19,25 @@ model GuestSession {
 }
 
 model User {
-  id                  String               @id @default(uuid()) @db.Uuid
-  email               String               @unique @db.VarChar(320)
-  passwordHash        String               @map("password_hash") @db.VarChar(255)
-  createdAt           DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
-  emailVerifiedAt     DateTime?            @map("email_verified_at") @db.Timestamptz(6)
+  id                      String               @id @default(uuid()) @db.Uuid
+  email                   String               @unique @db.VarChar(320)
+  passwordHash            String               @map("password_hash") @db.VarChar(255)
+  createdAt               DateTime             @default(now()) @map("created_at") @db.Timestamptz(6)
+  emailVerifiedAt         DateTime?            @map("email_verified_at") @db.Timestamptz(6)
   /// Data de nascimento declarada pelo titular da conta, colhida apenas quando
   /// ele vai usar o planejador. Não confundir com a data do BirthProfile, que é
   /// do sujeito do mapa e pode ser outra pessoa.
-  birthDate           DateTime?            @map("birth_date") @db.Date
-  adultAttestedAt     DateTime?            @map("adult_attested_at") @db.Timestamptz(6)
+  birthDate               DateTime?            @map("birth_date") @db.Date
+  adultAttestedAt         DateTime?            @map("adult_attested_at") @db.Timestamptz(6)
   /// Versão do texto de declaração que a pessoa de fato viu. O texto vive em
   /// código e é versionado; guardar a versão permite saber o que foi mostrado.
-  adultAttestationVersion String?          @map("adult_attestation_version") @db.VarChar(60)
-  sessions            AccountSession[]
-  profiles            BirthProfile[]
-  culturalContributor CulturalContributor?
-  emailOutbox         EmailOutbox[]
-  accountTokens       AccountToken[]
-  ceremonialPlans     CeremonialPlan[]
+  adultAttestationVersion String?              @map("adult_attestation_version") @db.VarChar(60)
+  sessions                AccountSession[]
+  profiles                BirthProfile[]
+  culturalContributor     CulturalContributor?
+  emailOutbox             EmailOutbox[]
+  accountTokens           AccountToken[]
+  ceremonialPlans         CeremonialPlan[]
 
   @@map("users")
 }
@@ -613,4 +613,50 @@ model DeletionTombstone {
   @@index([expiresAt])
   @@index([userId, deletedAt])
   @@map("deletion_tombstones")
+}
+
+/// Trecho do acervo, com o vetor que o representa.
+///
+/// É **insumo**, e não obra: nada daqui vai para o navegador em texto cru. O
+/// O título e a categoria ficam guardados para rastrear de onde veio uma leitura,
+/// e são exatamente os campos que nunca podem sair — projeção pública alguma tem
+/// lugar para eles.
+///
+/// O vetor é `Unsupported` porque o Prisma não conhece o tipo do pgvector. A
+/// consequência é boa: ele não aparece no cliente tipado, e a busca por
+/// similaridade precisa passar pela função que já sabe o que pode ser projetado.
+model CorpusChunk {
+  id          String                      @id @map("chunk_id") @db.VarChar(64)
+  docId       String                      @map("doc_id") @db.VarChar(64)
+  title       String                      @db.VarChar(400)
+  category    String                      @db.VarChar(60)
+  subcategory String                      @db.VarChar(60)
+  chunkIndex  Int                         @map("chunk_index")
+  text        String
+  charCount   Int                         @map("char_count")
+  embedding   Unsupported("vector(1024)")
+  createdAt   DateTime                    @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([category])
+  @@index([docId, chunkIndex])
+  @@map("corpus_chunks")
+}
+
+/// Assunto de consulta, com o vetor da pergunta já calculado.
+///
+/// O fluxo guiado não faz busca de texto livre: as perguntas são combinações
+/// finitas de finalidade e entidade, conhecidas de antemão. Calcular esses
+/// vetores fora do ar, e guardá-los aqui, tira o modelo de embedding do caminho
+/// crítico — a aplicação passa a fazer só uma consulta de vizinhança em SQL, sem
+/// Python em produção e sem variação entre execuções.
+model CorpusTopic {
+  id        String                      @id @db.VarChar(120)
+  kind      String                      @db.VarChar(40)
+  label     String                      @db.VarChar(200)
+  queryText String                      @map("query_text") @db.VarChar(600)
+  embedding Unsupported("vector(1024)")
+  createdAt DateTime                    @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([kind])
+  @@map("corpus_topics")
 }

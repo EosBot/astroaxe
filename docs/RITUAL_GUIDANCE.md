@@ -3,7 +3,7 @@
 Documento de trabalho. É atualizado a cada entrega, e serve para saber, a qualquer
 momento, o que já funciona, o que está em construção e o que ainda não começou.
 
-**Última atualização:** 3 de setembro de 2026.
+**Última atualização:** 3 de setembro de 2026 — Fase 1 em andamento, acervo já dentro do banco.
 
 ## O que o dono decidiu
 
@@ -45,11 +45,27 @@ O acervo tem 29.296 trechos, 538 pontos cantados e livros de Umbanda,
 fitoterapia, ervas, magia angelical e orações. **A aplicação não lê nada disso
 hoje** — existe só a pipeline Python. Sem esta ponte, todo o resto seria invenção.
 
-- [ ] Migração: tabela de trechos com `vector(1024)` em pgvector
-- [ ] Ingestão de `chunks.jsonl` + `embeddings.npy` para o Postgres
-- [ ] Serviço de embedding para a pergunta (bge-m3 vive em Python; a app é Node)
-- [ ] Busca por similaridade a partir da aplicação
-- [ ] Gate: nenhum trecho cru chega ao navegador — o acervo é insumo, não obra
+- [x] Migração: `corpus_chunks` e `corpus_topics` com `vector(1024)` e índice HNSW
+- [x] Ingestão: **29.296 trechos carregados**, 434 documentos, 17 categorias
+- [x] Vizinhança verificada no banco: 1,000 consigo mesmo, ~0,68 com vizinhos temáticos
+- [x] Decisão que dispensa Python em produção — ver abaixo
+- [ ] Vetores de assunto: calcular fora do ar e gravar em `corpus_topics`
+- [ ] Recuperação a partir da aplicação, com projeção que nunca devolve trecho cru
+- [ ] Gate: nenhum texto do acervo chega ao navegador — insumo, não obra
+
+**Sem modelo de embedding em produção.** O fluxo guiado não faz busca de texto
+livre: as perguntas são combinações finitas de finalidade e entidade, conhecidas
+de antemão. Os vetores dessas perguntas são calculados uma vez, fora do ar, e
+gravados em `corpus_topics`. Em produção a aplicação faz só uma consulta de
+vizinhança em SQL — sem Python, sem variação entre execuções, sem serviço extra
+para manter de pé.
+
+**O README do acervo estava errado.** Ele documenta `source_path`, `doc_id` e
+`char_count`; os arquivos têm `id`, `title`, `category`, `subcategory`,
+`metadata` e `text`. A tabela foi alinhada ao que existe: `doc_id` e
+`chunk_index` são derivados do próprio `id`, que tem a forma
+`<documento>_<índice>`, e `char_count` é o tamanho do texto. Coluna que a origem
+não preenche seria proveniência inventada.
 
 ### Fase 2 — Catálogo de entidades
 
