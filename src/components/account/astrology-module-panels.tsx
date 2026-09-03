@@ -118,22 +118,27 @@ export function ShadowHoroscopeView({
     if (!pos) return "Dados astrológicos indisponíveis para este ponto.";
     const { degree, house, retrograde } = pos;
     const retroTxt = retrograde ? " (retrógrado)" : "";
-    const bodyLabel = {
-      sun: "Sol",
-      moon: "Lua",
-      mercury: "Mercúrio",
-      venus: "Vênus",
-      mars: "Marte",
-      jupiter: "Júpiter",
-    }[body] ?? body;
-    const bodyScene = {
-      sun: "No cotidiano, isso vira aquela disputa silenciosa por protagonismo em conversas, escolhas e até no grupo da família.",
-      moon: "No afeto, o problema aparece como cobrança indireta, saudade mal explicada ou ciúme que chega antes do contexto.",
-      mercury: "Em discussões, a inteligência vira advogada de defesa: prova que o impulso era razoável, mesmo quando não era.",
-      venus: "No romance, isso aparece como expectativa de retorno, delicadeza que machuca ou charme usado para evitar conversa difícil.",
-      mars: "Na briga, você acelera: corta, reage, antecipa o golpe e só depois pergunta se era mesmo necessário.",
-      jupiter: "Na vida prática, isso vira excesso de confiança, explicação grandiosa e plano bonito demais para o prazo real.",
-    }[body] ?? "O padrão reaparece justamente onde você mais evita olhar.";
+    const bodyLabel =
+      {
+        sun: "Sol",
+        moon: "Lua",
+        mercury: "Mercúrio",
+        venus: "Vênus",
+        mars: "Marte",
+        jupiter: "Júpiter",
+      }[body] ?? body;
+    const bodyScene =
+      {
+        sun: "No cotidiano, isso vira aquela disputa silenciosa por protagonismo em conversas, escolhas e até no grupo da família.",
+        moon: "No afeto, o problema aparece como cobrança indireta, saudade mal explicada ou ciúme que chega antes do contexto.",
+        mercury:
+          "Em discussões, a inteligência vira advogada de defesa: prova que o impulso era razoável, mesmo quando não era.",
+        venus:
+          "No romance, isso aparece como expectativa de retorno, delicadeza que machuca ou charme usado para evitar conversa difícil.",
+        mars: "Na briga, você acelera: corta, reage, antecipa o golpe e só depois pergunta se era mesmo necessário.",
+        jupiter:
+          "Na vida prática, isso vira excesso de confiança, explicação grandiosa e plano bonito demais para o prazo real.",
+      }[body] ?? "O padrão reaparece justamente onde você mais evita olhar.";
     // Use degree to pick variations (deterministic)
     const idx = Math.floor(Math.abs(degree) * 10) % 3;
     const openings = [
@@ -224,7 +229,9 @@ ${retroTxt.trim()} sugere que rever essa lição com mais atenção pode trazer 
     const prof = pos ? signShadowProfile(pos.sign) : undefined;
     return {
       title,
-      text: prof ? shadowTextForPlanet(prof, pos, body, areaHint) : "Dados astrológicos indisponíveis para este ponto.",
+      text: prof
+        ? shadowTextForPlanet(prof, pos, body, areaHint)
+        : "Dados astrológicos indisponíveis para este ponto.",
     };
   });
 
