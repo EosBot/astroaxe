@@ -558,6 +558,20 @@ a.celestial-module:hover {
 }
 /* Janelas agrupadas por critério. A lista é longa por natureza — um mês pode
    render dezenas de horas — então cada linha precisa ser varrível de relance. */
+.plan-actions {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.timing-form textarea,
+.timing-form select {
+  padding: 0.6rem 0.7rem;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  background: rgb(5 10 15 / 65%);
+  font: inherit;
+}
 .window-group {
   margin-top: 2rem;
   padding-top: 1.25rem;
