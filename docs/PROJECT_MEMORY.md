@@ -8,6 +8,7 @@ e arredores; nenhuma alteração de código aplicada até o momento. Não editar
 simultaneamente. Próxima gravação aqui será feita ao entrar na implementação.
 
 **Achados iniciais da auditoria:**
+
 - O módulo atual (`ShadowHoroscopeView`) usa só Sol, Lua, Mercúrio, Vênus e Marte; ignora casas,
   aspectos, ascendente, MC, Saturno, Plutão e Netuno.
 - O texto atual é genérico, curto e tem tom “integração”, não o tom ácido/humorístico pedido.
