@@ -19,6 +19,7 @@ import {
 import { ModernPointsPanel } from "./modern-points-panel";
 import { TransitReading } from "./transit-reading";
 import { ImmersiveReport } from "./immersive-report";
+import { signShadowProfile, SignShadowProfile } from "@/lib/shadow-horoscope/sign-profiles";
 
 type Natal = ProfileRecord["chart"]["natal"];
 
@@ -82,36 +83,144 @@ export function HoroscopeOverview({
 export function ShadowHoroscopeView({
   profile,
 }: Readonly<{ profile: ProfileRecord }>): React.JSX.Element {
-  const sun = placement(profile.chart.natal, "sun");
-  const moon = placement(profile.chart.natal, "moon");
-  const mercury = placement(profile.chart.natal, "mercury");
-  const venus = placement(profile.chart.natal, "venus");
-  const mars = placement(profile.chart.natal, "mars");
-  const chapters = [
-    ["☉", "A máscara da força", sun, "sun"],
-    ["☾", "A defesa emocional", moon, "moon"],
-    ["☿", "A armadilha da mente", mercury, "mercury"],
-    ["♀", "O preço de ser amado", venus, "venus"],
-    ["♂", "A sombra do desejo", mars, "mars"],
-  ] as const;
+  const natal = profile.chart.natal;
+
+  // Função auxiliar para obter posição de um corpo celeste
+  const getPlacement = (body: string) => {
+    const found = natal.planets.find(({ id }) => id === body);
+    if (!found) return null;
+    const zodiac = zodiacPlacement(found.longitude);
+    const house = natal.houses ? houseForLongitude(found.longitude, natal.houses.cusps) : undefined;
+    return {
+      body,
+      sign: zodiac.sign,
+      degree: zodiac.signDegree,
+      house,
+      longitude: found.longitude,
+      retrograde: found.retrograde,
+    };
+  };
+
+  // Posicionamentos pessoais
+  const sunPos = getPlacement("sun");
+  const moonPos = getPlacement("moon");
+  const mercuryPos = getPlacement("mercury");
+  const venusPos = getPlacement("venus");
+  const marsPos = getPlacement("mars");
+  const jupiterPos = getPlacement("jupiter"); // usado para espiritualidade/expansão
+
+  // Função que gera texto de sombra para um planeta dado seu perfil e posição
+  const shadowTextForPlanet = (
+    profile: SignShadowProfile,
+    pos: ReturnType<typeof getPlacement> | null,
+    areaHint?: string
+  ): string => {
+    if (!pos) return "Dados astrológicos indisponíveis para este ponto.";
+    const { sign, degree, house, retrograde } = pos;
+    const retroTxt = retrograde ? " (retrogrado)" : "";
+    let base = `${profile.socialVersion}
+
+${profile.problem}
+
+Posição astral: ${sign} ${degree.toFixed(2)}°`;
+    if (house) {
+      const houseThemes = [
+        "identidade, aparência e começos",
+        "recursos, finanças e valores materiais",
+        "comunicação, aprendizado e irmãos",
+        "lar, família e raízes emocionais",
+        "criatividade, prazer e romance",
+        "trabalho diário, saúde e rotina",
+        "parcerias, contratos e um a um",
+        "intimidade, recursos compartilhados e transformação",
+        "crenças, estudos longs e viagens",
+        "carreira, reputação e público",
+        "amizades, grupos e ideais",
+        "recolhimento, inconsciente e espiritualidade",
+      ];
+      const theme = houseThemes[house - 1] || `Casa ${house}`;
+      base += `\n\nNa ${theme} (Casa ${house}), essa energia se manifesta com ênfase em ${profile.problem
+        .toLowerCase()
+        .replace(/^o problema é que /, "")}.`;
+    }
+    if (areaHint) {
+      base += `\n\nDica de integração: ${areaHint}.`;
+    }
+    base += `\n\n${profile.virtueShadow}`;
+    if (retroTxt) {
+      base += `\n\n${retroTxt.trim()} indica que a lição desta posição precisa ser revisitada com mais consciência.`;
+    }
+    return base;
+  };
+
+  // Áreas de sombra (quatro blocos principais)
   const shadowAreas = [
     {
       title: "Identidade e autoimagem",
-      text: `O Sol em ${sun.sign} pode defender a própria identidade repetindo uma força que perdeu flexibilidade. Como padrão natal, ele pede atenção quando afirmar-se vira provar valor ou quando a necessidade de coerência impede uma mudança necessária.`,
+      profileKey: sunPos?.sign ?? "Áries",
+      areaHint: "Observe onde você insiste em provar seu valor mesmo quando não é necessário.",
     },
     {
       title: "Dinheiro e carreira",
-      text: `A sombra profissional aparece quando ambição, medo de escassez ou necessidade de reconhecimento escolhem por você. Marte em ${mars.sign} pode reagir ${expression(mars.sign)} antes de medir custo, limite e consequência.`,
+      profileKey: marsPos?.sign ?? "Áries",
+      areaHint: "Perceba quando a pressa em resultados está custando mais que o ganho.",
     },
     {
       title: "Família e amigos",
-      text: `A Lua em ${moon.sign} protege pertencimento ${expression(moon.sign)}. Sob ameaça, cuidado pode virar cobrança, silêncio, controle ou expectativa de que os outros adivinhem uma necessidade que ainda não foi nomeada.`,
+      profileKey: moonPos?.sign ?? "Câncer",
+      areaHint: "Note quando o cuidado se torna cobrança disfarçada de amor.",
     },
     {
-      title: "Espiritualidade",
-      text: `A sombra espiritual surge quando intuição vira certeza absoluta, quando sinais substituem responsabilidade ou quando a busca de sentido evita uma realidade desconfortável. Seu caminho precisa ampliar consciência, não alimentar medo ou superioridade.`,
+      title: "Espiritualidade e crenças",
+      profileKey: jupiterPos?.sign ?? "Sagitário",
+      areaHint: "Questione se suas buscas de sentido estão evitando confrontos pessoais necessários.",
     },
-  ];
+  ].map(({ title, profileKey, areaHint }) => {
+    const prof = signShadowProfile(profileKey);
+    // Precisamos da posição real do planeta associado a essa área
+    let pos: ReturnType<typeof getPlacement> | null = null;
+    switch (profileKey) {
+      case sunPos?.sign:
+        pos = sunPos;
+        break;
+      case moonPos?.sign:
+        pos = moonPos;
+        break;
+      case marsPos?.sign:
+        pos = marsPos;
+        break;
+      case jupiterPos?.sign:
+        pos = jupiterPos;
+        break;
+      default:
+        pos = null;
+    }
+    return {
+      title,
+      text: shadowTextForPlanet(prof, pos, areaHint),
+    };
+  });
+
+  // Capítulos pessoais (Sol, Lua, Mercúrio, Vênus, Marte)
+  const personalPlanets = [
+    { glyph: "☉", title: "A máscara da força", body: "sun", pos: sunPos },
+    { glyph: "☾", title: "A defesa emocional", body: "moon", pos: moonPos },
+    { glyph: "☿", title: "A armadilha da mente", body: "mercury", pos: mercuryPos },
+    { glyph: "♀", title: "O preço de ser amado", body: "venus", pos: venusPos },
+    { glyph: "♂", title: "A sombra do desejo", body: "mars", pos: marsPos },
+  ].map(({ glyph, title, body, pos }) => {
+    const profile = pos ? signShadowProfile(pos.sign) : undefined;
+    return {
+      glyph,
+      title,
+      body,
+      pos,
+      content: profile
+        ? shadowTextForPlanet(profile, pos, "")
+        : "Dados indisponíveis para este ponto.",
+    };
+  });
+
   return (
     <section className="editorial-module shadow-horoscope" aria-labelledby="shadow-title">
       <header>
@@ -123,6 +232,8 @@ export function ShadowHoroscopeView({
           excessos e projeções — e a potência que retorna quando você assume autoria sobre eles.
         </p>
       </header>
+
+      {/* Quatro áreas principais */}
       <div className="editorial-module-grid">
         {shadowAreas.map((area) => (
           <article key={area.title}>
@@ -132,26 +243,30 @@ export function ShadowHoroscopeView({
           </article>
         ))}
       </div>
+
+      {/* Arquitetura natal da sombra – planetas pessoais */}
       <div className="biorhythm-chapter">
         <p className="eyebrow">Arquitetura natal da sombra</p>
         <h4>Cinco mecanismos pessoais</h4>
         <p>
-          Os capítulos abaixo mostram como identidade, emoção, pensamento, afeto e desejo podem se
-          defender — e qual potência reaparece quando cada padrão é reconhecido.
+          Os planetas pessoais revelam como você se defende, pensa, ama e age — e onde cada
+          padrão pode ser iluminado.
         </p>
       </div>
       <div className="editorial-module-grid">
-        {chapters.map(([glyph, title, value, body]) => (
-          <article key={body}>
-            <span aria-hidden="true">{glyph}</span>
+        {personalPlanets.map((p) => (
+          <article key={p.body}>
+            <span aria-hidden="true">{p.glyph}</span>
             <p className="eyebrow">
-              {value.sign} · {value.signDegree.toFixed(2)}°
+              {p.pos?.sign ?? "—"} · {p.pos?.degree?.toFixed(2) ?? "0"}°
             </p>
-            <h2>{title}</h2>
-            <p>{shadowMeaning(body, value.sign)}</p>
+            <h2>{p.title}</h2>
+            <p>{p.content}</p>
           </article>
         ))}
       </div>
+
+      {/* Trânsitos sombrios */}
       <div className="biorhythm-chapter">
         <p className="eyebrow">Sombras ativas e próximas</p>
         <h4>Trânsitos do seu Horóscopo Sombrio</h4>
@@ -161,6 +276,8 @@ export function ShadowHoroscopeView({
         </p>
       </div>
       <TransitReading profileId={profile.id} timezone={profile.timezone} variant="shadow" />
+
+      {/* Chamada para integração */}
       <aside className="future-sky-callout">
         <p className="eyebrow">Prática de integração</p>
         <h2>O que irrita, fascina ou assusta também informa.</h2>
@@ -1235,15 +1352,3 @@ function lunarPhaseMeaning(index: number): string {
   );
 }
 
-function shadowMeaning(body: string, sign: string): string {
-  const patterns: Readonly<Record<string, string>> = {
-    sun: "Todo mundo tem um jeito de se defender quando sente que não está sendo visto. O seu costuma passar por endurecer: virar orgulho, virar controle da narrativa, virar aquela rigidez que parece firmeza mas é medo bem vestido. Não é defeito de caráter — é a identidade se protegendo do jeito que aprendeu.",
-    moon: "Quando a segurança falta, o coração não espera para conferir se o perigo é real: ele já aciona a proteção que aprendeu na infância. Você pode se ver reagindo hoje a algo que terminou há muito tempo. Reconhecer isso não faz a reação sumir, mas abre um espaço entre o gatilho e a resposta — e é nesse espaço que a escolha mora.",
-    mercury:
-      "Sob pressão, a mente é hábil demais para o próprio bem. Ela produz explicação, ironia, silêncio calculado, mais um argumento — tudo para não chegar numa verdade emocional que seria mais simples e mais difícil de dizer. A saída raramente é pensar melhor. Costuma ser falar mais direto.",
-    venus:
-      "A vontade de ser querido pode desviar para agradar, idealizar ou medir o próprio valor pela resposta do outro. O ressentimento que vem depois quase sempre nasce no mesmo lugar: um pedido que nunca foi feito em voz alta, e que a gente esperava que o outro adivinhasse.",
-    mars: "A força que faz agir também sabe machucar. Ela vira confronto quando não encontra direção, impaciência quando é apressada, e desejo engolido quando é reprimida. Raiva e vontade não são problemas: viram problema quando escolhem por você antes de você reparar que estavam ali.",
-  };
-  return `${patterns[body] ?? "Há um padrão antigo aqui, e ele só quer ser reconhecido."} Em ${sign}, esse mecanismo costuma operar ${expression(sign)}. E aqui está a parte boa: é a mesma qualidade. Quando você a enxerga, ela deixa de agir sozinha e volta a ser sua.`;
-}

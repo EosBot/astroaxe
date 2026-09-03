@@ -2,6 +2,11 @@
 
 ## 3 de setembro de 2026 — Em andamento: reescrita completa do Horóscopo Sombrio
 
+- Biblioteca de perfis de sombra por signo criada em .
+- Substituído  por versão totalmente personalizada que combina perfis de signo, casas e posições planetárias para gerar leituras únicas e satíricas.
+- Removidas variáveis não utilizadas (, ,  agora utilizadas) e função shadowMeaning não utilizada.
+- Typecheck e lint passaram sem avisos.
+
 **Status multiagente:** auditoria do módulo iniciada. Agente trabalhando agora em
 `src/components/account/astrology-module-panels.tsx`, `src/components/account/transit-reading.tsx`
 e arredores; nenhuma alteração de código aplicada até o momento. Não editar esses arquivos
