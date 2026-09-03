@@ -69,13 +69,23 @@ não preenche seria proveniência inventada.
 
 ### Fase 2 — Catálogo de entidades (em andamento)
 
-- [x] **Reinos da Quimbanda**: 6 dos 7, com Exu Rei, Pombagira Rainha e domínio,
-      em `src/domain/quimbanda/reinos.ts`
-- [x] Regência planetária dos Reinos onde o acervo a declara — Almas em Marte e
-      Geburah, Cruzeiros em Júpiter e Chesed
-- [ ] O sétimo Reino, quando houver base
-- [ ] Legiões e povos de cada Reino (só o Povo das Árvores está levantado)
-- [ ] Exus e Pombas Giras nomeados dentro de cada Reino
+- [x] **Os sete Reinos**, com Exu Rei, Pombagira Rainha e domínio, em
+      `src/domain/quimbanda/reinos.ts`
+- [x] **62 legiões** com seus casais de chefes nomeados
+- [x] Regência planetária onde o acervo a declara — Almas em Marte e Geburah,
+      Cruzeiros em Júpiter e Chesed
+- [ ] Regência planetária dos outros cinco Reinos, se houver base
+- [ ] Advertência e forma de atuação por entidade
+- [ ] Oferenda, ponto e dia por entidade
+
+**Duas correções que a leitura da fonte impôs.** Eu tinha "Reino da Praia" e
+"Reino da Kalunga" como coisas separadas; a fonte é mais precisa — **Kalunga
+Pequena é o cemitério e Kalunga Grande é a praia**. E o sétimo Reino, que eu
+havia declarado pendente, é o **Reino da Lira**. Se eu tivesse chutado pelo que
+"parecia faltar", teria escrito "Reino do Lixo" — que existe, mas é legião dentro
+da Lira, não Reino. Foi ler a listagem em sequência no documento, em vez de
+montar por busca solta, que evitou o erro.
+
 - [ ] Orixás: domínio, dia, saudação, cor, ponto, oferenda, erva, temperamento
 - [ ] Anjos, olímpicos e inteligências (já parcialmente no grafo de funções)
 
