@@ -38,6 +38,37 @@ describe("TransitReading", () => {
     );
   });
 
+  it("uses the versioned shadow matrix for the main transit and the active feed", async () => {
+    const response = readingResponse();
+    response.interpretations.push({
+      ...response.interpretations[0]!,
+      transit: {
+        ...response.interpretations[0]!.transit,
+        transitingBody: "venus",
+        natalBody: "moon",
+        type: "trine",
+      },
+    });
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(JSON.stringify(response))));
+
+    render(
+      <TransitReading
+        profileId="123e4567-e89b-42d3-a456-426614174000"
+        timezone="America/Bahia"
+        variant="shadow"
+      />,
+    );
+
+    expect(
+      await screen.findByRole("heading", {
+        name: "O controle vestiu uniforme de responsabilidade",
+      }),
+    ).toBeTruthy();
+    expect(screen.getByText(/Saturno em quadratura com Sol ativa sua identidade/)).toBeTruthy();
+    expect(screen.getByText("O afeto começou a emitir fatura")).toBeTruthy();
+    expect(screen.queryByText("Saturno pede forma ao Sol")).toBeNull();
+  });
+
   it("shows calculated facts without inventing an absent editorial reading", async () => {
     vi.stubGlobal(
       "fetch",

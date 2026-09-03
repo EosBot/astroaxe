@@ -558,6 +558,35 @@ a.celestial-module:hover {
 }
 /* Janelas agrupadas por critério. A lista é longa por natureza — um mês pode
    render dezenas de horas — então cada linha precisa ser varrível de relance. */
+/* Passos numerados de um trabalho. O número precisa ser lido de relance por
+   quem está com as mãos ocupadas no meio do preparo. */
+.work-steps {
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.9rem;
+}
+.work-steps li {
+  display: grid;
+  grid-template-columns: 1.9rem minmax(0, 1fr);
+  gap: 0.9rem;
+  align-items: start;
+}
+.work-steps li > span {
+  width: 1.9rem;
+  height: 1.9rem;
+  display: grid;
+  place-items: center;
+  color: var(--obsidian);
+  border-radius: 50%;
+  background: var(--copper);
+  font-size: 0.82rem;
+}
+.work-steps li p {
+  margin: 0;
+  line-height: 1.6;
+}
 .plan-actions {
   margin-top: 1rem;
   display: flex;

@@ -164,7 +164,7 @@ export const trabalhosPlanetarios: readonly Trabalho[] = [
     purpose:
       "Condensar uma intenção num objeto e carregá-lo com a força de um planeta. Serve a propósito de longo prazo — proteção contínua, prosperidade, estudo, cura —, e não a pedido de urgência.",
     planet: null,
-    when: "No dia e na hora do planeta que rege a sua intenção: Júpiter para expansão e fartura, Marte para coragem e defesa, Vênus para vínculo, Mercúrio para estudo e negociação, Sol para reconhecimento, Lua para intuição e casa, Saturno para limite e estrutura. Dia e hora precisam coincidir — é a condição que o buscador de janelas existe para encontrar.",
+    when: "No dia e na hora do planeta que rege a sua intenção — Júpiter para fartura, Marte para defesa, Vênus para vínculo, Mercúrio para estudo, Sol para reconhecimento, Lua para intuição, Saturno para limite. Dia e hora precisam coincidir, e é essa coincidência que o buscador de janelas encontra.",
     materials: [
       "o suporte do talismã: metal, pergaminho, madeira ou papel de boa gramatura",
       "tinta ou instrumento de gravação",

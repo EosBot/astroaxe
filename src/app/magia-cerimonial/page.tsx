@@ -42,6 +42,11 @@ const steps = [
 
 const instruments = [
   {
+    href: "/magia-cerimonial/trabalhos",
+    name: "Guia de trabalhos",
+    what: "Banho, defumação, oferenda, firmeza, talismã e petição — cada um com o que cobra, quando se faz, o que se usa, a ordem dos passos e o descarte.",
+  },
+  {
     href: "/magia-cerimonial/janelas",
     name: "Buscador de janelas",
     what: "Varre o período hora a hora e mostra quando o céu atende ao que a tradição pede para o seu trabalho.",

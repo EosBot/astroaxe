@@ -69,40 +69,42 @@ export async function DELETE(
     const resultado = await tx.ceremonialPlan.deleteMany({
       where: { id: guard.planId, userId: guard.userId },
     });
-    if (resultado.count === 0) return resultado;
-
-    const agora = new Date();
-    const tombstones = [
-      buildDeletionTombstone({
-        id: randomUUID(),
-        recordKind: "ceremonial_plan",
-        recordId: guard.planId,
-        userId: guard.userId,
-        deletedAt: agora,
-      }),
-      // As sessões caem em cascata, e cada uma precisa da própria marca: a
-      // restauração traz linhas, e não o plano como unidade.
-      ...removidas.map((sessao) =>
+    // Nada apagado significa plano de outra pessoa ou já removido: não há o que
+    // sepultar, e criar tombstone aqui registraria exclusão que não aconteceu.
+    if (resultado.count > 0) {
+      const agora = new Date();
+      const tombstones = [
         buildDeletionTombstone({
           id: randomUUID(),
-          recordKind: "ceremonial_session",
-          recordId: sessao.id,
+          recordKind: "ceremonial_plan",
+          recordId: guard.planId,
           userId: guard.userId,
           deletedAt: agora,
         }),
-      ),
-    ];
-    await tx.deletionTombstone.createMany({
-      data: tombstones.map((tombstone) => ({
-        id: tombstone.id,
-        recordKind: tombstone.recordKind,
-        recordId: tombstone.recordId,
-        userId: tombstone.userId,
-        deletedAt: new Date(tombstone.deletedAt),
-        expiresAt: new Date(tombstone.expiresAt),
-      })),
-      skipDuplicates: true,
-    });
+        // As sessões caem em cascata, e cada uma precisa da própria marca: a
+        // restauração traz linhas, e não o plano como unidade.
+        ...removidas.map((sessao) =>
+          buildDeletionTombstone({
+            id: randomUUID(),
+            recordKind: "ceremonial_session",
+            recordId: sessao.id,
+            userId: guard.userId,
+            deletedAt: agora,
+          }),
+        ),
+      ];
+      await tx.deletionTombstone.createMany({
+        data: tombstones.map((tombstone) => ({
+          id: tombstone.id,
+          recordKind: tombstone.recordKind,
+          recordId: tombstone.recordId,
+          userId: tombstone.userId,
+          deletedAt: new Date(tombstone.deletedAt),
+          expiresAt: new Date(tombstone.expiresAt),
+        })),
+        skipDuplicates: true,
+      });
+    }
     return resultado;
   });
   // Idempotente: apagar de novo devolve o mesmo 204. Um 404 na segunda chamada

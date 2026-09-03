@@ -1,5 +1,38 @@
 # Memória canônica do projeto
 
+## 3 de setembro de 2026 — Trânsitos do Horóscopo Sombrio ganham composição por função astrológica
+
+- A composição editorial dos trânsitos sombrios saiu de
+  `src/components/account/transit-reading.tsx` e passou para a função pura
+  `shadowTransitContent`, em `src/lib/shadow-horoscope/transit-content.ts`.
+- A matriz `shadow-transits-2.0.0` diferencia os sete corpos que o motor realmente calcula
+  (Sol a Saturno), o campo natal ativado, os cinco aspectos, a fase aplicativa/separativa e
+  três faixas de intensidade. A mesma configuração continua produzindo exatamente o mesmo
+  texto.
+- Cada corpo ganhou mecanismo, cena cotidiana, motivo oculto e prática próprios. Foi removida
+  a série genérica que podia falar de autoridade, ciúme, gasto ou redes sociais sem relação
+  com os planetas envolvidos e que ainda continha o erro “gatilhos que permanecemos
+  adormecidos”.
+- A leitura declara que é possibilidade simbólica, não sentença sobre caráter, e orienta a não
+  forçar correspondência quando o texto não ressoar.
+- Testes unitários cobrem determinismo, fallbacks e variação por corpo, ponto natal, aspecto,
+  fase e intensidade. O teste do componente comprova que a matriz sombria substitui o conteúdo
+  editorial padrão tanto no trânsito principal quanto no feed.
+- Validação concluída: 759 testes passaram e 5 foram ignorados; cobertura global ficou em
+  82,26% de statements e 84,26% de linhas; typecheck, ESLint completo e formatação passaram.
+  O build de host não roda neste executor porque o Turbopack não consegue vincular sua porta
+  interna, mas o build autoritativo no Docker passou duas vezes, junto do smoke de release.
+- `tests/e2e/shadow-horoscope.spec.ts` registra uma conta sintética, cria um mapa real e abre o
+  módulo em desktop e mobile. As duas jornadas passaram e verificaram a ressalva não fatalista,
+  a composição de trânsito e ausência de overflow horizontal.
+- SonarQube ficou sem issue nos dois arquivos de produção alterados; a violação introduzida
+  inicialmente pelo ternário de intensidade foi corrigida. O Quality Gate global continua
+  vermelho por 49 violações e cobertura de novo código em 77,7% na janela acumulada desde 19
+  de agosto de 2026; a duplicação nova está aprovada em 2,397%.
+- A jornada legada `authenticated-mvp.spec.ts` continua defasada: tenta criar mapa anônimo e
+  reivindicá-lo no cadastro, fluxo removido quando o mapa passou a exigir conta. Ela falha antes
+  de chegar aos módulos, em desktop e mobile. O teste estreito novo não mascara esse bloqueio.
+
 ## 3 de setembro de 2026 — Commit parcial do Horóscopo Sombrio: correções de idioma e variação por corpo celeste
 
 - Perfis sombrios em `src/lib/shadow-horoscope/sign-profiles.ts` revisados para português
