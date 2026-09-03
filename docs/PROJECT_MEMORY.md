@@ -1,6 +1,5 @@
 # Memória canônica do projeto
 
-
 ## 3 de setembro de 2026 — Commit parcial do Horóscopo Sombrio: correções de idioma e variação por corpo celeste
 
 - Perfis sombrios em `src/lib/shadow-horoscope/sign-profiles.ts` revisados para português
@@ -23,6 +22,7 @@
   `src/lib/shadow-horoscope/sign-profiles.ts` e
   `src/components/account/astrology-module-panels.tsx`. Evitar edição simultânea até a
   próxima validação do módulo.
+
 ## 3 de setembro de 2026 — Em andamento: reescrita completa do Horóscopo Sombrio
 
 - Biblioteca de perfis de sombra por signo criada em .

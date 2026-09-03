@@ -67,6 +67,18 @@ para manter de pé.
 `<documento>_<índice>`, e `char_count` é o tamanho do texto. Coluna que a origem
 não preenche seria proveniência inventada.
 
+### Fase 1b — Catálogo de tradições
+
+- [x] **17 tradições** com profundidade declarada, em
+      `src/domain/tradicoes/catalogo.ts`
+- [x] Contagem de acervo medida no banco por tradição, e não estimada
+
+O guia cobre todas as tradições que o acervo sustenta, e não uma até acabar.
+Umbanda 1.722 trechos, Quimbanda 1.026, hermetismo 995, selos e sigilos 937,
+círculo e evocação 802, alquimia 669, cabala 657, tarot 600, ervas 445,
+candomblé 430, bruxaria 403, angelical 315, runas 242, goétia 155, apometria
+115, olímpicos 73, cigana 38.
+
 ### Fase 2 — Catálogo de entidades (em andamento)
 
 - [x] **Os sete Reinos**, com Exu Rei, Pombagira Rainha e domínio, em
@@ -139,14 +151,26 @@ Uma advertência é material, e não espiritual: no Reino das Matas o erro de er
 machuca o corpo. O texto diz isso e diz que trabalho de mata não substitui
 tratamento de saúde — há teste travando as duas frases.
 
-### Fase 4 — Preparo detalhado
+### Fase 4 — Preparo detalhado (começou)
 
-- [ ] Dia e hora planetária, ligados ao buscador de janelas que já existe
-- [ ] Ponto e assentamento
-- [ ] Oferenda, item a item, com o significado de cada item
-- [ ] Ervas, banho e defumação
-- [ ] Ponto cantado, do catálogo de 538
-- [ ] Firmeza, tempo de permanência e descarte
+- [x] **Catálogo de trabalhos**, organizado por trabalho e não por tradição, em
+      `src/domain/tradicoes/trabalhos.ts`
+- [x] Banho de descarrego, defumação da casa e oferenda a Exu ou Pombagira —
+      com material, passo a passo, advertência e descarte
+- [ ] Firmeza, assentamento e amaci
+- [ ] Selo, sigilo e talismã por hora planetária
+- [ ] Círculo, abertura e licença
+- [ ] Ponto cantado ligado ao trabalho, do catálogo de 538
+- [ ] Petição angélica
+
+**Descarte é parte do trabalho.** Cada procedimento diz o que se faz com o que
+sobra, porque trabalho deixado pela metade é a origem da maior parte do que
+depois se chama de retorno.
+
+**Advertência material vem junto da espiritual.** Fumaça faz mal a quem tem
+asma; vela em mato seco é risco de incêndio; caco de vidro em encruzilhada
+machuca quem passa depois. Isso está escrito ao lado do fundamento, e não num
+rodapé.
 
 ### Fase 5 — Integração
 
