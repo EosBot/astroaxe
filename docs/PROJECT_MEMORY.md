@@ -1,5 +1,28 @@
 # Memória canônica do projeto
 
+
+## 3 de setembro de 2026 — Commit parcial do Horóscopo Sombrio: correções de idioma e variação por corpo celeste
+
+- Perfis sombrios em `src/lib/shadow-horoscope/sign-profiles.ts` revisados para português
+  brasileiro; removidos trechos em espanhol, `Education` corrigido para `Diplomacia`,
+  `scenery` para `cenário`, `convertir` para `converter` e `denominación` para
+  `denominação`.
+- `ShadowHoroscopeView` em `src/components/account/astrology-module-panels.tsx` parou de
+  mapear as áreas sombrias por signo. Agora cada área usa o corpo celeste correto
+  (Sol, Lua, Marte e Júpiter), evitando que Marte caia no Sol quando os signos coincidem.
+- `shadowTextForPlanet` passou a receber `body` e usa aberturas por planeta, cena
+  cotidiana, casa e dica de integração. Também foram corrigidos erros de texto como
+  `por baixo do panos` e `estudos longs`.
+- Validação local executada antes do commit: `npm run typecheck` e `npx eslint` nos dois
+  arquivos alterados passaram sem erros.
+- **Ainda pendente** para a próxima rodada: ampliar mais as variações de
+  `src/components/account/transit-reading.tsx` (`shadowContent`), rodar SonarQube,
+  navegar no sistema com conta de teste e concluir a revisão editorial dos trânsitos
+  sombrios.
+- Atenção multiagente: arquivos críticos desta etapa são
+  `src/lib/shadow-horoscope/sign-profiles.ts` e
+  `src/components/account/astrology-module-panels.tsx`. Evitar edição simultânea até a
+  próxima validação do módulo.
 ## 3 de setembro de 2026 — Em andamento: reescrita completa do Horóscopo Sombrio
 
 - Biblioteca de perfis de sombra por signo criada em .

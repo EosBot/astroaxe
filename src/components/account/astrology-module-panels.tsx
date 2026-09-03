@@ -107,28 +107,44 @@ export function ShadowHoroscopeView({
   const mercuryPos = getPlacement("mercury");
   const venusPos = getPlacement("venus");
   const marsPos = getPlacement("mars");
-  const jupiterPos = getPlacement("jupiter"); // usado para espiritualidade/expansão
 
   // Função que gera texto de sombra para um planeta dado seu perfil e posição
   const shadowTextForPlanet = (
     profile: SignShadowProfile,
     pos: ReturnType<typeof getPlacement> | null,
+    body: string,
     areaHint?: string,
   ): string => {
     if (!pos) return "Dados astrológicos indisponíveis para este ponto.";
     const { degree, house, retrograde } = pos;
     const retroTxt = retrograde ? " (retrógrado)" : "";
+    const bodyLabel = {
+      sun: "Sol",
+      moon: "Lua",
+      mercury: "Mercúrio",
+      venus: "Vênus",
+      mars: "Marte",
+      jupiter: "Júpiter",
+    }[body] ?? body;
+    const bodyScene = {
+      sun: "No cotidiano, isso vira aquela disputa silenciosa por protagonismo em conversas, escolhas e até no grupo da família.",
+      moon: "No afeto, o problema aparece como cobrança indireta, saudade mal explicada ou ciúme que chega antes do contexto.",
+      mercury: "Em discussões, a inteligência vira advogada de defesa: prova que o impulso era razoável, mesmo quando não era.",
+      venus: "No romance, isso aparece como expectativa de retorno, delicadeza que machuca ou charme usado para evitar conversa difícil.",
+      mars: "Na briga, você acelera: corta, reage, antecipa o golpe e só depois pergunta se era mesmo necessário.",
+      jupiter: "Na vida prática, isso vira excesso de confiança, explicação grandiosa e plano bonito demais para o prazo real.",
+    }[body] ?? "O padrão reaparece justamente onde você mais evita olhar.";
     // Use degree to pick variations (deterministic)
     const idx = Math.floor(Math.abs(degree) * 10) % 3;
     const openings = [
-      `${profile.socialVersion}`,
-      `Você se manifesta como ${profile.socialVersion.toLowerCase()}, mas há mais por trás dessa aparência.`,
-      `A cara que você mostra ao mundo: ${profile.socialVersion}. Não conte toda a história.`,
+      `Seu ${bodyLabel} em ${pos.sign} costuma entrar em cena quando essa função age sem revisão.`,
+      `${bodyLabel} no signo de ${pos.sign} revela que há mais por trás da aparência que você aprendeu a sustentar.`,
+      `Com ${bodyLabel} em ${pos.sign}, você defende uma imagem que nem sempre combina com o que sente.`,
     ];
     const problems = [
       `${profile.problem}`,
       `O cerne da questão: ${profile.problem.toLowerCase()}.`,
-      `Quando olhamos por baixo do panos, vemos que ${profile.problem.toLowerCase()}.`,
+      `Quando olhamos por baixo dos panos, vemos que ${profile.problem.toLowerCase()}.`,
     ];
     let houseNote = "";
     if (house) {
@@ -141,7 +157,7 @@ export function ShadowHoroscopeView({
         "trabalho diário, saúde e rotina",
         "parcerias, contratos e um a um",
         "intimidade, recursos compartilhados e transformação",
-        "crenças, estudos longs e viagens",
+        "crenças, estudos longos e viagens",
         "carreira, reputação e público",
         "amizades, grupos e ideais",
         "recolhimento, inconsciente e espiritualidade",
@@ -165,6 +181,8 @@ ${houseNotes[idx]}`;
 
 ${problems[idx]}${houseNote}
 
+${bodyScene}
+
 ${virtueVariations[idx]}`;
     if (areaHint) {
       base += `
@@ -182,48 +200,31 @@ ${retroTxt.trim()} sugere que rever essa lição com mais atenção pode trazer 
   const shadowAreas = [
     {
       title: "Identidade e autoimagem",
-      profileKey: sunPos?.sign ?? "Áries",
+      body: "sun",
       areaHint: "Observe onde você insiste em provar seu valor mesmo quando não é necessário.",
     },
     {
       title: "Dinheiro e carreira",
-      profileKey: marsPos?.sign ?? "Áries",
+      body: "mars",
       areaHint: "Perceba quando a pressa em resultados está custando mais que o ganho.",
     },
     {
       title: "Família e amigos",
-      profileKey: moonPos?.sign ?? "Câncer",
+      body: "moon",
       areaHint: "Note quando o cuidado se torna cobrança disfarçada de amor.",
     },
     {
       title: "Espiritualidade e crenças",
-      profileKey: jupiterPos?.sign ?? "Sagitário",
+      body: "jupiter",
       areaHint:
         "Questione se suas buscas de sentido estão evitando confrontos pessoais necessários.",
     },
-  ].map(({ title, profileKey, areaHint }) => {
-    const prof = signShadowProfile(profileKey);
-    // Precisamos da posição real do planeta associado a essa área
-    let pos: ReturnType<typeof getPlacement> | null = null;
-    switch (profileKey) {
-      case sunPos?.sign:
-        pos = sunPos;
-        break;
-      case moonPos?.sign:
-        pos = moonPos;
-        break;
-      case marsPos?.sign:
-        pos = marsPos;
-        break;
-      case jupiterPos?.sign:
-        pos = jupiterPos;
-        break;
-      default:
-        pos = null;
-    }
+  ].map(({ title, body, areaHint }) => {
+    const pos = getPlacement(body);
+    const prof = pos ? signShadowProfile(pos.sign) : undefined;
     return {
       title,
-      text: shadowTextForPlanet(prof, pos, areaHint),
+      text: prof ? shadowTextForPlanet(prof, pos, body, areaHint) : "Dados astrológicos indisponíveis para este ponto.",
     };
   });
 
@@ -242,7 +243,7 @@ ${retroTxt.trim()} sugere que rever essa lição com mais atenção pode trazer 
       body,
       pos,
       content: profile
-        ? shadowTextForPlanet(profile, pos, "")
+        ? shadowTextForPlanet(profile, pos, body)
         : "Dados indisponíveis para este ponto.",
     };
   });
