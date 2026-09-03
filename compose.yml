@@ -83,7 +83,11 @@ services:
     labels:
       traefik.enable: "true"
       traefik.docker.network: "${COMPOSE_PROJECT_NAME:-astroaxe}_edge"
-      traefik.http.routers.astroaxe.rule: Host(`${ASTROAXE_HOST:-localhost}`)
+      # `127.0.0.1` entra junto de propósito: o navegador no Windows resolve
+      # `localhost` para IPv6 antes de IPv4, e o Traefik escuta só no laço IPv4.
+      # Quando esse caminho falha, o que aparece é a última página em cache — o
+      # que parece código velho no container e não é.
+      traefik.http.routers.astroaxe.rule: Host(`${ASTROAXE_HOST:-localhost}`) || Host(`127.0.0.1`)
       traefik.http.routers.astroaxe.entrypoints: web
       traefik.http.services.astroaxe.loadbalancer.server.port: "3000"
       traefik.http.services.astroaxe.loadbalancer.healthcheck.path: /api/health/ready

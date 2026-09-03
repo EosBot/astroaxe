@@ -582,6 +582,59 @@ a.celestial-module:hover {
   font-family: Georgia, "Times New Roman", serif;
   font-size: 1.15rem;
 }
+
+/* Cartões de ferramenta.
+   A versão anterior punha um link dentro do título e parava aí: sem cor, sem
+   sublinhado, sem cursor, o nome ficava idêntico a um título comum. A página
+   inteira virava uma lista de descrições que não levava a lugar nenhum, e quem
+   abria não tinha como saber que ali se clicava. */
+.tool-card {
+  margin-top: 1.25rem;
+  padding: 1.5rem;
+  display: block;
+  color: inherit;
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--copper);
+  background: rgb(5 10 15 / 55%);
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+.tool-card h3 {
+  margin: 0 0 0.5rem;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+  color: var(--copper);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.3rem;
+}
+.tool-card h3::after {
+  content: "→";
+  font-size: 0.95rem;
+  transition: transform 0.2s ease;
+}
+.tool-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+.tool-card:hover,
+.tool-card:focus-visible {
+  border-color: var(--copper);
+  background: rgb(196 122 74 / 8%);
+}
+.tool-card:hover h3::after,
+.tool-card:focus-visible h3::after {
+  transform: translateX(0.3rem);
+}
+@media (prefers-reduced-motion: reduce) {
+  .tool-card,
+  .tool-card h3::after {
+    transition: none;
+  }
+}
 .window-list {
   margin: 1rem 0 0;
   padding: 0;

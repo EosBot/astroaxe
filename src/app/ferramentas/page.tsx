@@ -49,13 +49,14 @@ export default function ToolsIndexPage(): React.JSX.Element {
 
         <section className="methodology-section" aria-labelledby="tools-list">
           <h2 id="tools-list">O que existe hoje.</h2>
+          {/* O cartão inteiro é o link, e não só o nome dentro do título: a
+              área de clique passa a ser o bloco todo, e a seta deixa claro que
+              dali se vai a algum lugar. */}
           {tools.map((tool) => (
-            <article key={tool.href} className="window-group">
-              <h3>
-                <Link href={tool.href}>{tool.name}</Link>
-              </h3>
+            <Link key={tool.href} href={tool.href} className="tool-card">
+              <h3>{tool.name}</h3>
               <p>{tool.what}</p>
-            </article>
+            </Link>
           ))}
         </section>
       </article>
