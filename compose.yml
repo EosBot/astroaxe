@@ -66,9 +66,14 @@ services:
       SITE_URL: ${SITE_URL:?SITE_URL is required}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       # Only `disabled` or `public` are valid here. This file intentionally declares no
-      # archive root, keyring or derivative volume: selecting `local` from the public
-      # stack fails startup instead of silently exposing the private corpus.
+      # archive root or derivative volume: selecting `local` from the public stack fails
+      # startup instead of silently exposing the private corpus.
       CEREMONIAL_MODE: ${CEREMONIAL_MODE:-disabled}
+      # Encrypts the plans and sessions a user writes in the planner — unrelated to the
+      # private corpus, which is gated by CEREMONIAL_ARCHIVE_ROOT. Optional on purpose:
+      # without it the planner answers 503 and stores nothing, instead of writing
+      # personal records in the clear.
+      CEREMONIAL_RECORD_KEYRING: ${CEREMONIAL_RECORD_KEYRING:-}
     depends_on:
       migrate:
         condition: service_completed_successfully
