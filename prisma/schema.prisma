@@ -649,6 +649,32 @@ model CorpusChunk {
 /// vetores fora do ar, e guardá-los aqui, tira o modelo de embedding do caminho
 /// crítico — a aplicação passa a fazer só uma consulta de vizinhança em SQL, sem
 /// Python em produção e sem variação entre execuções.
+/// Ponto cantado, em letra.
+///
+/// O dono decidiu: entra a letra, e não o áudio. O catálogo tem 538 pontos e
+/// 216 com letra validada — o restante fica registrado com `lyrics_status`
+/// dizendo que falta, em vez de sumir da lista ou aparecer com letra inventada.
+///
+/// `lyrics_source` guarda de onde a letra veio. É a única proveniência que pode
+/// ser publicada no produto, porque a letra circula em domínio público entre
+/// terreiros; o texto dos livros do acervo continua sendo insumo e não sai.
+model SungPoint {
+  id           String   @id @map("ponto_id") @db.VarChar(60)
+  title        String   @db.VarChar(300)
+  category     String   @db.VarChar(60)
+  subcategory  String   @db.VarChar(120)
+  entityType   String   @map("entity_type") @db.VarChar(60)
+  entityName   String   @map("entity_name") @db.VarChar(160)
+  lyrics       String?
+  lyricsSource String?  @map("lyrics_source") @db.VarChar(600)
+  lyricsStatus String   @map("lyrics_status") @db.VarChar(40)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([entityType, entityName])
+  @@index([lyricsStatus])
+  @@map("sung_points")
+}
+
 model CorpusTopic {
   id        String                      @id @db.VarChar(120)
   kind      String                      @db.VarChar(40)

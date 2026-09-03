@@ -103,10 +103,39 @@ não preenche seria proveniência inventada.
 - **Caderno de trabalhos** — planos e sessões cifrados, exclusão com rastro
 - **Política de finalidade** — 16 categorias religiosas, 3 recusas de dano a terceiro
 
-## Perguntas em aberto para o dono
+## Respostas do dono
 
-1. O catálogo de Exus e Pombas Giras deve seguir alguma casa ou linhagem
-   específica? As falanges variam entre terreiros, e escolher por conta própria
-   seria inventar fundamento.
-2. Há material do seu terreiro, fora do acervo digital, que deva entrar?
-3. Ponto cantado entra como letra, como áudio, ou os dois?
+1. **Exus e Pombas Giras seguem a Quimbanda/Kimbanda.** O acervo sustenta:
+   1.026 trechos falam do assunto, com livros dedicados e as apostilas de
+   formação sacerdotal do Templo da Pena. Reinos aparecem em 544 trechos,
+   falanges e legiões em 452, Pomba Gira em 845, assentamento e firmeza em 712,
+   oferenda e despacho em 896.
+2. **Ponto cantado entra como letra.** Feito: 538 pontos carregados, 216 com
+   letra validada. O áudio não entra, e o `file_path` do catálogo — que aponta
+   para o disco de origem — não é gravado.
+
+### Ainda em aberto
+
+- Há material do terreiro, fora do acervo digital, que deva entrar?
+
+## Cobertura do acervo, por assunto
+
+Levantado no banco, e não estimado. Serve para saber onde há base para escrever
+e onde escrever seria inventar.
+
+| Assunto                | Trechos |
+| ---------------------- | ------- |
+| Quimbanda/Kimbanda     | 1.026   |
+| Oferenda e despacho    | 896     |
+| Pomba Gira             | 845     |
+| Assentamento e firmeza | 712     |
+| Reinos                 | 544     |
+| Falanges e legiões     | 452     |
+
+Pontos cantados, por tipo de entidade: Orixá 164 (58 com letra), geral 124 (89),
+Exu e Pomba Gira 65 (16), caboclo 62 (30), preto-velho 44 (4), erê 24 (4),
+boiadeiro 18 (8), marinheiro 15 (4).
+
+**A letra falta em 322 dos 538.** Eles ficam no catálogo com o status dizendo
+que falta, porque sumir esconderia o tamanho real do acervo e preencher seria
+inventar letra de ponto.
