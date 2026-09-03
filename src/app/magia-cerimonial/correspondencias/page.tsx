@@ -5,7 +5,7 @@ import { CorrespondenceDirectory } from "@/components/ceremonial/correspondence-
 
 export const metadata: Metadata = {
   title: "Diretório de correspondências",
-  alternates: { canonical: "/ferramentas/correspondencias" },
+  alternates: { canonical: "/magia-cerimonial/correspondencias" },
   robots: { index: false, follow: false, nocache: true },
 };
 

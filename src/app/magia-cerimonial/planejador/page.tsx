@@ -4,7 +4,7 @@ import { CeremonialPlanner } from "@/components/ceremonial/ceremonial-planner";
 
 export const metadata: Metadata = {
   title: "Planejador cerimonial",
-  alternates: { canonical: "/ferramentas/planejador" },
+  alternates: { canonical: "/magia-cerimonial/planejador" },
   robots: { index: false, follow: false, nocache: true },
 };
 

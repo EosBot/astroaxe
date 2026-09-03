@@ -4,7 +4,7 @@ import { CorrespondenceTable } from "@/components/ceremonial/correspondence-tabl
 
 export const metadata: Metadata = {
   title: "Tábua operacional",
-  alternates: { canonical: "/ferramentas/tabua" },
+  alternates: { canonical: "/magia-cerimonial/tabua" },
   robots: { index: false, follow: false, nocache: true },
 };
 

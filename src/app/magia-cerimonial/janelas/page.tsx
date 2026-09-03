@@ -5,7 +5,7 @@ import { WindowFinder } from "@/components/ceremonial/window-finder";
 
 export const metadata: Metadata = {
   title: "Buscador de janelas",
-  alternates: { canonical: "/ferramentas/janelas" },
+  alternates: { canonical: "/magia-cerimonial/janelas" },
   // Recurso pago: não entra em índice de busca, e a porta de verdade fica na
   // API. Uma página que se esconde mas entrega dado não está fechada.
   robots: { index: false, follow: false, nocache: true },
