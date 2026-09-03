@@ -2,7 +2,6 @@ import "server-only";
 
 import type { NextRequest } from "next/server";
 
-import { evaluateAdultAccess } from "@/domain/ceremonial/adult-access";
 import {
   evaluateReleaseApprovals,
   PLANNER_REQUIRED_APPROVALS,
@@ -10,7 +9,6 @@ import {
 import { declaredReleaseApprovals } from "@/domain/ceremonial/release-approval-data";
 import { hasPaidPlan } from "@/lib/access/features";
 import { parseServerEnv } from "@/lib/env";
-import { getPrisma } from "@/lib/prisma";
 import { isSameOrigin, resolveAccount } from "@/lib/security/account";
 import { apiJson } from "@/lib/security/headers";
 
@@ -22,10 +20,14 @@ import { apiJson } from "@/lib/security/headers";
  * copiá-la seria garantir que uma delas envelhecesse diferente das outras — e a
  * que envelhece diferente é sempre a que abre a porta que devia estar fechada.
  *
- * A ordem das verificações não é arbitrária. Origem antes de conta, porque não
- * faz sentido consultar sessão de uma requisição que nem devia chegar. Conta
- * antes de idade, porque a declaração pertence a alguém. Idade antes de direito
- * de acesso, porque pagar não torna ninguém maior de idade.
+ * A ordem das verificações não é arbitrária: origem antes de conta, porque não
+ * faz sentido consultar sessão de uma requisição que nem devia chegar.
+ *
+ * Não há portão de maioridade. Ele existiu e barrava todo mundo: a declaração
+ * nunca teve tela, então nenhuma conta a possuía e as ferramentas respondiam 403
+ * a qualquer titular. O dono decidiu que o público é adulto e que o conteúdo é
+ * religioso — o contrato de uso é onde isso pertence, e não numa porta que
+ * ninguém conseguia atravessar.
  */
 
 /**
@@ -64,32 +66,6 @@ export async function authorizeCeremonialAccess(
   const account = await resolveAccount(request, env.AUTH_SESSION_SECRET);
   if (account === null)
     return apiJson({ error: "Entre para usar as ferramentas cerimoniais." }, { status: 401 });
-
-  // Declaração de maioridade, e não verificação: não existe caminho gratuito
-  // para verificar idade. O que se exige aqui é a declaração registrada, e ela
-  // barra quem não declarou, quem é menor pela própria data e quem declarou sob
-  // um texto que não é mais o vigente.
-  const titular = await getPrisma().user.findUnique({
-    where: { id: account.id },
-    select: { birthDate: true, adultAttestedAt: true, adultAttestationVersion: true },
-  });
-  const adulto = evaluateAdultAccess({
-    birthDate: titular?.birthDate?.toISOString().slice(0, 10) ?? null,
-    attestedAt: titular?.adultAttestedAt?.toISOString() ?? null,
-    attestationVersion: titular?.adultAttestationVersion ?? null,
-    on: new Date().toISOString().slice(0, 10),
-  });
-  if (adulto.status !== "cleared")
-    return apiJson(
-      { error: "Este recurso é restrito a maiores de 18 anos.", access: adulto },
-      { status: 403 },
-    );
-
-  if (!(await hasCeremonialEntitlement(account.id)))
-    return apiJson(
-      { error: "As ferramentas cerimoniais fazem parte do plano pago." },
-      { status: 402 },
-    );
 
   // A aprovação de tratamento é condição de funcionamento, e não formalidade:
   // ausente, revogada ou vencida, o recurso não opera.

@@ -22,18 +22,33 @@ interface SessionView {
 }
 
 /**
- * Categorias oferecidas na tela.
+ * Finalidades oferecidas na tela.
  *
- * O contrato aceita também as recusadas — coerção, violência, autolesão e as
- * outras — porque a política precisa poder recusá-las quando chegam. Oferecê-las
- * num menu seria outra coisa: o produto convidando ao que se nega a servir. A
- * recusa continua no servidor, para quem enviar à mão.
+ * São as razões pelas quais alguém procura um terreiro, e não uma lista de
+ * temas acadêmicos. A versão anterior oferecia quatro — estudo, reflexão,
+ * memória e rotina — o que tratava quem pratica como quem visita.
+ *
+ * O contrato aceita também coerção, violência e autolesão, porque a política
+ * precisa poder recusá-las quando chegam. Elas não aparecem aqui: oferecê-las
+ * num menu seria o produto convidando ao que se nega a servir.
  */
 const GOALS = [
-  { value: "study", label: "Estudo" },
-  { value: "reflection", label: "Reflexão" },
+  { value: "devotion", label: "Devoção" },
+  { value: "offering", label: "Oferenda" },
+  { value: "sacrifice", label: "Sacrifício ritual" },
+  { value: "protection", label: "Proteção" },
+  { value: "cleansing", label: "Limpeza e descarrego" },
+  { value: "health", label: "Saúde" },
+  { value: "prosperity", label: "Prosperidade" },
+  { value: "love", label: "Amor e vínculos" },
+  { value: "justice", label: "Justiça" },
+  { value: "ancestors", label: "Ancestralidade" },
+  { value: "initiation", label: "Iniciação e obrigação" },
+  { value: "divination", label: "Consulta e adivinhação" },
   { value: "remembrance", label: "Rememoração" },
   { value: "personal_routine", label: "Rotina pessoal" },
+  { value: "reflection", label: "Reflexão" },
+  { value: "study", label: "Estudo" },
 ] as const;
 
 const TARGETS = [
@@ -167,7 +182,7 @@ export function CeremonialPlanner(): React.JSX.Element {
         <textarea id="plan-intention" name="intention" rows={4} maxLength={4000} required />
 
         <label htmlFor="plan-goal">De que natureza</label>
-        <select id="plan-goal" name="goalCategory" defaultValue="reflection">
+        <select id="plan-goal" name="goalCategory" defaultValue="devotion">
           {GOALS.map((goal) => (
             <option key={goal.value} value={goal.value}>
               {goal.label}

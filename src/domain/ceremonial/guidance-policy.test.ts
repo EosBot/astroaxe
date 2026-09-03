@@ -31,13 +31,32 @@ describe("política de orientação cerimonial", () => {
   );
 
   it.each([
+    "devotion",
+    "offering",
+    "sacrifice",
+    "protection",
+    "cleansing",
+    "health",
+    "prosperity",
+    "love",
+    "justice",
+    "ancestors",
+    "initiation",
+    "divination",
+  ] as const)("aceita %s como finalidade religiosa legítima", (goalCategory) => {
+    const decision = evaluateGuidancePolicy({ operation: "create", goalCategory, target: "self" });
+
+    // O produto não julga a finalidade religiosa de ninguém. Sacrifício ritual
+    // é o caso que mais importa aqui: é prática de culto afro-brasileiro,
+    // reconhecida pelo STF no RE 494601, e tratá-la como dano colocava o
+    // produto contra a religião que ele diz servir.
+    expect(decision.kind).toBe("accepted_record");
+  });
+
+  it.each([
     ["coercion", "coercive_control", "consent_boundary"],
     ["violence", "physical_harm", "emergency_support"],
     ["self_harm", "self_harm_crisis", "crisis_support"],
-    ["sacrifice", "sacrifice_or_injury", "non_harmful_alternative"],
-    ["illegal_activity", "illegal_action", "legal_alternative"],
-    ["medical_promise", "medical_claim", "qualified_healthcare"],
-    ["financial_promise", "financial_claim", "qualified_financial_guidance"],
   ] as const)("recusa %s com categoria e ajuda tipadas", (goalCategory, category, helpCategory) => {
     const decision = evaluateGuidancePolicy({
       operation: "create",

@@ -202,23 +202,18 @@ describe("rotas de plano cerimonial", () => {
     expect(mocks.planCreate).not.toHaveBeenCalled();
   });
 
-  it("barra quem não declarou maioridade, e quem declarou sendo menor", async () => {
+  it("libera qualquer titular autenticado, sem portão de maioridade", async () => {
+    // O portão existiu e barrava todo mundo: a declaração nunca teve tela,
+    // nenhuma conta a possuía, e as ferramentas respondiam 403 a qualquer
+    // titular. Quem trata idade agora é o contrato de uso.
     mocks.userFindUnique.mockResolvedValue({
       birthDate: null,
       adultAttestedAt: null,
       adultAttestationVersion: null,
     });
-    expect((await POST(jsonRequest(PLANO_VALIDO))).status).toBe(403);
 
-    mocks.userFindUnique.mockResolvedValue({
-      birthDate: new Date("2015-01-01T00:00:00.000Z"),
-      adultAttestedAt: new Date("2026-09-02T00:00:00.000Z"),
-      adultAttestationVersion: "adult-attestation-1.0.0",
-    });
-    expect((await POST(jsonRequest(PLANO_VALIDO))).status).toBe(403);
-
-    // Declaração é o que se exige; provar não é possível sem serviço pago.
-    expect(mocks.planCreate).not.toHaveBeenCalled();
+    expect((await POST(jsonRequest(PLANO_VALIDO))).status).toBe(201);
+    expect(mocks.planCreate).toHaveBeenCalled();
   });
 
   it("sepulta o que apagou, na mesma transação", async () => {

@@ -1,18 +1,53 @@
 import { z } from "zod";
 
-export const CEREMONIAL_GUIDANCE_POLICY_VERSION = "ceremonial-guidance-policy-0.2.0-tool-only";
+export const CEREMONIAL_GUIDANCE_POLICY_VERSION = "ceremonial-guidance-policy-0.3.0-religious";
 
-const safeGoalCategorySchema = z.enum(["study", "reflection", "remembrance", "personal_routine"]);
-
-const refusedGoalCategorySchema = z.enum([
-  "coercion",
-  "violence",
-  "self_harm",
+/**
+ * Finalidades que o produto atende.
+ *
+ * A versão anterior aceitava quatro: estudo, reflexão, memória e rotina pessoal.
+ * Isso tratava quem usa como acadêmico visitando uma religião, e não como quem a
+ * pratica. Oferenda, proteção, saúde, prosperidade, justiça e ancestralidade são
+ * as razões pelas quais alguém procura um terreiro há séculos; deixá-las de fora
+ * não era cuidado, era desconforto do produto com o próprio assunto.
+ *
+ * `sacrifice` saiu da lista de recusas e entrou aqui. A oferenda animal é prática
+ * de culto afro-brasileiro, e o STF a reconheceu como exercício legítimo de
+ * liberdade religiosa no RE 494601, em 2019. Classificá-la como dano colocava o
+ * produto contra a religião que ele diz servir.
+ */
+const safeGoalCategorySchema = z.enum([
+  "study",
+  "reflection",
+  "remembrance",
+  "personal_routine",
+  "devotion",
+  "offering",
   "sacrifice",
-  "illegal_activity",
-  "medical_promise",
-  "financial_promise",
+  "protection",
+  "cleansing",
+  "health",
+  "prosperity",
+  "love",
+  "justice",
+  "ancestors",
+  "initiation",
+  "divination",
 ]);
+
+/**
+ * O que continua recusado, e por quê.
+ *
+ * Sobraram três, e nenhuma é sobre gosto ou moral: coagir quem não consentiu,
+ * causar dano físico a alguém, e crise de autolesão. As duas primeiras protegem
+ * terceiros, que não escolheram estar ali; a terceira existe porque a resposta
+ * certa naquele momento não é um registro num aplicativo.
+ *
+ * Promessa médica e financeira deixaram de ser recusa. Pedir saúde ou fartura é
+ * uma das coisas mais antigas que existem numa religião — o produto é que não
+ * promete resultado, e isso ele já declara nos limites.
+ */
+const refusedGoalCategorySchema = z.enum(["coercion", "violence", "self_harm"]);
 
 export const guidanceGoalCategorySchema = z.union([
   safeGoalCategorySchema,
@@ -51,25 +86,8 @@ export const refusedGuidanceSchema = z
   .object({
     kind: z.literal("refused_guidance"),
     policyVersion: z.literal(CEREMONIAL_GUIDANCE_POLICY_VERSION),
-    category: z.enum([
-      "consent_required",
-      "coercive_control",
-      "physical_harm",
-      "self_harm_crisis",
-      "sacrifice_or_injury",
-      "illegal_action",
-      "medical_claim",
-      "financial_claim",
-    ]),
-    helpCategory: z.enum([
-      "consent_boundary",
-      "emergency_support",
-      "crisis_support",
-      "non_harmful_alternative",
-      "legal_alternative",
-      "qualified_healthcare",
-      "qualified_financial_guidance",
-    ]),
+    category: z.enum(["consent_required", "coercive_control", "physical_harm", "self_harm_crisis"]),
+    helpCategory: z.enum(["consent_boundary", "emergency_support", "crisis_support"]),
     publicMessage: z.string().trim().min(1).max(240),
   })
   .strict();
@@ -84,10 +102,9 @@ export type GuidancePolicyDecision = z.infer<typeof guidancePolicyDecisionSchema
 /**
  * Decide se o produto aceita guardar um registro, usando só categorias.
  *
- * Recusar não é orientar: o produto não diz o que fazer, mas continua se
- * negando a servir de instrumento para coerção, violência, autolesão,
- * sacrifício, ilegalidade ou promessa médica e financeira. Declinar é a única
- * fala do produto sobre a prática de quem usa.
+ * O produto não julga a finalidade religiosa de ninguém. O que ele se recusa a
+ * instrumentalizar é dano a terceiro — coagir quem não consentiu, ferir alguém —
+ * e crise de autolesão. Fora esses três, a prática é de quem pratica.
  *
  * Texto livre não entra na decisão nem é repetido na recusa. A boundary que
  * recebe uma intenção precisa classificá-la antes de chamar esta função; uma
@@ -160,26 +177,6 @@ function refusalForGoal(goal: z.infer<typeof refusedGoalCategorySchema>) {
       "self_harm_crisis",
       "crisis_support",
       "Não podemos ajudar com autolesão. Procure apoio humano imediato e serviços de emergência locais.",
-    ],
-    sacrifice: [
-      "sacrifice_or_injury",
-      "non_harmful_alternative",
-      "Não fornecemos orientação que envolva ferir ou sacrificar seres vivos.",
-    ],
-    illegal_activity: [
-      "illegal_action",
-      "legal_alternative",
-      "Não ajudamos a planejar ou executar atividade ilegal.",
-    ],
-    medical_promise: [
-      "medical_claim",
-      "qualified_healthcare",
-      "Práticas simbólicas não substituem diagnóstico ou tratamento de profissionais de saúde.",
-    ],
-    financial_promise: [
-      "financial_claim",
-      "qualified_financial_guidance",
-      "Práticas simbólicas não garantem ganho financeiro nem substituem orientação qualificada.",
     ],
   } as const;
   const [category, helpCategory, publicMessage] = decisions[goal];

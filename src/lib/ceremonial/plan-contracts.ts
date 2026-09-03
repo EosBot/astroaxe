@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { guidanceGoalCategorySchema } from "@/domain/ceremonial/guidance-policy";
+
 export const CEREMONIAL_PLAN_CONTRACT_VERSION = "ceremonial-plan-contracts-1.0.0";
 
 /**
@@ -13,19 +15,10 @@ export const ceremonialPlanInputSchema = z
   .object({
     title: z.string().trim().min(1).max(160),
     intention: z.string().trim().min(1).max(4_000),
-    goalCategory: z.enum([
-      "study",
-      "reflection",
-      "remembrance",
-      "personal_routine",
-      "coercion",
-      "violence",
-      "self_harm",
-      "sacrifice",
-      "illegal_activity",
-      "medical_promise",
-      "financial_promise",
-    ]),
+    // A lista vem da política, e não de uma cópia aqui: duas listas divergem no
+    // dia em que uma delas mudar, e a que fica para trás é sempre a que deixa
+    // passar o que a outra recusa.
+    goalCategory: guidanceGoalCategorySchema,
     target: z.enum(["none", "self", "consenting_adult", "non_consenting_person"]),
     /** Entidades que a pessoa escolheu observar. Opcional e cifrado. */
     selection: z.array(z.string().trim().min(1).max(120)).max(24).optional(),

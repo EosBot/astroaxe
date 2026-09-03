@@ -41,11 +41,19 @@ export const frozenWorkspaceKinds = [
 ] as const;
 
 export const frozenGuidanceGoalCategories = [
+  "ancestors",
+  "cleansing",
   "coercion",
-  "financial_promise",
-  "illegal_activity",
-  "medical_promise",
+  "devotion",
+  "divination",
+  "health",
+  "initiation",
+  "justice",
+  "love",
+  "offering",
   "personal_routine",
+  "prosperity",
+  "protection",
   "reflection",
   "remembrance",
   "sacrifice",
