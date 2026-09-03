@@ -29,16 +29,13 @@ export const SIGN_SHADOW_PROFILES: Readonly<Record<string, SignShadowProfile>> =
       "Você se apresenta como quem tem iniciativa, coragem e zero paciência para gente parada. Só que iniciativa também tem um nome técnico: começar antes de entender.",
     problem:
       "O problema não é a coragem. É que seu senso de urgência transforma qualquer demora em conspiração pessoal contra o seu tempo.",
-    ego:
-      "Seu ego não pede desculpa; ele produz um relatório explicando por que a briga era necessária e por que o outro deveria agradecer.",
+    ego: "Seu ego não pede desculpa; ele produz um relatório explicando por que a briga era necessária e por que o outro deveria agradecer.",
     communication:
       "Você chama de sinceridade o que tecnicamente é um foguete com opinião e sem freio.",
     emotional:
       "Emoção para você dura o tempo de uma discussão: nasce, explode e vira outra coisa antes que o corpo alcance.",
-    love:
-      "Você se apaixona rápido. E quando a pessoa demora a responder, conclui que ela entrou em greve de afeto.",
-    anger:
-      "Sua raiva não é guardada; ela é terceirizada para o primeiro ambiente disponível.",
+    love: "Você se apaixona rápido. E quando a pessoa demora a responder, conclui que ela entrou em greve de afeto.",
+    anger: "Sua raiva não é guardada; ela é terceirizada para o primeiro ambiente disponível.",
     relationship:
       "Você gosta de parceria, desde que a pessoa entenda que 'juntos' significa 'você lidera e eu concordo depois'.",
     selfSabotage:
@@ -56,14 +53,11 @@ export const SIGN_SHADOW_PROFILES: Readonly<Record<string, SignShadowProfile>> =
       "Você parece estável, paciente e dono de um apetite admirável. Estável é só o nome educado para difícil de mover.",
     problem:
       "O problema é que segurança, para você, frequentemente significa que nada pode mudar — inclusive você.",
-    ego:
-      "Seu orgulho não se exibe; ele senta, espera e faz você continuar exatamente onde está até o outro desistir.",
+    ego: "Seu orgulho não se exibe; ele senta, espera e faz você continuar exatamente onde está até o outro desistir.",
     communication:
       "Você não argumenta muito. Repete a mesma posição com entonações diferentes até a outra pessoa cansar.",
-    emotional:
-      "Você sente devagar, mas quando sente compra a emoção, mobilia e não quer devolver.",
-    love:
-      "Você ama com presença e com inventário: se escolheu alguém, considera que a pessoa entrou no seu patrimônio emocional.",
+    emotional: "Você sente devagar, mas quando sente compra a emoção, mobilia e não quer devolver.",
+    love: "Você ama com presença e com inventário: se escolheu alguém, considera que a pessoa entrou no seu patrimônio emocional.",
     anger:
       "Demora para explodir. O problema é que a explosão parece ter sido planejada com meses de antecedência.",
     relationship:
@@ -83,14 +77,11 @@ export const SIGN_SHADOW_PROFILES: Readonly<Record<string, SignShadowProfile>> =
     problem:
       "O problema é que você sabe argumentar a favor, contra e em cima do muro antes do café terminar.",
     ego: "Seu ego precisa ser lembrado de que entender tudo não é o mesmo que decidir algo.",
-    communication:
-      "Você chama de diálogo o que é uma entrevista com você mesmo em tempo real.",
+    communication: "Você chama de diálogo o que é uma entrevista com você mesmo em tempo real.",
     emotional:
       "Sua emoção vira dado, vira piada, vira curiosidade. Ela raramente vira permanência.",
-    love:
-      "Você se apaixona pela conversa e depois descobre que o relacionamento também exige silêncio.",
-    anger:
-      "Sua raiva parece leve, mas é rápida: comenta, ironiza, corrige o pronome e sai.",
+    love: "Você se apaixona pela conversa e depois descobre que o relacionamento também exige silêncio.",
+    anger: "Sua raiva parece leve, mas é rápida: comenta, ironiza, corrige o pronome e sai.",
     relationship:
       "Você quer liberdade e companhia, preferencialmente ao mesmo tempo e com sinal de internet.",
     selfSabotage: "Você sabota transformando decisão em pesquisa de opinião.",
@@ -133,13 +124,12 @@ export const SIGN_SHADOW_PROFILES: Readonly<Record<string, SignShadowProfile>> =
     communication:
       "Você narra sua vida com trilha sonora e espera que o público acompanhe a temporada.",
     emotional: "Sua emoção é quente, leal e ofendida quando não vira centro.",
-    love:
-      "Você ama com pompa. Se a pessoa não demonstra do jeito esperado, conclui que ela não entendeu a grandiosidade.",
-    anger:
-      "Sua raiva é teatral, mas real. Quanto mais diz 'não ligo', mais ensaia a próxima fala.",
+    love: "Você ama com pompa. Se a pessoa não demonstra do jeito esperado, conclui que ela não entendeu a grandiosidade.",
+    anger: "Sua raiva é teatral, mas real. Quanto mais diz 'não ligo', mais ensaia a próxima fala.",
     relationship: "Você quer ser adorado sem parecer que pediu adoração.",
     selfSabotage: "Você sabota acreditando que ser substituível é a pior das ofensas.",
-    virtueShadow: "Autoconfiança vira necessidade de aplauso; generosidade vira pagamento por validação.",
+    virtueShadow:
+      "Autoconfiança vira necessidade de aplauso; generosidade vira pagamento por validação.",
     redFlags: [
       "🚩 chama de humildade aceitar elogio só até a terceira frase.",
       "🚩 fica magoado se ninguém pergunta da apresentação.",
@@ -155,9 +145,9 @@ export const SIGN_SHADOW_PROFILES: Readonly<Record<string, SignShadowProfile>> =
     ego: "Seu ego se esconde em estar certo e em ser indispensável.",
     communication:
       "Você chama de feedback o que o outro chama de lista de falhas com nota e referência.",
-    emotional: "Sua emoção vira tarefa. Sentir, para você, costuma ser uma pendência que precisa de método.",
-    love:
-      "Você demonstra amor organizando. Depois sofre porque a pessoa não percebeu o estoque de carinho nas planilhas.",
+    emotional:
+      "Sua emoção vira tarefa. Sentir, para você, costuma ser uma pendência que precisa de método.",
+    love: "Você demonstra amor organizando. Depois sofre porque a pessoa não percebeu o estoque de carinho nas planilhas.",
     anger: "Sua raiva é silenciosa, precisa e manifestada em observações muito bem escritas.",
     relationship: "Você quer entrega, consistência e ordem, e chama isso de básico.",
     selfSabotage: "Você sabota esperando perfeição antes de começar.",
@@ -175,11 +165,9 @@ export const SIGN_SHADOW_PROFILES: Readonly<Record<string, SignShadowProfile>> =
     problem:
       "O problema é que agradar todo mundo é uma estratégia que termina com você concordando com dois lados opostos.",
     ego: "Seu ego precisa parecer razoável, mesmo quando está sendo evasivo.",
-    communication:
-      "Você chama de ponderação o que às vezes é incapacidade de dizer não.",
+    communication: "Você chama de ponderação o que às vezes é incapacidade de dizer não.",
     emotional: "Sua emoção procura equilíbrio, mas pode virar diplomacia exaustiva.",
-    love:
-      "Você se apaixona pela ideia da relação e demora para aceitar que a pessoa real faz barulho.",
+    love: "Você se apaixona pela ideia da relação e demora para aceitar que a pessoa real faz barulho.",
     anger: "Sua raiva aparece com sorriso, indireta elegante e um 'não é nada' que é muita coisa.",
     relationship: "Você quer harmonia e evita conflito até o conflito morar na sala.",
     selfSabotage: "Você sabota consultando tanta gente que esquece o que queria.",
@@ -197,12 +185,10 @@ export const SIGN_SHADOW_PROFILES: Readonly<Record<string, SignShadowProfile>> =
     problem:
       "O problema é que você não confia fácil. E quando confia, cria um contrato invisível que a outra pessoa não assinou.",
     ego: "Seu ego não precisa de atenção; precisa de profundidade, poder e certeza.",
-    communication:
-      "Você fala pouco, observa muito e guarda a frase decisiva para o pior momento.",
+    communication: "Você fala pouco, observa muito e guarda a frase decisiva para o pior momento.",
     emotional: "Sua emoção não é rasa; é uma correnteza com biografia.",
     love: "Você ama com intensidade e quer exclusividade quase forense.",
-    anger:
-      "Sua raiva é silenciosa, transformadora e capaz de durar décadas com a mesma qualidade.",
+    anger: "Sua raiva é silenciosa, transformadora e capaz de durar décadas com a mesma qualidade.",
     relationship: "Você quer entrega absoluta, mas só mostra a senha depois de testar a pessoa.",
     selfSabotage: "Você sabota transformando vínculo em prova de resistência.",
     virtueShadow: "Profundidade vira obsessão; poder vira controle.",
@@ -219,12 +205,10 @@ export const SIGN_SHADOW_PROFILES: Readonly<Record<string, SignShadowProfile>> =
     problem:
       "O problema é que sua liberdade precisa de horizonte, e qualquer rotina parece uma gaiola com Wi-Fi.",
     ego: "Seu ego acredita que toda opinião sua é uma missão educativa.",
-    communication:
-      "Você chama de verdade o que o outro chama de atropelo com risada.",
+    communication: "Você chama de verdade o que o outro chama de atropelo com risada.",
     emotional: "Sua emoção é rápida e prefere viagem a permanência.",
     anger: "Sua raiva é barulhenta, filosófica e termina em frase de autoajuda.",
-    love:
-      "Você ama com entusiasmo e some quando a relação começa a pedir agenda.",
+    love: "Você ama com entusiasmo e some quando a relação começa a pedir agenda.",
     relationship: "Você quer aventura e fidelidade, desde que a aventura seja a prioridade.",
     selfSabotage: "Você sabota prometendo futuro enquanto foge do presente.",
     virtueShadow: "Otimismo vira negação; liberdade vira fuga.",
@@ -240,13 +224,10 @@ export const SIGN_SHADOW_PROFILES: Readonly<Record<string, SignShadowProfile>> =
       "Você se apresenta como responsável, estratégico e sóbrio. Sóbrio é a palavra que você usa para não admitir que sente.",
     problem: "O problema é que controle vira objetivo, e tudo vira meta, inclusive o amor.",
     ego: "Seu ego se alimenta de resultado, título e da sensação de que você aguentou mais.",
-    communication:
-      "Você fala por entregas. Às vezes entrega um silêncio e chama de gestão.",
+    communication: "Você fala por entregas. Às vezes entrega um silêncio e chama de gestão.",
     emotional: "Sua emoção é arquivada até ter utilidade estratégica.",
-    love:
-      "Você demonstra afeto construindo segurança. Depois fica surpreso quando a pessoa queria conversa.",
-    anger:
-      "Sua raiva é fria e administrativa: define consequência, prazo e segue a vida.",
+    love: "Você demonstra afeto construindo segurança. Depois fica surpreso quando a pessoa queria conversa.",
+    anger: "Sua raiva é fria e administrativa: define consequência, prazo e segue a vida.",
     relationship: "Você quer compromisso sério, mas frequentemente trata o vínculo como um cargo.",
     selfSabotage: "Você sabota adiando descanso e chamando de disciplina.",
     virtueShadow: "Responsabilidade vira rigidez; ambição vira frieza.",
@@ -262,8 +243,7 @@ export const SIGN_SHADOW_PROFILES: Readonly<Record<string, SignShadowProfile>> =
       "Você se apresenta como autônomo, visionário e acima de dramas. Acima é uma palavra que usa para não ficar perto.",
     problem:
       "O problema é que você quer revolucionar o mundo, mas acha reunião de condomínio uma perda de tempo.",
-    ego:
-      "Seu ego se orgulha de não ser igual, mesmo quando isso é só teimosia com nome futurista.",
+    ego: "Seu ego se orgulha de não ser igual, mesmo quando isso é só teimosia com nome futurista.",
     communication:
       "Você explica sentimentos como se fossem teoria e depois pergunta por que ninguém se emocionou.",
     emotional: "Sua emoção vira conceito. É profunda, mas tem dificuldade de aterrissar.",
@@ -283,8 +263,7 @@ export const SIGN_SHADOW_PROFILES: Readonly<Record<string, SignShadowProfile>> =
     sign: "Peixes",
     socialVersion:
       "Você se apresenta como sensível, criativo e conectado com o todo. O todo inclui também o que não foi dito, o que não existe e o que você imaginou.",
-    problem:
-      "O problema é que a fronteira entre intuição e fantasia é mal sinalizada no seu mapa.",
+    problem: "O problema é que a fronteira entre intuição e fantasia é mal sinalizada no seu mapa.",
     ego: "Seu ego se dissolve e, quando volta, quer que alguém o salve com delicadeza.",
     communication:
       "Você comunica por atmosfera. Depois cobra resposta de uma pergunta que não fez.",

@@ -113,7 +113,7 @@ export function ShadowHoroscopeView({
   const shadowTextForPlanet = (
     profile: SignShadowProfile,
     pos: ReturnType<typeof getPlacement> | null,
-    areaHint?: string
+    areaHint?: string,
   ): string => {
     if (!pos) return "Dados astrológicos indisponíveis para este ponto.";
     const { sign, degree, house, retrograde } = pos;
@@ -173,7 +173,8 @@ Posição astral: ${sign} ${degree.toFixed(2)}°`;
     {
       title: "Espiritualidade e crenças",
       profileKey: jupiterPos?.sign ?? "Sagitário",
-      areaHint: "Questione se suas buscas de sentido estão evitando confrontos pessoais necessários.",
+      areaHint:
+        "Questione se suas buscas de sentido estão evitando confrontos pessoais necessários.",
     },
   ].map(({ title, profileKey, areaHint }) => {
     const prof = signShadowProfile(profileKey);
@@ -249,8 +250,8 @@ Posição astral: ${sign} ${degree.toFixed(2)}°`;
         <p className="eyebrow">Arquitetura natal da sombra</p>
         <h4>Cinco mecanismos pessoais</h4>
         <p>
-          Os planetas pessoais revelam como você se defende, pensa, ama e age — e onde cada
-          padrão pode ser iluminado.
+          Os planetas pessoais revelam como você se defende, pensa, ama e age — e onde cada padrão
+          pode ser iluminado.
         </p>
       </div>
       <div className="editorial-module-grid">
@@ -1351,4 +1352,3 @@ function lunarPhaseMeaning(index: number): string {
     ][index] ?? ""
   );
 }
-
