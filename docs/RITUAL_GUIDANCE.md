@@ -157,11 +157,20 @@ tratamento de saúde — há teste travando as duas frases.
       `src/domain/tradicoes/trabalhos.ts`
 - [x] Banho de descarrego, defumação da casa e oferenda a Exu ou Pombagira —
       com material, passo a passo, advertência e descarte
-- [ ] Firmeza, assentamento e amaci
-- [ ] Selo, sigilo e talismã por hora planetária
-- [ ] Círculo, abertura e licença
+- [x] **Talismã planetário** — o trabalho que amarra o guia ao buscador de janelas
+- [x] **Firmeza de vela**
+- [x] **Petição angélica**
+- [ ] Assentamento e amaci
+- [ ] Círculo, abertura e licença, em detalhe próprio
 - [ ] Ponto cantado ligado ao trabalho, do catálogo de 538
-- [ ] Petição angélica
+
+**Seis trabalhos, quatro tradições.** Ervas, Quimbanda, selos e angelical — em
+paralelo, e não uma tradição por vez.
+
+**O talismã é onde o produto se fecha sobre si mesmo.** Ele exige dia e hora do
+mesmo planeta, que é exatamente a pergunta que o buscador de janelas responde
+varrendo hora planetária por hora planetária. O motor astrológico deixou de ser
+uma página à parte e virou etapa de um trabalho.
 
 **Descarte é parte do trabalho.** Cada procedimento diz o que se faz com o que
 sobra, porque trabalho deixado pela metade é a origem da maior parte do que

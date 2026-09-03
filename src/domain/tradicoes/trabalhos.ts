@@ -156,10 +156,118 @@ export const trabalhos: readonly Trabalho[] = [
   }),
 ];
 
+export const trabalhosPlanetarios: readonly Trabalho[] = [
+  trabalhoSchema.parse({
+    id: "trabalho:talisma-planetario",
+    tradicaoId: "tradicao:sigilos",
+    name: "Talismã planetário",
+    purpose:
+      "Condensar uma intenção num objeto e carregá-lo com a força de um planeta. Serve a propósito de longo prazo — proteção contínua, prosperidade, estudo, cura —, e não a pedido de urgência.",
+    planet: null,
+    when: "No dia e na hora do planeta que rege a sua intenção: Júpiter para expansão e fartura, Marte para coragem e defesa, Vênus para vínculo, Mercúrio para estudo e negociação, Sol para reconhecimento, Lua para intuição e casa, Saturno para limite e estrutura. Dia e hora precisam coincidir — é a condição que o buscador de janelas existe para encontrar.",
+    materials: [
+      "o suporte do talismã: metal, pergaminho, madeira ou papel de boa gramatura",
+      "tinta ou instrumento de gravação",
+      "o sigilo ou selo correspondente à intenção",
+      "tecido da cor do planeta, grande o bastante para envolver a peça",
+      "tigela com água de nascente",
+      "tigela com sal marinho",
+      "incenso e incensário",
+      "vela",
+    ],
+    steps: [
+      "Decidir a intenção antes de tocar em qualquer material, e escrevê-la numa frase única, no presente e sem negação.",
+      "Escolher o planeta que rege essa intenção, e só então o material, a cor e o sigilo que lhe correspondem.",
+      "Consultar a janela: encontrar um dia do planeta em que caia também uma hora dele.",
+      "Purificar o espaço e a si mesmo antes de começar — água e sal existem para isso.",
+      "Traçar o círculo e abrir o trabalho no planeta escolhido.",
+      "Confeccionar a peça dentro da hora planetária: gravar ou desenhar o sigilo de uma vez, sem interromper.",
+      "Consagrar passando a peça pelos quatro elementos: incenso, vela, água e sal.",
+      "Declarar a intenção em voz alta sobre a peça, uma única vez.",
+      "Envolver no tecido da cor do planeta e fechar o trabalho, licenciando o que foi chamado.",
+    ],
+    warnings: [
+      "Talismã feito fora da hora do planeta é objeto bonito e nada mais. A hora não é formalidade: é o que distingue a peça carregada da lembrança de artesanato.",
+      "Intenção vaga produz talismã vago. Uma frase que diz duas coisas carrega as duas pela metade, e uma frase com negação carrega o que ela nega.",
+      "Talismã é compromisso de longo prazo com uma direção. Carregar um que pede o contrário do que outro pede é o modo mais comum de anular os dois.",
+    ],
+    disposal:
+      "Talismã cumprido ou abandonado se descarrega antes de sair: passa-se por água corrente ou sal, declara-se encerrado, e só então se enterra, queima ou desmonta. Peça carregada jogada no lixo continua carregada.",
+  }),
+  trabalhoSchema.parse({
+    id: "trabalho:firmeza-vela",
+    tradicaoId: "tradicao:quimbanda",
+    name: "Firmeza de vela",
+    purpose:
+      "Sustentar um pedido no tempo. A oferenda entrega de uma vez; a firmeza mantém aceso enquanto o trabalho corre, e é o que se usa quando o assunto não se resolve num dia.",
+    planet: null,
+    when: "No dia da entidade — segunda para Exu, sexta para Pombagira —, e renovada sempre no mesmo dia da semana enquanto durar o assunto.",
+    materials: [
+      "vela na cor da entidade",
+      "prato de barro ou base que não pegue fogo",
+      "a bebida da entidade, em copo pequeno",
+      "pemba, quando houver ponto riscado",
+    ],
+    steps: [
+      "Escolher um canto da casa que não seja quarto de dormir nem cozinha, e que ninguém precise atravessar às pressas.",
+      "Limpar o local antes: firmeza em canto sujo não se sustenta.",
+      "Riscar o ponto, quando for o caso, e assentar a base sobre ele.",
+      "Acender a vela dizendo em voz alta o que se está firmando, com uma frase só.",
+      "Deixar a bebida ao lado, e trocá-la quando secar.",
+      "Acompanhar a queima: vela que apaga sozinha, chia ou racha está dizendo algo, e o trabalho pede revisão antes de continuar.",
+      "Renovar no mesmo dia da semana, enquanto o assunto durar.",
+      "Encerrar quando o pedido se resolver, agradecendo em voz alta e desfazendo o ponto.",
+    ],
+    warnings: [
+      "Vela acesa sem vigilância é a causa mais comum de incêndio doméstico em trabalho espiritual. Base que não pegue fogo, longe de cortina, tecido e papel, e nunca em cima de móvel de madeira sem proteção.",
+      "Firmeza é compromisso continuado. Deixar apagar e nunca mais voltar é pior que não ter firmado, porque o que foi levantado fica sem sustentação.",
+      "Nunca em quarto de quem dorme, nem em cozinha. O primeiro carrega o sono, o segundo carrega o alimento.",
+    ],
+    disposal:
+      "Encerrado o trabalho, restos de cera e a bebida vão para fora de casa, na terra. O prato se lava com água e sal antes de voltar ao uso, ou se descarta junto se tiver sido dedicado.",
+  }),
+  trabalhoSchema.parse({
+    id: "trabalho:peticao-angelica",
+    tradicaoId: "tradicao:angelical",
+    name: "Petição angélica",
+    purpose:
+      "Pedir por escrito a um anjo, dentro da hora do planeta que ele rege. É o trabalho mais simples da magia angelical e o mais dependente de tempo bem escolhido.",
+    planet: null,
+    when: "Na hora planetária do anjo a quem se pede, de preferência no dia do mesmo planeta. Sem a hora certa, a petição vira carta sem endereço.",
+    materials: [
+      "papel limpo, sem pauta e sem uso anterior",
+      "caneta ou tinta reservada para isto",
+      "o selo do anjo, desenhado à mão",
+      "vela da cor do planeta",
+      "incenso",
+    ],
+    steps: [
+      "Identificar o anjo cuja competência corresponde ao pedido, e o planeta que ele rege.",
+      "Encontrar a hora planetária desse planeta, no dia dele quando possível.",
+      "Lavar as mãos e o rosto antes de escrever: a petição começa antes da primeira palavra.",
+      "Desenhar o selo do anjo no alto do papel, de uma vez e sem corrigir.",
+      "Escrever o pedido abaixo do selo, em frase afirmativa, dizendo o que se quer e não o que se teme.",
+      "Acender a vela e o incenso, e ler a petição em voz alta uma única vez.",
+      "Deixar a vela queimar enquanto durar a hora planetária.",
+      "Guardar o papel dobrado, ou queimá-lo, conforme o que foi decidido antes de escrever.",
+    ],
+    warnings: [
+      "Pedido escrito com negação carrega a negação. “Que eu não perca o emprego” planta a perda; “que meu trabalho se firme” planta a firmeza.",
+      "Petição repetida todo dia para o mesmo assunto é sinal de que não se confiou no que foi pedido, e desfaz o que a primeira firmou.",
+      "Anjo tem competência declarada. Pedir a um anjo o que pertence à competência de outro é como levar processo ao médico.",
+    ],
+    disposal:
+      "Papel guardado fica em lugar limpo e fechado até o pedido se resolver, e então é queimado com agradecimento. Papel queimado na hora tem a cinza entregue à terra ou à água corrente.",
+  }),
+];
+
+/** Todos os trabalhos, dos gerais aos regidos por hora planetária. */
+export const todosOsTrabalhos: readonly Trabalho[] = [...trabalhos, ...trabalhosPlanetarios];
+
 export function trabalhoById(id: string): Trabalho | undefined {
-  return trabalhos.find((trabalho) => trabalho.id === id);
+  return todosOsTrabalhos.find((trabalho) => trabalho.id === id);
 }
 
 export function trabalhosPorTradicao(tradicaoId: string): Trabalho[] {
-  return trabalhos.filter((trabalho) => trabalho.tradicaoId === tradicaoId);
+  return todosOsTrabalhos.filter((trabalho) => trabalho.tradicaoId === tradicaoId);
 }
