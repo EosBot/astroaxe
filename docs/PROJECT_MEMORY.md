@@ -1,5 +1,23 @@
 # Memória canônica do projeto
 
+## 3 de setembro de 2026 — Em andamento: reescrita completa do Horóscopo Sombrio
+
+**Status multiagente:** auditoria do módulo iniciada. Agente trabalhando agora em
+`src/components/account/astrology-module-panels.tsx`, `src/components/account/transit-reading.tsx`
+e arredores; nenhuma alteração de código aplicada até o momento. Não editar esses arquivos
+simultaneamente. Próxima gravação aqui será feita ao entrar na implementação.
+
+**Achados iniciais da auditoria:**
+- O módulo atual (`ShadowHoroscopeView`) usa só Sol, Lua, Mercúrio, Vênus e Marte; ignora casas,
+  aspectos, ascendente, MC, Saturno, Plutão e Netuno.
+- O texto atual é genérico, curto e tem tom “integração”, não o tom ácido/humorístico pedido.
+- Os trânsitos sombrios (`variant="shadow"`) usam composição pré-escrita por aspecto, mas sem
+  variação por planeta/signo nem camadas psicológicas.
+- Há dados disponíveis no `ProfileRecord`: planetas com signo/grau/retrogradação, casas (quando
+  hora conhecida) e aspectos com tipo/orbe/força.
+
+---
+
 ## 3 de setembro de 2026 — freemium, ferramentas cerimoniais e auditoria
 
 **Fronteira do freemium.** O dono definiu que só mapa natal, horóscopo e horóscopo

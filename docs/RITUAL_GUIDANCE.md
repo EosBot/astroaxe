@@ -67,12 +67,23 @@ para manter de pé.
 `<documento>_<índice>`, e `char_count` é o tamanho do texto. Coluna que a origem
 não preenche seria proveniência inventada.
 
-### Fase 2 — Catálogo de entidades
+### Fase 2 — Catálogo de entidades (em andamento)
 
+- [x] **Reinos da Quimbanda**: 6 dos 7, com Exu Rei, Pombagira Rainha e domínio,
+      em `src/domain/quimbanda/reinos.ts`
+- [x] Regência planetária dos Reinos onde o acervo a declara — Almas em Marte e
+      Geburah, Cruzeiros em Júpiter e Chesed
+- [ ] O sétimo Reino, quando houver base
+- [ ] Legiões e povos de cada Reino (só o Povo das Árvores está levantado)
+- [ ] Exus e Pombas Giras nomeados dentro de cada Reino
 - [ ] Orixás: domínio, dia, saudação, cor, ponto, oferenda, erva, temperamento
-- [ ] Exus e Pombas Giras: falange, domínio, dia, ponto, oferenda, advertência
-- [ ] Anjos, espíritos olímpicos e inteligências planetárias (já parcialmente no grafo)
-- [ ] Como cada um atua, e o que costuma cobrar
+- [ ] Anjos, olímpicos e inteligências (já parcialmente no grafo de funções)
+
+**A ponte que apareceu.** O material do terreiro liga cada Reino a um planeta e
+a uma sephirah. Isso conecta a Quimbanda ao motor de horas planetárias que já
+existe: perguntar "quando trabalhar no Reino das Almas" vira perguntar ao
+buscador de janelas quando Marte rege. Não foi planejado, e é a peça que faz os
+dois lados do produto se encontrarem.
 
 ### Fase 3 — Advertências
 
@@ -114,9 +125,19 @@ não preenche seria proveniência inventada.
    letra validada. O áudio não entra, e o `file_path` do catálogo — que aponta
    para o disco de origem — não é gravado.
 
+3. **Material do terreiro pode entrar.** Ele já está no acervo: `templo_pena`
+   são 1.221 trechos, com as formações sacerdotais de Umbanda e de Kimbanda e a
+   apostila autodidata de Quimbanda hermética. **A autoria é do próprio dono** —
+   as apostilas são assinadas por ele. Isso muda o que pode ser publicado: obra
+   de terceiro continua sendo insumo, mas o material da casa é dele.
+
 ### Ainda em aberto
 
-- Há material do terreiro, fora do acervo digital, que deva entrar?
+- Há material do terreiro **fora** do acervo digital? Se houver, precisa dos
+  arquivos.
+- O sétimo Reino. Seis estão sustentados pelo acervo; o sétimo aparece com nomes
+  que variam entre casas, e ficou declarado como pendente em vez de preenchido
+  por suposição.
 
 ## Cobertura do acervo, por assunto
 
