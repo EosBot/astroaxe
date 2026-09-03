@@ -473,6 +473,22 @@ URL, branch protection ou pipeline.
 | Build difere do dev            | reproduza no target Docker de produção             | corrija import, env ou boundary server/client       |
 | Skill instalada não aparece    | confira catálogo da sessão                         | abra nova conversa/reinicie; use fallback declarado |
 
+## Fronteira do freemium
+
+O catálogo em `src/lib/access/features.ts` declara o nível mínimo de cada
+recurso, e `authorizeFeature` recebe o recurso — nunca a regra. Ao criar
+superfície nova, **o padrão é fechada**: acrescente o recurso ao catálogo antes
+de escrever a rota. Recurso fora do catálogo é recurso sem porta, e
+`requiredTierFor` falha de propósito em vez de liberar por omissão.
+
+`hasPaidPlan` é o ponto do paywall e hoje trata qualquer conta autenticada como
+paga, porque o produto está em fase de teste. Ligar a cobrança é mudar aquela
+função e nada mais — se você precisar tocar em mais de um arquivo para isso,
+alguma rota criou regra própria e é isso que deve ser corrigido.
+
+`data-export` nunca sobe para `paid`. Acesso e portabilidade são direito do
+titular na LGPD, e existe teste travando essa linha.
+
 Se uma verificação essencial falhar por infraestrutura, reporte comando,
 mensagem e impacto. Não marque a tarefa como concluída com gate essencial
 desconhecido.

@@ -17,8 +17,13 @@ import {
   verifyPassword,
 } from "@/lib/security/account";
 import { apiJson } from "@/lib/security/headers";
+import { checkJsonRequest } from "@/lib/security/json-body";
 
 export async function PUT(request: NextRequest): Promise<Response> {
+  // Corpo sem teto deixa a rota aberta a pedido enorme, e estas respondem
+  // sem sessão nenhuma.
+  const body = checkJsonRequest(request, 4096);
+  if (!body.ok) return apiJson({ error: "Pedido inválido." }, { status: body.status });
   if (!request.headers.get("content-type")?.startsWith("application/json"))
     return apiJson({ error: "Envie os dados como JSON." }, { status: 415 });
   try {

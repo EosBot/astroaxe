@@ -14,10 +14,14 @@ import {
   isSameOrigin,
   verifyPassword,
 } from "@/lib/security/account";
-import { findGuestSession, GUEST_COOKIE_NAME } from "@/lib/security/guest-session";
 import { apiJson } from "@/lib/security/headers";
+import { checkJsonRequest } from "@/lib/security/json-body";
 
 export async function POST(request: NextRequest): Promise<Response> {
+  // Corpo sem teto deixa a rota aberta a pedido enorme, e estas respondem
+  // sem sessão nenhuma.
+  const body = checkJsonRequest(request, 4096);
+  if (!body.ok) return apiJson({ error: "Pedido inválido." }, { status: body.status });
   if (!request.headers.get("content-type")?.startsWith("application/json"))
     return apiJson({ error: "Envie os dados como JSON." }, { status: 415 });
   try {
@@ -37,21 +41,9 @@ export async function POST(request: NextRequest): Promise<Response> {
     });
     if (user === null || !(await verifyPassword(credentials.password, user.passwordHash)))
       return apiJson({ error: "Email ou senha inválidos." }, { status: 401 });
-    const guest = await findGuestSession(request, env.GUEST_SESSION_SECRET);
-    const claimed =
-      guest === null
-        ? { count: 0 }
-        : await prisma.birthProfile.updateMany({
-            where: { guestSessionId: guest.id, userId: null },
-            data: { guestSessionId: null, userId: user.id },
-          });
     const session = await createAccountSession(user.id, env.AUTH_SESSION_SECRET);
-    const response = apiJson({ user: { email: user.email }, claimedProfiles: claimed.count });
+    const response = apiJson({ user: { email: user.email } });
     response.headers.append("Set-Cookie", accountCookie(session.token));
-    response.headers.append(
-      "Set-Cookie",
-      `${GUEST_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`,
-    );
     return response;
   } catch (error) {
     if (error instanceof z.ZodError)

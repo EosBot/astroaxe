@@ -18,7 +18,6 @@ const mocks = vi.hoisted(() => ({
   profileUpdate: vi.fn(),
   getPrisma: vi.fn(),
   rateLimit: vi.fn(),
-  findGuest: vi.fn(),
   hashPassword: vi.fn(),
   verifyPassword: vi.fn(),
   createSession: vi.fn(),
@@ -45,10 +44,6 @@ vi.mock("@/lib/env", () => ({
 vi.mock("@/lib/prisma", () => ({ getPrisma: mocks.getPrisma }));
 vi.mock("@/lib/rate-limit", () => ({ enforceRateLimit: mocks.rateLimit }));
 vi.mock("@/lib/logger", () => ({ logger: { error: vi.fn() } }));
-vi.mock("@/lib/security/guest-session", () => ({
-  findGuestSession: mocks.findGuest,
-  GUEST_COOKIE_NAME: "astroaxe_guest",
-}));
 vi.mock("@/lib/security/account", () => ({
   accountCookie: () => "astroaxe_session=opaque; Path=/; HttpOnly",
   clearAccountCookie: () => "astroaxe_session=; Max-Age=0",
@@ -65,7 +60,6 @@ describe("account routes", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.rateLimit.mockResolvedValue(true);
-    mocks.findGuest.mockResolvedValue({ id: "guest-id" });
     mocks.hashPassword.mockResolvedValue(passwordHashFixture);
     mocks.verifyPassword.mockResolvedValue(true);
     mocks.createSession.mockResolvedValue({ token: "opaque", expiresAt: new Date() });
@@ -96,16 +90,15 @@ describe("account routes", () => {
     });
   });
 
-  it("registers and claims the current guest profile", async () => {
+  it("registra a conta e devolve o cookie de sessão", async () => {
     const { POST } = await import("./register/route");
     const response = await POST(jsonRequest("/api/auth/register"));
     expect(response.status).toBe(201);
-    await expect(response.json()).resolves.toMatchObject({ claimedProfiles: 1 });
-    expect(mocks.profileUpdate).toHaveBeenCalledWith({
-      where: { guestSessionId: "guest-id", userId: null },
-      data: { guestSessionId: null, userId: "user-id" },
-    });
-    expect(response.headers.getSetCookie()).toHaveLength(2);
+    await expect(response.json()).resolves.toMatchObject({ user: { email: expect.any(String) } });
+    // Não existe mais reivindicação de perfil de convidado: o mapa natal passou
+    // a exigir conta, então nenhum perfil nasce sem dono para ser adotado depois.
+    expect(mocks.profileUpdate).not.toHaveBeenCalled();
+    expect(response.headers.getSetCookie()).toHaveLength(1);
     expect(mocks.emailCreate).toHaveBeenCalledWith({
       data: expect.objectContaining({
         userId: "user-id",
@@ -117,12 +110,12 @@ describe("account routes", () => {
     });
   });
 
-  it("logs in and claims without duplicating profiles", async () => {
+  it("entra e devolve o cookie de sessão", async () => {
     const { POST } = await import("./login/route");
     const response = await POST(jsonRequest("/api/auth/login"));
     expect(response.status).toBe(200);
     expect(mocks.verifyPassword).toHaveBeenCalledWith(passwordFixture, passwordHashFixture);
-    expect(mocks.profileUpdate).toHaveBeenCalledOnce();
+    expect(mocks.profileUpdate).not.toHaveBeenCalled();
   });
 
   it("returns the same public error for an unknown login", async () => {

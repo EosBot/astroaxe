@@ -1,5 +1,51 @@
 # Memória canônica do projeto
 
+## 3 de setembro de 2026 — freemium, ferramentas cerimoniais e auditoria
+
+**Fronteira do freemium.** O dono definiu que só mapa natal, horóscopo e horóscopo
+sombrio são gratuitos, e que gratuito exige conta. `/tempo-cerimonial` e
+`/acervo-cultural` seguem abertos a quem não tem conta, porque não guardam dado de
+ninguém. O catálogo em `src/lib/access/features.ts` passou a declarar o nível de
+cada recurso; `hasPaidPlan` é o único ponto a mudar quando a cobrança entrar.
+
+Exigir conta para o mapa natal encerrou o funil de experimentar antes de assinar.
+A sessão de convidado foi removida: com zero perfis órfãos no banco, apagar a
+reivindicação em `auth/register` e `auth/login` não deixou nada preso.
+`GUEST_SESSION_SECRET` **permanece**, porque serve de chave HMAC para o rate limit
+de `geocoding` e `ceremonial/timing`.
+
+**Quatro ferramentas cerimoniais**, todas pagas e reunidas em `/ferramentas`:
+buscador de janelas, diretório de correspondências, planejador e tábua operacional.
+A camada de orientação saiu do produto — as recusas ficaram, porque declinar não é
+orientar.
+
+**Desempenho da varredura.** A primeira versão levava 115 ms por hora planetária, o
+que faria um mês levar 83 segundos. Medindo em vez de supor: descobrir nascer e pôr
+do sol custa 24,5 ms; posicionar Sol e Lua custa 0,2 ms. Derivar as doze horas de um
+segmento do mesmo par de eventos, e deixar `evaluateElections` receber a hora já
+resolvida — ela a recalculava uma vez por critério — levou a 2,83 ms por hora.
+
+**Turbopack.** O `build` passava `--webpack` desde o commit de bootstrap, sem motivo
+registrado, e o cache corrompia sozinho (`WasmHash._updateWithBuffer`). Turbopack
+gera a mesma saída standalone e três builds consecutivos terminam limpos. O sintoma
+perigoso não é o build morrer: é o gate de vazamento varrer menos artefato de
+repente, que foi como um build parcial quase passou por bom.
+
+**Auditoria de segurança.** Um furo real, aberto por mim: `/api/maps` passou a criar
+perfil na conta do titular e continuava sem checagem de origem — CSRF em conta
+logada. Fechado, com teste de regressão. Também foram adicionados limites de corpo
+às sete rotas de `auth`, que respondem sem sessão.
+
+`npm audit` acusa `mysql2` (alto) via Prisma. Verificado que o pacote está ausente
+do bundle standalone e da imagem do container: o projeto usa PostgreSQL e o driver
+nunca é carregado. Corrigir exigiria Prisma 8.0.0-rc, e não se troca produção por
+release candidate para fechar achado inalcançável.
+
+**Achados em aberto:** não há `Content-Security-Policy` nem `Strict-Transport-Security`.
+CSP em Next exige nonce nos scripts inline e quebra a página se feito às cegas; HSTS
+pertence à borda TLS, que ainda não existe. Ambos ficam para quando houver ambiente
+com TLS.
+
 ## Atualização 2026-09-02 — o acervo sai da interface, e a página de tempo ganha o invólucro certo
 
 - **Defeito de layout, meu.** A página de tempo usava `methodology-main` e

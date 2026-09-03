@@ -15,12 +15,16 @@ import {
   hashPassword,
   isSameOrigin,
 } from "@/lib/security/account";
-import { findGuestSession, GUEST_COOKIE_NAME } from "@/lib/security/guest-session";
 import { apiJson } from "@/lib/security/headers";
+import { checkJsonRequest } from "@/lib/security/json-body";
 import { WELCOME_EMAIL_KIND, WELCOME_TEMPLATE_VERSION } from "@/lib/email/template";
 import { createAccountToken } from "@/lib/auth/account-token";
 
 export async function POST(request: NextRequest): Promise<Response> {
+  // Corpo sem teto deixa a rota aberta a pedido enorme, e estas respondem
+  // sem sessão nenhuma.
+  const body = checkJsonRequest(request, 4096);
+  if (!body.ok) return apiJson({ error: "Pedido inválido." }, { status: body.status });
   if (!request.headers.get("content-type")?.startsWith("application/json"))
     return apiJson({ error: "Envie os dados como JSON." }, { status: 415 });
   try {
@@ -33,7 +37,6 @@ export async function POST(request: NextRequest): Promise<Response> {
       .digest("hex");
     if (!(await enforceRateLimit(`v1:rate:register:${rateKey}`, 5, 900)))
       return apiJson({ error: "Muitas tentativas. Aguarde alguns minutos." }, { status: 429 });
-    const guest = await findGuestSession(request, env.GUEST_SESSION_SECRET);
     const passwordHash = await hashPassword(credentials.password);
     const now = new Date();
     const prisma = getPrisma();
@@ -58,13 +61,6 @@ export async function POST(request: NextRequest): Promise<Response> {
           expiresAt: verification.expiresAt,
         },
       });
-      const claimed =
-        guest === null
-          ? { count: 0 }
-          : await tx.birthProfile.updateMany({
-              where: { guestSessionId: guest.id, userId: null },
-              data: { guestSessionId: null, userId: user.id },
-            });
       await tx.emailOutbox.create({
         data: {
           userId: user.id,
@@ -74,18 +70,11 @@ export async function POST(request: NextRequest): Promise<Response> {
           accountTokenId: tokenId,
         },
       });
-      return { user, claimedProfiles: claimed.count };
+      return { user };
     });
     const session = await createAccountSession(created.user.id, env.AUTH_SESSION_SECRET);
-    const response = apiJson(
-      { user: { email: created.user.email }, claimedProfiles: created.claimedProfiles },
-      { status: 201 },
-    );
+    const response = apiJson({ user: { email: created.user.email } }, { status: 201 });
     response.headers.append("Set-Cookie", accountCookie(session.token));
-    response.headers.append(
-      "Set-Cookie",
-      `${GUEST_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`,
-    );
     return response;
   } catch (error) {
     if (error instanceof z.ZodError)

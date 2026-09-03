@@ -55,15 +55,47 @@ convertidos por timezone IANA antes do cálculo em UTC. Quando a hora é desconh
 retorna posições de referência e a faixa diária da Lua, mas omite casas, Ascendente e Meio do
 Céu. Resultados incluem versões de engine/config e fingerprint SHA-256 dos inputs normalizados.
 
-## Onboarding guest-first
+## Fronteira do freemium
+
+O produto é freemium, e a fronteira vive num só lugar: `src/lib/access/features.ts`. Cada recurso
+declara o nível mínimo de acesso, e `authorizeFeature` recebe o recurso — nunca a regra. Trocar o
+preço de algo é editar uma linha do catálogo.
+
+| Nível       | O que alcança                                                                                           |
+| ----------- | ------------------------------------------------------------------------------------------------------- |
+| `anonymous` | `/tempo-cerimonial` e `/acervo-cultural`: mostram o método sem guardar dado de ninguém                  |
+| `free`      | mapa natal, horóscopo, horóscopo sombrio, arquivo da conta e exportação                                 |
+| `paid`      | trânsitos, lunar, retornos, sinastria, calendário, mapas temáticos, tríade e as ferramentas cerimoniais |
+
+Gratuito não quer dizer anônimo. Os três recursos gratuitos dependem de data, hora e lugar de
+nascimento, e guardar isso sem titular criaria dado pessoal que ninguém pode pedir para apagar
+ou exportar.
+
+**O paywall ainda não existe** — o produto está em fase de teste, e `hasPaidPlan` trata qualquer
+conta autenticada como paga. Ligar a cobrança é mudar aquela função, e nada mais.
+
+Exportar os próprios dados nunca sobe para `paid`: acesso e portabilidade são direito do titular
+na LGPD, e há teste travando isso.
+
+## Onboarding
 
 A página inicial entrega nome/apelido, data, hora opcional e cidade em quatro etapas. A busca de
 cidades usa Nominatim somente com o texto da cidade, deriva o timezone pelas coordenadas e mantém
-cache por 30 dias. O primeiro mapa aparece antes de cadastro ou paywall.
+cache por 30 dias. Criar o mapa exige conta: dados natais nunca devem ir para logs, analytics,
+URLs ou serviços de geocoding.
 
-A sessão guest dura 24 horas. O navegador recebe um token aleatório em cookie HttpOnly,
-SameSite=Lax e Secure em produção; o banco persiste apenas seu HMAC. Dados natais nunca devem ir
-para logs, analytics, URLs ou serviços de geocoding.
+## Ferramentas cerimoniais
+
+Quatro ferramentas pagas, reunidas em `/ferramentas`. Elas calculam, cruzam e guardam — e nenhuma
+sugere o que fazer, por decisão de produto.
+
+- **Buscador de janelas** varre um período hora planetária por hora planetária e devolve as que
+  atendem a cada critério de eleição.
+- **Diretório de correspondências** inverte o grafo de funções: dado um nome, que posição ele
+  ocupa e quem mais a ocupa, vindo de outra linhagem.
+- **Planejador** guarda planos e sessões cifrados, com exclusão em cascata e rastro auditável.
+- **Tábua operacional** lista planeta, signo, elemento, modalidade e casa por Orixá, sempre
+  rotulados como hipótese autoral e não como afirmação das tradições.
 
 ## Producao
 

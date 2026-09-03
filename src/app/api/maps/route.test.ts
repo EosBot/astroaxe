@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   resolveAccount: vi.fn(),
-  resolveGuest: vi.fn(),
+  isSameOrigin: vi.fn(),
   rateLimit: vi.fn(),
   create: vi.fn(),
   sanitize: vi.fn(),
@@ -16,10 +16,9 @@ vi.mock("@/lib/env", () => ({
     FINGERPRINT_SECRET: "f".repeat(32),
   }),
 }));
-vi.mock("@/lib/security/account", () => ({ resolveAccount: mocks.resolveAccount }));
-vi.mock("@/lib/security/guest-session", () => ({
-  resolveGuestSession: mocks.resolveGuest,
-  guestCookie: () => "astroaxe_guest=opaque",
+vi.mock("@/lib/security/account", () => ({
+  resolveAccount: mocks.resolveAccount,
+  isSameOrigin: mocks.isSameOrigin,
 }));
 vi.mock("@/lib/rate-limit", () => ({ enforceRateLimit: mocks.rateLimit }));
 vi.mock("@/lib/prisma", () => ({ getPrisma: () => ({ birthProfile: { create: mocks.create } }) }));
@@ -32,6 +31,7 @@ describe("map route boundary", () => {
     vi.clearAllMocks();
     mocks.resolveAccount.mockResolvedValue({ id: "owner-id", email: "lu@example.test" });
     mocks.rateLimit.mockResolvedValue(true);
+    mocks.isSameOrigin.mockReturnValue(true);
     mocks.sanitize.mockImplementation((input: object) => ({
       ...input,
       quality: { timeKnown: false, normalized: true },
@@ -74,7 +74,7 @@ describe("map route boundary", () => {
     const response = await POST(
       new NextRequest("http://localhost/api/maps", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", origin: "http://localhost" },
         body: JSON.stringify({
           displayName: "Lu",
           date: "1990-06-10",
@@ -93,7 +93,6 @@ describe("map route boundary", () => {
         data: expect.objectContaining({ guestSessionId: null, userId: "owner-id" }),
       }),
     );
-    expect(mocks.resolveGuest).not.toHaveBeenCalled();
   });
 
   it("recusa criar mapa para quem não tem conta", async () => {
@@ -102,7 +101,7 @@ describe("map route boundary", () => {
     const response = await POST(
       new NextRequest("http://localhost/api/maps", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", origin: "http://localhost" },
         body: JSON.stringify({
           displayName: "Lu",
           date: "1990-06-10",
@@ -128,10 +127,28 @@ describe("map route boundary", () => {
     const response = await POST(
       new NextRequest("http://localhost/api/maps", {
         method: "POST",
-        headers: { "content-type": "application/json" },
+        headers: { "content-type": "application/json", origin: "http://localhost" },
         body: JSON.stringify({ displayName: "" }),
       }),
     );
     expect(response.status).toBe(400);
+  });
+
+  it("recusa criação vinda de outra origem", async () => {
+    // O mapa passou a nascer na conta de quem está logado. Sem esta checagem,
+    // uma página de terceiro poderia criar perfis dentro da conta da pessoa
+    // usando o cookie que o navegador envia sozinho.
+    mocks.isSameOrigin.mockReturnValue(false);
+    const { POST } = await import("./route");
+    const response = await POST(
+      new NextRequest("http://localhost/api/maps", {
+        method: "POST",
+        headers: { "content-type": "application/json", origin: "https://outro.example" },
+        body: JSON.stringify({ displayName: "Lu" }),
+      }),
+    );
+
+    expect(response.status).toBe(403);
+    expect(mocks.create).not.toHaveBeenCalled();
   });
 });

@@ -14,6 +14,7 @@ const links = [
   { href: "/acervo-cultural", label: "Acervo" },
   { href: "/metodologia", label: "Método" },
   { href: "/tempo-cerimonial", label: "Tempo" },
+  { href: "/ferramentas", label: "Ferramentas" },
 ] as const;
 
 export function SiteHeader(): React.JSX.Element {

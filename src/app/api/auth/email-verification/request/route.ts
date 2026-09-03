@@ -10,8 +10,13 @@ import { getPrisma } from "@/lib/prisma";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { isSameOrigin, resolveAccount } from "@/lib/security/account";
 import { apiJson } from "@/lib/security/headers";
+import { checkJsonRequest } from "@/lib/security/json-body";
 
 export async function POST(request: NextRequest): Promise<Response> {
+  // Corpo sem teto deixa a rota aberta a pedido enorme, e estas respondem
+  // sem sessão nenhuma.
+  const body = checkJsonRequest(request, 2048);
+  if (!body.ok) return apiJson({ error: "Pedido inválido." }, { status: body.status });
   try {
     const env = parseServerEnv();
     if (!isSameOrigin(request, env.SITE_URL))

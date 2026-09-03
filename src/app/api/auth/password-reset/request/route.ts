@@ -12,10 +12,15 @@ import { getPrisma } from "@/lib/prisma";
 import { enforceRateLimit } from "@/lib/rate-limit";
 import { isSameOrigin } from "@/lib/security/account";
 import { apiJson } from "@/lib/security/headers";
+import { checkJsonRequest } from "@/lib/security/json-body";
 
 const GENERIC_MESSAGE = "Se a conta existir, enviaremos as instruções para redefinir a senha.";
 
 export async function POST(request: NextRequest): Promise<Response> {
+  // Corpo sem teto deixa a rota aberta a pedido enorme, e estas respondem
+  // sem sessão nenhuma.
+  const body = checkJsonRequest(request, 2048);
+  if (!body.ok) return apiJson({ error: "Pedido inválido." }, { status: body.status });
   if (!request.headers.get("content-type")?.startsWith("application/json"))
     return apiJson({ error: "Envie os dados como JSON." }, { status: 415 });
   try {

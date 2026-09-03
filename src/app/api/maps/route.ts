@@ -31,7 +31,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     // O mapa natal é gratuito, mas exige conta: ele guarda data, hora e lugar de
     // nascimento, e dado pessoal sem titular é dado que ninguém pode pedir para
     // apagar nem exportar depois. A sessão de convidado deixou de criar mapa.
-    const grant = await authorizeFeature(request, "natal-chart", { requireSameOrigin: false });
+    const grant = await authorizeFeature(request, "natal-chart", { requireSameOrigin: true });
     if (grant instanceof Response) return grant;
     const ownerId = grant.userId as string;
     const allowed = await enforceRateLimit(`v1:rate:maps:${ownerId}`, 5, 60);
