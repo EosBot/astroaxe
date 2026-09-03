@@ -116,11 +116,28 @@ existe: perguntar "quando trabalhar no Reino das Almas" vira perguntar ao
 buscador de janelas quando Marte rege. Não foi planejado, e é a peça que faz os
 dois lados do produto se encontrarem.
 
-### Fase 3 — Advertências
+### Fase 3 — Advertências (domínio pronto)
 
-- [ ] Por entidade
-- [ ] Por tipo de trabalho
+- [x] **Quatro advertências gerais**, tiradas do que o acervo afirma sobre a
+      natureza da força: agentes cármicos, não se abre por qualquer coisa, o que
+      se abre precisa ser fechado, e a conta é de quem abre
+- [x] **Uma advertência própria para cada um dos sete Reinos**
+- [ ] Por tipo de trabalho, além do Reino
 - [ ] Tela de prosseguir, com o que se assume declarado antes do procedimento
+
+**O fundamento da advertência.** O acervo diz que os Exus atuam como agentes
+cármicos, executores da Lei do Karma: quando existe causa desequilibrada, são
+eles que fazem o efeito acontecer, cobrando o que é devido para reequilibrar a
+balança. Daí sai a advertência que mais importa — **a força não distingue de que
+lado da causa você está**. Quem pede justiça pede a lei inteira.
+
+O acervo também é direto sobre o risco: por serem forças pouco conhecidas, não
+devem ser invocadas por qualquer motivo, e fazê-lo é expor-se a perigos fortes,
+incontroláveis e desconhecidos.
+
+Uma advertência é material, e não espiritual: no Reino das Matas o erro de erva
+machuca o corpo. O texto diz isso e diz que trabalho de mata não substitui
+tratamento de saúde — há teste travando as duas frases.
 
 ### Fase 4 — Preparo detalhado
 

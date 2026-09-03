@@ -26,258 +26,308 @@ export const SIGN_SHADOW_PROFILES: Readonly<Record<string, SignShadowProfile>> =
   Áries: {
     sign: "Áries",
     socialVersion:
-      "Você se apresenta como quem tem iniciativa, coragem e zero paciência para gente parada. Só que iniciativa também tem um nome técnico: começar antes de entender.",
+      "Iniciativa, coragem e impaciência são seu cartão de visitas – embora a iniciativa muitas vezes seja apenas o ato de começar antes de entender o jogo.",
     problem:
-      "O problema não é a coragem. É que seu senso de urgência transforma qualquer demora em conspiração pessoal contra o seu tempo.",
-    ego: "Seu ego não pede desculpa; ele produz um relatório explicando por que a briga era necessária e por que o outro deveria agradecer.",
+      "Seu senso de urgência transforma cada espera em um suposto sabotagem do universo contra sua agenda.",
+    ego: "Seu ego não pede desculpa; elabora um relatório detalhado explicando por que o conflito foi inevitável e por que o outro deveria lhe agradecer.",
     communication:
-      "Você chama de sinceridade o que tecnicamente é um foguete com opinião e sem freio.",
+      "Você chama de franqueza o que, tecnicamente, é um projétil de opinião lançado sem sistema de guiamento.",
     emotional:
-      "Emoção para você dura o tempo de uma discussão: nasce, explode e vira outra coisa antes que o corpo alcance.",
-    love: "Você se apaixona rápido. E quando a pessoa demora a responder, conclui que ela entrou em greve de afeto.",
-    anger: "Sua raiva não é guardada; ela é terceirizada para o primeiro ambiente disponível.",
+      "Seus sentimentos têm a vida útil de uma discussão: nascem, explodem e se transformam antes que o corpo consiga acompanhar.",
+    love: "Você se apaixona em velocidade de relâmpago; diante de uma resposta lenta, conclui que o outro entrou em greve de afetividade.",
+    anger: "Sua ira não é arquivada; é terceirizada para o primeiro ambiente que der espaço.",
     relationship:
-      "Você gosta de parceria, desde que a pessoa entenda que 'juntos' significa 'você lidera e eu concordo depois'.",
+      "Você valoriza parceria, desde que o parceiro compreenda que 'juntos' significa 'você conduz, eu acompanho depois'.",
     selfSabotage:
-      "Você sabota prometendo calma enquanto a perna já balança para iniciar a próxima briga.",
-    virtueShadow: "Coragem vira imprudência; liberdade vira incapacidade de esperar.",
+      "Você promete tranquilidade enquanto o pé já bate o chão para a próxima troca de acusações.",
+    virtueShadow: "Coragem vira imprudência; liberdade vira incapacidade de aguardar.",
     redFlags: [
-      "🚩 chama de proatividade o que o grupo chama de atropelamento.",
-      "🚩 termina a frase dos outros e depois cobra o enredo.",
-      "🚩 acredita que pedir desculpa é uma forma de atraso.",
+      "🚩 chama de ação preventiva o que o grupo chama de interrompê‑los antes de terminarem a frase.",
+      "🚩 termina suas frases e depois cobra o resumo do que você acabou de dizer.",
+      "🚩 acredita que pedir perdão é apenas mais um item na lista de atrasos.",
     ],
   },
   Touro: {
     sign: "Touro",
     socialVersion:
-      "Você parece estável, paciente e dono de um apetite admirável. Estável é só o nome educado para difícil de mover.",
-    problem:
-      "O problema é que segurança, para você, frequentemente significa que nada pode mudar — inclusive você.",
-    ego: "Seu orgulho não se exibe; ele senta, espera e faz você continuar exatamente onde está até o outro desistir.",
+      "Estabilidade, paciência e um apetite à prova de crises são seu estilo – embora a estabilidade frequentemente seja apenas resistência ao movimento.",
+    problem: "Para você, segurança costuma significar que nada pode mudar, inclusive você mesmo.",
+    ego: "Seu orgulho não grita; ele se assenta, espera e faz você permanecer no mesmo lugar até que o outro desista primeiro.",
     communication:
-      "Você não argumenta muito. Repete a mesma posição com entonações diferentes até a outra pessoa cansar.",
-    emotional: "Você sente devagar, mas quando sente compra a emoção, mobilia e não quer devolver.",
-    love: "Você ama com presença e com inventário: se escolheu alguém, considera que a pessoa entrou no seu patrimônio emocional.",
+      "Você raramente entra em debate; repete a mesma posição com diferentes entonações até o interlocutor desistir.",
+    emotional:
+      "Seus sentimentos chegam devagar, mas quando chegam você os compra, mobila e se recusa a devolver a posse.",
+    love: "Você ama com presença e com inventário de bens: ao escolher alguém, considera que a pessoa passou a fazer parte do seu patrimônio afetivo.",
     anger:
-      "Demora para explodir. O problema é que a explosão parece ter sido planejada com meses de antecedência.",
+      "Sua explosão é lenta de acender, mas quando ocorre parece ter sido planejada com antecedência meticulosa.",
     relationship:
-      "Você é fiel, estável e perigosamente apegado ao conforto. O outro pode confundir carinho com dependência de rotina.",
-    selfSabotage: "Você sabota esperando tanto a hora certa que ela passa sem avisar.",
-    virtueShadow: "Persistência vira teimosia; segurança vira possessividade.",
+      "Fiel, estável e apegado ao conforto, você pode ser confundido como alguém cujo carinho depende da manutenção da rotina.",
+    selfSabotage:
+      "Você deixa a oportunidade passar esperando o momento perfeito que nunca chega exatamente quando você acha que deve.",
+    virtueShadow: "Teimosia nasce da persistência; possessividade nasce da busca por segurança.",
     redFlags: [
-      "🚩 chama de preservar a paz o que é não aceitar mudança de cardápio.",
-      "🚩 resolve conflito oferecendo comida e mudando de assunto.",
-      "🚩 acha que ciúme é só cuidado com bom estoque afetivo.",
+      "🚩 chama de preservar a harmonia o que é recusar mudar o cardápio mesmo quando todos já pediram outra coisa.",
+      "🚩 resolve o desconforto oferecendo lanche e desviando o assunto para algo totalmente diferente.",
+      "🚩 interpreta ciúme como prova de que está cuidando bem do estoque afetivo.",
     ],
   },
   Gêmeos: {
     sign: "Gêmeos",
     socialVersion:
-      "Você se apresenta como curioso, ágil e dono de uma conversa excelente. A conversa é excelente, mas costuma ter três autores dentro da sua cabeça.",
+      "Curiosidade, agilidade e facilidade de conversa são seu cartão – embora essa conversa muitas vezes tenha três autores diferentes dentro da sua cabeça.",
     problem:
-      "O problema é que você sabe argumentar a favor, contra e em cima do muro antes do café terminar.",
-    ego: "Seu ego precisa ser lembrado de que entender tudo não é o mesmo que decidir algo.",
-    communication: "Você chama de diálogo o que é uma entrevista com você mesmo em tempo real.",
+      "Você consegue argumentar a favor, contra e até pelo meio‑do‑caminho antes mesmo de terminar o primeiro copo de café.",
+    ego: "Seu ego precisa ser lembrado de que entender tudo não é o mesmo que decidir algo definitivo.",
+    communication:
+      "Você chama de diálogo o que, na prática, é uma entrevista coletiva com você mesmo em tempo real.",
     emotional:
-      "Sua emoção vira dado, vira piada, vira curiosidade. Ela raramente vira permanência.",
-    love: "Você se apaixona pela conversa e depois descobre que o relacionamento também exige silêncio.",
-    anger: "Sua raiva parece leve, mas é rápida: comenta, ironiza, corrige o pronome e sai.",
+      "Sua emoção vira dado, vira piada, vira curiosidade – raramente se instala como estado duradouro.",
+    love: "Você se apaixona pelo papo e depois descobre que manter o relacionamento também exige momentos de silêncio.",
+    anger:
+      "Sua irritação aparece leve, mas age rápido: comenta, ironiza, corrige o pronome e some antes que alguém perceba.",
     relationship:
-      "Você quer liberdade e companhia, preferencialmente ao mesmo tempo e com sinal de internet.",
-    selfSabotage: "Você sabota transformando decisão em pesquisa de opinião.",
-    virtueShadow: "Curiosidade vira dispersão; inteligência vira racionalização.",
+      "Você deseja liberdade e companhia, de preferência simultâneas e com sinal de internet garantido.",
+    selfSabotage:
+      "Você adianta decisões transformando‑as em intermináveis pesquisas de opinião que nunca chegam a concluir nada.",
+    virtueShadow:
+      "Curiosidade se espalha em dispersão; inteligência vira ferramenta de auto‑justificação.",
     redFlags: [
-      "🚩 chama de mente aberta o que é não escolher nem o jantar.",
-      "🚩 responde uma pergunta séria com 'depende'.",
-      "🚩 acha que visualizou e não respondeu é uma resposta.",
+      "🚩 chama de mente aberta o que é não conseguir escolher nem o prato do almoço.",
+      "🚩 responde a qualquer questão séria com um evasivo 'depende'.",
+      "🚩 considera que ter visto a mensagem e não ter respondido já conta como resposta.",
     ],
   },
   Câncer: {
     sign: "Câncer",
     socialVersion:
-      "Você se apresenta como quem cuida, acolhe e lembra de tudo. Lembra tanto que às vezes esquece de perdoar.",
+      "Você se apresenta como quem acolhe, lembra de tudo e zela pelos outros – embora essa memória às vezes se transforme em ressentimento arquivado.",
     problem:
-      "O problema é que sua memória emocional é um arquivo vivo, indexado por quem feriu, quando e qual foi a entonação.",
-    ego: "Seu ego não quer trono; quer cozinha, quarto e a certeza de que ninguém vai embora.",
+      "Sua memória emocional funciona como um banco de dados vivo, indexado por quem feriu, quando e com que tom de voz.",
+    ego: "Seu ego não almeja um trono; busca cozinha, quarto e a certeza de que ninguém vai embora sem seu consentimento.",
     communication:
-      "Você não diz o que sente. Espera que a pessoa perceba pela temperatura do 'oi'.",
-    emotional: "Sua emoção é profunda, mas usa indiretas para evitar exposição.",
-    love: "Você ama cuidando. E cobra o cuidado de volta com juros emocionais.",
+      "Você não costuma declarar seus sentimentos; espera que o outro perceba pela temperatura do simples 'oi'.",
+    emotional:
+      "Sua emoção é profunda, porém prefere falar por meio de indiretas para evitar exposição direta.",
+    love: "Você demonstra afeto cuidando do outro; em seguida cobra o retorno desse cuidado com juros emocionais.",
     anger:
-      "Sua raiva se disfarça de silêncio e depois vira frase passivo-agressiva em dia de família.",
+      "Sua raiva se veste de silêncio e, depois, aparece como frase passivo‑agressiva nas reuniões de família.",
     relationship:
-      "Você quer intimidade total, mas frequentemente constrói uma fortaleza com campainha e espera que o outro entre sozinho.",
-    selfSabotage: "Você sabota acumulando ressentimento sem contar o que feriu.",
-    virtueShadow: "Cuidado vira controle; sensibilidade vira chantagem emocional.",
+      "Você anseia por intimidade total, mas costuma erguer uma cerca com campainha, esperando que o outro entre por conta própria.",
+    selfSabotage: "Você acumula mágoas sem jamais nomear o que exatamente lhe causou dor.",
+    virtueShadow:
+      "Cuidado pode se voltar para controle; sensibilidade pode virar chantagem emocional disfarçada.",
     redFlags: [
-      "🚩 chama de proteger o que é vigiar quem curtiu a foto.",
-      "🚩 diz que está bem com uma voz de enterro.",
-      "🚩 cobra lealdade por algo que nunca pediu em voz alta.",
+      "🚩 chama de proteção o que é vigiar quem curtiu a foto do seu parceiro nas redes sociais.",
+      "🚩 afirma que está bem enquanto a voz soa como se estivesse em um velório.",
+      "🚩 exige lealdade por algo que nunca foi pedido explícita ou diretamente.",
     ],
   },
   Leão: {
     sign: "Leão",
     socialVersion:
-      "Você se apresenta como confiante, generoso e feito para brilhar. O brilho é real; a necessidade de plateia também.",
-    problem: "O problema é que reconhecimento, para você, não é vaidade: é oxigênio.",
-    ego: "Seu ego pode transformar um elogio atrasado em uma ferida histórica.",
+      "Confiança, generosidade e sede de holofote são sua marca – embora o holofote seja real e a necessidade de plateia também.",
+    problem:
+      "Para você, reconhecimento não é vaidade; é o oxigênio que mantém seu motor funcionando.",
+    ego: "Seu ego pode transformar um elogio atrasado em uma ferida que carregará por muito tempo.",
     communication:
-      "Você narra sua vida com trilha sonora e espera que o público acompanhe a temporada.",
-    emotional: "Sua emoção é quente, leal e ofendida quando não vira centro.",
-    love: "Você ama com pompa. Se a pessoa não demonstra do jeito esperado, conclui que ela não entendeu a grandiosidade.",
-    anger: "Sua raiva é teatral, mas real. Quanto mais diz 'não ligo', mais ensaia a próxima fala.",
-    relationship: "Você quer ser adorado sem parecer que pediu adoração.",
-    selfSabotage: "Você sabota acreditando que ser substituível é a pior das ofensas.",
+      "Você narra sua própria vida como se fosse uma série com trilha sonora, esperando que a platéia acompanhe cada episódio.",
+    emotional:
+      "Seus sentimentos são quentes, leais e facilmente ofendidos quando não ficam no centro da atenção.",
+    love: "Você ama com pompa e cerimônia; se o outro não demonstrar do jeito que você espera, conclui que ele simplesmente não compreendeu a magnitude do gesto.",
+    anger:
+      "Sua ira é teatral, porém genuína; quanto mais insiste que 'não liga', mais ensaia a próxima réplica para usar na disputa.",
+    relationship:
+      "Você deseja ser adorado, mas prefere que essa adoração pareça espontânea, não solicitada.",
+    selfSabotage:
+      "Você convence a si mesmo de que ser substituído seria o pior insulto possível à sua existência.",
     virtueShadow:
-      "Autoconfiança vira necessidade de aplauso; generosidade vira pagamento por validação.",
+      "Autoconfiança pode virar sede constante de aplauso; generosidade pode se transformar em pagamento por validação externa.",
     redFlags: [
-      "🚩 chama de humildade aceitar elogio só até a terceira frase.",
-      "🚩 fica magoado se ninguém pergunta da apresentação.",
-      "🚩 usa 'meu bem' enquanto brilha sozinho na conversa.",
+      "🚩 chama de modéstia o que é aceitar elogio apenas até a terceira frase antes de virar o rosto.",
+      "🚩 fica ressentido se ninguém pergunta como foi a sua apresentação ou performance recente.",
+      "🚩 usa expresões afetuosas tipo 'meu bem' enquanto segue falando sozinho, como se o outro não existisse.",
     ],
   },
   Virgem: {
     sign: "Virgem",
     socialVersion:
-      "Você se apresenta como útil, detalhista e competente. Detalhista é o nome diplomático para revisor da vida alheia.",
+      "Utilidade, atenção aos detalhes e competência são sua apresentação – embora o detalhe muitas vezes seja apenas o nome diplomático para quem revisa a vida alheia.",
     problem:
-      "O problema é que você não aponta defeito por maldade: aponta por vocação e depois fica ofendido se ninguém agradece.",
-    ego: "Seu ego se esconde em estar certo e em ser indispensável.",
+      "Você não aponta falhas por malvadez; aponta por vocação e depois se sente ofendido quando ninguém agradece a observação.",
+    ego: "Seu ego se esconde atrás da certeza de estar correto e da sensação de ser indispensável para o funcionamento alheio.",
     communication:
-      "Você chama de feedback o que o outro chama de lista de falhas com nota e referência.",
+      "Você chama de feedback o que, para o outro, soa como uma lista de defeitos completa com notas e referências.",
     emotional:
-      "Sua emoção vira tarefa. Sentir, para você, costuma ser uma pendência que precisa de método.",
-    love: "Você demonstra amor organizando. Depois sofre porque a pessoa não percebeu o estoque de carinho nas planilhas.",
-    anger: "Sua raiva é silenciosa, precisa e manifestada em observações muito bem escritas.",
-    relationship: "Você quer entrega, consistência e ordem, e chama isso de básico.",
-    selfSabotage: "Você sabota esperando perfeição antes de começar.",
-    virtueShadow: "Praticidade vira frieza; discernimento vira crítica infinita.",
+      "Seu sentimento costuma se transformar em tarefa; sentir, para você, muitas vezes é uma pendência que espera um método para ser resolvida.",
+    love: "Você demonstra amor organizando a vida do outro; depois sofre porque a pessoa não percebeu o estoque de carinho que você anotou em planilhas.",
+    anger:
+      "Sua irritação é silenciosa, precisa e se manifesta em comentários minuciosamente bem escritos.",
+    relationship:
+      "Você almeja entrega, consistência e ordem, considerando isso o nível básico de qualquer parceria saudável.",
+    selfSabotage:
+      "Você trava em espera da perfeição antes de iniciar qualquer ação, como se o mundo pudesse esperar até que tudo esteja impecável.",
+    virtueShadow:
+      "Praticidade pode tornar‑se frieza; discernimento pode se tornar fonte de crítica interminável.",
     redFlags: [
-      "🚩 chama de ajudar o que é reorganizar a bolsa dos outros.",
-      "🚩 responde 'eu só perguntei' depois de uma auditoria completa.",
-      "🚩 ama mais o processo do que o resultado.",
+      "🚩 chama de ayudar o que es rearranjar el contenido de la bolsa ajena sin ser solicitado.",
+      "🚩 después de una inspección detallada, responde 'eu só estava curios@' como si nada hubiera pasado.",
+      "🚩 tiene mayor fascinación por el proceso de realización que por el resultado final en sí.",
     ],
   },
   Libra: {
     sign: "Libra",
     socialVersion:
-      "Você se apresenta como educado, justo e ótimo para mediar. Justo, até a decisão envolver você.",
+      "Education, justiça e talento para mediar são sua cara – embora a justiça muitas vezes desapareça quando o assunto passa a ser você mesmo.",
     problem:
-      "O problema é que agradar todo mundo é uma estratégia que termina com você concordando com dois lados opostos.",
-    ego: "Seu ego precisa parecer razoável, mesmo quando está sendo evasivo.",
-    communication: "Você chama de ponderação o que às vezes é incapacidade de dizer não.",
-    emotional: "Sua emoção procura equilíbrio, mas pode virar diplomacia exaustiva.",
-    love: "Você se apaixona pela ideia da relação e demora para aceitar que a pessoa real faz barulho.",
-    anger: "Sua raiva aparece com sorriso, indireta elegante e um 'não é nada' que é muita coisa.",
-    relationship: "Você quer harmonia e evita conflito até o conflito morar na sala.",
-    selfSabotage: "Você sabota consultando tanta gente que esquece o que queria.",
-    virtueShadow: "Diplomacia vira covardia relacional; senso estético vira frieza de julgamento.",
+      "Tentar agradar a todos costuma terminar com você concordando simultaneamente com duas posições totalmente opostas.",
+    ego: "Seu ego precisa parecer razoável, mesmo quando está sendo claramente evasivo ou incongruente.",
+    communication:
+      "Você chama de ponderação o que, em algumas ocasiões, nada mais é do que la incapacidad de decir un simple 'no'.",
+    emotional:
+      "Tu sentimento procura equilibrio, pero puede terminar siendo una diplomacia cansativa que agota a quienes están alrededor.",
+    love: "Te encantas por la idea de la relación y tardas en aceptar que la persona real, con sus manías y ruidos, forma parte del paquete.",
+    anger:
+      "Tu irritación aparece envuelta en sonrisa, acompañada de indiretas sofisticadas y un 'no es nada' que, en la práctica, oculta mucho más.",
+    relationship:
+      "Buscas armonía y evitas el conflicto hasta el punto en que el propio malestar pasa a residir permanentemente en la sala de estar.",
+    selfSabotage:
+      "Te pierdes en consultas infinitas con terceros, terminando olvidando cuál era tu deseo original.",
+    virtueShadow:
+      "La diplomacia puede tornar-se covardia relacional; el sentido estético puede tornar-se frio al momento de juzgar a las personas.",
     redFlags: [
-      "🚩 chama de consenso fazer reunião para escolher onde almoçar.",
-      "🚩 diz 'não sei' quando já decidiu que não.",
-      "🚩 confunde paz com enterrar o assunto.",
+      "🚩 llama a consenso lo que es marcar una reunión solo para decidir dónde será el almuerzo del día.",
+      "🚩 afirmas 'no sé' cuando, en realidad, ya decidiste que no harás nada.",
+      "🚩 confunde la ausencia de pelea con la paz verdadera, enterrando el asunto en lugar de resolverlo.",
     ],
   },
   Escorpião: {
     sign: "Escorpião",
     socialVersion:
-      "Você se apresenta como reservado, intenso e capaz de ler qualquer ambiente. Lê, registra e às vezes abre investigação.",
+      "Reserva, intensidad y habilidad de leer ambientes son tu presentación – aunque esa lectura muchas veces se convierta en registro y, ocasionalmente, apertura de investigación particular.",
     problem:
-      "O problema é que você não confia fácil. E quando confia, cria um contrato invisível que a outra pessoa não assinou.",
-    ego: "Seu ego não precisa de atenção; precisa de profundidade, poder e certeza.",
-    communication: "Você fala pouco, observa muito e guarda a frase decisiva para o pior momento.",
-    emotional: "Sua emoção não é rasa; é uma correnteza com biografia.",
-    love: "Você ama com intensidade e quer exclusividade quase forense.",
-    anger: "Sua raiva é silenciosa, transformadora e capaz de durar décadas com a mesma qualidade.",
-    relationship: "Você quer entrega absoluta, mas só mostra a senha depois de testar a pessoa.",
-    selfSabotage: "Você sabota transformando vínculo em prova de resistência.",
-    virtueShadow: "Profundidade vira obsessão; poder vira controle.",
+      "No confías fácilmente; cuando finalmente confías, elaboras un contrato mental que la otra parte nunca vio ni concurdó.",
+    ego: "Tu ego no clama por atención; anhelas profundidad, poder y la sensación de control absoluto sobre lo que importa.",
+    communication:
+      "Hablas poco, observas mucho y guardas la frase decisiva exactamente para el momento en que causará mayor daño.",
+    emotional:
+      "Tu emoción no es superficial; es una corriente fuerte, cargada de historias que raramente contamos en voz alta.",
+    love: "Amás con intensidad y exige exclusividad casi que con rigor de perícia forense.",
+    anger:
+      "Tu ira es silenciosa, transformadora y capaz de permanecer con la misma intensidad por décadas seguidas.",
+    relationship:
+      "Deseas entrega total, pero solo revelas la senha de acceso después de someter al compañero a una batería de pruebas de confianza.",
+    selfSabotage:
+      "Transformas el vínculo afectivo en una prueba de resistencia, midiendo hasta dónde el otro puede aguantar antes de quebrar.",
+    virtueShadow:
+      "La profundidad puede fácilmente tornar-se obsesión; el poder puede convertirse en control absoluto sobre el otro.",
     redFlags: [
-      "🚩 chama de pesquisa ler anos de curtidas antigas.",
-      "🚩 perdoa, mas não esquece nem o que não aconteceu.",
-      "🚩 diz 'está tudo bem' enquanto investiga o significado do silêncio.",
+      "🚩 llama a investigación lo que es pasar horas analizando 'me gusta' antiguos como si fueran pruebas de un crimen.",
+      "🚩 perdonas en voz alta, pero guardas rencor tanto por lo que sucedió quanto por lo que ni siquiera llegó a ocurrir.",
+      "🚩 afirmas que 'todo está bien' mientras, en realidad, estás descifrando el significado detrás de cada silencio.",
     ],
   },
   Sagitário: {
     sign: "Sagitário",
     socialVersion:
-      "Você se apresenta como livre, otimista e sincero. A sinceridade às vezes chega antes do contexto.",
+      "Libertad, optimismo y sinceridad directa son tu marca – aunque esa sinceridad muchas veces llegue antes mesmo de que se explique el contexto.",
     problem:
-      "O problema é que sua liberdade precisa de horizonte, e qualquer rotina parece uma gaiola com Wi-Fi.",
-    ego: "Seu ego acredita que toda opinião sua é uma missão educativa.",
-    communication: "Você chama de verdade o que o outro chama de atropelo com risada.",
-    emotional: "Sua emoção é rápida e prefere viagem a permanência.",
-    anger: "Sua raiva é barulhenta, filosófica e termina em frase de autoajuda.",
-    love: "Você ama com entusiasmo e some quando a relação começa a pedir agenda.",
-    relationship: "Você quer aventura e fidelidade, desde que a aventura seja a prioridade.",
-    selfSabotage: "Você sabota prometendo futuro enquanto foge do presente.",
-    virtueShadow: "Otimismo vira negação; liberdade vira fuga.",
+      "Tu necesidad de libertad requiere horizontes amplios; cualquier rutina, por más inofensiva que sea, parece una jaula decorada con señal de Wi‑Fi.",
+    ego: "Tu ego está convencido de que toda opinión tuya es una misión de iluminación ajena, casi una cruzada educativa.",
+    communication:
+      "Llamas de verdad lo que, para el oyente, suena como un avance directo sin aviso, acompañado de risada nervosa.",
+    emotional:
+      "Tus sentimientos son rápidos y prefieren un cambio de paisaje a cualquier intento de fijarse en un lugar.",
+    anger:
+      "Tu irritación es bulliciosa, trae discusiones filosóficas y suele terminar en una frase típica de libro de autoayuda.",
+    love: "Te involucras con entusiasmo y desapareces assim que la relación comienza a exigir algún tipo de planificación o agenda compartida.",
+    relationship:
+      "Sueñas con aventura y fidelidad, siempre que la aventura mantenga el primer lugar en tus prioridades.",
+    selfSabotage:
+      "Prometes un futuro brillante mientras, en la práctica, huyes del presente como si éste pudiera desaparecer si le prestaras demasiada atención.",
+    virtueShadow:
+      "El optimismo puede tornar-se recusa ante evidencias; la libertad puede tornar-se huida constante de compromisos.",
     redFlags: [
-      "🚩 chama de flexibilidade não confirmar nada.",
-      "🚩 faz piada quando a conversa pede escuta.",
-      "🚩 diz 'a gente vê' e desaparece.",
+      "🚩 llama a flexibilidad lo que es negarse a comprometerse con cualquier plan, por más simple que sea.",
+      "🚩 sueltas una broma en el momento en que la conversación pide atención seria y escucha atenta.",
+      "🚩 dices que 'vas a ver' y desapareces, dejando a los demás en el vacío mientras sigues tu propio rumo.",
     ],
   },
   Capricórnio: {
     sign: "Capricórnio",
     socialVersion:
-      "Você se apresenta como responsável, estratégico e sóbrio. Sóbrio é a palavra que você usa para não admitir que sente.",
-    problem: "O problema é que controle vira objetivo, e tudo vira meta, inclusive o amor.",
-    ego: "Seu ego se alimenta de resultado, título e da sensação de que você aguentou mais.",
-    communication: "Você fala por entregas. Às vezes entrega um silêncio e chama de gestão.",
-    emotional: "Sua emoção é arquivada até ter utilidade estratégica.",
-    love: "Você demonstra afeto construindo segurança. Depois fica surpreso quando a pessoa queria conversa.",
-    anger: "Sua raiva é fria e administrativa: define consequência, prazo e segue a vida.",
-    relationship: "Você quer compromisso sério, mas frequentemente trata o vínculo como um cargo.",
-    selfSabotage: "Você sabota adiando descanso e chamando de disciplina.",
-    virtueShadow: "Responsabilidade vira rigidez; ambição vira frieza.",
+      "Responsabilidad, estrategia y postura seria son tu tarjeta – aunque la seriedad muchas veces sea simplemente la palabra que usas para evitar admitir que sientes algo.",
+    problem:
+      "El control se convierte en objetivo de vida; todo pasa a tratarse como meta, incluyendo los sentimientos que deberían vivirse.",
+    ego: "Tu ego se alimenta de resultados concretos, títulos pomposos y la sensación de que aguantaste más que la mayoría podría lograr.",
+    communication:
+      "Sueles hablar solo cuando hay algo entregable; a veces ofreces silencio y lo llamas 'gestión eficiente'.",
+    emotional:
+      "Tu afectividad está archivada hasta que pueda servir a algún propósito estratégico posteriormente.",
+    love: "Demuestras cariño construyendo seguridad alrededor del otro; luego te sorprendes al descubrir que la persona simplemente quería conversar.",
+    anger:
+      "Tu ira es fría y burocrática: define la consecuencia, establece el plazo y continúas adelante como si nada hubiera ocurrido.",
+    relationship:
+      "Aspiras a un compromiso serio, pero muchas veces tratas el vínculo afectivo como si fuera simplemente otro cargo a desempeñar.",
+    selfSabotage:
+      "Postergas el descanso indispensable y aún lo llamas disciplina, como si el cuerpo pudiera funcionar indefinidamente sin recarga.",
+    virtueShadow:
+      "La responsabilidad puede tornar‑se rigidez excesiva; la ambición puede voltar‑se contra el prójimo como frialdad emocional.",
     redFlags: [
-      "🚩 chama de planejamento controlar o fim de semana.",
-      "🚩 responde 'ok' e depois envia planilha.",
-      "🚩 confunde vulnerabilidade com desorganização.",
+      "🚩 llama a planificación lo que es intentar determinar cómo será tu fin de semana antes siquiera de que llegue.",
+      "🚩 respondes con un breve 'ok' y, poco después, envías una hoja de cálculo detallada como prueba de que 'todo está bajo control'.",
+      "🚩 confundes la capacidad de mostrar vulnerabilidad con la falta de organización o preparación previa.",
     ],
   },
   Aquário: {
     sign: "Aquário",
     socialVersion:
-      "Você se apresenta como autônomo, visionário e acima de dramas. Acima é uma palavra que usa para não ficar perto.",
+      "Autonomía, visión de futuro y postura por encima de los conflictos son tu presentación – aunque 'encima' muchas veces sea simplemente la excusa para mantener distancia emocional.",
     problem:
-      "O problema é que você quer revolucionar o mundo, mas acha reunião de condomínio uma perda de tempo.",
-    ego: "Seu ego se orgulha de não ser igual, mesmo quando isso é só teimosia com nome futurista.",
+      "Quieres revolucionar el mundo, pero crees que perder tiempo en una reunión de condominio es un lujo que no puedes permitirte.",
+    ego: "Tu ego se enorgullece de ser diferente, incluso cuando esa diferencia nada más es terquedad vestida de ropa futurista.",
     communication:
-      "Você explica sentimentos como se fossem teoria e depois pergunta por que ninguém se emocionou.",
-    emotional: "Sua emoção vira conceito. É profunda, mas tem dificuldade de aterrissar.",
-    love: "Você ama à sua distância, e chama de espaço o que o outro chama de frio.",
-    anger: "Sua raiva é intelectualizada e sai com argumento, nunca com lágrima.",
+      "Explicas sentimientos como si fueran teoría académica y, después, preguntas por qué nadie se emocionó con tu exposición.",
+    emotional:
+      "Tu afectividad tiende a tornar‑se un concepto abstracto; es profunda, pero enfrenta dificultad al momento de conectar‑se con la realidad concreta.",
+    love: "Amás a tu manera de distancia y llamas de 'espacio' lo que el otro interpreta como frío o desinterés.",
+    anger:
+      "Tu irritación es excesivamente intelectualizada y sale del cuerpo en forma de argumentos fríos, nunca acompañada de lágrima o manifestación visceral.",
     relationship:
-      "Você quer conexão e independência; o outro frequentemente recebe só a independência.",
-    selfSabotage: "Você sabota transformando intimidade em projeto.",
-    virtueShadow: "Originalidade vira contrarianismo; autonomia vira distanciamento.",
+      "Anhelas una conexión genuína, pero insistes en mantener tu independencia – el compañero frecuentemente queda solo con la segunda parte de esa petición.",
+    selfSabotage:
+      "Transformas la intimidad afectiva en un proyecto a gestionar, completo con metas, cronogramas y entregas esperadas.",
+    virtueShadow:
+      "La originalidad puede fácilmente tornar‑se contrarianismo sistemático; la autonomía puede tornar‑se distanciamiento emocional crónico.",
     redFlags: [
-      "🚩 chama de pensar fora da caixa o que é ignorar o problema.",
-      "🚩 responde 'interessante' quando era uma confissão.",
-      "🚩 some para 'processar' e volta com um manifesto.",
+      "🚩 llama a pensar fuera de la caja lo que es simplemente ignorar el problema existente con la esperanza de que desaparezca solo.",
+      "🚩 respondes con un neutral 'interesante' cuando, en realidad, alguien acaba de hacerte una confesión profunda.",
+      "🚩 te alejas diciendo que estás 'procesando' información y regresas trayendo un manifiesto totalmente nuevo como si nada hubiera ocurrido antes.",
     ],
   },
   Peixes: {
     sign: "Peixes",
     socialVersion:
-      "Você se apresenta como sensível, criativo e conectado com o todo. O todo inclui também o que não foi dito, o que não existe e o que você imaginou.",
-    problem: "O problema é que a fronteira entre intuição e fantasia é mal sinalizada no seu mapa.",
-    ego: "Seu ego se dissolve e, quando volta, quer que alguém o salve com delicadeza.",
+      "Sensibilidad, criatividad y sensación de unidad con el todo son tu cara – aunque ese 'todo' incluya también lo que no fue dicho, lo que no existe y lo que solo imaginaste.",
+    problem:
+      "La línea que separa intuición legítima de fantasía desenfrenada está mal trazada en tu mapa astral, causando confusión constante.",
+    ego: "Tu ego tiende a disolverse en las situaciones; cuando regresa, tiende a pedir que alguien te salve con la máxima delicadeza posible.",
     communication:
-      "Você comunica por atmosfera. Depois cobra resposta de uma pergunta que não fez.",
+      "Te expresas a través de atmosferas y sensaciones; después de eso, esperas una respuesta para una pregunta que ni siquiera llegaste a formular.",
     emotional:
-      "Sua emoção é um oceano; o problema é que às vezes você esquece de voltar para a praia.",
-    love: "Você ama a versão idealizada da pessoa e se decepciona com o ser humano.",
-    anger: "Sua raiva vira tristeza, vira poesia e raramente vira frase clara.",
-    relationship: "Você quer fusão, mas confunde entrega com desaparecer no outro.",
-    selfSabotage: "Você sabota adiando limites porque dói dizer não.",
-    virtueShadow: "Sensibilidade vira fuga; imaginação vira autoengano.",
+      "Tu afectividad es un océano vasto; el problema surge cuando olvidas, por distracción, que necesitas regresar a la orilla en algún momento.",
+    love: "Te encantas por la versión idealizada de la persona y te frustras al descubrir que el ser humano real está lejos de ese patrón de perfección.",
+    anger:
+      "Tu irritación suele tornar‑se tristeza, después poesía y rara vez se transforma en una declaración directa y objetiva.",
+    relationship:
+      "Deseas una fusión íntima, pero muchas veces confundes el acto de entregarte con el simple desaparecimiento dentro de la otra persona.",
+    selfSabotage:
+      "Postergas la definición de límites personales porque decir 'no' duele demasiado y, mientras lo postpones, la situación se complica aún más.",
+    virtueShadow:
+      "La sensibilidad puede fácilmente tornar‑se fuga evitativa; la imaginación puede tornar‑se fuente de autoengaño persistente.",
     redFlags: [
-      "🚩 chama de empatia absorver o problema e ficar pior que a pessoa.",
-      "🚩 termina antes de começar para não sofrer.",
-      "🚩 responde 'senti uma energia' e espera que isso resolva.",
+      "🚩 llama a empatía lo que es absorber el problema ajeno hasta el punto de salir aún más afectado que la persona que originalmente lo vivió.",
+      "🚩 abandonas el empeño antes incluso de comenzar, con el temor de que el esfuerzo pueda resultar en sufrimiento futuro.",
+      "🚩 respondes diciendo que 'sientes una energía' y esperas que esa sensación, por sí sola, sea suficiente para resolver cualquier cuestión.",
     ],
   },
 };
@@ -287,19 +337,26 @@ export function signShadowProfile(sign: string): SignShadowProfile {
   if (profile !== undefined) return profile;
   return {
     sign,
-    socialVersion: "Seu mapa apresenta uma configuração difícil de resumir em arquétipo único.",
-    problem: "A dificuldade começa justamente aí: muita coisa pedindo atenção ao mesmo tempo.",
-    ego: "O ego desta combinação costuma se defender mantendo o controle da narrativa.",
-    communication: "A comunicação tende a ser mais elaborada do que direta.",
-    emotional: "A base emocional reage antes de conferir se o perigo é real.",
-    love: "No afeto, há tendência a idealizar antes de observar.",
-    anger: "A irritação aparece quando o controle da narrativa é ameaçado.",
-    relationship: "Os vínculos pedem clareza que o mapa ainda hesita em oferecer.",
-    selfSabotage: "A sabotagem aparece quando adiar parece mais seguro do que decidir.",
-    virtueShadow: "Qualidade e defeito compartilham a mesma raiz neste mapa.",
+    socialVersion:
+      "Seu mapa apresenta uma configuração de difícil redução a um único arquétipo clássico.",
+    problem:
+      "A dificuldade começa exatamente aí: muitos elementos distintos pedindo atenção simultaneamente.",
+    ego: "O ego desta combinação costuma se defender agarrando‑se ao controle da narrativa como forma de proteção.",
+    communication:
+      "A comunicação tende a ser mais elaborada do que direta, preferindo circuitos indiretos.",
+    emotional: "A base emocional reage antes de checar se o suposto perigo realmente existe.",
+    love: "No campo afetivo, há propensão a idealizar antes de observar a realidade como ela se apresenta.",
+    anger:
+      "A irritação surge sempre que a percepção de controle sobre a narrativa é ameaçada ou questionada.",
+    relationship:
+      "Os vínculos afetivos solicitam clareza que o mapa ainda hesita em oferecer de forma clara.",
+    selfSabotage:
+      "A sabotagem aparece quando adianta‑se parece mais seguro do que enfrentar a decisão de frente.",
+    virtueShadow:
+      "Qualidade e defeito compartilham a mesma raiz neste mapa, tornando‑se difíceis de separar.",
     redFlags: [
-      "🚩 chama de sensatez o que é simplesmente protelação.",
-      "🚩 confunde silêncio com maturidade.",
+      "🚩 chama de bom senso o que é simplesmente procrastinar sob outra denominación.",
+      "🚩 confunde silêncio contemplativo com maturidade emocional alcançada.",
     ],
   };
 }
