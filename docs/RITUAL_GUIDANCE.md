@@ -74,9 +74,30 @@ não preenche seria proveniência inventada.
 - [x] **62 legiões** com seus casais de chefes nomeados
 - [x] Regência planetária onde o acervo a declara — Almas em Marte e Geburah,
       Cruzeiros em Júpiter e Chesed
-- [ ] Regência planetária dos outros cinco Reinos, se houver base
+- [x] **Regência planetária dos sete**, com sephirah e cor litúrgica
 - [ ] Advertência e forma de atuação por entidade
 - [ ] Oferenda, ponto e dia por entidade
+
+### As sete correspondências, todas sustentadas
+
+| Reino                  | Sephirah  | Planeta  | Cor                       |
+| ---------------------- | --------- | -------- | ------------------------- |
+| Lira                   | Tiphereth | Sol      | amarelo e dourado         |
+| Encruzilhadas          | Hod       | Mercúrio | laranja e cores múltiplas |
+| Kalunga Grande (Praia) | Netzach   | Vênus    | verde                     |
+| Matas                  | Yesod     | Lua      | violeta e prata           |
+| Almas                  | Geburah   | Marte    | vermelho                  |
+| Cruzeiros              | Chesed    | Júpiter  | azul                      |
+| Kalunga Pequena        | Binah     | Saturno  | preto e índigo            |
+
+A tabela veio da apostila hermética do terreiro. Kalunga eu quase deduzi por
+posição no desenho da árvore; a fonte declara em texto corrido — "conectando
+esses princípios à Sephirah Binah (Saturno)" —, e é a declaração que vale.
+
+**Com os sete mapeados, todo Reino consulta o buscador de janelas.** A ponte
+entre Quimbanda e astrologia deixou de valer para dois Reinos e passou a valer
+para o sistema inteiro: perguntar quando trabalhar num Reino virou perguntar
+quando o planeta dele rege.
 
 **Duas correções que a leitura da fonte impôs.** Eu tinha "Reino da Praia" e
 "Reino da Kalunga" como coisas separadas; a fonte é mais precisa — **Kalunga

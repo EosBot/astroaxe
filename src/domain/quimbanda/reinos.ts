@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const QUIMBANDA_REINOS_VERSION = "quimbanda-reinos-0.2.0-research";
+export const QUIMBANDA_REINOS_VERSION = "quimbanda-reinos-0.3.0-research";
 
 /**
  * Os Sete Reinos da Quimbanda, com suas legiões.
@@ -15,6 +15,19 @@ export const QUIMBANDA_REINOS_VERSION = "quimbanda-reinos-0.2.0-research";
  * Júpiter e Chesed. É por aí que este domínio encontra o motor de horas
  * planetárias: quem vai trabalhar num Reino pode perguntar ao buscador de
  * janelas quando o céu favorece aquele planeta.
+ *
+ * ## As correspondências planetárias, todas sustentadas
+ *
+ * A apostila hermética do terreiro traz a tabela completa: os Sete Reinos
+ * correspondem às sete sephirot inferiores e aos sete planetas sagrados, e o
+ * material ainda registra a cor de cada um. Kalunga é declarada em texto
+ * corrido — "conectando esses princípios à Sephirah Binah (Saturno)" — e não
+ * por dedução de posição.
+ *
+ * Com os sete mapeados, **todo Reino consegue perguntar ao buscador de janelas**
+ * quando o céu favorece o seu planeta. A ponte entre a Quimbanda e o motor
+ * astrológico deixou de valer para dois Reinos e passou a valer para o sistema
+ * inteiro.
  *
  * ## Duas correções que a leitura da fonte impôs
  *
@@ -52,6 +65,8 @@ const reinoSchema = z
      */
     planet: z.enum(["sun", "moon", "mercury", "venus", "mars", "jupiter", "saturn"]).nullable(),
     sephirah: z.string().trim().min(1).max(40).nullable(),
+    /** Cor litúrgica do Reino, como o material de formação a registra. */
+    color: z.string().trim().min(1).max(60).nullable(),
     legions: z.array(legionSchema).max(24),
   })
   .strict();
@@ -69,8 +84,9 @@ export const quimbandaReinos: readonly QuimbandaReino[] = [
     queen: "Pombagira Rainha das Sete Encruzilhadas",
     domain:
       "O ponto onde os caminhos se cruzam e a decisão acontece: abertura e fechamento de caminhos, escolha e movimento. A encruzilhada é o portal que permite a Exu estar em qualquer lugar, e por isso é onde se chama e onde se oferenda.",
-    planet: null,
-    sephirah: null,
+    planet: "mercury",
+    sephirah: "Hod",
+    color: "Laranja e cores múltiplas",
     legions: [
       legion(
         "Encruzilhada da Rua",
@@ -96,6 +112,7 @@ export const quimbandaReinos: readonly QuimbandaReino[] = [
       "A lei, a ordem, a fé, a expansão e a proteção. O cruzeiro é o ponto onde a lei se firma, e também a intersecção entre a vida e a morte — o cruzeiro das almas. Reino de grande força e poder de ação, procurado em demanda e em justiça.",
     planet: "jupiter",
     sephirah: "Chesed",
+    color: "Azul",
     legions: [
       legion("Cruzeiro da Rua", "Exu Tranca Tudo das Almas", "Pombagira dos Sete Cruzeiros"),
       legion("Cruzeiro de Lira", "Exu Sete Cruzeiros", "Pombagira dos Sete Cruzeiros"),
@@ -115,8 +132,9 @@ export const quimbandaReinos: readonly QuimbandaReino[] = [
     queen: "Pombagira Rainha das Matas",
     domain:
       "A cura pelas ervas e o conhecimento da natureza. A mata também é Kalunga — nela repousam cemitérios indígenas e animais —, e por isso guarda relação estreita com o Reino do cemitério. Reino de quem trabalha folha, banho e defumação.",
-    planet: null,
-    sephirah: null,
+    planet: "moon",
+    sephirah: "Yesod",
+    color: "Violeta e prata",
     legions: [
       legion("Árvores", "Exu das Matas", "Pombagira das Matas"),
       legion("Campinas", "Exu das Campinas", "Pombagira das Matas"),
@@ -135,8 +153,9 @@ export const quimbandaReinos: readonly QuimbandaReino[] = [
     queen: "Pombagira Rainha da Kalunga, também Rainha do Cemitério",
     domain:
       "O cemitério: o mistério da morte e o portal da ancestralidade. Não é fim, e sim travessia. Reino de quem trabalha ancestralidade, encerramento de ciclo e o que precisa ser entregue à terra.",
-    planet: null,
-    sephirah: null,
+    planet: "saturn",
+    sephirah: "Binah",
+    color: "Preto e índigo",
     legions: [
       legion("Portas da Kalunga", "Exu Sete Porteiras", "Pombagira das Sete Porteiras"),
       legion("Catacumbas", "Exu Sete Catacumbas", "Maria Padilha das Sete Catacumbas"),
@@ -159,6 +178,7 @@ export const quimbandaReinos: readonly QuimbandaReino[] = [
       "A lei cármica, a batalha, a demanda e a justiça executora. É a força da severidade e do rigor da lei: a capacidade de cortar o que é injusto e de enfrentar o que precisa ser enfrentado. Exu Caveira aparece aqui em seu aspecto justiceiro.",
     planet: "mars",
     sephirah: "Geburah",
+    color: "Vermelho",
     legions: [
       legion("Almas da Lomba", "Exu Sete Lombas", "Maria Mulambo das Sete Lombas"),
       legion("Almas do Cativeiro", "Exu Pemba", "Pombagira das Almas"),
@@ -179,8 +199,9 @@ export const quimbandaReinos: readonly QuimbandaReino[] = [
     queen: "Pombagira Rainha das Sete Liras",
     domain:
       "O Reino da vida que corre solta: festa, prazer, dinheiro, malandragem e sedução. Abriga desde os cabarés e os malandros até o ouro e o comércio, e é onde a Quimbanda trata daquilo que a moral costuma preferir não olhar de frente.",
-    planet: null,
-    sephirah: null,
+    planet: "sun",
+    sephirah: "Tiphereth",
+    color: "Amarelo e dourado",
     legions: [
       legion("Inferno", "Exu dos Sete Infernos", "Maria Padilha dos Infernos"),
       legion("Cabarés", "Exu dos Cabarés", "Pombagira dos Cabarés"),
@@ -201,8 +222,9 @@ export const quimbandaReinos: readonly QuimbandaReino[] = [
     queen: "Pombagira Rainha das Praias",
     domain:
       "O mar e a praia: evolução e saída dos labirintos da psique. Cura enfermidades e abre caminhos novos, e é procurado em assunto sentimental porque a água manifesta emoção — ainda que as entidades operem sem sentimento, cumprindo o que lhes cabe.",
-    planet: null,
-    sephirah: null,
+    planet: "venus",
+    sephirah: "Netzach",
+    color: "Verde",
     legions: [
       legion("Rios", "Exu dos Rios", "Pombagira dos Rios"),
       legion("Cachoeiras", "Exu Sete Cachoeiras", "Pombagira das Sete Cachoeiras"),
