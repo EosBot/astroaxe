@@ -96,7 +96,7 @@ describe("methodology page", () => {
     // Marbas e Omolu na mesma função, com as categorias visíveis lado a lado.
     // Omolu aparece duas vezes porque ocupa duas funções, e isso é correto.
     expect(screen.getByText("Marbas")).toBeTruthy();
-    expect(screen.getAllByText("Omolu").length).toBe(2);
+    expect(screen.getAllByText("Omolu")).toHaveLength(2);
     expect(screen.getAllByText("espírito goético").length).toBeGreaterThan(0);
 
     // A proveniência por claim sai da interface: nada de escola, obra ou locator.

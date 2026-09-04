@@ -36,9 +36,9 @@ const querySchema = z
 
 export default async function CeremonialTimingPage({
   searchParams,
-}: {
+}: Readonly<{
   searchParams: Promise<Record<string, string | string[] | undefined>>;
-}): Promise<React.JSX.Element> {
+}>): Promise<React.JSX.Element> {
   const query = await searchParams;
   const single = (key: string): string | undefined => {
     const value = query[key];

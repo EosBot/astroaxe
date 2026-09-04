@@ -41,6 +41,7 @@ import {
   type CrossSystemRelation,
 } from "./entity-records";
 import { CEREMONIAL_GUIDANCE_POLICY_VERSION, evaluateGuidancePolicy } from "./guidance-policy";
+import { compareStrings } from "@/domain/sort-strings";
 
 export const DOMAIN_FREEZE_VERSION = "ceremonial-domain-freeze-0.1.0";
 
@@ -311,7 +312,7 @@ export function createDomainConflictReport(
           observations
             .filter((observation) => observation.status === status)
             .map(({ profileId }) => profileId)
-            .sort();
+            .sort(compareStrings);
         return {
           momentId: golden.momentId,
           matched: ids("matched"),
@@ -344,7 +345,10 @@ function consensusOf(graph: RegencyFunctionGraph): SourceCoverageReport["consens
     strength: group.strength,
     collapsedWorkGroups: [...(byFunction.get(group.functionId)?.entries() ?? [])]
       .filter(([, entry]) => entry.count > 1)
-      .map(([familyId, entry]) => ({ familyId, workIds: [...entry.works].sort() }))
+      .map(([familyId, entry]) => ({
+        familyId,
+        workIds: [...entry.works].sort(compareStrings),
+      }))
       .sort((left, right) => left.familyId.localeCompare(right.familyId)),
   }));
 }
@@ -407,7 +411,7 @@ function frozenDiscriminants(records: readonly CeremonialEntityRecord[]): unknow
     recordIds: records
       .filter((record) => record.workspaceKind === workspaceKind)
       .map(({ id }) => id)
-      .sort(),
+      .sort(compareStrings),
   }));
 }
 

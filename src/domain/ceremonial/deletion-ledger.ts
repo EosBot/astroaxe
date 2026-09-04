@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { compareStrings } from "@/domain/sort-strings";
 
 export const DELETION_LEDGER_VERSION = "ceremonial-deletion-ledger-1.0.0";
 
@@ -104,5 +105,5 @@ export function expiredTombstoneIds(input: {
   return input.tombstones
     .filter(({ expiresAt }) => expiresAt <= input.on)
     .map(({ id }) => id)
-    .sort();
+    .sort(compareStrings);
 }

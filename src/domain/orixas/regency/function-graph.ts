@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 import { structuralFunctionIds, findStructuralFunction } from "./structural-functions";
+import { compareStrings } from "@/domain/sort-strings";
 
 /**
  * Camadas 1 e 3 de `docs/BLUEPRINT.md` §5.0.1.
@@ -214,7 +215,7 @@ export interface AnalogousPositionGroup {
 }
 
 function pairKey(left: string, right: string): string {
-  return [left, right].sort().join("|");
+  return [left, right].sort(compareStrings).join("|");
 }
 
 function strengthOf(independentFamilyCount: number): ConvergenceStrength {
@@ -251,7 +252,9 @@ export function condenseStructuralFunctions(rawGraph: unknown): AnalogousPositio
       const conflicts: { left: string; right: string }[] = [];
       for (const assignment of assignments) {
         for (const other of assignment.conflictsWith) {
-          const pair = [assignment.id, other].sort();
+          const pair = [assignment.id, other].sort((left, right) =>
+            left < right ? -1 : left > right ? 1 : 0,
+          );
           const key = pair.join("|");
           if (seen.has(key)) continue;
           seen.add(key);
@@ -267,17 +270,23 @@ export function condenseStructuralFunctions(rawGraph: unknown): AnalogousPositio
         independentFamilyCount: families.size,
         schoolCount: schools.size,
         strength: strengthOf(families.size),
-        traditionIds: [...new Set(assignments.map(({ traditionId }) => traditionId))].sort(),
+        traditionIds: [...new Set(assignments.map(({ traditionId }) => traditionId))].sort(
+          compareStrings,
+        ),
         entityCategories: [
           ...new Set(assignments.map(({ entityCategory }) => entityCategory)),
-        ].sort(),
+        ].sort(compareStrings),
         members: [...byEntity.entries()]
           .map(([entityId, entityAssignments]) => ({
             entityId,
             entityCategory: entityAssignments[0]!.entityCategory,
             traditionId: entityAssignments[0]!.traditionId,
-            schoolIds: [...new Set(entityAssignments.map((a) => a.claimSchoolId))].sort(),
-            familyIds: [...new Set(entityAssignments.map((a) => a.sourceFamilyId))].sort(),
+            schoolIds: [...new Set(entityAssignments.map((a) => a.claimSchoolId))].sort(
+              compareStrings,
+            ),
+            familyIds: [...new Set(entityAssignments.map((a) => a.sourceFamilyId))].sort(
+              compareStrings,
+            ),
           }))
           .sort((left, right) => left.entityId.localeCompare(right.entityId)),
         conflicts: conflicts.sort((left, right) => left.left.localeCompare(right.left)),

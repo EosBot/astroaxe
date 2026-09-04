@@ -157,15 +157,24 @@ export function buildPublicFunctionGraph(rawGraph: unknown): PublicFunctionGraph
         independentLineages: group.independentFamilyCount,
         occupants,
         relation: "ocupa a mesma função estrutural" as const,
-        divergenceNote:
-          instavel !== undefined
-            ? "As fontes discordam da própria função, e por isso esta posição não é apresentada como consenso."
-            : estavel === undefined
-              ? null
-              : "As fontes discordam sobre qual potência ocupa o posto, e concordam sobre a função.",
+        divergenceNote: divergenceNoteFor(instavel, estavel),
       },
     ];
   });
 
   return publicFunctionGraphSchema.parse({ version: PUBLIC_FUNCTION_GRAPH_VERSION, functions });
+}
+
+/**
+ * Nota de divergência, nos três estados possíveis.
+ *
+ * Divergência que derruba a própria função não pode sair como se fosse a mesma
+ * coisa que divergência sobre quem ocupa o posto: a primeira desautoriza a
+ * leitura, a segunda apenas mostra que as linhagens não concordam no nome.
+ */
+function divergenceNoteFor(instavel: unknown, estavel: unknown): string | null {
+  if (instavel !== undefined)
+    return "As fontes discordam da própria função, e por isso esta posição não é apresentada como consenso.";
+  if (estavel === undefined) return null;
+  return "As fontes discordam sobre qual potência ocupa o posto, e concordam sobre a função.";
 }

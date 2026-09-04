@@ -40,6 +40,14 @@ const steps = [
   },
 ] as const;
 
+/** Rótulo de cada profundidade. Mapa em vez de ternário aninhado: acrescentar
+    um nível passa a ser acrescentar uma linha. */
+const DEPTH_LABELS: Readonly<Record<string, string>> = {
+  orientacao: "Orienta procedimento",
+  fundamento: "Explica fundamento",
+  panorama: "Apresenta e situa",
+};
+
 const instruments = [
   {
     href: "/magia-cerimonial/trabalhos",
@@ -120,11 +128,7 @@ export default function CeremonialMagicPage(): React.JSX.Element {
                 <h3>{tradicao.name}</h3>
                 <p className="method-function-question">{tradicao.summary}</p>
                 <p className="method-function-support" data-depth={tradicao.depth}>
-                  {tradicao.depth === "orientacao"
-                    ? "Orienta procedimento"
-                    : tradicao.depth === "fundamento"
-                      ? "Explica fundamento"
-                      : "Apresenta e situa"}
+                  {DEPTH_LABELS[tradicao.depth]}
                 </p>
                 {tradicao.entities.length === 0 ? null : (
                   <ul className="method-function-occupants">

@@ -1,4 +1,5 @@
 import { phaseFromLongitudes } from "@/domain/astrology/lunar";
+import { compareStrings } from "@/domain/sort-strings";
 import {
   resolvePlanetaryHourAt,
   type ClassicalPlanet,
@@ -106,7 +107,7 @@ export function evaluateElection(input: {
     status: statusOf(observations),
     observations,
     declaredUncertainty: profile.declaredUncertainty,
-    limitations: [...new Set(limitations)].sort(),
+    limitations: [...new Set(limitations)].sort(compareStrings),
   };
 }
 

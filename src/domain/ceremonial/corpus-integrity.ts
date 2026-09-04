@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { compareStrings } from "@/domain/sort-strings";
+
 import {
   inventoryRelativePathSchema,
   type InventoryEntry,
@@ -182,7 +184,10 @@ export function buildCorpusIntegrityReport(input: {
     byCategory: categorias,
     duplicateWorks: [...porHash.entries()]
       .filter(([, titles]) => titles.length > 1)
-      .map(([contentHash, titles]) => ({ contentHash, titles: [...titles].sort() }))
+      .map(([contentHash, titles]) => ({
+        contentHash,
+        titles: [...titles].sort(compareStrings),
+      }))
       .sort((left, right) => left.contentHash.localeCompare(right.contentHash)),
     unresolvedMetadata: documents
       .flatMap((document) => {
@@ -198,7 +203,9 @@ export function buildCorpusIntegrityReport(input: {
       inventoryQuarantined: entries.filter(({ state }) => state === "QUARANTINED").length,
       derivedMatched: derivadosPorCaminho.size,
       gaps,
-      unmatchedInCorpus: [...unmatchedInCorpus].sort(),
+      unmatchedInCorpus: [...unmatchedInCorpus].sort((left, right) =>
+        left < right ? -1 : left > right ? 1 : 0,
+      ),
       status: reconciliationStatus({
         inventorySize: entries.length,
         linkableDocuments: documents.filter(({ sourcePath }) => sourcePath !== null).length,

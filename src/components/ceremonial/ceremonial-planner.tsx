@@ -58,6 +58,25 @@ const TARGETS = [
 ] as const;
 
 /**
+ * Lê um campo do formulário como texto.
+ *
+ * `FormData.get` devolve `File` quando o campo é de arquivo, e converter isso
+ * com `String()` produziria "[object File]" silenciosamente. Aqui um valor que
+ * não seja texto vira string vazia, que é o que o resto do código já trata.
+ */
+function readField(data: FormData, field: string): string {
+  const value = data.get(field);
+  return typeof value === "string" ? value : "";
+}
+
+/** Título da lista, nos três estados possíveis. */
+function tituloDaLista(plans: PlanView[] | undefined): string {
+  if (plans === undefined) return "Carregando…";
+  if (plans.length === 0) return "Você ainda não guardou nenhum plano.";
+  return `${plans.length} plano(s) guardado(s).`;
+}
+
+/**
  * Planejador cerimonial.
  *
  * Guarda o que a pessoa registra, e não diz o que fazer: o produto calcula e
@@ -78,8 +97,6 @@ export function CeremonialPlanner(): React.JSX.Element {
       const response = await fetch("/api/ceremonial/plans");
       if (response.status === 401) return setMessage("Entre na sua conta para usar o planejador.");
       if (response.status === 402) return setMessage("O planejador faz parte do plano pago.");
-      if (response.status === 403)
-        return setMessage("O planejador é restrito a maiores de 18 anos que declararam a idade.");
       if (response.status === 503)
         return setMessage(
           "Os registros privados não estão configurados no servidor. Nada é gravado em claro.",
@@ -101,7 +118,7 @@ export function CeremonialPlanner(): React.JSX.Element {
 
   async function createPlan(form: HTMLFormElement): Promise<void> {
     const data = new FormData(form);
-    const scheduled = String(data.get("scheduledFor") ?? "");
+    const scheduled = readField(data, "scheduledFor");
     const response = await fetch("/api/ceremonial/plans", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -132,8 +149,8 @@ export function CeremonialPlanner(): React.JSX.Element {
 
   async function addSession(planId: string, form: HTMLFormElement): Promise<void> {
     const data = new FormData(form);
-    const occurred = String(data.get("occurredAt") ?? "");
-    const text = (field: string): string | undefined => String(data.get(field) ?? "") || undefined;
+    const occurred = readField(data, "occurredAt");
+    const text = (field: string): string | undefined => readField(data, field) || undefined;
     const response = await fetch(`/api/ceremonial/plans/${planId}/sessions`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -207,13 +224,7 @@ export function CeremonialPlanner(): React.JSX.Element {
       </form>
 
       <section className="methodology-section" aria-labelledby="plans-title">
-        <h2 id="plans-title">
-          {plans === undefined
-            ? "Carregando…"
-            : plans.length === 0
-              ? "Você ainda não guardou nenhum plano."
-              : `${plans.length} plano(s) guardado(s).`}
-        </h2>
+        <h2 id="plans-title">{tituloDaLista(plans)}</h2>
 
         {(plans ?? []).map((plan) => (
           <article key={plan.id} className="window-group">

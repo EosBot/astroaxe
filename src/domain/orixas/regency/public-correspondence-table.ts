@@ -105,7 +105,7 @@ export function buildPublicCorrespondenceTable(): PublicCorrespondenceTable {
   return {
     version: PUBLIC_CORRESPONDENCE_TABLE_VERSION,
     note: AUTHORIAL_NOTE,
-    rows: rows.sort(
+    rows: rows.toSorted(
       (left, right) =>
         left.name.localeCompare(right.name, "pt-BR") ||
         left.factorLabel.localeCompare(right.factorLabel, "pt-BR"),

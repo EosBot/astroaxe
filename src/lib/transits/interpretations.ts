@@ -241,12 +241,7 @@ function builtInInterpretation(
     ? "O encontro ainda está se aproximando do ponto máximo. É a fase em que as coisas ganham nitidez: o que estava difuso começa a ter nome, e situações aparecem quase como se tivessem sido convocadas. Não precisa correr atrás de conclusão — ela vem."
     : "O ponto máximo já passou, e o que resta agora é a parte que ninguém fotografa: entender o que aconteceu. Esta fase é boa para consolidar, guardar o aprendizado e reparar no que mudou sem que você percebesse na hora.";
 
-  const intensidade =
-    transit.relativeIntensity >= 0.66
-      ? "Este é um dos trânsitos mais fortes do seu momento, e provavelmente você já vinha sentindo antes de ler isto aqui."
-      : transit.relativeIntensity >= 0.33
-        ? "A intensidade é média: aparece com clareza em alguns dias e some em outros, e isso é normal."
-        : "A intensidade é sutil. Costuma agir como pano de fundo, mais no clima do período do que num acontecimento específico.";
+  const intensidade = descreveIntensidade(transit.relativeIntensity);
 
   const opening = `${voice.image}\n\nDesta vez ele alcança ${natalField}. ${aspect.texture}, e isso ${aspect.movement}.`;
 
@@ -279,4 +274,13 @@ function builtInInterpretation(
       },
     },
   });
+}
+
+/** Como a força do trânsito costuma se apresentar, em três faixas. */
+function descreveIntensidade(relativeIntensity: number): string {
+  if (relativeIntensity >= 0.66)
+    return "Este é um dos trânsitos mais fortes do seu momento, e provavelmente você já vinha sentindo antes de ler isto aqui.";
+  if (relativeIntensity >= 0.33)
+    return "A intensidade é média: aparece com clareza em alguns dias e some em outros, e isso é normal.";
+  return "A intensidade é sutil. Costuma agir como pano de fundo, mais no clima do período do que num acontecimento específico.";
 }

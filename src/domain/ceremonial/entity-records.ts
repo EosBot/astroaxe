@@ -156,6 +156,9 @@ export function findNameCollisions(
   }
   return [...porNome.entries()]
     .filter(([, lista]) => new Set(lista.map((r) => r.sourceSystemId)).size > 1)
-    .map(([name, records]) => ({ name, records: records.sort((a, b) => a.id.localeCompare(b.id)) }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .map(([name, records]) => ({
+      name,
+      records: records.toSorted((a, b) => a.id.localeCompare(b.id)),
+    }))
+    .toSorted((a, b) => a.name.localeCompare(b.name));
 }

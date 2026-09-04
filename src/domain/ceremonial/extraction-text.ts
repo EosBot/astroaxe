@@ -35,15 +35,23 @@ function decodeXmlEntities(value: string): string {
   });
 }
 
-/** Optional namespace prefix: Word writes `w:p`, OpenDocument writes `text:p`. */
-const NS = "(?:[a-zA-Z][\\w.-]*:)?";
+/**
+ * Optional namespace prefix: Word writes `w:p`, OpenDocument writes `text:p`.
+ *
+ * O comprimento é limitado de propósito. Sem teto, um documento com uma
+ * sequência longa de caracteres válidos e sem os dois-pontos faz o motor
+ * retroceder sobre cada prefixo, e com a flag global isso vira quadrático —
+ * arquivo malformado pararia a extração. Prefixo de namespace real tem poucos
+ * caracteres.
+ */
+const NS = String.raw`(?:[a-zA-Z][\w.-]{0,64}:)?`;
 
 const DROPPED_PARTS = new RegExp(
-  `<${NS}(?:binary-data|annotation)\\b[\\s\\S]*?</${NS}(?:binary-data|annotation)>`,
+  String.raw`<${NS}(?:binary-data|annotation)\b[\s\S]*?</${NS}(?:binary-data|annotation)>`,
   "g",
 );
-const TAB_ELEMENT = new RegExp(`<${NS}tab\\b[^>]*/?>`, "g");
-const BREAK_ELEMENT = new RegExp(`<${NS}(?:br|line-break)\\b[^>]*/?>`, "g");
+const TAB_ELEMENT = new RegExp(String.raw`<${NS}tab\b[^>]*/?>`, "g");
+const BREAK_ELEMENT = new RegExp(String.raw`<${NS}(?:br|line-break)\b[^>]*/?>`, "g");
 const PARAGRAPH_END = new RegExp(`</${NS}(?:p|h|title)>`, "g");
 
 /**
@@ -104,7 +112,7 @@ export function stripRtf(rtf: string): string {
     }
 
     if (character === "\\") {
-      const control = /^\\([a-zA-Z]+)(-?\d+)?[ ]?/.exec(rtf.slice(index));
+      const control = /^\\([a-zA-Z]+)(-?\d+)? ?/.exec(rtf.slice(index));
       if (control !== null) {
         const [matched, word, parameter] = control;
         index += matched.length;

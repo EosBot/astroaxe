@@ -123,7 +123,7 @@ describe("AmbientSoundControl", () => {
 
     const antes = started.length;
     fireEvent.pointerDown(screen.getByRole("button", { name: "Abrir leitura" }));
-    expect(started.length).toBe(antes);
+    expect(started).toHaveLength(antes);
   });
 
   it("guarda a escolha e volta ligado na visita seguinte", () => {
