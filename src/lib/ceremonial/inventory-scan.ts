@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { constants } from "node:fs";
+import { constants, type Dirent } from "node:fs";
 import { lstat, open, readdir, realpath } from "node:fs/promises";
 import { isAbsolute, join, relative, resolve, sep } from "node:path";
 
@@ -164,6 +164,41 @@ async function scanFile(
  * checkpoint are re-emitted untouched, which is what makes an interrupted run resumable
  * and a full rerun idempotent.
  */
+/** Filhos do diretório, ou `null` quando ele não pôde ser lido. */
+async function readChildren(directory: string): Promise<Dirent[] | null> {
+  try {
+    return await withIoRetry(() => readdir(directory, { withFileTypes: true }));
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * A entrada de um arquivo, vinda do cache de retomada ou de leitura nova.
+ *
+ * Devolve `reused` para o laço saber se deve anunciar progresso: reprocessar e
+ * reanunciar o que já estava pronto faria uma retomada parecer varredura
+ * inteira.
+ */
+async function entryForFile(input: {
+  canonicalRoot: string;
+  absolutePath: string;
+  completed: ReadonlyMap<string, InventoryEntry>;
+  maxHashableBytes: number;
+}): Promise<{ value: InventoryEntry; relativePath: string; reused: boolean }> {
+  const relativePath = toPosixRelative(input.canonicalRoot, input.absolutePath);
+  const previous = input.completed.get(relativePath);
+  if (previous !== undefined) return { value: previous, relativePath, reused: true };
+
+  const value = await scanFile(
+    input.canonicalRoot,
+    input.absolutePath,
+    relativePath,
+    input.maxHashableBytes,
+  );
+  return { value, relativePath, reused: false };
+}
+
 export async function scanArchive(options: ScanArchiveOptions): Promise<InventoryEntry[]> {
   const canonicalRoot = await realpath(options.archiveRoot);
   const maxHashableBytes = options.maxHashableBytes ?? MAX_HASHABLE_BYTES;
@@ -176,42 +211,78 @@ export async function scanArchive(options: ScanArchiveOptions): Promise<Inventor
   while (pending.length > 0) {
     const directory = pending.pop();
     if (directory === undefined) break;
-    // A directory reached twice means a loop; visiting it again would never terminate.
+    // Um diretório alcançado duas vezes é laço; visitá-lo de novo nunca
+    // terminaria.
     if (visitedDirectories.has(directory)) continue;
     visitedDirectories.add(directory);
 
-    let children;
-    try {
-      children = await withIoRetry(() => readdir(directory, { withFileTypes: true }));
-    } catch {
-      const relativePath = toPosixRelative(canonicalRoot, directory);
-      if (relativePath !== "")
-        entries.push(quarantined(relativePath, 0, new Date(0).toISOString(), "UNREADABLE"));
-      continue;
-    }
-
-    for (const child of children) {
-      const absolutePath = join(directory, child.name);
-      if (!isWithinRoot(canonicalRoot, resolve(absolutePath))) continue;
-      const relativePath = toPosixRelative(canonicalRoot, absolutePath);
-
-      if (child.isDirectory()) {
-        pending.push(absolutePath);
-        continue;
-      }
-
-      const previous = completed.get(relativePath);
-      if (previous !== undefined) {
-        entries.push(previous);
-        continue;
-      }
-
-      const entry = await scanFile(canonicalRoot, absolutePath, relativePath, maxHashableBytes);
-      entries.push(entry);
-      options.onProgress?.({ scanned: entries.length, relativePath });
-      await options.onEntry?.(entry);
-    }
+    const visita = await visitDirectory({
+      directory,
+      canonicalRoot,
+      completed,
+      maxHashableBytes,
+      entries,
+      options,
+    });
+    pending.push(...visita.directories);
   }
 
   return entries;
+}
+
+/**
+ * Uma pasta: enfileira as subpastas e transforma cada arquivo em entrada.
+ *
+ * Sai do laço principal porque ali o que importa é a travessia — pilha,
+ * diretórios já vistos, término — e aqui o que importa é o conteúdo de uma
+ * pasta. Junto, o custo de ler as duas coisas somava.
+ *
+ * `entries` é recebido e alimentado em vez de devolvido, porque o progresso
+ * anuncia a contagem corrente: devolver uma lista à parte faria o número
+ * anunciado divergir do total real.
+ */
+async function visitDirectory(input: {
+  directory: string;
+  canonicalRoot: string;
+  completed: ReadonlyMap<string, InventoryEntry>;
+  maxHashableBytes: number;
+  entries: InventoryEntry[];
+  options: ScanArchiveOptions;
+}): Promise<{ directories: string[] }> {
+  const { directory, canonicalRoot, entries, options } = input;
+
+  const children = await readChildren(directory);
+  if (children === null) {
+    const relativePath = toPosixRelative(canonicalRoot, directory);
+    if (relativePath !== "")
+      entries.push(quarantined(relativePath, 0, new Date(0).toISOString(), "UNREADABLE"));
+    return { directories: [] };
+  }
+
+  const directories: string[] = [];
+  for (const child of children) {
+    const absolutePath = join(directory, child.name);
+    // Caminho que escapa da raiz não é lido: link simbólico apontando para fora
+    // transformaria a varredura do acervo em varredura do disco.
+    if (!isWithinRoot(canonicalRoot, resolve(absolutePath))) continue;
+
+    if (child.isDirectory()) {
+      directories.push(absolutePath);
+      continue;
+    }
+
+    const entry = await entryForFile({
+      canonicalRoot,
+      absolutePath,
+      completed: input.completed,
+      maxHashableBytes: input.maxHashableBytes,
+    });
+    entries.push(entry.value);
+    if (entry.reused) continue;
+
+    options.onProgress?.({ scanned: entries.length, relativePath: entry.relativePath });
+    await options.onEntry?.(entry.value);
+  }
+
+  return { directories };
 }

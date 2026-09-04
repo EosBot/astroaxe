@@ -109,6 +109,79 @@ export interface InventoryManifest {
   readonly duplicateGroups: readonly InventoryDuplicateGroup[];
 }
 
+type AsciiReader = (start: number, end: number) => string;
+
+const startsWithBytes = (bytes: Buffer, signature: number[]): boolean =>
+  bytes.subarray(0, signature.length).equals(Buffer.from(signature));
+
+/**
+ * Assinaturas reconhecidas, em ordem de teste.
+ *
+ * Tabela em vez de cadeia de `if`: acrescentar um formato passa a ser
+ * acrescentar uma linha, e a ordem — que importa, porque RIFF serve a mais de
+ * um tipo — fica visível de uma vez em vez de espalhada por trinta linhas.
+ *
+ * Reconhecer um tipo aqui é classificação, e nunca autorização para servir o
+ * arquivo. Quem decide entrega é o portão estreito de `artifact-storage.ts`.
+ */
+const ARCHIVE_SIGNATURES: readonly {
+  mediaType: string;
+  matches: (bytes: Buffer, ascii: AsciiReader) => boolean;
+}[] = [
+  { mediaType: "application/pdf", matches: (_, ascii) => ascii(0, 5) === "%PDF-" },
+  { mediaType: "application/rtf", matches: (_, ascii) => ascii(0, 5) === String.raw`{\rtf` },
+  {
+    // Documento composto OLE2 antigo: .doc, .xls, .ppt.
+    mediaType: "application/x-ole-storage",
+    matches: (bytes) => startsWithBytes(bytes, [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1]),
+  },
+  {
+    // Contêiner ZIP: .docx, .odt, .epub e arquivos comuns são separados na importação.
+    mediaType: "application/zip",
+    matches: (bytes) => startsWithBytes(bytes, [0x50, 0x4b, 0x03, 0x04]),
+  },
+  {
+    mediaType: "image/png",
+    matches: (bytes) => startsWithBytes(bytes, [137, 80, 78, 71, 13, 10, 26, 10]),
+  },
+  {
+    mediaType: "image/jpeg",
+    matches: (bytes) => bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff,
+  },
+  {
+    mediaType: "image/gif",
+    matches: (_, ascii) => ascii(0, 6) === "GIF87a" || ascii(0, 6) === "GIF89a",
+  },
+  {
+    mediaType: "image/webp",
+    matches: (_, ascii) => ascii(0, 4) === "RIFF" && ascii(8, 12) === "WEBP",
+  },
+  {
+    mediaType: "audio/wav",
+    matches: (_, ascii) => ascii(0, 4) === "RIFF" && ascii(8, 12) === "WAVE",
+  },
+  // O acervo é em boa parte ponto gravado, então áudio aqui é de primeira classe.
+  { mediaType: "audio/mpeg", matches: (_, ascii) => ascii(0, 3) === "ID3" },
+  {
+    // Sincronismo de quadro MPEG sem etiqueta ID3: onze bits ligados.
+    mediaType: "audio/mpeg",
+    matches: (bytes) => bytes.length > 1 && bytes[0] === 0xff && ((bytes[1] ?? 0) & 0xe0) === 0xe0,
+  },
+  { mediaType: "video/mp4", matches: (_, ascii) => ascii(4, 8) === "ftyp" },
+  {
+    // GUID de cabeçalho do contêiner ASF: .wma e .wmv.
+    mediaType: "application/vnd.ms-asf",
+    matches: (bytes) =>
+      startsWithBytes(
+        bytes,
+        [
+          0x30, 0x26, 0xb2, 0x75, 0x8e, 0x66, 0xcf, 0x11, 0xa6, 0xd9, 0x00, 0xaa, 0x00, 0x62, 0xce,
+          0x6c,
+        ],
+      ),
+  },
+];
+
 /**
  * Classification only — deliberately separate from the narrow delivery-gate detector in
  * `artifact-storage.ts`. Recognising a type here never authorizes serving it.
@@ -117,41 +190,14 @@ export function detectArchiveMediaType(bytes: Buffer): string | null {
   const ascii = (start: number, end: number): string =>
     bytes.subarray(start, end).toString("ascii");
 
-  if (ascii(0, 5) === "%PDF-") return "application/pdf";
-  if (ascii(0, 5) === String.raw`{\rtf`) return "application/rtf";
-  if (bytes.subarray(0, 8).equals(Buffer.from([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1])))
-    // Legacy OLE2 compound file: .doc, .xls, .ppt.
-    return "application/x-ole-storage";
-  if (bytes.subarray(0, 4).equals(Buffer.from([0x50, 0x4b, 0x03, 0x04])))
-    // ZIP container: .docx, .odt, .epub and plain archives are disambiguated on import.
-    return "application/zip";
-  if (bytes.subarray(0, 8).equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10])))
-    return "image/png";
-  if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return "image/jpeg";
-  if (ascii(0, 6) === "GIF87a" || ascii(0, 6) === "GIF89a") return "image/gif";
-  if (ascii(0, 4) === "RIFF" && ascii(8, 12) === "WEBP") return "image/webp";
-  if (ascii(0, 4) === "RIFF" && ascii(8, 12) === "WAVE") return "audio/wav";
-  // The archive is mostly recorded chant, so audio is first-class here, not an oddity.
-  if (ascii(0, 3) === "ID3") return "audio/mpeg";
-  // Bare MPEG audio frame sync (no ID3 tag): 11 set bits, then a valid layer/version.
-  if (bytes.length > 1 && bytes[0] === 0xff && ((bytes[1] ?? 0) & 0xe0) === 0xe0)
-    return "audio/mpeg";
-  if (ascii(4, 8) === "ftyp") return "video/mp4";
-  if (
-    bytes
-      .subarray(0, 16)
-      .equals(
-        Buffer.from([
-          0x30, 0x26, 0xb2, 0x75, 0x8e, 0x66, 0xcf, 0x11, 0xa6, 0xd9, 0x00, 0xaa, 0x00, 0x62, 0xce,
-          0x6c,
-        ]),
-      )
-  )
-    // ASF container header GUID: .wma and .wmv.
-    return "application/vnd.ms-asf";
+  for (const { mediaType, matches } of ARCHIVE_SIGNATURES)
+    if (matches(bytes, ascii)) return mediaType;
+
+  // Sem assinatura conhecida, sobra texto: ausência de byte zero e nenhum
+  // caractere de substituição depois de decodificar em UTF-8.
   if (bytes.length > 0 && !bytes.includes(0)) {
     const text = bytes.toString("utf8");
-    if (!text.includes("�")) return "text/plain";
+    if (!text.includes("\ufffd")) return "text/plain";
   }
   return null;
 }

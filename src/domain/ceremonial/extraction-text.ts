@@ -70,7 +70,11 @@ export function xmlPartToText(xml: string): string {
       .replace(TAB_ELEMENT, "\t")
       .replace(BREAK_ELEMENT, "\n")
       .replace(PARAGRAPH_END, "\n")
-      .replace(/<[^>]*>/g, ""),
+      // O quantificador é limitado de propósito. Sem teto, um arquivo com muitos
+      // `<` e nenhum `>` faz o motor varrer até o fim a partir de cada posição,
+      // e com a flag global isso vira quadrático. Nenhuma tag real tem quatro mil
+      // caracteres.
+      .replace(/<[^>]{0,4096}>/g, ""),
   );
 }
 
@@ -87,13 +91,79 @@ const SKIPPED_RTF_DESTINATIONS =
  * RTF interleaves text with control words, control symbols and brace groups, so this
  * walks the stream once, tracking brace depth to know when a skipped destination ends.
  */
+/**
+ * O que uma palavra de controle produz como texto.
+ *
+ * Fora do laço porque ali o que importa é a máquina de estados — profundidade,
+ * destino ignorado, avanço do índice — e aqui o que importa é a tabela de
+ * significados. Palavra desconhecida não produz nada, que é o comportamento
+ * certo: inventar caractere para controle não reconhecido sujaria o texto.
+ */
+function textForControlWord(word: string | undefined, parameter: string | undefined): string {
+  if (word === "par" || word === "line" || word === "sect") return "\n";
+  if (word === "tab") return "\t";
+  if (word === "u" && parameter !== undefined) {
+    // \uN emite um ponto de código; valor negativo é a codificação de 16 bits
+    // com sinal, e volta somando 0x10000.
+    const code = Number(parameter);
+    if (Number.isSafeInteger(code)) return String.fromCodePoint(code < 0 ? code + 0x10000 : code);
+  }
+  return "";
+}
+
+/**
+ * O que vem depois de uma barra invertida, e quanto ela consome.
+ *
+ * Sai do laço principal porque ali o que importa é a máquina de estados —
+ * profundidade de chaves e destinos ignorados — enquanto aqui o que importa é a
+ * gramática do RTF: palavra de controle, byte hexadecimal ou literal escapado.
+ *
+ * A função não decide sozinha o que ignorar: devolve se abriu um destino a ser
+ * pulado, e quem mantém a pilha é o laço.
+ */
+function readBackslash(
+  rtf: string,
+  index: number,
+  skipping: boolean,
+): { consumed: number; text: string; startsSkippedDestination: boolean } {
+  const resto = rtf.slice(index);
+
+  const control = /^\\([a-zA-Z]+)(-?\d+)? ?/.exec(resto);
+  if (control !== null) {
+    const [matched, word, parameter] = control;
+    if (skipping) return { consumed: matched.length, text: "", startsSkippedDestination: false };
+    if (word !== undefined && SKIPPED_RTF_DESTINATIONS.test(word))
+      return { consumed: matched.length, text: "", startsSkippedDestination: true };
+    return {
+      consumed: matched.length,
+      text: textForControlWord(word, parameter),
+      startsSkippedDestination: false,
+    };
+  }
+
+  // Símbolo de controle: `\'` introduz um byte hexadecimal, e o resto é literal
+  // escapado.
+  const hex = /^\\'([0-9a-fA-F]{2})/.exec(resto);
+  if (hex !== null)
+    return {
+      consumed: hex[0].length,
+      // Windows-1252 é o padrão prático do RTF da época do acervo; ASCII passa
+      // direto.
+      text: skipping ? "" : Buffer.from(hex[1] ?? "", "hex").toString("latin1"),
+      startsSkippedDestination: false,
+    };
+
+  const escaped = rtf[index + 1];
+  const literal =
+    !skipping && escaped !== undefined && String.raw`\{}`.includes(escaped) ? escaped : "";
+  return { consumed: 2, text: literal, startsSkippedDestination: false };
+}
+
 export function stripRtf(rtf: string): string {
   let output = "";
   let depth = 0;
   const skipFromDepth: number[] = [];
   let index = 0;
-
-  const skipping = () => skipFromDepth.length > 0;
 
   while (index < rtf.length) {
     const character = rtf[index];
@@ -105,6 +175,7 @@ export function stripRtf(rtf: string): string {
     }
 
     if (character === "}") {
+      // A chave que fecha o destino ignorado devolve a saída ao texto normal.
       if (skipFromDepth.at(-1) === depth) skipFromDepth.pop();
       depth -= 1;
       index += 1;
@@ -112,47 +183,28 @@ export function stripRtf(rtf: string): string {
     }
 
     if (character === "\\") {
-      const control = /^\\([a-zA-Z]+)(-?\d+)? ?/.exec(rtf.slice(index));
-      if (control !== null) {
-        const [matched, word, parameter] = control;
-        index += matched.length;
-        if (skipping()) continue;
-
-        if (word !== undefined && SKIPPED_RTF_DESTINATIONS.test(word)) {
-          skipFromDepth.push(depth);
-          continue;
-        }
-        if (word === "par" || word === "line" || word === "sect") output += "\n";
-        else if (word === "tab") output += "\t";
-        else if (word === "u" && parameter !== undefined) {
-          // \uN emits a code point; a negative value is the 16-bit signed encoding.
-          const code = Number(parameter);
-          if (Number.isSafeInteger(code))
-            output += String.fromCodePoint(code < 0 ? code + 0x10000 : code);
-        }
-        continue;
-      }
-
-      // Control symbol: \' introduces a hex byte, anything else is an escaped literal.
-      const hex = /^\\'([0-9a-fA-F]{2})/.exec(rtf.slice(index));
-      if (hex !== null) {
-        index += hex[0].length;
-        // Windows-1252 is the practical default for archive-era RTF; ASCII passes through.
-        if (!skipping()) output += Buffer.from(hex[1] ?? "", "hex").toString("latin1");
-        continue;
-      }
-      const escaped = rtf[index + 1];
-      index += 2;
-      if (!skipping() && escaped !== undefined && "\\{}".includes(escaped)) output += escaped;
+      const passo = readBackslash(rtf, index, skipFromDepth.length > 0);
+      index += passo.consumed;
+      if (passo.startsSkippedDestination) skipFromDepth.push(depth);
+      output += passo.text;
       continue;
     }
 
     index += 1;
-    if (skipping()) continue;
-    // Raw newlines in an RTF stream are formatting, not content.
-    if (character === "\n" || character === "\r") continue;
-    if (character !== undefined) output += character;
+    if (skipFromDepth.length === 0) output += literalCharacter(character);
   }
 
   return output;
+}
+
+/**
+ * Caractere comum do fluxo, já filtrado.
+ *
+ * Quebra de linha crua em RTF é formatação do arquivo, e não conteúdo: quem
+ * marca parágrafo é a palavra de controle, não o byte.
+ */
+function literalCharacter(character: string | undefined): string {
+  if (character === undefined) return "";
+  if (character === "\n" || character === "\r") return "";
+  return character;
 }

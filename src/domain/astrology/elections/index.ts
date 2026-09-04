@@ -159,21 +159,49 @@ function evaluateCondition(
   if (condition.kind === "source_requirement")
     return { outcome: "indeterminate", reason: "condition_not_computable" };
   if (reading === undefined) return { outcome: "indeterminate", reason: "moment_unavailable" };
-  if (condition.kind === "operation_planetary_day") {
-    if (operationPlanet === undefined)
-      return { outcome: "indeterminate", reason: "operation_planet_missing" };
-    return { outcome: reading.dayRuler === operationPlanet ? "satisfied" : "violated" };
+  return evaluateAgainstReading(condition, reading, operationPlanet);
+}
+
+/**
+ * Condições que só se julgam com a hora planetária em mãos.
+ *
+ * Sai de `evaluateCondition` porque lá o que importa é a ordem das recusas —
+ * falta de fase lunar, condição incomputável, ausência de hora — e aqui o que
+ * importa é comparar regente e segmento. Misturar as duas coisas na mesma
+ * função é o que fazia a leitura custar caro.
+ */
+function evaluateAgainstReading(
+  // A união chega estreitada: fase lunar e requisito de fonte já foram tratados
+  // por quem chama, e listá-los aqui obrigaria a um ramo morto.
+  condition: Exclude<ElectionCondition, { kind: "lunar_phase" } | { kind: "source_requirement" }>,
+  reading: PlanetaryHourReading,
+  operationPlanet: ClassicalPlanet | undefined,
+): {
+  outcome: ElectionConditionObservation["outcome"];
+  reason?: ElectionConditionObservation["reason"];
+} {
+  const veredito = (satisfeito: boolean) =>
+    ({ outcome: satisfeito ? "satisfied" : "violated" }) as const;
+
+  switch (condition.kind) {
+    case "operation_planetary_day":
+    case "operation_planetary_hour": {
+      // O planeta da operação vem de fora da regra; sem ele não há o que
+      // comparar, e responder "violado" acusaria o momento por uma falta que é
+      // de quem perguntou.
+      if (operationPlanet === undefined)
+        return { outcome: "indeterminate", reason: "operation_planet_missing" };
+      const regente =
+        condition.kind === "operation_planetary_day" ? reading.dayRuler : reading.hourRuler;
+      return veredito(regente === operationPlanet);
+    }
+    case "planetary_day":
+      return veredito(reading.dayRuler === condition.planet);
+    case "planetary_hour":
+      return veredito(reading.hourRuler === condition.planet);
+    default:
+      return veredito(reading.segment === condition.segment);
   }
-  if (condition.kind === "operation_planetary_hour") {
-    if (operationPlanet === undefined)
-      return { outcome: "indeterminate", reason: "operation_planet_missing" };
-    return { outcome: reading.hourRuler === operationPlanet ? "satisfied" : "violated" };
-  }
-  if (condition.kind === "planetary_day")
-    return { outcome: reading.dayRuler === condition.planet ? "satisfied" : "violated" };
-  if (condition.kind === "planetary_hour")
-    return { outcome: reading.hourRuler === condition.planet ? "satisfied" : "violated" };
-  return { outcome: reading.segment === condition.segment ? "satisfied" : "violated" };
 }
 
 /**

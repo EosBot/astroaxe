@@ -254,6 +254,23 @@ async function readSourceBytes(source: VerifiedSource): Promise<Buffer> {
  * a blank plate in a scanned book is normal. A budget overrun refuses the whole source,
  * because a partial transcription of a book reads exactly like a complete one.
  */
+/**
+ * Motivo que derruba o documento inteiro, quando houver.
+ *
+ * Estouro de tempo ou de tamanho é recusa da fonte toda: insistir nas páginas
+ * seguintes seria gastar o mesmo orçamento que já acabou. Falha de outra
+ * natureza é só esta página, e o laço segue.
+ */
+function fatalReason(result: {
+  ok: boolean;
+  reason?: string | null;
+}): "ADAPTER_TIMEOUT" | "OUTPUT_TOO_LARGE" | null {
+  if (result.ok) return null;
+  if (result.reason === "ADAPTER_TIMEOUT") return "ADAPTER_TIMEOUT";
+  if (result.reason === "OUTPUT_TOO_LARGE") return "OUTPUT_TOO_LARGE";
+  return null;
+}
+
 export async function runPdfOcr(
   source: VerifiedSource,
   pageCount: number,
@@ -277,19 +294,14 @@ export async function runPdfOcr(
       [...render.args, "-f", String(page), "-l", String(page), "-", "-"],
       source,
     );
-    if (!rendered.ok) {
-      if (rendered.reason === "ADAPTER_TIMEOUT" || rendered.reason === "OUTPUT_TOO_LARGE")
-        return { ok: false, reason: rendered.reason };
-      continue;
-    }
-    if (rendered.stdout.length === 0) continue;
+    const rejeitaRender = fatalReason(rendered);
+    if (rejeitaRender !== null) return { ok: false, reason: rejeitaRender };
+    if (!rendered.ok || rendered.stdout.length === 0) continue;
 
     const text = await runBounded(ocr.command, ocr.args, rendered.stdout);
-    if (!text.ok) {
-      if (text.reason === "ADAPTER_TIMEOUT" || text.reason === "OUTPUT_TOO_LARGE")
-        return { ok: false, reason: text.reason };
-      continue;
-    }
+    const rejeitaOcr = fatalReason(text);
+    if (rejeitaOcr !== null) return { ok: false, reason: rejeitaOcr };
+    if (!text.ok) continue;
 
     total += text.stdout.length;
     if (total > EXTRACTION_LIMITS.maxOutputBytes) return { ok: false, reason: "OUTPUT_TOO_LARGE" };
@@ -300,41 +312,59 @@ export async function runPdfOcr(
   return { ok: true, text: pages.join("\f"), pageCount, adapterVersion };
 }
 
+/** Texto puro e RTF: o próprio arquivo já é a fonte, sem processo externo. */
+async function readTextSource(
+  adapter: "plain-text" | "rtf",
+  source: VerifiedSource,
+  adapterVersion: string,
+): Promise<AdapterResult> {
+  let bytes: Buffer;
+  try {
+    bytes = await readSourceBytes(source);
+  } catch {
+    return { ok: false, reason: "SOURCE_UNREADABLE" };
+  }
+  if (bytes.length > EXTRACTION_LIMITS.maxOutputBytes)
+    return { ok: false, reason: "OUTPUT_TOO_LARGE" };
+
+  const decoded = bytes.toString("utf8");
+  return {
+    ok: true,
+    text: adapter === "rtf" ? stripRtf(decoded) : decoded,
+    pageCount: null,
+    adapterVersion,
+  };
+}
+
+/** Adaptadores que rodam um binário e leem a saída padrão. */
+async function runSingleBinary(
+  adapter: "pdf-text" | "ocr-image",
+  source: VerifiedSource,
+  adapterVersion: string,
+): Promise<AdapterResult> {
+  const binary = ADAPTER_BINARIES[adapter];
+  const result = await runBounded(binary.command, binary.args, source);
+  if (!result.ok) return { ok: false, reason: result.reason ?? "ADAPTER_FAILED" };
+
+  const text = result.stdout.toString("utf8");
+  return {
+    ok: true,
+    text,
+    pageCount: adapter === "pdf-text" ? countPagesFromFormFeeds(text) : null,
+    adapterVersion,
+  };
+}
+
 export async function runExtractionAdapter(
   adapter: ExtractionAdapter,
   source: VerifiedSource,
   adapterVersion: string,
 ): Promise<AdapterResult> {
-  if (adapter === "plain-text" || adapter === "rtf") {
-    let bytes: Buffer;
-    try {
-      bytes = await readSourceBytes(source);
-    } catch {
-      return { ok: false, reason: "SOURCE_UNREADABLE" };
-    }
-    if (bytes.length > EXTRACTION_LIMITS.maxOutputBytes)
-      return { ok: false, reason: "OUTPUT_TOO_LARGE" };
-    const decoded = bytes.toString("utf8");
-    return {
-      ok: true,
-      text: adapter === "rtf" ? stripRtf(decoded) : decoded,
-      pageCount: null,
-      adapterVersion,
-    };
-  }
+  if (adapter === "plain-text" || adapter === "rtf")
+    return await readTextSource(adapter, source, adapterVersion);
 
-  if (adapter === "pdf-text" || adapter === "ocr-image") {
-    const binary = ADAPTER_BINARIES[adapter];
-    const result = await runBounded(binary.command, binary.args, source);
-    if (!result.ok) return { ok: false, reason: result.reason ?? "ADAPTER_FAILED" };
-    const text = result.stdout.toString("utf8");
-    return {
-      ok: true,
-      text,
-      pageCount: adapter === "pdf-text" ? countPagesFromFormFeeds(text) : null,
-      adapterVersion,
-    };
-  }
+  if (adapter === "pdf-text" || adapter === "ocr-image")
+    return await runSingleBinary(adapter, source, adapterVersion);
 
   // A ZIP container is only usable if it holds a known document part. Each candidate gets
   // a fresh stream from the same descriptor, so trying one does not consume the source.

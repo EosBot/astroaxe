@@ -268,15 +268,20 @@ const NON_TEXT_CONTROL_CHARACTERS =
  * fixed here rather than left to whichever tool produced the text.
  */
 export function normalizeExtractedText(raw: string): string {
-  return raw
-    .normalize("NFC")
-    .replace(/\r\n?/g, "\n")
-    .replace(NON_TEXT_CONTROL_CHARACTERS, "")
-    .split("\n")
-    .map((line) => line.replace(/[ \t]+$/g, ""))
-    .join("\n")
-    .replace(/\n{3,}/g, "\n\n")
-    .trim();
+  return (
+    raw
+      .normalize("NFC")
+      .replace(/\r\n?/g, "\n")
+      .replace(NON_TEXT_CONTROL_CHARACTERS, "")
+      .split("\n")
+      // Limite pelo mesmo motivo: uma linha de milhares de espaços faria o motor
+      // tentar a partir de cada um deles. A flag global também sai — com âncora de
+      // fim, ela só faz o motor repetir trabalho já concluído.
+      .map((line) => line.replace(/[ \t]{1,1024}$/, ""))
+      .join("\n")
+      .replace(/\n{3,}/g, "\n\n")
+      .trim()
+  );
 }
 
 /**

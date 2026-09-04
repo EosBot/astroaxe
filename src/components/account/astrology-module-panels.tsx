@@ -16,10 +16,17 @@ import {
   planetaryReturnResponseSchema,
   type PlanetaryReturnResponse,
 } from "@/lib/returns/contracts";
+import {
+  shadowAngleContent,
+  shadowAspectContent,
+  shadowNatalContent,
+  shadowNatalMeta,
+  type ShadowNatalBody,
+  type ShadowNatalReading,
+} from "@/lib/shadow-horoscope/natal-content";
 import { ModernPointsPanel } from "./modern-points-panel";
 import { TransitReading } from "./transit-reading";
 import { ImmersiveReport } from "./immersive-report";
-import { signShadowProfile, SignShadowProfile } from "@/lib/shadow-horoscope/sign-profiles";
 
 type Natal = ProfileRecord["chart"]["natal"];
 
@@ -84,9 +91,19 @@ export function ShadowHoroscopeView({
   profile,
 }: Readonly<{ profile: ProfileRecord }>): React.JSX.Element {
   const natal = profile.chart.natal;
-
-  // Função auxiliar para obter posição de um corpo celeste
-  const getPlacement = (body: string) => {
+  const shadowBodies: readonly ShadowNatalBody[] = [
+    "sun",
+    "moon",
+    "mercury",
+    "venus",
+    "mars",
+    "jupiter",
+    "saturn",
+    "uranus",
+    "neptune",
+    "pluto",
+  ];
+  const getPlacement = (body: ShadowNatalBody) => {
     const found = natal.planets.find(({ id }) => id === body);
     if (!found) return null;
     const zodiac = zodiacPlacement(found.longitude);
@@ -100,164 +117,33 @@ export function ShadowHoroscopeView({
       retrograde: found.retrograde,
     };
   };
-
-  // Posicionamentos pessoais
-  const sunPos = getPlacement("sun");
-  const moonPos = getPlacement("moon");
-  const mercuryPos = getPlacement("mercury");
-  const venusPos = getPlacement("venus");
-  const marsPos = getPlacement("mars");
-
-  // Função que gera texto de sombra para um planeta dado seu perfil e posição
-  const shadowTextForPlanet = (
-    profile: SignShadowProfile,
-    pos: ReturnType<typeof getPlacement> | null,
-    body: string,
-    areaHint?: string,
-  ): string => {
-    if (!pos) return "Dados astrológicos indisponíveis para este ponto.";
-    const { degree, house, retrograde } = pos;
-    const retroTxt = retrograde ? " (retrógrado)" : "";
-    const bodyLabel =
+  const mechanisms = shadowBodies.flatMap((body) => {
+    const position = getPlacement(body);
+    if (position === null) return [];
+    const meta = shadowNatalMeta(body);
+    return [
       {
-        sun: "Sol",
-        moon: "Lua",
-        mercury: "Mercúrio",
-        venus: "Vênus",
-        mars: "Marte",
-        jupiter: "Júpiter",
-      }[body] ?? body;
-    const bodyScene =
-      {
-        sun: "No cotidiano, isso vira aquela disputa silenciosa por protagonismo em conversas, escolhas e até no grupo da família.",
-        moon: "No afeto, o problema aparece como cobrança indireta, saudade mal explicada ou ciúme que chega antes do contexto.",
-        mercury:
-          "Em discussões, a inteligência vira advogada de defesa: prova que o impulso era razoável, mesmo quando não era.",
-        venus:
-          "No romance, isso aparece como expectativa de retorno, delicadeza que machuca ou charme usado para evitar conversa difícil.",
-        mars: "Na briga, você acelera: corta, reage, antecipa o golpe e só depois pergunta se era mesmo necessário.",
-        jupiter:
-          "Na vida prática, isso vira excesso de confiança, explicação grandiosa e plano bonito demais para o prazo real.",
-      }[body] ?? "O padrão reaparece justamente onde você mais evita olhar.";
-    // Use degree to pick variations (deterministic)
-    const idx = Math.floor(Math.abs(degree) * 10) % 3;
-    const openings = [
-      `Seu ${bodyLabel} em ${pos.sign} costuma entrar em cena quando essa função age sem revisão.`,
-      `${bodyLabel} no signo de ${pos.sign} revela que há mais por trás da aparência que você aprendeu a sustentar.`,
-      `Com ${bodyLabel} em ${pos.sign}, você defende uma imagem que nem sempre combina com o que sente.`,
+        id: body,
+        glyph: meta.glyph,
+        reading: shadowNatalContent(position),
+      },
     ];
-    const problems = [
-      `${profile.problem}`,
-      `O cerne da questão: ${profile.problem.toLowerCase()}.`,
-      `Quando olhamos por baixo dos panos, vemos que ${profile.problem.toLowerCase()}.`,
-    ];
-    let houseNote = "";
-    if (house) {
-      const houseThemes = [
-        "identidade, aparência e começos",
-        "recursos, finanças e valores materiais",
-        "comunicação, aprendizado e irmãos",
-        "lar, família e raízes emocionais",
-        "criatividade, prazer e romance",
-        "trabalho diário, saúde e rotina",
-        "parcerias, contratos e um a um",
-        "intimidade, recursos compartilhados e transformação",
-        "crenças, estudos longos e viagens",
-        "carreira, reputação e público",
-        "amizades, grupos e ideais",
-        "recolhimento, inconsciente e espiritualidade",
-      ];
-      const theme = houseThemes[house - 1] || `Casa ${house}`;
-      const houseNotes = [
-        `Na ${theme} (Casa ${house}), essa energia se expressa através de ${profile.problem.toLowerCase().replace(/^o problema é que /, "")}.`,
-        `No setor do ${theme} (Casa ${house}), o padrão se manifesta como ${profile.problem.toLowerCase().replace(/^o problema é que /, "")}.`,
-        `Quando ativada no ${theme} (Casa ${house}), essa tendência leva a ${profile.problem.toLowerCase().replace(/^o problema é que /, "")}.`,
-      ];
-      houseNote = `
-
-${houseNotes[idx]}`;
-    }
-    const virtueVariations = [
-      `${profile.virtueShadow}`,
-      `Essa qualidade tem seu lado sombrio: ${profile.virtueShadow.toLowerCase()}.`,
-      `O reverso da medalha: ${profile.virtueShadow.toLowerCase()}.`,
-    ];
-    let base = `${openings[idx]}
-
-${problems[idx]}${houseNote}
-
-${bodyScene}
-
-${virtueVariations[idx]}`;
-    if (areaHint) {
-      base += `
-
-Dica de integração: ${areaHint}.`;
-    }
-    if (retroTxt) {
-      base += `
-
-${retroTxt.trim()} sugere que rever essa lição com mais atenção pode trazer insights valiosos.`;
-    }
-    return base;
-  };
-  // Áreas de sombra (quatro blocos principais)
-  const shadowAreas = [
-    {
-      title: "Identidade e autoimagem",
-      body: "sun",
-      areaHint: "Observe onde você insiste em provar seu valor mesmo quando não é necessário.",
-    },
-    {
-      title: "Dinheiro e carreira",
-      body: "mars",
-      areaHint: "Perceba quando a pressa em resultados está custando mais que o ganho.",
-    },
-    {
-      title: "Família e amigos",
-      body: "moon",
-      areaHint: "Note quando o cuidado se torna cobrança disfarçada de amor.",
-    },
-    {
-      title: "Espiritualidade e crenças",
-      body: "jupiter",
-      areaHint:
-        "Questione se suas buscas de sentido estão evitando confrontos pessoais necessários.",
-    },
-  ].map(({ title, body, areaHint }) => {
-    const pos = getPlacement(body);
-    const prof = pos ? signShadowProfile(pos.sign) : undefined;
-    return {
-      title,
-      text: prof
-        ? shadowTextForPlanet(prof, pos, body, areaHint)
-        : "Dados astrológicos indisponíveis para este ponto.",
-    };
   });
-
-  // Capítulos pessoais (Sol, Lua, Mercúrio, Vênus, Marte)
-  const personalPlanets = [
-    { glyph: "☉", title: "A máscara da força", body: "sun", pos: sunPos },
-    { glyph: "☾", title: "A defesa emocional", body: "moon", pos: moonPos },
-    { glyph: "☿", title: "A armadilha da mente", body: "mercury", pos: mercuryPos },
-    { glyph: "♀", title: "O preço de ser amado", body: "venus", pos: venusPos },
-    { glyph: "♂", title: "A sombra do desejo", body: "mars", pos: marsPos },
-  ].map(({ glyph, title, body, pos }) => {
-    const profile = pos ? signShadowProfile(pos.sign) : undefined;
-    return {
-      glyph,
-      title,
-      body,
-      pos,
-      content: profile
-        ? shadowTextForPlanet(profile, pos, body)
-        : "Dados indisponíveis para este ponto.",
-    };
-  });
+  const angles =
+    natal.houses === undefined
+      ? []
+      : [
+          shadowAngleContent("ascendant", natal.houses.ascendant),
+          shadowAngleContent("midheaven", natal.houses.midheaven),
+        ];
+  const aspects = [...(natal.aspects ?? [])]
+    .sort((left, right) => right.strength - left.strength)
+    .slice(0, 6)
+    .map(shadowAspectContent);
 
   return (
     <section className="editorial-module shadow-horoscope" aria-labelledby="shadow-title">
-      <header>
+      <header className="shadow-horoscope-hero">
         <p className="eyebrow">Horóscopo sombrio</p>
         <h1 id="shadow-title">Aquilo que pede integração.</h1>
         <p>
@@ -265,45 +151,82 @@ ${retroTxt.trim()} sugere que rever essa lição com mais atenção pode trazer 
           endurecida, passa a agir sem consciência. Esta leitura mostra seus mecanismos de defesa,
           excessos e projeções — e a potência que retorna quando você assume autoria sobre eles.
         </p>
+        <div className="shadow-reading-key" aria-label="Como esta leitura está organizada">
+          <span>Mecanismo</span>
+          <span>Manifestação</span>
+          <span>Custo</span>
+          <span>Integração</span>
+        </div>
       </header>
 
-      {/* Quatro áreas principais */}
-      <div className="editorial-module-grid">
-        {shadowAreas.map((area) => (
-          <article key={area.title}>
-            <span aria-hidden="true">◐</span>
-            <h2>{area.title}</h2>
-            <p>{area.text}</p>
-          </article>
-        ))}
-      </div>
-
-      {/* Arquitetura natal da sombra – planetas pessoais */}
-      <div className="biorhythm-chapter">
+      <div className="shadow-section-heading">
         <p className="eyebrow">Arquitetura natal da sombra</p>
-        <h4>Cinco mecanismos pessoais</h4>
+        <h2>Dez mecanismos, sem repetir o mesmo diagnóstico.</h2>
         <p>
-          Os planetas pessoais revelam como você se defende, pensa, ama e age — e onde cada padrão
-          pode ser iluminado.
+          Cada corpo descreve uma função diferente. A casa mostra o palco; o custo mostra quando a
+          qualidade endurece; a integração propõe uma ação observável.
         </p>
       </div>
-      <div className="editorial-module-grid">
-        {personalPlanets.map((p) => (
-          <article key={p.body}>
-            <span aria-hidden="true">{p.glyph}</span>
-            <p className="eyebrow">
-              {p.pos?.sign ?? "—"} · {p.pos?.degree?.toFixed(2) ?? "0"}°
-            </p>
-            <h2>{p.title}</h2>
-            <p>{p.content}</p>
-          </article>
+      <div className="shadow-reading-axis">
+        {mechanisms.map(({ id, glyph, reading }, index) => (
+          <ShadowReadingArticle key={id} glyph={glyph} reading={reading} index={index + 1} />
         ))}
       </div>
 
-      {/* Trânsitos sombrios */}
-      <div className="biorhythm-chapter">
+      <div className="shadow-section-heading">
+        <p className="eyebrow">Ângulos e exposição</p>
+        <h2>Como a defesa chega e como ela quer ser reconhecida.</h2>
+        <p>
+          Ascendente e Meio do Céu dependem de hora conhecida. Sem esse dado, o sistema não inventa
+          casas nem ângulos.
+        </p>
+      </div>
+      {angles.length > 0 ? (
+        <div className="shadow-angle-grid">
+          {angles.map((reading, index) => (
+            <ShadowReadingArticle
+              key={reading.position}
+              glyph={reading.glyph}
+              reading={reading}
+              index={index + 1}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="shadow-unavailable">
+          Hora desconhecida: Ascendente, Meio do Céu e manifestações por casa permanecem fora desta
+          leitura.
+        </p>
+      )}
+
+      <div className="shadow-section-heading">
+        <p className="eyebrow">Aspectos natais</p>
+        <h2>Onde duas funções alimentam o mesmo ponto cego.</h2>
+        <p>
+          A seleção prioriza os seis aspectos de maior força calculada. Facilidade não significa
+          lucidez, e tensão não significa condenação.
+        </p>
+      </div>
+      {aspects.length > 0 ? (
+        <div className="shadow-aspect-grid">
+          {aspects.map((reading, index) => (
+            <ShadowReadingArticle
+              key={`${reading.title}-${reading.position}`}
+              glyph="◇"
+              reading={reading}
+              index={index + 1}
+            />
+          ))}
+        </div>
+      ) : (
+        <p className="shadow-unavailable">
+          Nenhum aspecto natal elegível foi calculado para este mapa.
+        </p>
+      )}
+
+      <div className="shadow-section-heading shadow-transit-heading">
         <p className="eyebrow">Sombras ativas e próximas</p>
-        <h4>Trânsitos do seu Horóscopo Sombrio</h4>
+        <h2>Trânsitos do seu Horóscopo Sombrio</h2>
         <p>
           Navegue pela data para acompanhar quando um padrão entra em cena, alcança o pico e começa
           a perder força. Aspectos futuros funcionam como preparação para não repetir no automático.
@@ -311,8 +234,7 @@ ${retroTxt.trim()} sugere que rever essa lição com mais atenção pode trazer 
       </div>
       <TransitReading profileId={profile.id} timezone={profile.timezone} variant="shadow" />
 
-      {/* Chamada para integração */}
-      <aside className="future-sky-callout">
+      <aside className="future-sky-callout shadow-integration-callout">
         <p className="eyebrow">Prática de integração</p>
         <h2>O que irrita, fascina ou assusta também informa.</h2>
         <p>
@@ -322,6 +244,36 @@ ${retroTxt.trim()} sugere que rever essa lição com mais atenção pode trazer 
         </p>
       </aside>
     </section>
+  );
+}
+
+function ShadowReadingArticle({
+  glyph,
+  reading,
+  index,
+}: Readonly<{
+  glyph: string;
+  reading: ShadowNatalReading;
+  index: number;
+}>): React.JSX.Element {
+  return (
+    <article className="shadow-reading-card">
+      <div className="shadow-reading-card-heading">
+        <span aria-hidden="true">{glyph}</span>
+        <p>
+          Lâmina {String(index).padStart(2, "0")} · {reading.position}
+        </p>
+      </div>
+      <h3>{reading.title}</h3>
+      <dl>
+        {reading.blocks.map((block) => (
+          <div key={block.label}>
+            <dt>{block.label}</dt>
+            <dd>{block.text}</dd>
+          </div>
+        ))}
+      </dl>
+    </article>
   );
 }
 

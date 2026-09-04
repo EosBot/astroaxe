@@ -252,9 +252,7 @@ export function condenseStructuralFunctions(rawGraph: unknown): AnalogousPositio
       const conflicts: { left: string; right: string }[] = [];
       for (const assignment of assignments) {
         for (const other of assignment.conflictsWith) {
-          const pair = [assignment.id, other].sort((left, right) =>
-            left < right ? -1 : left > right ? 1 : 0,
-          );
+          const pair = [assignment.id, other].sort(compareStrings);
           const key = pair.join("|");
           if (seen.has(key)) continue;
           seen.add(key);
@@ -289,7 +287,7 @@ export function condenseStructuralFunctions(rawGraph: unknown): AnalogousPositio
             ),
           }))
           .sort((left, right) => left.entityId.localeCompare(right.entityId)),
-        conflicts: conflicts.sort((left, right) => left.left.localeCompare(right.left)),
+        conflicts: conflicts.toSorted((left, right) => left.left.localeCompare(right.left)),
         divergences: (graph.divergences ?? [])
           .filter((divergence) => divergence.functionId === functionId)
           .sort((left, right) => left.id.localeCompare(right.id)),

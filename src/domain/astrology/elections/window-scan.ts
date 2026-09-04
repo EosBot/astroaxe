@@ -130,45 +130,17 @@ export function scanCeremonialWindows(input: {
       if (startJdUt >= scan.toJdUt) break;
       hoursScanned += 1;
 
-      // O meio da hora representa a hora inteira: avaliar na borda faria a
-      // resposta depender de arredondamento.
-      const midpoint = startJdUt + hourLength / 2;
-      const hourRuler = chaldeanHourRuler(anchor.dayRuler, anchor.segment, hourNumber);
-
-      for (const observation of evaluateElections({
-        profiles: [...input.profiles],
-        // A hora já é conhecida: passá-la evita que cada critério redescubra o
-        // nascer e o pôr do sol por conta própria.
-        resolution: {
-          method: "observed_solar",
-          reading: {
-            dayRuler: anchor.dayRuler,
-            hourRuler,
-            hourNumber,
-            segment: anchor.segment,
-            intervalProgress: 0.5,
-          },
-        },
-        moment: {
-          jdUt: midpoint,
-          latitude: scan.latitude,
-          longitude: scan.longitude,
-          sunLongitude: engine.position("sun", midpoint).lon,
-          moonLongitude: engine.position("moon", midpoint).lon,
-        },
-      })) {
-        if (observation.status !== "matched") continue;
-        windows.push({
-          profileId: observation.profileId,
+      windows.push(
+        ...windowsForHour({
+          anchor,
+          hourNumber,
           startJdUt,
           endJdUt,
-          dayRuler: anchor.dayRuler,
-          hourRuler,
-          hourNumber,
-          segment: anchor.segment,
-          limitations: [...observation.limitations],
-        });
-      }
+          hourLength,
+          scan,
+          profiles: input.profiles,
+        }),
+      );
 
       if (windows.length >= scan.limit) {
         truncated = true;
@@ -190,4 +162,62 @@ export function scanCeremonialWindows(input: {
     truncated,
     windows: windows.slice(0, scan.limit),
   };
+}
+
+/**
+ * As janelas que uma única hora planetária produz.
+ *
+ * Sai do laço principal para que ele fique legível: o laço cuida de caminhar
+ * pelo período, e esta função cuida de julgar uma hora. Uma hora aparece uma
+ * vez por critério que ela satisfaz.
+ */
+function windowsForHour(input: {
+  anchor: { dayRuler: ClassicalPlanet; segment: SolarSegment };
+  hourNumber: number;
+  startJdUt: number;
+  endJdUt: number;
+  hourLength: number;
+  scan: { latitude: number; longitude: number };
+  profiles: readonly ElectionProfile[];
+}): CeremonialWindow[] {
+  const { anchor, hourNumber, startJdUt, endJdUt, hourLength, scan } = input;
+
+  // O meio da hora representa a hora inteira: avaliar na borda faria a resposta
+  // depender de arredondamento.
+  const midpoint = startJdUt + hourLength / 2;
+  const hourRuler = chaldeanHourRuler(anchor.dayRuler, anchor.segment, hourNumber);
+
+  return evaluateElections({
+    profiles: [...input.profiles],
+    // A hora já é conhecida: passá-la evita que cada critério redescubra o
+    // nascer e o pôr do sol por conta própria.
+    resolution: {
+      method: "observed_solar",
+      reading: {
+        dayRuler: anchor.dayRuler,
+        hourRuler,
+        hourNumber,
+        segment: anchor.segment,
+        intervalProgress: 0.5,
+      },
+    },
+    moment: {
+      jdUt: midpoint,
+      latitude: scan.latitude,
+      longitude: scan.longitude,
+      sunLongitude: engine.position("sun", midpoint).lon,
+      moonLongitude: engine.position("moon", midpoint).lon,
+    },
+  })
+    .filter((observation) => observation.status === "matched")
+    .map((observation) => ({
+      profileId: observation.profileId,
+      startJdUt,
+      endJdUt,
+      dayRuler: anchor.dayRuler,
+      hourRuler,
+      hourNumber,
+      segment: anchor.segment,
+      limitations: [...observation.limitations],
+    }));
 }

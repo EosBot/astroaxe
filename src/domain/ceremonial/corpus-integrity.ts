@@ -203,9 +203,7 @@ export function buildCorpusIntegrityReport(input: {
       inventoryQuarantined: entries.filter(({ state }) => state === "QUARANTINED").length,
       derivedMatched: derivadosPorCaminho.size,
       gaps,
-      unmatchedInCorpus: [...unmatchedInCorpus].sort((left, right) =>
-        left < right ? -1 : left > right ? 1 : 0,
-      ),
+      unmatchedInCorpus: [...unmatchedInCorpus].sort(compareStrings),
       status: reconciliationStatus({
         inventorySize: entries.length,
         linkableDocuments: documents.filter(({ sourcePath }) => sourcePath !== null).length,

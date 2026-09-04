@@ -1584,6 +1584,198 @@ a.celestial-module:hover {
   border-radius: 0 1.25rem 1.25rem 0;
   background: linear-gradient(90deg, rgb(196 122 74 / 10%), rgb(5 10 15 / 88%));
 }
+.shadow-horoscope {
+  --shadow-violet: #77658d;
+  --shadow-ember: #d09264;
+  --shadow-surface: #090b12;
+}
+.shadow-horoscope-hero {
+  position: relative;
+  isolation: isolate;
+  max-width: none !important;
+  overflow: hidden;
+  padding-inline: clamp(1.25rem, 4vw, 3.5rem) !important;
+  border: 1px solid rgb(119 101 141 / 28%);
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(115deg, rgb(119 101 141 / 12%), transparent 38%),
+    radial-gradient(circle at 82% 20%, rgb(208 146 100 / 13%), transparent 16rem),
+    var(--shadow-surface);
+}
+.shadow-horoscope-hero::after {
+  position: absolute;
+  z-index: -1;
+  top: -20%;
+  right: clamp(1rem, 8vw, 8rem);
+  width: 1px;
+  height: 145%;
+  background: linear-gradient(
+    transparent,
+    rgb(208 146 100 / 75%) 28%,
+    rgb(233 228 217 / 45%) 50%,
+    rgb(119 101 141 / 55%) 72%,
+    transparent
+  );
+  box-shadow: 0 0 36px 10px rgb(208 146 100 / 8%);
+  content: "";
+  transform: rotate(17deg);
+}
+.shadow-reading-key {
+  margin-top: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.shadow-reading-key span {
+  padding: 0.42rem 0.72rem;
+  border: 1px solid rgb(208 146 100 / 24%);
+  border-radius: 999px;
+  color: rgb(233 228 217 / 76%);
+  background: rgb(7 10 16 / 72%);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.shadow-section-heading {
+  max-width: 54rem;
+  margin: clamp(3.5rem, 8vw, 7rem) 0 1.5rem;
+}
+.shadow-section-heading h2 {
+  max-width: 20ch;
+  margin: 0.55rem 0 0.8rem;
+  font-family: "Iowan Old Style", Baskerville, Georgia, serif;
+  font-size: clamp(2rem, 4vw, 3.8rem);
+  font-weight: 500;
+  line-height: 1;
+}
+.shadow-section-heading > p:last-child {
+  color: var(--muted);
+  line-height: 1.7;
+}
+.shadow-reading-axis {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgb(119 101 141 / 30%);
+  border-radius: 1.5rem;
+  background: rgb(119 101 141 / 30%);
+}
+.shadow-reading-axis::before {
+  position: absolute;
+  z-index: 2;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: linear-gradient(transparent, var(--shadow-ember), transparent);
+  box-shadow: 0 0 28px 8px rgb(208 146 100 / 7%);
+  content: "";
+  pointer-events: none;
+}
+.shadow-reading-card {
+  min-width: 0;
+  padding: clamp(1.4rem, 3vw, 2.6rem);
+  background:
+    radial-gradient(circle at 100% 0, rgb(119 101 141 / 10%), transparent 13rem),
+    var(--shadow-surface);
+}
+.shadow-reading-card-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 0.85rem;
+}
+.shadow-reading-card-heading > span {
+  flex: 0 0 auto;
+  color: var(--shadow-ember);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.65rem;
+}
+.shadow-reading-card-heading > p {
+  margin: 0;
+  color: rgb(233 228 217 / 52%);
+  font-size: 0.67rem;
+  letter-spacing: 0.1em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+.shadow-reading-card h3 {
+  max-width: 18ch;
+  margin: 1rem 0 1.5rem;
+  font-family: "Iowan Old Style", Baskerville, Georgia, serif;
+  font-size: clamp(1.55rem, 2.5vw, 2.35rem);
+  font-weight: 500;
+  line-height: 1.05;
+}
+.shadow-reading-card dl {
+  margin: 0;
+}
+.shadow-reading-card dl > div {
+  position: relative;
+  padding: 0.9rem 0 0.9rem 1.25rem;
+  border-top: 1px solid rgb(119 101 141 / 22%);
+}
+.shadow-reading-card dl > div::before {
+  position: absolute;
+  top: 1.25rem;
+  left: 0;
+  width: 0.38rem;
+  height: 0.38rem;
+  border-radius: 50%;
+  background: var(--shadow-violet);
+  box-shadow: 0 0 12px rgb(119 101 141 / 50%);
+  content: "";
+}
+.shadow-reading-card dl > div:last-child::before {
+  background: var(--shadow-ember);
+}
+.shadow-reading-card dt {
+  margin-bottom: 0.32rem;
+  color: var(--shadow-ember);
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.shadow-reading-card dd {
+  margin: 0;
+  color: rgb(235 231 221 / 76%);
+  line-height: 1.68;
+}
+.shadow-angle-grid,
+.shadow-aspect-grid {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid rgb(119 101 141 / 28%);
+  border-radius: 1.5rem;
+  background: rgb(119 101 141 / 28%);
+}
+.shadow-angle-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.shadow-aspect-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.shadow-aspect-grid .shadow-reading-card h3 {
+  font-size: clamp(1.35rem, 2vw, 2rem);
+}
+.shadow-unavailable {
+  padding: 1.2rem 1.4rem;
+  border-left: 2px solid var(--shadow-violet);
+  color: var(--muted);
+  background: rgb(119 101 141 / 8%);
+  line-height: 1.65;
+}
+.shadow-transit-heading {
+  margin-bottom: 0;
+}
+.shadow-integration-callout {
+  margin-top: clamp(3rem, 7vw, 6rem);
+  border-left-color: var(--shadow-ember);
+  background: linear-gradient(90deg, rgb(119 101 141 / 13%), rgb(5 10 15 / 88%));
+}
 .annual-compass {
   aspect-ratio: 2.2;
   max-width: 66rem;
@@ -2146,6 +2338,18 @@ a.celestial-module:hover {
   .lunar-phase-track {
     grid-template-columns: 1fr;
   }
+  .shadow-reading-axis,
+  .shadow-angle-grid,
+  .shadow-aspect-grid {
+    grid-template-columns: 1fr;
+  }
+  .shadow-reading-axis::before {
+    right: auto;
+    left: 0;
+  }
+  .shadow-horoscope-hero::after {
+    right: 1.5rem;
+  }
   .editorial-module-grid article,
   .lunar-phase-track article {
     min-height: auto;
@@ -2181,6 +2385,10 @@ a.celestial-module:hover {
   .editorial-module-grid,
   .editorial-module-grid-three,
   .lunar-phase-track {
+    grid-template-columns: 1fr;
+  }
+  .shadow-reading-axis,
+  .shadow-aspect-grid {
     grid-template-columns: 1fr;
   }
   .annual-compass {
